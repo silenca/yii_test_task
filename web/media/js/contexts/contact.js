@@ -614,20 +614,6 @@ $(function () {
             checkChanges($(this).attr('name'), $(this).val(), $contact_form);
         });
 
-        $('.languages [name="language"]', $contact_data_form).on('change', function () {
-            checkChanges(['language'], $(this).val(), $contact_form);
-        });
-        $('.distributions [name="distribution"]', $contact_data_form).on('change', function () {
-            checkChanges(['distribution'], $(this).val(), $contact_form);
-        });
-        $('#contact-channel_attraction', $contact_data_form).on('change', function () {
-            checkChanges(['channel_attraction_id'], $(this).val(), $contact_form);
-        });
-        $('.primary-person [name="primary_person"]', $contact_data_form).on('change', function () {
-            checkChanges(['primary_person'], $(this).val(), $contact_form);
-        });
-
-
         var date = new Date();
         var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
@@ -776,10 +762,6 @@ function bindLiveChange($form) {
         var val = $(input).val();
         bind_inputs[name] = val;
     });
-    bind_inputs['language'] = $('.languages [name="language"]:checked').val();
-    bind_inputs['distribution'] = $('.distributions [name="distribution"]:checked').val();
-    bind_inputs['channel_attraction_id'] = $('#contact-channel_attraction').val();
-    bind_inputs['primary_person'] = $('.primary-person [name="primary_person"]:checked').val();
     var contact_id = $('#contact-id').val();
     bind_inputs['id'] = contact_id;
 }
@@ -801,7 +783,7 @@ function editContact(name, value, $form) {
 //    if (bind_inputs['id']) {
 //        data['id'] = bind_inputs['id'];
 //    }
-    if ((bind_inputs['first_name'] && bind_inputs['first_phone']) || (bind_inputs['second_name'] && bind_inputs['second_phone'])) {
+    if (bind_inputs['name'] && bind_inputs['surname'] && bind_inputs['phones']) {
         $.post('/contacts/edit', data, function (response) {
             $form.find('label.error').remove();
             $form.find('.error').removeClass('error');
@@ -945,16 +927,7 @@ function clearContactForm($form) {
     $form.find('#contact-id').val('');
     $form.find('.contact-title').text('Новый контакт');
     $form.find('.history_content').empty();
-    $form.find('#contact-first_name').val('');
-    $form.find('#contact-first_phone').val('');
-    $form.find('#contact-first_email').val('');
-    $form.find('#contact-second_name').val('');
-    $form.find('#contact-second_phone').val('');
-    $form.find('#contact-second_email').val('');
-    $form.find('#language_rus').prop("checked", true);
-    $form.find('#language_rus').closest('label').addClass('active').siblings('label').removeClass('active');
-    $form.find('#distribution_yes').prop("checked", true);
-    $form.find('#distribution_yes').closest('label').addClass('active').siblings('label').removeClass('active');
+    $form.find('input').val('');
     $form.find('#contact_manager_name').text('');
     $form.find('.contact-manager-name-cont').hide();
     hideNotifications($form);

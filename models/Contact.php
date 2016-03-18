@@ -164,63 +164,77 @@ class Contact extends \yii\db\ActiveRecord {
     }
 
     public function buildData($data) {
-        if (isset($data['first_phone'])) {
-            if (!empty($data['first_phone'])) {
-                $phones = array_map('trim', explode(',', $data['first_phone']));
+        if (isset($data['phones'])) {
+            if (!empty($data['phones'])) {
+                $phones = array_map('trim', explode(',', $data['phones']));
                 if (isset($phones[0])) {
                     $phone = $phones[0];
                     if (strlen($phone) > 10) {
                         $phone = substr($phone, strlen($phone) - 10);
                     }
-                    if ($this->first_mobile !== $phone) {
-                        $this->first_mobile = $phone;
+                    if ($this->first_phone !== $phone) {
+                        $this->first_phone = $phone;
                         $this->new_phone = $phone;
                     }
                 }
                 if (isset($phones[1])) {
                     $phone = $phones[1];
                     if (strlen($phone) > 10) {
-                        $phone = substr($phones[1], strlen($phones[1]) - 10);
+                        $phone = substr($phone, strlen($phone) - 10);
                     }
-                    if ($this->first_landline !== $phone) {
-                        $this->first_landline = $phone;
+                    if ($this->second_phone !== $phone) {
+                        $this->second_phone = $phone;
+                        $this->new_phone = $phone;
+                    }
+                }
+                if (isset($phones[2])) {
+                    $phone = $phones[2];
+                    if (strlen($phone) > 10) {
+                        $phone = substr($phone, strlen($phone) - 10);
+                    }
+                    if ($this->third_phone !== $phone) {
+                        $this->third_phone = $phone;
+                        $this->new_phone = $phone;
+                    }
+                }
+                if (isset($phones[3])) {
+                    $phone = $phones[3];
+                    if (strlen($phone) > 10) {
+                        $phone = substr($phone, strlen($phone) - 10);
+                    }
+                    if ($this->fourth_phone !== $phone) {
+                        $this->fourth_phone = $phone;
                         $this->new_phone = $phone;
                     }
                 }
             } else {
-                $this->first_mobile = null;
-                $this->first_landline = null;
+                $this->first_phone = null;
+                $this->second_phone = null;
+                $this->third_phone = null;
+                $this->fourth_phone = null;
             }
-            unset($data['first_phone']);
+            unset($data['phones']);
         }
-        if (isset($data['second_phone'])) {
-            if (!empty($data['second_phone'])) {
-                $phones = array_map('trim', explode(',', $data['second_phone']));
-                if (isset($phones[0])) {
-                    $phone = $phones[0];
-                    if (strlen($phone) > 10) {
-                        $phone = substr($phone, strlen($phone) - 10);
-                    }
-                    if ($this->second_mobile !== $phone) {
-                        $this->second_mobile = $phone;
-                        $this->new_phone = $phone;
+        if (isset($data['emails'])) {
+            if (!empty($data['emails'])) {
+                $emails = array_map('trim', explode(',', $data['emails']));
+                if (isset($emails[0])) {
+                    $email = $emails[0];
+                    if ($this->first_email !== $email) {
+                        $this->first_email = $email;
                     }
                 }
-                if (isset($phones[1])) {
-                    $phone = $phones[1];
-                    if (strlen($phone) > 10) {
-                        $phone = substr($phones[1], strlen($phones[1]) - 10);
-                    }
-                    if ($this->second_landline !== $phone) {
-                        $this->second_landline = $phone;
-                        $this->new_phone = $phone;
+                if (isset($emails[1])) {
+                    $email = $emails[1];
+                    if ($this->second_email !== $email) {
+                        $this->second_email = $email;
                     }
                 }
             } else {
-                $this->second_mobile = null;
-                $this->second_landline = null;
+                $this->first_email = null;
+                $this->second_email = null;
             }
-            unset($data['second_phone']);
+            unset($data['emails']);
         }
         foreach ($data as $name => $value) {
             $this->$name = $value;
@@ -235,13 +249,13 @@ class Contact extends \yii\db\ActiveRecord {
             $this->save();
             if ($is_new_record) {
                 $contact_history = new ContactHistory();
-                $contact_history->add($this->id, 'создан контакт', '', 'new_contact');
+                $contact_history->add($this->id, 'создан контакт', 'new_contact');
                 $contact_history->save();
                 $contactStatusHistory = new ContactStatusHistory();
                 $contactStatusHistory->add($this->id, $this->manager_id, 'lead');
                 $contactStatusHistory->save();
 
-                $call->setContactIdByPhone($this->new_phone, $this->id);
+//                $call->setContactIdByPhone($this->new_phone, $this->id);
             }
             $transaction->commit();
             return true;

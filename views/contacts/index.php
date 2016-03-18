@@ -96,76 +96,70 @@ $this->params['active'] = 'contact';
                                             <div class="text-warning contact-deleted">Контакт удален</div>
                                         </div>
                                         <div class="panel-body">
-                                            <div class="form-group">
-                                                <div class="radio radio-star text-left primary-person">
-                                                    <input type="radio" checked="checked" value="1" name="primary_person" id="primary_person_1">
-                                                    <label for="primary_person_1"><i class="fa fa-star-o"></i></label>
-                                                </div>
-                                            </div>
                                             <div class="input-group">
-                                                <label class="input-group-addon primary" for="contact-first_name"><i class="fa fa-fw fa-user"></i></label>
-                                                <input type="text" id="contact-first_name" name="first_name" placeholder="Имя 1" class="form-control">
+                                                <label class="input-group-addon primary" for="contact_surname"><i class="fa fa-fw fa-user"></i></label>
+                                                <input type="text" id="contact_surname" name="surname" placeholder="Фамилия контакта" class="form-control">
                                             </div>
                                             <br>
                                             <div class="input-group">
-                                                <label class="input-group-addon primary" for="contact-first_phone"><i class="fa fa-fw fa-phone"></i></label>
-                                                <input type="text" id="contact-first_phone" name="first_phone" placeholder="Телефон"  class="form-control">
+                                                <label class="input-group-addon primary" for="contact_name"><i class="fa fa-fw fa-user"></i></label>
+                                                <input type="text" id="contact_name" name="name" placeholder="Имя контакта" class="form-control">
                                             </div>
                                             <br>
                                             <div class="input-group">
-                                                <label class="input-group-addon primary" for="contact-first_email"><i class="fa fa-fw fa-envelope"></i></label>
-                                                <input type="text" id="contact-first_email" name="first_email" placeholder="Email" class="form-control">
-                                            </div>
-                                            <hr>
-                                            <div class="form-group">
-                                                <div class="radio radio-star text-left primary-person">
-                                                    <input type="radio" value="2" name="primary_person" id="primary_person_2">
-                                                    <label for="primary_person_2"><i class="fa fa-star-o"></i></label>
-                                                </div>
-                                            </div>
-                                            <div class="input-group">
-                                                <label class="input-group-addon info" for="contact-second_name"><i class="fa fa-fw fa-user"></i></label>
-                                                <input type="text" id="contact-second_name" name="second_name" placeholder="Имя 2" class="form-control">
+                                                <label class="input-group-addon primary" for="contact_middle_name"><i class="fa fa-fw fa-user"></i></label>
+                                                <input type="text" id="contact_middle_name" name="middle_name" placeholder="Отчество контакта" class="form-control">
                                             </div>
                                             <br>
                                             <div class="input-group">
-                                                <label class="input-group-addon info" for="contact-second_phone"><i class="fa fa-fw fa-phone"></i></label>
-                                                <input type="text" id="contact-second_phone" name="second_phone" placeholder="Телефон" class="form-control">
+                                                <label class="input-group-addon primary" for="contact_phones"><i class="fa fa-fw fa-phone"></i></label>
+                                                <input type="text" id="contact_phones" name="phones" placeholder="Номера телефонов"  class="form-control">
                                             </div>
                                             <br>
                                             <div class="input-group">
-                                                <label class="input-group-addon info" for="contact-second_email"><i class="fa fa-fw fa-envelope"></i></label>
-                                                <input type="text" id="contact-second_email" name="second_email" placeholder="Email" class="form-control">
+                                                <label class="input-group-addon primary" for="contact_emails"><i class="fa fa-fw fa-envelope"></i></label>
+                                                <input type="text" id="contact_emails" name="emails" placeholder="Email" class="form-control">
                                             </div>
+
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_country"><i class="pg pg-home"></i></label>
+                                                <input type="text" id="contact_country" name="country" placeholder="Страна проживания" class="form-control">
+                                            </div>
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_region"><i class="pg pg-home"></i></label>
+                                                <input type="text" id="contact_region" name="region" placeholder="Регион проживания" class="form-control">
+                                            </div>
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_area"><i class="pg pg-home"></i></label>
+                                                <input type="text" id="contact_area" name="area" placeholder="Область" class="form-control">
+                                            </div>
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_city"><i class="pg pg-home"></i></label>
+                                                <input type="text" id="contact_city" name="city" placeholder="Город/поселок проживания" class="form-control">
+                                            </div>
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_street"><i class="pg pg-home"></i></label>
+                                                <input type="text" id="contact_street" name="street" placeholder="Улица" class="form-control">
+                                            </div>
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_house"><i class="pg pg-home"></i></label>
+                                                <input type="text" id="contact_house" name="house" placeholder="Номер дома" class="form-control">
+                                            </div>
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_flat"><i class="pg pg-home"></i></label>
+                                                <input type="text" id="contact_flat" name="flat" placeholder="Номер квартиры" class="form-control">
+                                            </div>
+
                                             <hr>
                                             <div class="form-group">
                                                 <div class="row">
-                                                    <div class="col-md-5 text-right">Язык:</div>
-                                                    <div class="col-md-7">
-                                                        <div class="btn-group btn-group-xs btn-group-justified languages" data-toggle="buttons">
-                                                            <label class="btn btn-default active">
-                                                                <input type="radio" value="rus" name="language" id="language_rus" checked> <span class="fs-16">Рус</span>
-                                                            </label>
-                                                            <label class="btn btn-default">
-                                                                <input type="radio" value="ukr" name="language" id="language_ukr"> <span class="fs-16">Укр</span>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <div class="row">
-                                                    <div class="col-md-5 text-right">Рассылка:</div>
-                                                    <div class="col-md-7">
-                                                        <div class="btn-group btn-group-xs btn-group-justified distributions" data-toggle="buttons">
-                                                            <label class="btn btn-default active">
-                                                                <input type="radio" value="1" name="distribution" id="distribution_yes" checked> <span class="fs-16">Да</span>
-                                                            </label>
-                                                            <label class="btn btn-default">
-                                                                <input type="radio" value="0" name="distribution" id="distribution_no"> <span class="fs-16">Нет</span>
-                                                            </label>
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

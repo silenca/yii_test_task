@@ -81,9 +81,9 @@ class ContactsController extends BaseController {
 
     public function actionEdit() {
         $post = Yii::$app->request->post();
-        $contact_form = new ContactForm();
-        $contact_form->load($post);
-        if ($contact_form->validate()) {
+//        $contact_form = new ContactForm();
+//        $contact_form->load($post);
+//        if ($contact_form->validate()) {
             try {
                 $contact = null;
                 if (isset($post['id']) && !empty($post['id'])) {
@@ -113,10 +113,10 @@ class ContactsController extends BaseController {
             } catch (\Exception $ex) {
                 $this->json(false, 500);
             }
-        } else {
-            $errors = $contact_form->getErrors();
-            $this->json(false, 415, $errors);
-        }
+//        } else {
+//            $errors = $contact_form->getErrors();
+//            $this->json(false, 415, $errors);
+//        }
     }
 
     public function actionGetdata() {
