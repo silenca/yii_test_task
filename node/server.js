@@ -41,13 +41,10 @@ io.sockets.on('connection', function (socket) {
                 if (!err) {
                     switch (rows[0].role) {
                         case 1:
-                            socket.join('manager');
+                            socket.join('operator');
                             break;
                         case 5:
-                            socket.join('supervisor');
-                            break;
-                        case 10:
-                            socket.join('fin_dir');
+                            socket.join('manager');
                             break;
                         case 15:
                             socket.join('admin');
@@ -85,17 +82,6 @@ app.post('/incoming', function (req, res) {
     };
     io.to('manager').emit('call_incoming', data);
     res.send('Сообщение отправлено всем менеджерам');
-});
-
-app.post('/contract', function (req, res) {
-    var data = {
-        'link': req.body.link,
-        'phone': req.body.price,
-        'contact_name': req.body.contact_name,
-        'manager': req.body.manager
-    };
-    io.to('fin_dir').emit('new_contract', data);
-    res.send('Сообщение отправлено всем директорам');
 });
 
 var server = app.listen(8002, '127.0.0.1', function () {
