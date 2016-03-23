@@ -1,8 +1,9 @@
 var express = require('express');
-var io = require('socket.io').listen(8001);
+var config = require('./config.js');
+var io = require('socket.io').listen(config.socket.port);
 var mysql = require('mysql');
 var bodyParser = require('body-parser');
-var config = require('./config.js');
+
 var http = require('http');
 
 var connection = mysql.createConnection(config.mysql);
@@ -84,7 +85,8 @@ app.post('/incoming', function (req, res) {
     res.send('Сообщение отправлено всем менеджерам');
 });
 
-var server = app.listen(8002, '127.0.0.1', function () {
+
+var server = app.listen(config.app.port, '127.0.0.1', function () {
 
     var host = server.address().address;
     var port = server.address().port;
