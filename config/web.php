@@ -1,6 +1,10 @@
 <?php
+if (file_exists(__DIR__ . '/params-local.php')) {
+    $params = require(__DIR__ . '/params-local.php');
+} else {
+    $params = require(__DIR__ . '/params.php');
+}
 
-$params = require(__DIR__ . '/params.php');
 
 $config = [
     'id' => 'basic',

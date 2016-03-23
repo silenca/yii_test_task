@@ -39,6 +39,7 @@ if (!Yii::$app->user->isGuest) {
         <? if(!Yii::$app->user->isGuest): ?>
         <script type="text/javascript">
             var notify_id = "<?= Yii::$app->user->identity->notification_key; ?>";
+            var notify_host = "<?= Yii::$app->params['host_notify'] ?>";
             var _csrf = "<?= Yii::$app->request->getCsrfToken() ?>";
         </script>
         <? endif; ?>

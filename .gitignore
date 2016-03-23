@@ -1,3 +1,4 @@
+/config/params-local.php
 /config/db.php
 # phpstorm project files
 .idea

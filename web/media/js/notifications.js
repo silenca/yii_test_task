@@ -1,5 +1,5 @@
 $(function () {
-    var socket = io.connect('http://' + window.location.hostname + ':8001');
+    var socket = io.connect(notify_host);
     //var socket = io.connect('http://127.0.0.1:8001');
     socket.emit('join', {notify_id: notify_id});
 
