@@ -20,6 +20,7 @@ class ObjectAsset extends AssetBundle
     public $css = [];
     public $js = [
         'media/js/contexts/object.js',
+        'media/js/contact_form.js',
     ];
     public $depends = [];
 }

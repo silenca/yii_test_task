@@ -23,7 +23,7 @@ class ActionController extends BaseController {
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'getdata'],
+                        'actions' => ['index', 'getdata', 'view'],
                         'allow' => true,
                         'roles' => ['@'],
                     ]
@@ -88,9 +88,9 @@ class ActionController extends BaseController {
                 ->join('LEFT JOIN', ActionType::tableName() . ' `at`', '`at`.`id` = `a`.`action_type_id`')
                 ->join('LEFT JOIN', Contact::tableName() . ' `c`', '`c`.`id` = `a`.`contact_id`')
                 ->join('LEFT JOIN', User::tableName() . ' `u`', '`u`.`id` = `a`.`manager_id`')
-                ->join('LEFT JOIN', ContactComment::tableName() . ' `cc`', '`cc`.`id` = (SELECT MAX(`id`) FROM `contact_comment` WHERE `contact_comment`.`contact_id` = `a`.`contact_id`)')
-                ->join('LEFT OUTER JOIN', ActionObject::tableName() . ' `ao`', '`a`.`id` = `ao`.`action_id`')
-                ->join('LEFT OUTER JOIN', ObjectApartment::tableName() . ' `oa`', '`oa`.`id` = `ao`.`object_id`');
+                ->join('LEFT JOIN', ContactComment::tableName() . ' `cc`', '`cc`.`id` = (SELECT MAX(`id`) FROM `contact_comment` WHERE `contact_comment`.`contact_id` = `a`.`contact_id`)');
+                //->join('LEFT OUTER JOIN', ActionObject::tableName() . ' `ao`', '`a`.`id` = `ao`.`action_id`')
+                //->join('LEFT OUTER JOIN', ObjectApartment::tableName() . ' `oa`', '`oa`.`id` = `ao`.`object_id`');
         //$dump = $query->prepare(Yii::$app->db->queryBuilder)->createCommand()->rawSql;
         $query->orderBy($sorting);
         $actions = $query->all();
@@ -107,6 +107,38 @@ class ActionController extends BaseController {
         );
         echo json_encode($json_data);
         die;
+    }
+
+    public function actionView() {
+        $id = Yii::$app->request->post('id');
+        $date = Yii::$app->request->post('date');
+        $date = strtotime(date('Y-m-d', strtotime($date)));
+        $today = mktime(0, 0, 0);
+        if ($today >= $date) {
+            Action::updateAll(['viewed' => '1'], ['id' => $id]);
+            $this->json([], 200);
+        }
+        $this->json([], 412);
+    }
+
+    public function actionAddcomment() {
+        $action_id = Yii::$app->request->post('id');
+        $comment_text = Yii::$app->request->post('comment');
+        $action_comment = new ContactComment();
+        if ($action_comment->add($action_id, $comment_text)) {
+//            $contact_history = new ContactHistory();
+//            $comment_text = "комментарий - " . $comment_text;
+//            $contact_history->add($action_id, $comment_text, '', 'comment', $contact_comment->datetime);
+//            $response_date = [
+//                'text' => $comment_text,
+//                'datetime' => date("d-m-Y G:i:s", strtotime($contact_comment->datetime))
+//            ];
+//            $this->json($response_date, 200);
+            $this->json([], 200);
+        } else {
+            $errors = $action_comment->getErrors();
+            $this->json(false, 415, $errors);
+        }
     }
 
 }

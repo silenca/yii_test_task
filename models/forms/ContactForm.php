@@ -2,15 +2,16 @@
 
 namespace app\models\forms;
 
+use app\models\Contact;
 use Yii;
 use yii\base\Model;
 use yii\validators\EmailValidator;
-use yii\validators\NumberValidator;
 
 /**
  * ContactForm is the model behind the contact form.
  */
-class ContactForm extends Model {
+class ContactForm extends Model
+{
 
     var $name;
     var $surname;
@@ -37,7 +38,8 @@ class ContactForm extends Model {
     'status'
     */
 
-    public function rules() {
+    public function rules()
+    {
         return [
             [['name', 'surname', 'phones'], 'requiredForContact'],
             [['phones'], 'phoneArray'],
@@ -46,102 +48,110 @@ class ContactForm extends Model {
                 'tooShort' => '{attribute} должен содержать больше {min} символов',
                 'tooLong' => '{attribute} должен содержать до {max} символов'
             ],
-//            [['first_email', 'second_email'], 'email', 'message' => '{attribute} введен не корректно'],
         ];
     }
 
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'name' => 'Имя',
             'surname' => 'Фамилия',
             'middle_name' => 'Отчество',
-            'first_phone' => 'Номер телефона',
-            'second_phone' => 'Номер телефона',
-            'third_phone' => 'Номер телефона',
-            'fourth_phone' => 'Номер телефона',
-            'first_email' => 'Email',
-            'second_email' => 'Email',
+            'phones' => 'Номер телефона',
+            'emails' => 'Email'
         ];
     }
 
-    public function formName() {
+    public function formName()
+    {
         return 'contact';
     }
 
-    public function requiredForContact($attribute, $params) {
-        $this->addError($attribute, 'Необходимо заполнить имя и телефон');
+    public function requiredForContact($attribute, $params)
+    {
         if (empty($this->name) || empty($this->surname) || empty($this->phones)) {
-            $this->addError($attribute, 'Необходимо заполнить имя и телефон');
+            $this->addError($attribute, 'Необходимо заполнить ФИО и телефон');
         }
     }
 
-    public function phoneArray($attribute, $params) {
-        if (!empty($attribute)) {
-            $validator = new NumberValidator();
-            $phones = array_map('trim', explode(',', $this->$attribute));
-//            $phones = explode(',', $this->$attribute);
-            foreach ($phones as $phone) {
-                $phone = trim($phone);
-                if (!$validator->validate($phone, $error)) {
-                    $this->addError($attribute, 'Телефон заполнен некорректно');
+    public static function dataConvert($data, $type, $action) {
+        if ($action == 'explode') {
+            $res_data = [];
+            $data = array_map('trim', explode(',', $data));
+            if ($type == 'phones') {
+                $data = array_map(function($el) {
+                    return preg_replace("/[^a-zA-Z0-9]/i","", $el);
+                }, $data);
+                $data_cols = Contact::getPhoneCols();
+            } else {
+                $data_cols = Contact::getEmailCols();
+            }
+            $count = 0;
+            foreach ($data_cols as $col) {
+                if (isset($data[$count])) {
+                    $res_data[$col] = $data[$count];
+                } else {
+                    $res_data[$col] = null;
+                }
+                $count++;
+            }
+        } elseif ($action == 'implode') {
+            $res_data = '';
+            $res_data = implode(', ', $data);
+        }
+        return $res_data;
+    }
+
+    public function phoneArray($attribute, $params)
+    {
+        $phones = self::dataConvert($this->$attribute, 'phones', 'explode');
+        foreach ($phones as $phone) {
+            $this->checkPhone($phone, $attribute);
+        }
+    }
+
+    public function checkPhone($phone, $attribute)
+    {
+        if ($phone !== null) {
+            if (!preg_match('/^\d*$/', $phone)) {
+                if ($this->getFirstError($attribute) == null) {
+                    $this->addError($attribute, 'Телефон не должен содержать буквенные символы');
+                }
+            } elseif (strlen($phone) == 10) {
+                $this->addError($attribute, 'Код страны не введен. Код России: 7');
+            } elseif (strlen($phone) < 10 || strlen($phone) > 15) {
+                $this->addError($attribute, 'Телефон заполнен некорректно');
+            }
+//            elseif (!preg_match('/^(8|7|\+7)/', $phone)) {
+//                if ($this->getFirstError($attribute) == null) {
+//                    $this->addError($attribute, 'Код страны введен не верно');
+//                }
+//            } elseif (!preg_match('/^(8|7|\+7)((\d{10})|(\s\(\d{3}\)\s\d{3}\s\d{2}\s\d{2}))/', $phone)) {
+//                if ($this->getFirstError($attribute) == null) {
+//                    $this->addError($attribute, 'Телефон заполнен некорректно');
+//                }
+//            }
+        }
+    }
+
+    public function checkEmail($email, $attribute)
+    {
+        if ($email !== null) {
+            $email_validator = new EmailValidator();
+            if (!$email_validator->validate($email)) {
+                if ($this->getFirstError($attribute) == null) {
+                    $this->addError($attribute, 'Email введен не верно');
                 }
             }
         }
 
-
-        if (!empty($attribute)) {
-            $phones = explode(',', $this->$attribute);
-
-            foreach ($phones as $phone) {
-                $phone = trim($phone);
-
-//                if (!$this->checkPhone($phone)) {
-//                    if ($this->getFirstError($attribute) == null) {
-//                        $this->addError($attribute, 'Телефон заполнен некорректно');
-//                    }
-//                }
-//                if (!is_numeric($phone) || strlen($phone) < 10) {
-//                    if ($this->getFirstError($attribute) == null) {
-//                        $this->addError($attribute, 'Телефон заполнен некорректно');
-//                    }
-//                }
-            }
-//            if (isset($phones[0])) {
-//                $phones[0] = trim($phones[0]);
-//                if (!is_numeric($phones[0]) || $phones[0] < 1 || strlen($phones[0]) < 7) {
-//                    $this->addError($attribute, 'Телефон заполнен некорректно');
-//                }
-//            }
-        }
     }
 
-    public function checkPhone($phone) {
-        return preg_match("/^\+?([87](?!95[4-79]|99[^2457]|907|94[^0]|336)([348]\d|9[0-689]|7[027])\d{8}|[1246]\d{9,13}|68\d{7}|5[1-46-9]\d{8,12}|55[1-9]\d{9}|500[56]\d{4}|5016\d{6}|5068\d{7}|502[45]\d{7}|5037\d{7}|50[457]\d{8}|50855\d{4}|509[34]\d{7}|376\d{6}|855\d{8}|856\d{10}|85[0-4789]\d{8,10}|8[68]\d{10,11}|8[14]\d{10}|82\d{9,10}|852\d{8}|90\d{10}|96(0[79]|17[01]|13)\d{6}|96[23]\d{9}|964\d{10}|96(5[69]|89)\d{7}|96(65|77)\d{8}|92[023]\d{9}|91[1879]\d{9}|9[34]7\d{8}|959\d{7}|989\d{9}|97\d{8,12}|99[^456]\d{7,11}|994\d{9}|9955\d{8}|996[57]\d{8}|380[34569]\d{8}|381\d{9}|385\d{8,9}|375[234]\d{8}|372\d{7,8}|37[0-4]\d{8}|37[6-9]\d{7,11}|30[69]\d{9}|34[67]\d{8}|3[12359]\d{8,12}|36\d{9}|38[1679]\d{8}|382\d{8,9})$/", preg_replace("/[^0-9]/i","", $phone));
-    }
-
-    public function emailArray($attribute, $params) {
-        $valids = $this->activeValidators;
-        if (!empty($attribute)) {
-            $emails = explode(',', $this->$attribute);
-            foreach ($emails as $email) {
-                $email = trim($email);
-//                if ($this->checkPhone($phone)) {
-//                    if ($this->getFirstError($attribute) == null) {
-//                        $this->addError($attribute, 'Телефон заполнен некорректно');
-//                    }
-//                }
-//                if (!is_numeric($phone) || strlen($phone) < 10) {
-//                    if ($this->getFirstError($attribute) == null) {
-//                        $this->addError($attribute, 'Телефон заполнен некорректно');
-//                    }
-//                }
-            }
-//            if (isset($phones[0])) {
-//                $phones[0] = trim($phones[0]);
-//                if (!is_numeric($phones[0]) || $phones[0] < 1 || strlen($phones[0]) < 7) {
-//                    $this->addError($attribute, 'Телефон заполнен некорректно');
-//                }
-//            }
+    public function emailArray($attribute, $params)
+    {
+        $emails = self::dataConvert($this->$attribute, 'emails', 'explode');
+        foreach ($emails as $email) {
+            $this->checkEmail($email, $attribute);
         }
     }
 

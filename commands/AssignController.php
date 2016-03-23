@@ -13,21 +13,13 @@ class AssignController extends Controller {
         
         $adminRole = $authManager->getRole('admin');
         $authManager->assign($adminRole, 1);
-        $authManager->assign($adminRole, 9);
         
         $managerRole = $authManager->getRole('manager');
-        $authManager->assign($managerRole, 3);
-        $authManager->assign($managerRole, 6);
-        $authManager->assign($managerRole, 7);
-        $authManager->assign($managerRole, 8);
-        $authManager->assign($managerRole, 112);
+        $authManager->assign($managerRole, 2);
         
-        $supervisorRole = $authManager->getRole('supervisor');
+        $supervisorRole = $authManager->getRole('operator');
+        $authManager->assign($supervisorRole, 3);
         $authManager->assign($supervisorRole, 4);
-        $authManager->assign($supervisorRole, 10);
-        
-        $fin_dirRole = $authManager->getRole('fin_dir');
-        $authManager->assign($fin_dirRole, 5);
-        $authManager->assign($fin_dirRole, 113);
+        $authManager->assign($supervisorRole, 5);
     }
 }

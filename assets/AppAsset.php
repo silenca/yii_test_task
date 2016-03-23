@@ -28,6 +28,7 @@ class AppAsset extends AssetBundle {
         '/media/plugins/switchery/css/switchery.min.css',
         '/media/css/pages-icons.css',
         '/media/css/pages.css',
+        '/media/css/main.css',
     ];
     public $js = [
         '/media/plugins/pace/pace.min.js',

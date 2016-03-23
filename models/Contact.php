@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use app\components\UtilHelper;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "contact".
@@ -54,7 +55,8 @@ class Contact extends \yii\db\ActiveRecord {
         'manager_id',
         'is_deleted'
     ];
-    private $new_phone;
+    private $new_phones = [];
+    private $new_emails = [];
 
     /**
      * @inheritdoc
@@ -83,7 +85,7 @@ class Contact extends \yii\db\ActiveRecord {
         return [
             [['int_id'], 'required'],
             [['int_id', 'manager_id'], 'integer'],
-            [['name','surname','middle_name','first_phone','second_phone','third_phone','fourth_phone','first_email','second_email','country','region','area','city','street','house','flat','status'], 'string'],
+            [['first_phone','second_phone','third_phone','fourth_phone','first_email','second_email','country','region','area','city','street','house','flat','status'], 'string', 'max' => 255],
             [['name', 'surname', 'middle_name'], 'string', 'max' => 150],
             [['first_email', 'second_email'], 'string', 'max' => 255],
         ];
@@ -100,6 +102,46 @@ class Contact extends \yii\db\ActiveRecord {
             7 => 'first_email',
             8 => 't.name',
         ];
+    }
+
+    public static function getFIOCols() {
+        return [
+            'surname',
+            'name',
+            'middle_name'
+        ];
+    }
+
+    public static function getPhoneCols() {
+        return [
+            'first_phone',
+            'second_phone',
+            'third_phone',
+            'fourth_phone'
+        ];
+    }
+
+    public function getPhoneColsWithVal() {
+        $phones = [];
+        isset($this->first_phone) ? $phones['first_phone'] = $this->first_phone : null;
+        isset($this->second_phone) ? $phones['second_phone'] = $this->second_phone : null;
+        isset($this->third_phone) ? $phones['third_phone'] = $this->third_phone : null;
+        isset($this->fourth_phone) ? $phones['fourth_phone'] = $this->fourth_phone : null;
+        return $phones;
+    }
+
+    public static function getEmailCols() {
+        return [
+            'first_email',
+            'second_email',
+        ];
+    }
+
+    public function getEmailColsWithVal() {
+        $emails = [];
+        isset($this->first_email) ? $emails['first_email'] = $this->first_email : null;
+        isset($this->second_email) ? $emails['second_email'] = $this->second_email : null;
+        return $emails;
     }
 
     public static function getContactByPhone($phone) {
@@ -143,21 +185,46 @@ class Contact extends \yii\db\ActiveRecord {
 
     //works only on active contacts (skips records marked as deleted)
     public function isPhoneNumberExists() {
-        if ($this->new_phone) {
-            $contact = self::find()
+        if (count($this->new_phones) > 0) {
+            foreach ($this->new_phones as $new_phone) {
+                $contact = self::find()
                     ->andWhere(['is_deleted' => false])
                     ->andWhere(
-                            [
-                                'or',
-                                ['first_phone' => $this->new_phone],
-                                ['second_phone' => $this->new_phone],
-                                ['third_phone' => $this->new_phone],
-                                ['fourth_phone' => $this->new_phone]
-                            ]
+                        [
+                            'or',
+                            ['first_phone' => $new_phone],
+                            ['second_phone' => $new_phone],
+                            ['third_phone' => $new_phone],
+                            ['fourth_phone' => $new_phone]
+                        ]
                     )
                     ->one();
-            if ($contact) {
-                return true;
+                if ($contact) {
+                    $this->addError('new_phones', $new_phone.', такой телефон уже существует в базе');
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public function isEmailExists() {
+        if (count($this->new_emails) > 0) {
+            foreach ($this->new_emails as $new_email) {
+                $contact = self::find()
+                    ->andWhere(['is_deleted' => false])
+                    ->andWhere(
+                        [
+                            'or',
+                            ['first_email' => $new_email],
+                            ['second_email' => $new_email],
+                        ]
+                    )
+                    ->one();
+                if ($contact) {
+                    $this->addError('new_emails', $new_email.', такой Email уже существует в базе');
+                    return true;
+                }
             }
         }
         return false;
@@ -165,74 +232,46 @@ class Contact extends \yii\db\ActiveRecord {
 
     public function buildData($data) {
         if (isset($data['phones'])) {
+            $db_phones = $this->getPhoneColsWithVal();
             if (!empty($data['phones'])) {
-                $phones = array_map('trim', explode(',', $data['phones']));
-                if (isset($phones[0])) {
-                    $phone = $phones[0];
-                    if (strlen($phone) > 10) {
-                        $phone = substr($phone, strlen($phone) - 10);
+                $phones = forms\ContactForm::dataConvert($data['phones'], 'phones', 'explode');
+                foreach ($phones as $phone_key => $phone_val) {
+                    if ($phone_val !== null) {
+//                        if (!ArrayHelper::isIn($phone_val, $db_phones)) {
+//                            $this->new_phones[] = $phone_val;
+//                        }
+                        if (!in_array($phone_val, $db_phones)) {
+                            $this->new_phones[] = $phone_val;
+                        }
                     }
-                    if ($this->first_phone !== $phone) {
-                        $this->first_phone = $phone;
-                        $this->new_phone = $phone;
-                    }
-                }
-                if (isset($phones[1])) {
-                    $phone = $phones[1];
-                    if (strlen($phone) > 10) {
-                        $phone = substr($phone, strlen($phone) - 10);
-                    }
-                    if ($this->second_phone !== $phone) {
-                        $this->second_phone = $phone;
-                        $this->new_phone = $phone;
-                    }
-                }
-                if (isset($phones[2])) {
-                    $phone = $phones[2];
-                    if (strlen($phone) > 10) {
-                        $phone = substr($phone, strlen($phone) - 10);
-                    }
-                    if ($this->third_phone !== $phone) {
-                        $this->third_phone = $phone;
-                        $this->new_phone = $phone;
-                    }
-                }
-                if (isset($phones[3])) {
-                    $phone = $phones[3];
-                    if (strlen($phone) > 10) {
-                        $phone = substr($phone, strlen($phone) - 10);
-                    }
-                    if ($this->fourth_phone !== $phone) {
-                        $this->fourth_phone = $phone;
-                        $this->new_phone = $phone;
-                    }
+                    $this->$phone_key = $phone_val;
                 }
             } else {
-                $this->first_phone = null;
-                $this->second_phone = null;
-                $this->third_phone = null;
-                $this->fourth_phone = null;
+                foreach ($db_phones as $phone_key => $phone_val) {
+                    $this->$phone_key = null;
+                }
             }
             unset($data['phones']);
         }
         if (isset($data['emails'])) {
+            $db_emails = $this->getEmailColsWithVal();
             if (!empty($data['emails'])) {
-                $emails = array_map('trim', explode(',', $data['emails']));
-                if (isset($emails[0])) {
-                    $email = $emails[0];
-                    if ($this->first_email !== $email) {
-                        $this->first_email = $email;
+                $emails = forms\ContactForm::dataConvert($data['emails'], 'emails', 'explode');
+                foreach ($emails as $email_key => $email_val) {
+                    if ($email_val !== null) {
+//                        if (!ArrayHelper::isIn($email_val, $db_emails)) {
+//                            $this->new_emails[] = $email_val;
+//                        }
+                        if (!in_array($email_val, $db_emails)) {
+                            $this->new_emails[] = $email_val;
+                        }
                     }
-                }
-                if (isset($emails[1])) {
-                    $email = $emails[1];
-                    if ($this->second_email !== $email) {
-                        $this->second_email = $email;
-                    }
+                    $this->$email_key = $email_val;
                 }
             } else {
-                $this->first_email = null;
-                $this->second_email = null;
+                foreach ($db_emails as $email_key => $email_val) {
+                    $this->$email_key = null;
+                }
             }
             unset($data['emails']);
         }

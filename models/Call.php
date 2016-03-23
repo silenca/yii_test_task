@@ -70,7 +70,7 @@ class Call extends \yii\db\ActiveRecord {
             'contact_id' => '`c`.`contact_id`',
             'phone_number' => '`c`.`phone_number`',
             'contact_id' => '`c`.`contact_id`',
-            'contact' => '`ct`.`first_name`',
+            'contact' => '`ct`.`name`',
             'record' => '`c`.`record`',
             'status' => '`c`.`status`',
             //'missed_call_id' => '`mc`.`id`',

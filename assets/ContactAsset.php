@@ -20,6 +20,9 @@ class ContactAsset extends AssetBundle
     public $css = [];
     public $js = [
         'media/js/contexts/contact.js',
+        'media/js/contact_form.js',
     ];
-    public $depends = [];
+    public $depends = [
+        'app\assets\DatapickerAsset'
+    ];
 }

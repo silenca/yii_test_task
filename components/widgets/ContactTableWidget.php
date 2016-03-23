@@ -21,7 +21,6 @@ class ContactTableWidget extends Widget {
             $data[$i][] = $contact->surname;
             $data[$i][] = $contact->name;
             $data[$i][] = $contact->middle_name;
-            $data[$i][] = '';
             $phones = [];
             $emails = [];
             foreach ($contact as $contact_prop_key => $contact_prop_val) {
@@ -38,7 +37,6 @@ class ContactTableWidget extends Widget {
                 $tags[] = '<a href="javascript:void(0)">' . $tag->name . '</a>';
             }
             $data[$i][] = implode(', ', $tags);
-            $data[$i][] = '';
             if (Yii::$app->user->can('delete_contact')) {
                 $data[$i][] = '<div class="col-md-offset-3 remove"><i class="fa fa-remove"></i></div>';
             } else {

@@ -2,6 +2,7 @@
     Options +FollowSymlinks
     RewriteEngine On
 </IfModule>
+AddDefaultCharset Off
 
 <IfModule mod_rewrite.c>
     RewriteCond %{REQUEST_URI} ^/.*

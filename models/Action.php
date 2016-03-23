@@ -9,11 +9,10 @@ use Yii;
  *
  * @property integer $id
  * @property string $system_date
- * @property string $type
- * @property integer $contact_show_id
- * @property integer $contact_visit_id
- * @property integer $contact_contract_id
+ * @property integer $contact_id
  * @property integer $manager_id
+ * @property string $schedule_date
+ * @property integer $action_type_id
  */
 class Action extends \yii\db\ActiveRecord {
 
@@ -33,10 +32,10 @@ class Action extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['system_date', 'contact_id', 'manager_id'], 'required'],
+            [['system_date', 'contact_id', 'manager_id', 'action_type_id'], 'required'],
             [['system_date'], 'safe'],
             ['schedule_date', 'date', 'format' => 'yyyy-M-d H:m:s'],
-            [['contact_id', 'manager_id'], 'integer'],
+            [['contact_id', 'manager_id', 'action_type_id'], 'integer'],
         ];
     }
     
@@ -45,12 +44,15 @@ class Action extends \yii\db\ActiveRecord {
             '`a`.`id`',
             '`a`.`system_date`',
             '`at`.`name` as "type"',
-            '`c`.`first_name`',
-            '`oa`.`link` as "object_link"',
+            '`c`.`name`',
+            '`c`.`surname`',
+            '`c`.`middle_name`',
+            //'`oa`.`link` as "object_link"',
             '`a`.`schedule_date`',
             '`u`.`firstname` as "manager_name"',
-            '`cc`.`comment`',
+            '`cc`.`comment` as contact_comment',
             '`a`.`contact_id`',
+            '`a`.`viewed`'
         ];
     }
 

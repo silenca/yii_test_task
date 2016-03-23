@@ -142,7 +142,7 @@ class CallController extends BaseController {
         $total_filtering_count = $query->count();
 
         $query->orderBy($sorting);
-        $dump = $query->prepare(Yii::$app->db->queryBuilder)->createCommand()->rawSql;
+        //$dump = $query->prepare(Yii::$app->db->queryBuilder)->createCommand()->rawSql;
         $calls = $query->all();
 
         $call_widget = new CallTableWidget();

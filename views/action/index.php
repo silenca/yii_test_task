@@ -1,9 +1,11 @@
 <?php
 use app\assets\TableAsset;
 use app\assets\ActionAsset;
+use app\assets\DatapickerAsset;
 
 TableAsset::register($this);
 ActionAsset::register($this);
+DatapickerAsset::register($this);
 
 $this->title = "Действия";
 $this->params['header_text'] = "Действия";
@@ -21,10 +23,20 @@ $this->params['active'] = 'action';
                 <table class="table table-hover" id="action-table">
                     <thead>
                         <tr>
-                            <th>Дата/время</th>
-                            <th>Тип действия</th>
+                            <th>ID</th>
+                            <th>Дата</th>
+                            <th>
+                                <select data-column="1"  class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                    <option value="0">Тип действия</option>
+                                    <option value="scheduled_call">Запланированный исходящий звонок</option>
+                                    <option value="email_now">Email сообщение</option>
+                                    <option value="scheduled_email">Запланированное Email сообщение</option>
+                                    <option value="incoming">Исходящий звонок</option>
+                                    <option value="outgoing">Входящий звонок</option>
+                                </select>
+
+                            </th>
                             <th>Контакт</th>
-                            <th>Объект</th>
                             <th>Запланированное время</th>
                             <th>Комментарий</th>
                             <th>
@@ -49,3 +61,5 @@ $this->params['active'] = 'action';
         <!-- END PANEL -->
     </div>
 </div>
+
+<?php echo $this->render('/parts/contact_form'); ?>

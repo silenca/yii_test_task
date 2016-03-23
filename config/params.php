@@ -1,4 +1,5 @@
 <?php
+Yii::setAlias('@web_folder', realpath(__DIR__.'/../web'));
 
 return [
     'adminEmail' => 'admin@example.com',

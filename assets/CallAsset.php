@@ -20,8 +20,11 @@ class CallAsset extends AssetBundle
     public $css = [];
     public $js = [
         'media/js/contexts/call.js',
+        'media/js/contact_form.js',
     ];
-    public $depends = [];
+    public $depends = [
+        'app\assets\DatapickerAsset'
+    ];
 }
 
 //

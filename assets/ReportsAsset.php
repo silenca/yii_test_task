@@ -20,6 +20,7 @@ class ReportsAsset extends AssetBundle
     public $css = [];
     public $js = [
         'media/js/contexts/reports.js',
+        'media/js/contact_form.js',
     ];
     public $depends = [];
 }

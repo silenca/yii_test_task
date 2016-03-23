@@ -24,16 +24,20 @@ $(function () {
                 }
             },
             "columnDefs": [
-                 { "targets": 0, "orderable": false },
-                 { "targets": 1, "orderable": false },
-                 { "targets": 2, "orderable": false },
-                 { "targets": 3, "orderable": false },
-                 { "targets": 4, "orderable": false },
-                 { "targets": 5, "orderable": false },
-                 { "targets": 6, "orderable": false }
+                {
+                    "targets": [0, 1, 2, 3, 4, 5, 6],
+                    //"data": null,
+                    "orderable": false,
+                    //"defaultContent": '<div class="col-md-offset-3 remove"><i class="fa fa-remove"></i></div>'
+                },
+                {"visible": false, "targets": [0]}
             ],
             "createdRow": function (row, data, index) {
                 $(row).attr('data-id', data[0]);
+                $(row).attr('data-schedule_date', data[4]);
+                if (data[7] == 0) {
+                    $(row).addClass('unread');
+                }
                 $(row).addClass('open-link');
             },
             //"bSort": [[0, 1, 4]]
@@ -63,4 +67,25 @@ $(function () {
     if ($('#action-table').length) { 
         initTable();
     }
+
+    $('#action-table').on('click', '.open_contact' , function(e) {
+        e.preventDefault();
+        var $row = $(this).closest('tr'),
+            contact_id = $(this).data('id'),
+            action_id = $row.data('id'),
+            action_date = $row.data('schedule_date');
+        openContactForm(contact_id);
+        if ($row.hasClass('unread')) {
+            viewAction(action_id, action_date);
+        }
+    });
 });
+
+function viewAction(id, date) {
+    $.post('/action/view', {id: id, date: date, _csrf: _csrf}, function (response) {
+        var result = $.parseJSON(response);
+        if (result.status === 200) {
+            $('#action-table').find('tr[data-id='+id+']').removeClass('unread');
+        }
+    });
+}

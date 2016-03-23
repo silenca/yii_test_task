@@ -20,6 +20,7 @@ class ReceivableAsset extends AssetBundle
     public $css = [];
     public $js = [
         'media/js/contexts/receivables.js',
+        'media/js/contact_form.js',
     ];
     public $depends = [];
 }

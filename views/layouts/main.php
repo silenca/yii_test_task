@@ -170,6 +170,15 @@ if (!Yii::$app->user->isGuest) {
                                 </a>
                             </li>
                         <?php endif; ?>
+                        <?php if (Yii::$app->user->can('import')): ?>
+                            <li>
+                                <a href="/import" class="detailed">
+                                    <span class="title">Импорт</span>
+                                    <span class="details"></span>
+                                    <span class="icon-thumbnail <?= $this->params['active'] == 'import' ? 'bg-success' : null ?>" title="Импорт"><i class="fa fa-cloud-upload"></i></span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                     <div class="clearfix"></div>
                 </div>

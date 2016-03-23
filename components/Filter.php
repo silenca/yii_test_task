@@ -15,4 +15,27 @@ class Filter {
         return strlen($value) >= $min && strlen($value) <= $max;
     }
 
+    public static function strConverter($data, $cols) {
+        switch (gettype($data)) {
+            case 'string':
+
+                break;
+            case 'array':
+                $data_res = [];
+//                $db_cols = $callback();
+                foreach ($cols as $col) {
+                    if (isset($data[$col])) {
+                        $data_res[] = $data[$col];
+                    }
+                }
+                $data_res = implode(', ', $data_res);
+                return $data_res;
+
+                break;
+            case 'object':
+
+                break;
+        }
+    }
+
 }
