@@ -363,9 +363,10 @@ class ContactsController extends BaseController
     public function actionObjectschedulecall() {
         $contact_id = Yii::$app->request->post('id');
         $schedule_date = Yii::$app->request->post('schedule_date');
+        $action_comment = Yii::$app->request->post('action_comment');
         $contact_schedule_call = new ContactScheduledCall();
         $contact_schedule_call->manager_id = Yii::$app->user->identity->id;
-        if ($contact_schedule_call->add($contact_id, $schedule_date)) {
+        if ($contact_schedule_call->add($contact_id, $schedule_date, $action_comment)) {
             $history_text = $contact_schedule_call->getHistoryText();
             $response_date = [
                 'id' => $contact_schedule_call->id,
@@ -381,9 +382,10 @@ class ContactsController extends BaseController
     {
         $contact_id = Yii::$app->request->post('id');
         $schedule_date = Yii::$app->request->post('schedule_date');
+        $action_comment_text = Yii::$app->request->post('action_comment');
         $contact_schedule_email = new ContactScheduledEmail();
         $contact_schedule_email->manager_id = Yii::$app->user->identity->id;
-        if ($contact_schedule_email->add($contact_id, $schedule_date)) {
+        if ($contact_schedule_email->add($contact_id, $schedule_date, $action_comment_text)) {
             $history_text = $contact_schedule_email->getHistoryText();
             $response_date = [
                 'id' => $contact_schedule_email->id,

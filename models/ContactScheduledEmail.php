@@ -67,7 +67,7 @@ class ContactScheduledEmail extends \yii\db\ActiveRecord {
         return $this->hasOne(User::className(), ['id' => 'manager_id']);
     }
 
-    public function add($contact_id, $schedule_date) {
+    public function add($contact_id, $schedule_date, $action_comment_text) {
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $this->contact_id = $contact_id;
@@ -79,6 +79,11 @@ class ContactScheduledEmail extends \yii\db\ActiveRecord {
                 $this->schedule_date = date('Y-m-d G:i:s', strtotime($schedule_date));
                 $action->addManagerNotification($action->id, $this->system_date, 'scheduled_email', $this->manager_id, $this->contact_id);
             }
+            if ($action_comment_text != null) {
+                $action_comment = new ActionComment();
+                $action_comment->add($action->id, $action_comment_text);
+            }
+            
             $this->save();
 
             $contact_history = new ContactHistory();

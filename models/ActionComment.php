@@ -29,7 +29,7 @@ class ActionComment extends \yii\db\ActiveRecord {
             [['action_id', 'datetime'], 'required'],
             [['action_id'], 'integer'],
             [['comment'], 'string'],
-            [['comment'], 'required', 'message' => '{attribute} не может быть пустым'],
+//            [['comment'], 'required', 'message' => '{attribute} не может быть пустым'],
             [['datetime'], 'safe'],
         ];
     }

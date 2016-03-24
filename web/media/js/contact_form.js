@@ -43,32 +43,32 @@ var action_shedule_call_form_validate = {
 };
 
 
-var action_email_now_form_validate = {
-    rules: {},
-    messages: {},
-    submitHandler: function (form) {
-        var contact_id = $('#contact-id').val();
-        if (!contact_id) {
-            showNotification($contact_form, 'Контакт еще не создан', 'top', 'danger', 'bar');
-            return false;
-        }
-        $('<input />').attr('type', 'hidden')
-            .attr('name', "id")
-            .attr('value', $('#contact-id').val())
-            .appendTo(form);
-        $('<input />').attr('type', 'hidden')
-            .attr('name', "_csrf")
-            .attr('value', _csrf)
-            .appendTo(form);
-        var data = $(form).serialize();
-        $.post($(form).attr('action'), data, function (response) {
-            var result = $.parseJSON(response);
-            if (result.status === 200) {
-                $contact_form.find('.history_content').append("<div class='visit' id='visit_id-" + result.data.id + "'>" + result.data.system_date + " - " + result.data.history + "</div>");
-            }
-        });
-    }
-};
+// var action_email_now_form_validate = {
+//     rules: {},
+//     messages: {},
+//     submitHandler: function (form) {
+//         var contact_id = $('#contact-id').val();
+//         if (!contact_id) {
+//             showNotification($contact_form, 'Контакт еще не создан', 'top', 'danger', 'bar');
+//             return false;
+//         }
+//         $('<input />').attr('type', 'hidden')
+//             .attr('name', "id")
+//             .attr('value', $('#contact-id').val())
+//             .appendTo(form);
+//         $('<input />').attr('type', 'hidden')
+//             .attr('name', "_csrf")
+//             .attr('value', _csrf)
+//             .appendTo(form);
+//         var data = $(form).serialize();
+//         $.post($(form).attr('action'), data, function (response) {
+//             var result = $.parseJSON(response);
+//             if (result.status === 200) {
+//                 $contact_form.find('.history_content').append("<div class='visit' id='visit_id-" + result.data.id + "'>" + result.data.system_date + " - " + result.data.history + "</div>");
+//             }
+//         });
+//     }
+// };
 
 var action_email_date_form_validate = {
     rules: {
@@ -100,6 +100,7 @@ var action_email_date_form_validate = {
             $(form).find('input[name="_csrf"]').remove();
             var result = $.parseJSON(response);
             if (result.status === 200) {
+                resetForm(form);
                 if ($(form).find('.google-cal-show').is(':checked')) {
                     var event = createGEventData('action_email', $(form).find('input[name="schedule_date"]').val());
                     createGCalEvent(event);
@@ -112,7 +113,7 @@ var action_email_date_form_validate = {
 
 $(function() {
     $('#action_call #form_action_call').validate(action_shedule_call_form_validate);
-    $('#action_email #form_action_email_now').validate(action_email_now_form_validate);
+    // $('#action_email #form_action_email_now').validate(action_email_now_form_validate);
     $('#action_email #form_action_email').validate(action_email_date_form_validate);
 
     $contact_form = $('#modalAddContact');
@@ -141,6 +142,19 @@ $(function() {
         }
     });
 
+    $('.action_send_now').on('change', function() {
+        var $form = $(this).closest('form');
+        if ($(this).is(':checked')) {
+            $form.find('input[name="schedule_date"]').val('').attr('disabled', true);
+            $form.find('.google-cal-show').attr('checked', false).attr('disabled', true);
+            changeValidationRequired(action_email_date_form_validate, false);
+        } else {
+            $form.find('input[name="schedule_date"]').val('').attr('disabled', false);
+            $form.find('.google-cal-show').attr('checked', false).attr('disabled', false);
+            changeValidationRequired(action_email_date_form_validate, true);
+        }
+    });
+
 
 
     var date = new Date();
@@ -157,6 +171,15 @@ $(function() {
         }
     });
 });
+
+function resetForm(form) {
+    $(form).trigger('reset');
+    $(form).find('input').attr('disabled', false);
+}
+
+function changeValidationRequired(options, state) {
+    options.rules.schedule_date.required = state;
+}
 
 function openContactForm(id) {
     buildContactForm(id, $contact_form, function () {

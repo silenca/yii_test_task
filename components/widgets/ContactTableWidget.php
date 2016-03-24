@@ -37,6 +37,15 @@ class ContactTableWidget extends Widget {
                 $tags[] = '<a href="javascript:void(0)">' . $tag->name . '</a>';
             }
             $data[$i][] = implode(', ', $tags);
+
+            $data[$i][] = $contact->country;
+            $data[$i][] = $contact->region;
+            $data[$i][] = $contact->area;
+            $data[$i][] = $contact->city;
+            $data[$i][] = $contact->street;
+            $data[$i][] = $contact->house;
+            $data[$i][] = $contact->flat;
+
             if (Yii::$app->user->can('delete_contact')) {
                 $data[$i][] = '<div class="col-md-offset-3 remove"><i class="fa fa-remove"></i></div>';
             } else {

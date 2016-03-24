@@ -205,7 +205,7 @@ use app\models\User;
                                                     </div>
                                                     <hr>
                                                     <div class="form-group">
-                                                            <textarea id="call_action-comment" rows="6" cols="10"
+                                                            <textarea name="action_comment" id="call_action-comment" rows="6" cols="10"
                                                                       placeholder="Комментарий"
                                                                       class="action-comment form-control"></textarea>
                                                     </div>
@@ -218,20 +218,17 @@ use app\models\User;
                                                 </form>
                                             </div>
                                             <div id="action_email" class="contact-action" style="display: none">
-                                                <form id="form_action_email_now" action="/contacts/objectscheduleemail"
+
+                                                <form id="form_action_email" action="/contacts/objectscheduleemail"
                                                       method="POST">
-                                                    <div class="panel panel-default block">
+                                                    <div class="panel panel-default block form-group">
                                                         <div class="row">
-                                                            <div class="col-md-8"><label>Отправить сейчас</label></div>
-                                                            <div class="col-md-4">
-                                                                <button class="btn btn-complete" type="submit">ОК
-                                                                </button>
+                                                            <div class="checkbox check-success text-left p-l-10">
+                                                                <input type="checkbox" name="action_send_now" class="action_send_now" id="action_send_now_email">
+                                                                <label for="action_send_now_email">Отправить сейчас</label>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </form>
-                                                <form id="form_action_email" action="/contacts/objectscheduleemail"
-                                                      method="POST">
                                                     <div class="form-group">
                                                         <label>Запланировать Email</label>
                                                     </div>
@@ -252,7 +249,7 @@ use app\models\User;
                                                     </div>
                                                     <hr>
                                                     <div class="form-group">
-                                                            <textarea id="email_action-comment" rows="6" cols="10"
+                                                            <textarea name="action_comment" id="email_action-comment" rows="6" cols="10"
                                                                       placeholder="Комментарий"
                                                                       class="action-comment form-control"></textarea>
                                                     </div>

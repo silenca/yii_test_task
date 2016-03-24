@@ -65,6 +65,42 @@ $this->params['active'] = 'contact';
                                    value="tags" id="column_filter_tags">
                             <label for="column_filter_tags">Теги</label>
                         </div>
+                        <div class="checkbox check-success">
+                            <input type="checkbox" <?= !in_array('country', $hide_columns) ? 'checked' : null ?>
+                                   value="country" id="column_filter_country">
+                            <label for="column_filter_country">Страна</label>
+                        </div>
+                        <div class="checkbox check-success">
+                            <input type="checkbox" <?= !in_array('region', $hide_columns) ? 'checked' : null ?>
+                                   value="region" id="column_filter_region">
+                            <label for="column_filter_region">Регион</label>
+                        </div>
+                        <div class="checkbox check-success">
+                            <input type="checkbox" <?= !in_array('area', $hide_columns) ? 'checked' : null ?>
+                                   value="area" id="column_filter_area">
+                            <label for="column_filter_area">Область</label>
+                        </div>
+                        <div class="checkbox check-success">
+                            <input type="checkbox" <?= !in_array('city', $hide_columns) ? 'checked' : null ?>
+                                   value="city" id="column_filter_city">
+                            <label for="column_filter_city">Город</label>
+                        </div>
+                        <div class="checkbox check-success">
+                            <input type="checkbox" <?= !in_array('street', $hide_columns) ? 'checked' : null ?>
+                                   value="street" id="column_filter_street">
+                            <label for="column_filter_street">Улица</label>
+                        </div>
+                        <div class="checkbox check-success">
+                            <input type="checkbox" <?= !in_array('house', $hide_columns) ? 'checked' : null ?>
+                                   value="house" id="column_filter_house">
+                            <label for="column_filter_house">Дом</label>
+                        </div>
+                        <div class="checkbox check-success">
+                            <input type="checkbox" <?= !in_array('flat', $hide_columns) ? 'checked' : null ?>
+                                   value="flat" id="column_filter_flat">
+                            <label for="column_filter_flat">Квартира</label>
+                        </div>
+
                         <div class="col-xs-12">
                             <button class="btn btn-success btn-cons" id="column_filter_apply"><i
                                     class="fa fa-check"></i> Применить
@@ -93,6 +129,13 @@ $this->params['active'] = 'contact';
                         <th>Телефоны</th>
                         <th>Email</th>
                         <th>Теги</th>
+                        <th>Страна</th>
+                        <th>Регион</th>
+                        <th>Область</th>
+                        <th>Город</th>
+                        <th>Улица</th>
+                        <th>Дом</th>
+                        <th>Кваритра</th>
                         <th>Удалить</th>
                     </tr>
                     </thead>
@@ -120,6 +163,27 @@ $this->params['active'] = 'contact';
                             <td><input type="text" data-column="8" class="form-control search-input-text"></td>
                         <? endif ?>
                         <td></td>
+                        <? if (!in_array('country', $hide_columns)): ?>
+                            <td></td>
+                        <? endif ?>
+                        <? if (!in_array('region', $hide_columns)): ?>
+                            <td></td>
+                        <? endif ?>
+                        <? if (!in_array('area', $hide_columns)): ?>
+                            <td></td>
+                        <? endif ?>
+                        <? if (!in_array('city', $hide_columns)): ?>
+                            <td></td>
+                        <? endif ?>
+                        <? if (!in_array('street', $hide_columns)): ?>
+                            <td></td>
+                        <? endif ?>
+                        <? if (!in_array('house', $hide_columns)): ?>
+                            <td></td>
+                        <? endif ?>
+                        <? if (!in_array('flat', $hide_columns)): ?>
+                            <td></td>
+                        <? endif ?>
                     </tr>
                     </thead>
                     <tbody>

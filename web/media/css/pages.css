@@ -12884,9 +12884,9 @@ table .open-link {
 #action_visit .block {
     padding: 5px;
 }
-#action_visit .block label, #action_email .block label {
-    margin-top: 7px;
-}
+/*#action_visit .block label, #action_email .block label {*/
+    /*margin-top: 7px;*/
+/*}*/
 
 .selected_file .filename {
     display: inline-block;

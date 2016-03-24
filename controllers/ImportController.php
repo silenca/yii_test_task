@@ -57,19 +57,13 @@ class ImportController extends BaseController
 
         for ($i = 1; $i <= count($new_contacts); $i++) {
             $contact_data = $new_contacts[$i];
-            $attributes['surname'] = $contact_data[0];
-            $attributes['name'] = $contact_data[1];
-            $attributes['phones'] = $contact_data[2];
-            $attributes['middle_name'] = $contact_data[3];
-            $attributes['emails'] = $contact_data[4];
-            $attributes['country'] = $contact_data[5];
-            $attributes['region'] = $contact_data[6];
-            $attributes['area'] = $contact_data[7];
-            $attributes['city'] = $contact_data[8];
-            $attributes['street'] = $contact_data[9];
-            $attributes['house'] = $contact_data[10];
-            $attributes['flat'] = $contact_data[11];
-            //$attributes['tags'] = $contact_data[12];
+            $contact_form_cols = ContactForm::getAllCols();
+            $attributes = [];
+            $col_cnt = 0;
+            foreach ($contact_form_cols as $col) {
+                $attributes[$col] = iconv(mb_detect_encoding($contact_data[$col_cnt], mb_detect_order(), true), "UTF-8", $contact_data[$col_cnt]);
+                $col_cnt++;
+            }
             $contact_form = new ContactForm();
             $contact_form->attributes = $attributes;
             $report_file_name = time() . '.txt';
@@ -80,8 +74,7 @@ class ImportController extends BaseController
                     if ($contact->isPhoneNumberExists() || $contact->isEmailExists()) {
                         $this->writeReport($report_file_name, $attributes, $contact->getErrors());
                         $error = true;
-                    }
-                    if ($contact->edit()) {
+                    } elseif ($contact->edit()) {
                         $imported++;
                     } else {
                         $this->writeReport($report_file_name, $attributes, $contact->getErrors());
@@ -113,7 +106,7 @@ class ImportController extends BaseController
     private function writeReport($file_name, $attributes, $errors)
     {
         $report_file = fopen(Yii::getAlias('@web_folder') . '/reports/' . $file_name, "a+");
-        fwrite($report_file, iconv("UTF-8", "windows-1251//TRANSLIT", implode($attributes, ',')) . "\n");
+        fwrite($report_file, iconv("UTF-8", "windows-1251//TRANSLIT", implode(array_filter($attributes), ',')) . "\n");
         foreach ($errors as $error) {
             fwrite($report_file, iconv("UTF-8", "windows-1251//TRANSLIT", $error[0]) . "\n");
         }

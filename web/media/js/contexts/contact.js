@@ -10,6 +10,13 @@ $(function () {
         'phones',
         'emails',
         'tags',
+        'country',
+        'region',
+        'area',
+        'city',
+        'street',
+        'house',
+        'flat',
         'delete_button'
     ];
 
@@ -56,7 +63,7 @@ $(function () {
         $.each(hide_columns, function(i ,val) {
             var index = columns.indexOf(val);
             settings.columnDefs.push({
-                "visible": false, "targets" : columns.indexOf(val)
+                "visible": false, "targets" : index
             });
         });
         dataTable = table.DataTable(settings);

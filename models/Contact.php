@@ -104,6 +104,27 @@ class Contact extends \yii\db\ActiveRecord {
         ];
     }
 
+    public static function getAllCols() {
+        return [
+            'name',
+            'surname',
+            'middle_name',
+            'first_phone',
+            'second_phone',
+            'third_phone',
+            'fourth_phone',
+            'first_email',
+            'second_email',
+            'country',
+            'region',
+            'area',
+            'city',
+            'street',
+            'house',
+            'flat'
+        ];
+    }
+
     public static function getFIOCols() {
         return [
             'surname',

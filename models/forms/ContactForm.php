@@ -19,6 +19,23 @@ class ContactForm extends Model
     var $phones;
     var $emails;
 
+    public static function getAllCols() {
+        return [
+            'surname',
+            'name',
+            'phones',
+            'middle_name',
+            'emails',
+            'country',
+            'region',
+            'area',
+            'city',
+            'street',
+            'house',
+            'flat'
+        ];
+    }
+
     /*'name',
     'surname',
     'middle_name',
