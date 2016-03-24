@@ -81,8 +81,8 @@ app.post('/incoming', function (req, res) {
         'language': req.body.language,
         'id': req.body.id
     };
-    io.to('manager').emit('call_incoming', data);
-    res.send('Сообщение отправлено всем менеджерам');
+    io.to('operator').emit('call_incoming', data);
+    res.send('Сообщение отправлено всем операторам');
 });
 
 
