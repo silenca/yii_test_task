@@ -55,7 +55,7 @@ class ImportController extends BaseController
         $error = false;
         $imported = 0;
 
-        for ($i = 1; $i < count($new_contacts); $i++) {
+        for ($i = 1; $i <= count($new_contacts); $i++) {
             $contact_data = $new_contacts[$i];
             $attributes['surname'] = $contact_data[0];
             $attributes['name'] = $contact_data[1];
