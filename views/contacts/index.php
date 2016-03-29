@@ -51,6 +51,11 @@ $this->params['active'] = 'contact';
                             <label for="column_filter_middle_name">Отчество</label>
                         </div>
                         <div class="checkbox check-success">
+                            <input type="checkbox" <?= !in_array('link_with', $hide_columns) ? 'checked' : null ?>
+                                   value="link_with" id="column_filter_link_with">
+                            <label for="column_filter_link_with">Связать с</label>
+                        </div>
+                        <div class="checkbox check-success">
                             <input type="checkbox" <?= !in_array('phones', $hide_columns) ? 'checked' : null ?>
                                    value="phones" id="column_filter_Телефоны">
                             <label for="column_filter_Телефоны">Телефоны</label>
@@ -126,6 +131,7 @@ $this->params['active'] = 'contact';
                         <th>Фамилия</th>
                         <th>Имя</th>
                         <th>Отчество</th>
+                        <th></th>
                         <th>Телефоны</th>
                         <th>Email</th>
                         <th>Теги</th>
@@ -153,14 +159,17 @@ $this->params['active'] = 'contact';
                         <? if (!in_array('middle_name', $hide_columns)): ?>
                             <td><input type="text" data-column="5" class="form-control search-input-text"></td>
                         <? endif ?>
-                        <? if (!in_array('phones', $hide_columns)): ?>
-                            <td><input type="text" data-column="6" class="form-control search-input-text"></td>
+                        <? if (!in_array('link_with', $hide_columns)): ?>
+                            <td></td>
                         <? endif ?>
-                        <? if (!in_array('emails', $hide_columns)): ?>
+                        <? if (!in_array('phones', $hide_columns)): ?>
                             <td><input type="text" data-column="7" class="form-control search-input-text"></td>
                         <? endif ?>
-                        <? if (!in_array('tags', $hide_columns)): ?>
+                        <? if (!in_array('emails', $hide_columns)): ?>
                             <td><input type="text" data-column="8" class="form-control search-input-text"></td>
+                        <? endif ?>
+                        <? if (!in_array('tags', $hide_columns)): ?>
+                            <td><input type="text" data-column="9" class="form-control search-input-text"></td>
                         <? endif ?>
                         <td></td>
                         <? if (!in_array('country', $hide_columns)): ?>
@@ -193,6 +202,18 @@ $this->params['active'] = 'contact';
         </div>
         <!-- END PANEL -->
     </div>
+</div>
+
+<div class="dropdown-menu link_with-dropdown pull-left" role="menu">
+    <form class="link_with-form form-inline" action="contacts/link-with">
+        <div class="form-group">
+            <div class="input-group">
+                <input type="text" name="search" class="search form-control">
+            </div>
+        </div>
+        <button class="btn btn-sm btn-complete inline link_btn m-l-10">Связать</button>
+        <ul class="result"></ul>
+    </form>
 </div>
 
 <?php echo $this->render('/parts/contact_form'); ?>

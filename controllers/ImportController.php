@@ -2,12 +2,12 @@
 
 namespace app\controllers;
 
+use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\components\CSVReader;
 use app\models\Contact;
-use app\models\forms\ContactForm;
-use Yii;
+use app\models\forms\ImportContactForm;
 
 class ImportController extends BaseController
 {
@@ -55,26 +55,25 @@ class ImportController extends BaseController
         $error = false;
         $imported = 0;
 
+        $report_file_name = time() . '.txt';
         for ($i = 1; $i <= count($new_contacts); $i++) {
             $contact_data = $new_contacts[$i];
-            $contact_form_cols = ContactForm::getAllCols();
+            $import_contact_form_cols = ImportContactForm::getAllCols();
             $attributes = [];
             $col_cnt = 0;
-            foreach ($contact_form_cols as $col) {
+            foreach ($import_contact_form_cols as $col) {
                 $attributes[$col] = iconv(mb_detect_encoding($contact_data[$col_cnt], mb_detect_order(), true), "UTF-8", $contact_data[$col_cnt]);
                 $col_cnt++;
             }
-            $contact_form = new ContactForm();
-            $contact_form->attributes = $attributes;
-            $report_file_name = time() . '.txt';
-            if ($contact_form->validate()) {
+            $import_contact_form = new ImportContactForm();
+            $import_contact_form->attributes = $attributes;
+            if ($import_contact_form->validate()) {
                 try {
                     $contact = new Contact();
-                    $contact->buildData($attributes);
-                    if ($contact->isPhoneNumberExists() || $contact->isEmailExists()) {
-                        $this->writeReport($report_file_name, $attributes, $contact->getErrors());
-                        $error = true;
-                    } elseif ($contact->edit()) {
+                    $contact->manager_id = Yii::$app->user->identity->id;
+                    $contact->attributes = $import_contact_form->attributes;
+
+                    if ($contact->edit()) {
                         $imported++;
                     } else {
                         $this->writeReport($report_file_name, $attributes, $contact->getErrors());
@@ -84,7 +83,7 @@ class ImportController extends BaseController
                     $this->json(false, 500);
                 }
             } else {
-                $this->writeReport($report_file_name, $attributes, $contact_form->getErrors());
+                $this->writeReport($report_file_name, $attributes, $import_contact_form->getErrors());
                 $error = true;
             }
         }

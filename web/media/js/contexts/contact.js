@@ -1,4 +1,5 @@
-var dataTable;
+var dataTable,
+    dropDownOpened = false;
 
 $(function () {
     var columns = [
@@ -7,6 +8,7 @@ $(function () {
         'surname',
         'name',
         'middle_name',
+        'link_with',
         'phones',
         'emails',
         'tags',
@@ -53,6 +55,7 @@ $(function () {
                 {"orderable": false, "targets": show_columns.indexOf('phones')},
                 {"orderable": false, "targets": show_columns.indexOf('emails')},
                 {"orderable": false, "targets": show_columns.indexOf('tags')},
+                {"orderable": false, "targets": show_columns.indexOf('link_with')},
                 {"visible": false, "targets": [0]}
             ],
             "createdRow": function (row, data, index) {
@@ -126,7 +129,7 @@ $(function () {
 
         //open form
         $contact_table.on('click', 'tr', function (e) {
-            if (!$(this).parent('thead').length && !$(this).find('.dataTables_empty').length) {
+            if (!$(this).parent('thead').length && !$(this).find('.dataTables_empty').length && !hasTarget($(e.target), '.contact_open_disable') && !dropDownOpened) {
                 var id = $(this).data('id');
                 openContactForm(id);
             }
@@ -169,7 +172,75 @@ $(function () {
                 $cont.removeClass('hide');
             }
         });
+
+        var toggleDropdown = function (action, $dropDown) {
+            var $dropDowns = $('.dropdown'),
+                dropMenu = document.getElementsByClassName('link_with-dropdown')[0].cloneNode(true);
+
+            $dropDowns.removeClass("open");
+            $dropDowns.find('.link_with-dropdown').remove();
+            if (action == 'open') {
+                $dropDown.append(dropMenu);
+                $dropDown.addClass("open");
+            }
+            dropDownOpened = $dropDown && $dropDown.hasClass("open") ? true : false;
+        };
+
+        $(document).on('click', '.dropdown .dropdown-toggle', function (e) {
+            var $dropDownCurr = $(this).parent();
+
+            e.stopPropagation();
+            toggleDropdown('open', $dropDownCurr);
+            return false;
+        });
+
+        $(document).on('click', function (e) {
+            var $target = $(e.target);
+
+            if (!hasTarget($target, '.dropdown') && dropDownOpened) {
+                toggleDropdown('close');
+            }
+        });
+
+        $('.link_with-dropdown input.search').on('keyup', function(event) {
+            var $this = $(this),
+                $form = $this.parents('form'),
+                search_term = $(this).val();
+
+            $.post($form.attr('action'), {search_term: search_term, _csrf: _csrf}, function (response) {
+                var result = $.parseJSON(response);
+                if (result.status === 200) {
+                    
+                }
+            });
+
+            var search_result = search_obj.search(search_term);
+
+            var result_list = '',
+                result_items = '';
+
+            $.each(search_result, function() {
+                var $product = $(this);
+
+                result_items += '<li><a href="product.php?product=' + $product[0].code + '">' + $product[0].category + ' ' + $product[0].trademark + ' ' + $product[0].model + '</a></li>';
+            });
+
+            result_list = '<ul id="search_result_list">' + result_items + '</ul>';
+
+            if (search_result.length) {
+                $('#search_result').show();
+                $('#search_result').html(result_list);
+            } else {
+                $('#search_result').hide();
+                $('#search_result').html('');
+            }
+
+        });
     }
 });
+
+function hasTarget($target, elem) {
+    return $target.is(elem) || $target.parents(elem).length == 1;
+}
 
 

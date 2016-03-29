@@ -105,3 +105,8 @@
     border-radius: 5px;
     padding: 10px;
 }
+
+.dropdown form {
+    min-width: 400px;
+    padding: 5px 10px;
+}

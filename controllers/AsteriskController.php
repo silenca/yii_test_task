@@ -27,7 +27,7 @@ class AsteriskController extends BaseController {
                 'rules' => [
                     [
                         'allow' => true,
-                        'ips' => ['127.0.0.1'],
+//                        'ips' => ['127.0.0.1'],
                     ]
                 ],
             ],

@@ -6,6 +6,7 @@ use app\models\Contact;
 use Yii;
 use yii\base\Model;
 use yii\validators\EmailValidator;
+use app\components\Filter;
 
 /**
  * ContactForm is the model behind the contact form.
@@ -16,8 +17,27 @@ class ContactForm extends Model
     var $name;
     var $surname;
     var $middle_name;
+
     var $phones;
     var $emails;
+
+    var $first_phone;
+    var $second_phone;
+    var $third_phone;
+    var $fourth_phone;
+
+    var $first_email;
+    var $second_email;
+
+    var $country;
+    var $region;
+    var $area;
+    var $city;
+    var $street;
+    var $house;
+    var $flat;
+
+    var $edited_id;
 
     public static function getAllCols() {
         return [
@@ -61,11 +81,42 @@ class ContactForm extends Model
             [['name', 'surname', 'phones'], 'requiredForContact'],
             [['phones'], 'phoneArray'],
             [['emails'], 'emailArray'],
+
+            [['name', 'surname'], 'match', 'pattern' => "/^[\p{Cyrillic}\-]*$/u", 'message' => '{attribute} - Недопустимые символы'],
             [['name', 'surname', 'middle_name'], 'string', 'length' => [4, 150],
                 'tooShort' => '{attribute} должен содержать больше {min} символов',
-                'tooLong' => '{attribute} должен содержать до {max} символов'
-            ],
+                'tooLong' => '{attribute} должен содержать до {max} символов'],
+            [['middle_name'], 'match', 'pattern' => "/^[\p{Cyrillic}\-\s]*$/u", 'message' => 'Недопустимые символы'],
+            [['region', 'area'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => 'Недопустимые символы'],
+            [['city'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)\d]*$/u", 'message' => 'Недопустимые символы'],
+            [['street'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d]*$/u", 'message' => 'Недопустимые символы'],
+            [['house', 'flat'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d\/]*$/u", 'message' => 'Недопустимые символы'],
+
+            [[
+                'first_phone', 'second_phone', 'third_phone', 'fourth_phone',
+                'first_email', 'second_email',
+                'middle_name', 'region', 'area', 'city', 'street', 'house', 'flat'
+            ], 'default'],
         ];
+    }
+
+    public function isUnique($value, $attr, $fields, $message_callback) {
+        if ($value != null) {
+            $or_where = ['or'];
+            foreach ($fields as $field) {
+                $or_where[] = [$field => $value];
+            }
+            $contact = Contact::find()->where(['is_deleted' => false])->andWhere($or_where);
+            if ($this->edited_id) {
+                $contact->andWhere(['!=', 'id', $this->edited_id]);
+            }
+            $contact = $contact->one();
+            if ($contact) {
+                $message_callback($attr, $value, $contact->id);
+                return $contact->id;
+            }
+        }
+        return true;
     }
 
     public function attributeLabels()
@@ -106,7 +157,11 @@ class ContactForm extends Model
             $count = 0;
             foreach ($data_cols as $col) {
                 if (isset($data[$count])) {
-                    $res_data[$col] = $data[$count];
+                    if ($type == 'emails') {
+                        $res_data[$col] = strtolower($data[$count]);
+                    } else {
+                        $res_data[$col] = $data[$count];
+                    }
                 } else {
                     $res_data[$col] = null;
                 }
@@ -122,8 +177,13 @@ class ContactForm extends Model
     public function phoneArray($attribute, $params)
     {
         $phones = self::dataConvert($this->$attribute, 'phones', 'explode');
-        foreach ($phones as $phone) {
-            $this->checkPhone($phone, $attribute);
+        foreach ($phones as $phone_key => $phone_val) {
+            $this->checkPhone($phone_val, $attribute);
+            $fields = Contact::getPhoneCols();
+            $this->isUnique($phone_val, $attribute, $fields, function($attr, $value, $contact_id) {
+                $this->addError($attr, $value.', уже существует в базе');
+            });
+            $this->$phone_key = $phone_val;
         }
     }
 
@@ -131,9 +191,7 @@ class ContactForm extends Model
     {
         if ($phone !== null) {
             if (!preg_match('/^\d*$/', $phone)) {
-                if ($this->getFirstError($attribute) == null) {
-                    $this->addError($attribute, 'Телефон не должен содержать буквенные символы');
-                }
+                $this->addError($attribute, 'Телефон не должен содержать буквенные символы');
             } elseif (strlen($phone) == 10) {
                 $this->addError($attribute, 'Код страны не введен. Код России: 7');
             } elseif (strlen($phone) < 10 || strlen($phone) > 15) {
@@ -156,9 +214,7 @@ class ContactForm extends Model
         if ($email !== null) {
             $email_validator = new EmailValidator();
             if (!$email_validator->validate($email)) {
-                if ($this->getFirstError($attribute) == null) {
-                    $this->addError($attribute, 'Email введен не верно');
-                }
+                $this->addError($attribute, 'Email введен не верно');
             }
         }
 
@@ -167,8 +223,20 @@ class ContactForm extends Model
     public function emailArray($attribute, $params)
     {
         $emails = self::dataConvert($this->$attribute, 'emails', 'explode');
-        foreach ($emails as $email) {
-            $this->checkEmail($email, $attribute);
+        foreach ($emails as $email_key => $email_val) {
+            $this->checkEmail($email_val, $attribute);
+            $fields = Contact::getEmailCols();
+            $this->isUnique($email_val, $attribute, $fields, function($attr, $value, $contact_id) {
+                $this->addError($attr, $value.', уже существует в базе');
+            });
+            $this->$email_key = $email_val;
+        }
+    }
+
+    public function addError($attribute, $message)
+    {
+        if ($this->getFirstError($attribute) == null) {
+            parent::addError($attribute, $message);
         }
     }
 

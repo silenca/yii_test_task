@@ -21,6 +21,9 @@ class ContactTableWidget extends Widget {
             $data[$i][] = $contact->surname;
             $data[$i][] = $contact->name;
             $data[$i][] = $contact->middle_name;
+            $data[$i][] = '<div class="dropdown contact_open_disable">
+                                <button class="btn btn-sm btn-default dropdown-toggle" href="javascript:void(0)" aria-expanded="true">Связать с...</button>
+                            </div>';
             $phones = [];
             $emails = [];
             foreach ($contact as $contact_prop_key => $contact_prop_val) {

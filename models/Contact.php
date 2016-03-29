@@ -205,101 +205,101 @@ class Contact extends \yii\db\ActiveRecord {
     }
 
     //works only on active contacts (skips records marked as deleted)
-    public function isPhoneNumberExists() {
-        if (count($this->new_phones) > 0) {
-            foreach ($this->new_phones as $new_phone) {
-                $contact = self::find()
-                    ->andWhere(['is_deleted' => false])
-                    ->andWhere(
-                        [
-                            'or',
-                            ['first_phone' => $new_phone],
-                            ['second_phone' => $new_phone],
-                            ['third_phone' => $new_phone],
-                            ['fourth_phone' => $new_phone]
-                        ]
-                    )
-                    ->one();
-                if ($contact) {
-                    $this->addError('new_phones', $new_phone.', такой телефон уже существует в базе');
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+//    public function isPhoneNumberExists() {
+//        if (count($this->new_phones) > 0) {
+//            foreach ($this->new_phones as $new_phone) {
+//                $contact = self::find()
+//                    ->andWhere(['is_deleted' => false])
+//                    ->andWhere(
+//                        [
+//                            'or',
+//                            ['first_phone' => $new_phone],
+//                            ['second_phone' => $new_phone],
+//                            ['third_phone' => $new_phone],
+//                            ['fourth_phone' => $new_phone]
+//                        ]
+//                    )
+//                    ->one();
+//                if ($contact) {
+//                    $this->addError('new_phones', $new_phone.', такой телефон уже существует в базе');
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
+//
+//    public function isEmailExists() {
+//        if (count($this->new_emails) > 0) {
+//            foreach ($this->new_emails as $new_email) {
+//                $contact = self::find()
+//                    ->andWhere(['is_deleted' => false])
+//                    ->andWhere(
+//                        [
+//                            'or',
+//                            ['first_email' => $new_email],
+//                            ['second_email' => $new_email],
+//                        ]
+//                    )
+//                    ->one();
+//                if ($contact) {
+//                    $this->addError('new_emails', $new_email.', такой Email уже существует в базе');
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
-    public function isEmailExists() {
-        if (count($this->new_emails) > 0) {
-            foreach ($this->new_emails as $new_email) {
-                $contact = self::find()
-                    ->andWhere(['is_deleted' => false])
-                    ->andWhere(
-                        [
-                            'or',
-                            ['first_email' => $new_email],
-                            ['second_email' => $new_email],
-                        ]
-                    )
-                    ->one();
-                if ($contact) {
-                    $this->addError('new_emails', $new_email.', такой Email уже существует в базе');
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public function buildData($data) {
-        if (isset($data['phones'])) {
-            $db_phones = $this->getPhoneColsWithVal();
-            if (!empty($data['phones'])) {
-                $phones = forms\ContactForm::dataConvert($data['phones'], 'phones', 'explode');
-                foreach ($phones as $phone_key => $phone_val) {
-                    if ($phone_val !== null) {
-//                        if (!ArrayHelper::isIn($phone_val, $db_phones)) {
+//    public function buildData($data) {
+//        if (isset($data['phones'])) {
+//            $db_phones = $this->getPhoneColsWithVal();
+//            if (!empty($data['phones'])) {
+//                $phones = forms\ContactForm::dataConvert($data['phones'], 'phones', 'explode');
+//                foreach ($phones as $phone_key => $phone_val) {
+//                    if ($phone_val !== null) {
+////                        if (!ArrayHelper::isIn($phone_val, $db_phones)) {
+////                            $this->new_phones[] = $phone_val;
+////                        }
+//                        if (!in_array($phone_val, $db_phones)) {
 //                            $this->new_phones[] = $phone_val;
 //                        }
-                        if (!in_array($phone_val, $db_phones)) {
-                            $this->new_phones[] = $phone_val;
-                        }
-                    }
-                    $this->$phone_key = $phone_val;
-                }
-            } else {
-                foreach ($db_phones as $phone_key => $phone_val) {
-                    $this->$phone_key = null;
-                }
-            }
-            unset($data['phones']);
-        }
-        if (isset($data['emails'])) {
-            $db_emails = $this->getEmailColsWithVal();
-            if (!empty($data['emails'])) {
-                $emails = forms\ContactForm::dataConvert($data['emails'], 'emails', 'explode');
-                foreach ($emails as $email_key => $email_val) {
-                    if ($email_val !== null) {
-//                        if (!ArrayHelper::isIn($email_val, $db_emails)) {
+//                    }
+//                    $this->$phone_key = $phone_val;
+//                }
+//            } else {
+//                foreach ($db_phones as $phone_key => $phone_val) {
+//                    $this->$phone_key = null;
+//                }
+//            }
+//            unset($data['phones']);
+//        }
+//        if (isset($data['emails'])) {
+//            $db_emails = $this->getEmailColsWithVal();
+//            if (!empty($data['emails'])) {
+//                $emails = forms\ContactForm::dataConvert($data['emails'], 'emails', 'explode');
+//                foreach ($emails as $email_key => $email_val) {
+//                    if ($email_val !== null) {
+////                        if (!ArrayHelper::isIn($email_val, $db_emails)) {
+////                            $this->new_emails[] = $email_val;
+////                        }
+//                        if (!in_array($email_val, $db_emails)) {
 //                            $this->new_emails[] = $email_val;
 //                        }
-                        if (!in_array($email_val, $db_emails)) {
-                            $this->new_emails[] = $email_val;
-                        }
-                    }
-                    $this->$email_key = $email_val;
-                }
-            } else {
-                foreach ($db_emails as $email_key => $email_val) {
-                    $this->$email_key = null;
-                }
-            }
-            unset($data['emails']);
-        }
-        foreach ($data as $name => $value) {
-            $this->$name = $value;
-        }
-    }
+//                    }
+//                    $this->$email_key = $email_val;
+//                }
+//            } else {
+//                foreach ($db_emails as $email_key => $email_val) {
+//                    $this->$email_key = null;
+//                }
+//            }
+//            unset($data['emails']);
+//        }
+//        foreach ($data as $name => $value) {
+//            $this->$name = $value;
+//        }
+//    }
 
     public function edit() {
         $is_new_record = $this->isNewRecord;

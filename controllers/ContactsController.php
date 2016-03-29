@@ -93,7 +93,9 @@ class ContactsController extends BaseController
     {
         $post = Yii::$app->request->post();
         $contact_form = new ContactForm();
-//        $contact_form->load($post);
+        if ($post['id']) {
+            $contact_form->edited_id = $post['id'];
+        }
         $contact_form->attributes = $post;
 
         if ($contact_form->validate()) {
@@ -114,12 +116,7 @@ class ContactsController extends BaseController
                 }
                 unset($post['_csrf']);
                 unset($post['id']);
-                $contact->buildData($post);
-                if ($contact->isPhoneNumberExists()) {
-                    $this->json(false, 412, 'Такой номер уже существует в системе');
-                } elseif ($contact->isEmailExists()) {
-                    $this->json(false, 412, 'Такой Email уже существует в системе');
-                }
+                $contact->attributes = $contact_form->attributes;
                 if ($contact->edit()) {
                     $this->json(['id' => $contact->id], 200);
                 } else {
@@ -132,6 +129,37 @@ class ContactsController extends BaseController
             $errors = $contact_form->getErrors();
             $this->json(false, 415, $errors);
         }
+    }
+
+    public function actionLinkWith()
+    {
+        $search_term = Yii::$app->request->post('search_term');
+
+        $query = Contact::find();
+        $query->andWhere(['is_deleted' => '0']);
+
+        //Filtering
+        if (!empty($request_data['columns'][3]['search']['value'])) {
+            $query->where(['like', 'surname', $request_data['columns'][3]['search']['value']]);
+        }
+        if (!empty($request_data['columns'][4]['search']['value'])) {
+            $query->andWhere(['like', 'name', $request_data['columns'][4]['search']['value']]);
+        }
+        if (!empty($request_data['columns'][5]['search']['value'])) {
+            $query->andWhere(['like', 'middle_name', $request_data['columns'][5]['search']['value']]);
+        }
+
+        ['like',
+            ['surname' => $search_term],
+            ['name' => $search_term],
+            ['middle_name' => $search_term],
+        ];
+        $query->andWhere(['like', 'surname', $request_data['columns'][7]['search']['value']])
+            ->orWhere(['like', 'name', $request_data['columns'][7]['search']['value']])
+            ->orWhere(['like', 'middle_name', $request_data['columns'][7]['search']['value']]);
+
+//        $dump = $query->createCommand()->rawSql;
+        $contacts = $query->all();
     }
 
     public function actionGetdata()
@@ -287,79 +315,7 @@ class ContactsController extends BaseController
         Yii::$app->session->set('contact_hide_columns', $hide_columns);
         $this->json(false, 200);
     }
-//    public function actionObjectshow() {
-//        $contact_id = Yii::$app->request->post('id');
-//        $objects_id = Yii::$app->request->post('apartment');
-//        $schedule_date = Yii::$app->request->post('schedule_date');
-//        $contact_show = new ContactShow();
-//        $contact_show->manager_id = Yii::$app->user->identity->id;
-//        if ($contact_show->add($contact_id, $objects_id, $schedule_date)) {
-//            $history_text = $contact_show->getHistoryText();
-//            $response_date = [
-//                'id' => $contact_show->id,
-//                'system_date' => date('d-m-Y G:i:s', strtotime($contact_show->system_date)),
-//                'history' => $history_text
-//            ];
-//            $this->json($response_date, 200);
-//        }
-//        $this->json(false, 500);
-//    }
-//
-//    public function actionObjectvisit() {
-//        $contact_id = Yii::$app->request->post('id');
-//        $schedule_date = Yii::$app->request->post('schedule_date');
-//        $contact_visit = new ContactVisit();
-//        $contact_visit->manager_id = Yii::$app->user->identity->id;
-//        if ($contact_visit->add($contact_id, $schedule_date)) {
-//            $history_text = $contact_visit->getHistoryText();
-//            $response_date = [
-//                'id' => $contact_visit->id,
-//                'system_date' => date('d-m-Y G:i:s', strtotime($contact_visit->system_date)),
-//                'history' => $history_text
-//            ];
-//            $this->json($response_date, 200);
-//        }
-//        $this->json(false, 500);
-//    }
-//
-//    public function actionObjectcontract() {
-//        $contact_id = Yii::$app->request->post('id');
-//        $object_id = Yii::$app->request->post('apartment');
-//        $price = Yii::$app->request->post('price');
-//        $contract_id = Yii::$app->request->post('contract');
-//        $model = new UploadDoc();
-//        if ($contract_id) {
-//            $model->docFile = UploadedFile::getInstance($model, 'docFile');
-//            $agreement_file_name = null;
-//            if ($model->docFile) {
-//                $agreement_file_name = $model->upload();
-//            }
-//            $contact_contract = ContactContract::find()->where(['id' => $contract_id])->one();
-//            if (!$contact_contract->edit($object_id, $price, $agreement_file_name)) {
-//                $this->json(false, 500);
-//            }
-//        } else {
-//            $contact_contract = new ContactContract();
-//            $model->docFile = UploadedFile::getInstance($model, 'docFile');
-//            if (!$model->docFile) {
-//                $this->json(false, 500);
-//            }
-//            if ($agreement_file_name = $model->upload()) {
-//                $contact_contract->manager_id = Yii::$app->user->identity->id;
-//                if (!$contact_contract->add($contact_id, $object_id, $price, $agreement_file_name)) {
-//                    $this->json(false, 500);
-//                }
-//            }
-//        }
-//        $history_text = $contact_contract->getHistoryText();
-//        $response_date = [
-//            'id' => $contact_contract->id,
-//            'system_date' => date('d-m-Y G:i:s', strtotime($contact_contract->system_date)),
-//            'history' => $history_text
-//        ];
-//        $this->json($response_date, 200);
-//    }
-//
+
     public function actionObjectschedulecall() {
         $contact_id = Yii::$app->request->post('id');
         $schedule_date = Yii::$app->request->post('schedule_date');
@@ -397,24 +353,7 @@ class ContactsController extends BaseController
         $this->json(false, 500);
     }
 
-//
-//    public function actionGetcontracts() {
-//        $contact_id = Yii::$app->request->get('id');
-//        $contracts = ContactContract::find()->select('id')->where(['contact_id' => $contact_id])->asArray()->all();
-//        $this->json($contracts, 200);
-////        $contract = ContactContract::getContractsByContactId($contact_id);
-////        $contract_data = [];
-////        if ($contract) {
-////            if ($contract['solution']) {
-////                $contract_data[0]['status'] = 'answered';
-////                $contract_data[0]['solution'] = $contract['solution'];
-////                $contract_data[0]['comment'] = $contract['comment'];
-////            } else {
-////                $contract_data[0]['status'] = 'unanswered';
-////            }
-////        }
-////        $this->json(['contract' => $contract_data], 200);
-//    }
+
 
     public function actionGetContactByPhone()
     {
