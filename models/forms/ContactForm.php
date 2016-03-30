@@ -112,8 +112,8 @@ class ContactForm extends Model
             }
             $contact = $contact->one();
             if ($contact) {
-                $message_callback($attr, $value, $contact->id);
-                return $contact->id;
+                $message_callback($attr, $value, $contact->int_id);
+                return $contact->int_id;
             }
         }
         return true;

@@ -10,10 +10,9 @@ use yii\web\IdentityInterface;
 
 class User extends ActiveRecord implements IdentityInterface {
 
-    const ROLE_MANAGER = 1;
-    const ROLE_SUPERVISOR = 5;
-    const ROLE_FIN_DIR = 10;
     const ROLE_ADMIN = 15;
+    const ROLE_MANAGER = 5;
+    const ROLE_OPERATOR = 1;
 
     public static function tableName() {
         return '{{%user}}';

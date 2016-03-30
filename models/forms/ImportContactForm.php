@@ -74,8 +74,8 @@ class ImportContactForm extends ContactForm
         foreach ($phones as $phone_key => $phone_val) {
             $this->checkPhone($phone_val, $attribute);
             $fields = Contact::getPhoneCols();
-            $this->isUnique($phone_val, $attribute, $fields, function($attr, $value, $contact_id) {
-                $this->addError($attr, $value.', уже существует в базе. ID контакта: '.$contact_id);
+            $this->isUnique($phone_val, $attribute, $fields, function($attr, $value, $int_contact_id) {
+                $this->addError($attr, $value.', уже существует в базе. ID контакта: '.$int_contact_id);
             });
             $this->$phone_key = $phone_val;
         }
@@ -87,8 +87,8 @@ class ImportContactForm extends ContactForm
         foreach ($emails as $email_key => $email_val) {
             $this->checkEmail($email_val, $attribute);
             $fields = Contact::getEmailCols();
-            $this->isUnique($email_val, $attribute, $fields, function($attr, $value, $contact_id) {
-                $this->addError($attr, $value.', уже существует в базе. ID контакта: '.$contact_id);
+            $this->isUnique($email_val, $attribute, $fields, function($attr, $value, $int_contact_id) {
+                $this->addError($attr, $value.', уже существует в базе. ID контакта: '.$int_contact_id);
             });
             $this->$email_key = $email_val;
         }

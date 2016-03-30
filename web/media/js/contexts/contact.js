@@ -202,37 +202,70 @@ $(function () {
             }
         });
 
-        $('.link_with-dropdown input.search').on('keyup', function(event) {
+        $(document).on('keyup', '.link_with-dropdown input.search', function(event) {
             var $this = $(this),
                 $form = $this.parents('form'),
-                search_term = $(this).val();
-
-            $.post($form.attr('action'), {search_term: search_term, _csrf: _csrf}, function (response) {
-                var result = $.parseJSON(response);
-                if (result.status === 200) {
-                    
-                }
-            });
-
-            var search_result = search_obj.search(search_term);
-
-            var result_list = '',
+                search_term = $(this).val(),
                 result_items = '';
 
-            $.each(search_result, function() {
-                var $product = $(this);
+            if (search_term.length < 2 || search_term.length == 0) {
+                $form.find('.result').html('');
+            } else if (search_term.length > 2) {
+                delay(function () {
+                    $.post('contacts/search', {search_term: search_term, _csrf: _csrf}, function (response) {
+                        var result = $.parseJSON(response);
+                        if (result.status === 200) {
+                            $.each(result.data, function(i, el) {
+                                result_items += '<tr data-id="' + el.id + '">' +
+                                                    '<td>' + el.int_id + '</td>' +
+                                                    '<td><a href="javascript:void(0)">' + el.fio + '</a></td>' +
+                                                    '<td>' + el.phones + '</td>' +
+                                                    '<td>' + el.emails + '</td>' +
+                                                '</tr>';
+                            });
 
-                result_items += '<li><a href="product.php?product=' + $product[0].code + '">' + $product[0].category + ' ' + $product[0].trademark + ' ' + $product[0].model + '</a></li>';
-            });
+                            $form.find('.result').html(result_items);
+                        } else {
+                            $form.find('.result').text('Контакты не найдены');
+                        }
+                    });
+                }, 2000);
+            }
+        });
 
-            result_list = '<ul id="search_result_list">' + result_items + '</ul>';
+        $(document).on('click', '.link_with-dropdown .result tr', function() {
+            if (!$(this).hasClass('selected')) {
+                $('.link_with-dropdown .result tr').removeClass('selected');
+            }
+            $(this).toggleClass('selected');
+        });
 
-            if (search_result.length) {
-                $('#search_result').show();
-                $('#search_result').html(result_list);
-            } else {
-                $('#search_result').hide();
-                $('#search_result').html('');
+        $(document).on('click', '.link_with-dropdown .link_btn', function(e) {
+            e.preventDefault();
+            var $dropdown = $(this).parents('.dropdown'),
+                linkedContactId = $(this).parents('tr').data('id'),
+                linkToContactId = $dropdown.find('.selected').data('id');
+
+            if (linkToContactId !== undefined) {
+                $dropdown.find('.search').val('').attr('disabled', true);
+                $dropdown.find('.result').empty();
+                $dropdown.find('.link_btn').removeClass('inline').hide();
+                $dropdown.find('.loader').addClass('inline');
+                $.post('contacts/link-with', {linked_contact_id: linkedContactId, link_to_contact_id: linkToContactId, _csrf: _csrf}, function (response) {
+                    var result = $.parseJSON(response);
+                    if (result.status === 200) {
+                        showNotification('.content', 'Слияние прошло успешно', 'top', 'success', 'bar', 5000);
+                        dataTable.draw();
+                    } else {
+                        $dropdown.find('.loader').removeClass('inline');
+                        $dropdown.find('.link_btn').addClass('inline').show();
+                        $dropdown.find('.search').attr('disabled', false);
+                        $.each(result.errors, function (name, error) {
+                            $dropdown.find('.result').html('<div class="error">'+ error +'</div><br>');
+                        });
+                    }
+
+                });
             }
 
         });

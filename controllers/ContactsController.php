@@ -41,17 +41,15 @@ class ContactsController extends BaseController
                             'getdata',
                             'edit',
                             'hide-columns',
-                            'getcontracts',
-                            'get-contact-by-phone'
+                            'get-contact-by-phone',
+                            'search',
+                            'link-with'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                     [
                         'actions' => [
-                            'objectshow',
-                            'objectvisit',
-                            'objectcontract',
                             'objectschedulecall',
                             'objectscheduleemail',
                         ],
@@ -131,35 +129,61 @@ class ContactsController extends BaseController
         }
     }
 
-    public function actionLinkWith()
+    public function actionSearch()
     {
         $search_term = Yii::$app->request->post('search_term');
 
-        $query = Contact::find();
+        $query = Contact::find()->select(['id', 'int_id', 'surname', 'name', 'middle_name', 'first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email']);
         $query->andWhere(['is_deleted' => '0']);
 
-        //Filtering
-        if (!empty($request_data['columns'][3]['search']['value'])) {
-            $query->where(['like', 'surname', $request_data['columns'][3]['search']['value']]);
-        }
-        if (!empty($request_data['columns'][4]['search']['value'])) {
-            $query->andWhere(['like', 'name', $request_data['columns'][4]['search']['value']]);
-        }
-        if (!empty($request_data['columns'][5]['search']['value'])) {
-            $query->andWhere(['like', 'middle_name', $request_data['columns'][5]['search']['value']]);
-        }
-
-        ['like',
-            ['surname' => $search_term],
-            ['name' => $search_term],
-            ['middle_name' => $search_term],
-        ];
-        $query->andWhere(['like', 'surname', $request_data['columns'][7]['search']['value']])
-            ->orWhere(['like', 'name', $request_data['columns'][7]['search']['value']])
-            ->orWhere(['like', 'middle_name', $request_data['columns'][7]['search']['value']]);
+        $query->andWhere(['like', 'surname', $search_term])
+            ->orWhere(['like', 'name', $search_term])
+            ->orWhere(['like', 'middle_name', $search_term]);
 
 //        $dump = $query->createCommand()->rawSql;
-        $contacts = $query->all();
+
+        $contacts = $query->asArray()->all();
+
+        foreach ($contacts as &$contact) {
+            $contact['fio'] = implode(" ", array_filter([$contact['surname'], $contact['name'], $contact['middle_name']]));
+            $contact['phones'] = implode("<br>", array_filter([$contact['first_phone'], $contact['second_phone'], $contact['third_phone'], $contact['fourth_phone']]));
+            $contact['emails'] = implode("<br>", array_filter([$contact['first_email'], $contact['second_email']]));
+        }
+
+        if (count($contacts) > 0) {
+            $json_data = array(
+                "status" => 200,
+                "data" => $contacts
+            );
+        } else {
+            $json_data = array(
+                "status" => 404,
+            );
+        }
+
+        echo json_encode($json_data);
+        die;
+    }
+
+    public function actionLinkWith()
+    {
+        $linked_contact_id = Yii::$app->request->post('linked_contact_id');
+        $link_to_contact_id = Yii::$app->request->post('link_to_contact_id');
+
+        $linked_contact = Contact::find()->where(['id' => $linked_contact_id])->one();
+        $link_to_contact = Contact::find()->where(['id' => $link_to_contact_id])->one();
+
+        if ($link_to_contact->mergeTogether($linked_contact)) {
+            $linked_contact->is_deleted = 1;
+            $linked_contact->save();
+            if ($link_to_contact->save()) {
+                $this->json(false, 200);
+            } else {
+                $this->json(false, 415, $link_to_contact->getErrors());
+            }
+        } else {
+            $this->json(false, 415, $link_to_contact->getErrors());
+        }
     }
 
     public function actionGetdata()

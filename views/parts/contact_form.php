@@ -1,11 +1,11 @@
 <?php
 use app\models\User;
 ?>
-<div class="modal fade slide-right <?= Yii::$app->user->identity->role == User::ROLE_FIN_DIR ? "modal-md" : "modal-lg" ?>"
+<div class="modal fade slide-right modal-lg"
     id="modalAddContact" tabindex="-1" role="dialog" aria-hidden="true">
     <input type="hidden" id="contact-id" value=""/>
     <div
-        class="modal-dialog drop-shadow <?= Yii::$app->user->identity->role == User::ROLE_FIN_DIR ? "modal-md" : "modal-lg" ?>">
+        class="modal-dialog drop-shadow modal-lg">
         <div class="modal-content-wrapper">
             <div class="list-view-wrapper modal-content">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i
@@ -20,7 +20,7 @@ use app\models\User;
                             </div>
                             <div class="row">
                                 <div
-                                    class="contact-data <?= Yii::$app->user->identity->role == User::ROLE_FIN_DIR ? "col-md-6" : "col-md-4" ?>">
+                                    class="contact-data col-md-4">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <div class="panel-title contact-title">Новый контакт</div>
@@ -121,7 +121,7 @@ use app\models\User;
                                     </div>
                                 </div>
                                 <div
-                                    class="contact-history <?= Yii::$app->user->identity->role == User::ROLE_FIN_DIR ? "col-md-6" : "col-md-5" ?>">
+                                    class="contact-history col-md-5">
                                     <div class="panel panel-transparent ">
                                         <!-- Nav tabs -->
                                         <ul class="nav nav-tabs nav-tabs-fillup">

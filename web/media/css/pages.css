@@ -7156,7 +7156,7 @@ div.cs-skin-slide .cs-options ul li.cs-selected span {
 .table tbody tr.selected td {
     background: #fef6dd;
 }
-.table.table-hover tbody tr:hover td {
+.table.table-hover>tbody>tr:hover>td {
     background: #daeffd !important;
 }
 .table.table-hover tbody tr.selected:hover td {

@@ -107,6 +107,10 @@
 }
 
 .dropdown form {
-    min-width: 400px;
+    /*min-width: 400px;*/
     padding: 5px 10px;
+}
+
+.dropdown .table {
+    min-width: 290px;
 }

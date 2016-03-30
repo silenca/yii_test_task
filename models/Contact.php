@@ -165,6 +165,96 @@ class Contact extends \yii\db\ActiveRecord {
         return $emails;
     }
 
+    public static function getLocationCols() {
+        return [
+            'country',
+            'region',
+            'area',
+            'city',
+            'street',
+            'house',
+            'flat'
+        ];
+    }
+
+    public function mergeTogether($contact)
+    {
+        foreach ($this->attributes as $prop_key => &$prop_val) {
+            if (preg_match('/surname|name|middle_name/', $prop_key)) {
+                if (is_null($prop_val) || $prop_val == '') {
+                    $this->$prop_key = $contact->$prop_key;
+                }
+            }
+        }
+
+        $phone_cols = self::getPhoneCols();
+        $email_cols = self::getEmailCols();
+        $location_cols = self::getLocationCols();
+
+        $contact_phones = self::getPropValues($contact, $phone_cols);
+        $contact_emails = self::getPropValues($contact, $email_cols);
+        $contact_location = self::getPropValues($contact, $location_cols);
+
+        $self_phones = self::getPropValues($this, $phone_cols);
+        $self_emails = self::getPropValues($this, $email_cols);
+
+        if (count($contact_phones['exists']) > count($self_phones['empty'])) {
+
+            $this->addError('prop_count_miss', 'Ошибка - телефоны переполнены');
+            return false;
+        } elseif (count($contact_emails['exists']) > count($self_emails['empty'])) {
+            $this->addError('prop_count_miss', 'Ошибка - email-ы переполнены');
+            return false;
+        }
+
+        $i = 0;
+        foreach ($self_phones['empty'] as $phone_key => $phone_val) {
+            $this->$phone_key = $contact_phones['exists'][$i] ?: null;
+            $i++;
+        }
+        $i = 0;
+        foreach ($self_emails['empty'] as $phone_key => $phone_val) {
+            $this->$phone_key = $contact_emails['exists'][$i] ?: null;
+            $i++;
+        }
+
+        if (count($contact_location['exists']) > 0) {
+            $this->setNull($location_cols);
+
+            $i = 0;
+            foreach ($location_cols as $col) {
+                $this->$col = $contact->$col;
+                $i++;
+            }
+        }
+
+        return true;
+    }
+
+    public static function getPropValues($contact, $cols)
+    {
+        $values = ['exists' => [], 'empty' => []];
+        $cols_str = implode('|', $cols);
+        $pattern = '/'.$cols_str.'/';
+        foreach ($contact->attributes as $prop_key => $prop_val) {
+            if (preg_match($pattern, $prop_key)) {
+                if (is_null($prop_val) || $prop_val == '') {
+                    $values['empty'][$prop_key] = $prop_val;
+                } else {
+                    $values['exists'][] = $prop_val;
+                }
+            }
+        }
+        return $values;
+    }
+
+    public function setNull($cols)
+    {
+        foreach ($cols as $col) {
+            $this->$col = null;
+        }
+    }
+
     public static function getContactByPhone($phone) {
         return self::find()
                         ->where(['first_phone' => $phone])

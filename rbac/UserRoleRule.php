@@ -19,12 +19,10 @@ class UserRoleRule extends Rule {
             switch ($item->name) {
                 case "admin":
                     return $role == User::ROLE_ADMIN;
-                case "fin_dir":
-                    return $role == User::ROLE_FIN_DIR;
                 case "manager":
                     return $role == User::ROLE_MANAGER;
-                case "supervisor":
-                    return $role == User::ROLE_SUPERVISOR;
+                case "operator":
+                    return $role == User::ROLE_OPERATOR;
             }
         }
         return false;

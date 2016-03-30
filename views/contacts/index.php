@@ -205,14 +205,22 @@ $this->params['active'] = 'contact';
 </div>
 
 <div class="dropdown-menu link_with-dropdown pull-left" role="menu">
-    <form class="link_with-form form-inline" action="contacts/link-with">
+    <form class="link_with-form form-inline">
         <div class="form-group">
             <div class="input-group">
                 <input type="text" name="search" class="search form-control">
             </div>
         </div>
         <button class="btn btn-sm btn-complete inline link_btn m-l-10">Связать</button>
-        <ul class="result"></ul>
+        <img
+            class="loader m-l-30"
+            src="media/img/progress/progress-circle-primary.svg" alt="Progress"
+            style="display: none; width: 30px; height: 30px">
+<!--        <ul class="result list-group m-t-5"></ul>-->
+        <table class="result table table-hover m-t-5">
+            <tbody>
+            </tbody>
+        </table>
     </form>
 </div>
 
