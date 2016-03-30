@@ -174,9 +174,9 @@ class ContactsController extends BaseController
         $link_to_contact = Contact::find()->where(['id' => $link_to_contact_id])->one();
 
         if ($link_to_contact->mergeTogether($linked_contact)) {
-            $linked_contact->is_deleted = 1;
-            $linked_contact->save();
             if ($link_to_contact->save()) {
+                $linked_contact->is_deleted = 1;
+                $linked_contact->save();
                 $this->json(false, 200);
             } else {
                 $this->json(false, 415, $link_to_contact->getErrors());

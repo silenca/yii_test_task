@@ -179,7 +179,7 @@ class Contact extends \yii\db\ActiveRecord {
 
     public function mergeTogether($contact)
     {
-        foreach ($this->attributes as $prop_key => &$prop_val) {
+        foreach ($this->attributes as $prop_key => $prop_val) {
             if (preg_match('/surname|name|middle_name/', $prop_key)) {
                 if (is_null($prop_val) || $prop_val == '') {
                     $this->$prop_key = $contact->$prop_key;
@@ -199,7 +199,6 @@ class Contact extends \yii\db\ActiveRecord {
         $self_emails = self::getPropValues($this, $email_cols);
 
         if (count($contact_phones['exists']) > count($self_phones['empty'])) {
-
             $this->addError('prop_count_miss', 'Ошибка - телефоны переполнены');
             return false;
         } elseif (count($contact_emails['exists']) > count($self_emails['empty'])) {
@@ -209,22 +208,20 @@ class Contact extends \yii\db\ActiveRecord {
 
         $i = 0;
         foreach ($self_phones['empty'] as $phone_key => $phone_val) {
-            $this->$phone_key = $contact_phones['exists'][$i] ?: null;
+            $this->$phone_key = isset($contact_phones['exists'][$i]) ? $contact_phones['exists'][$i] : null;
             $i++;
         }
         $i = 0;
-        foreach ($self_emails['empty'] as $phone_key => $phone_val) {
-            $this->$phone_key = $contact_emails['exists'][$i] ?: null;
+        foreach ($self_emails['empty'] as $email_key => $email_val) {
+            $this->$email_key = isset($contact_emails['exists'][$i]) ? $contact_emails['exists'][$i] : null;
             $i++;
         }
 
         if (count($contact_location['exists']) > 0) {
             $this->setNull($location_cols);
 
-            $i = 0;
             foreach ($location_cols as $col) {
                 $this->$col = $contact->$col;
-                $i++;
             }
         }
 

@@ -114,3 +114,7 @@
 .dropdown .table {
     min-width: 290px;
 }
+
+.dropdown .dropdown-menu {
+    background: #E0E0E0;
+}
