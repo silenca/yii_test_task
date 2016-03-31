@@ -55,8 +55,8 @@ class Contact extends \yii\db\ActiveRecord {
         'manager_id',
         'is_deleted'
     ];
-    private $new_phones = [];
-    private $new_emails = [];
+//    private $new_phones = [];
+//    private $new_emails = [];
 
     /**
      * @inheritdoc
@@ -104,8 +104,10 @@ class Contact extends \yii\db\ActiveRecord {
         ];
     }
 
-    public static function getAllCols() {
+    public static function getAllSafeCols() {
         return [
+            'id',
+            'int_id',
             'name',
             'surname',
             'middle_name',
@@ -122,6 +124,28 @@ class Contact extends \yii\db\ActiveRecord {
             'street',
             'house',
             'flat'
+        ];
+    }
+
+    public static function getColsForTableView() {
+        return [
+            'id' => ['label' => 'ID', 'have_search' => false],
+            'int_id' => ['label' => '№', 'have_search' => false,],
+            'surname' => ['label' => 'Фамилия', 'have_search' => true],
+            'name' => ['label' => 'Имя', 'have_search' => true],
+            'middle_name' => ['label' => 'Отчество', 'have_search' => true],
+            'link_with' => ['label' => 'Связать', 'have_search' => false],
+            'phones' => ['label' => 'Телефоны', 'have_search' => true, 'db_cols' => ['first_phone','second_phone','third_phone','fourth_phone']],
+            'emails' => ['label' => 'Email', 'have_search' => true, 'db_cols' => ['first_email','second_email']],
+            'tags' => ['label' => 'Теги', 'have_search' => true],
+            'country' => ['label' => 'Страна', 'have_search' => true],
+            'region' => ['label' => 'Регион', 'have_search' => true],
+            'area' => ['label' => 'Область', 'have_search' => true],
+            'city' => ['label' => 'Город', 'have_search' => true],
+            'street' => ['label' => 'Улица', 'have_search' => true],
+            'house' => ['label' => 'Дом', 'have_search' => true],
+            'flat' => ['label' => 'Квартира', 'have_search' => true],
+            'delete_button' => ['label' => 'Удалить', 'have_search' => false]
         ];
     }
 

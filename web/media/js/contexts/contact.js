@@ -2,25 +2,25 @@ var dataTable,
     dropDownOpened = false;
 
 $(function () {
-    var columns = [
-        'id',
-        'int_id',
-        'surname',
-        'name',
-        'middle_name',
-        'link_with',
-        'phones',
-        'emails',
-        'tags',
-        'country',
-        'region',
-        'area',
-        'city',
-        'street',
-        'house',
-        'flat',
-        'delete_button'
-    ];
+    // var columns = [
+    //     'id',
+    //     'int_id',
+    //     'surname',
+    //     'name',
+    //     'middle_name',
+    //     'link_with',
+    //     'phones',
+    //     'emails',
+    //     'tags',
+    //     'country',
+    //     'region',
+    //     'area',
+    //     'city',
+    //     'street',
+    //     'house',
+    //     'flat',
+    //     'delete_button'
+    // ];
 
     var show_columns = columns.filter(function(item) {
         return hide_columns.indexOf(item) === -1;
@@ -56,13 +56,17 @@ $(function () {
                 {"orderable": false, "targets": show_columns.indexOf('emails')},
                 {"orderable": false, "targets": show_columns.indexOf('tags')},
                 {"orderable": false, "targets": show_columns.indexOf('link_with')},
-                {"visible": false, "targets": [0]}
+                {"visible": false, "targets": [show_columns.indexOf('id')]}
             ],
             "createdRow": function (row, data, index) {
-                $(row).attr('data-id', data[0]);
+                $(row).attr('data-id', data[show_columns.indexOf('id')]);
                 $(row).addClass('open-link');
             }
         };
+        $.each(show_columns, function(col_index, col_val) {
+            settings.columnDefs.push({ "name": col_val, "targets": col_index })
+        });
+
         $.each(hide_columns, function(i ,val) {
             var index = columns.indexOf(val);
             settings.columnDefs.push({
@@ -74,11 +78,22 @@ $(function () {
         var $searchBoxes = $('input.search-input-text, select.search-input-select');
 
         $('.search-input-text').on('keyup', function () {   // for text boxes
+            // var $currBox = $(this),
+            //     currBoxCol = $currBox.data('column'),
+            //     currBoxVal = $currBox.val();
             delay(function () {
                 $.each($searchBoxes, function (index, val) {
-                    var i = $(this).attr('data-column');
+                    var n = $(this).attr('data-column');
                     var v = $(this).val();
-                    if (v.length > 2 || v.length == 0) dataTable.columns(i).search(v);
+                    var strLenDef = 2;
+                    if (n == 'city' || n == 'street' || n == 'house' || n == 'flat') {
+                        strLenDef = 0;
+                    }
+                    // var is_int = typeof Number($(this).val()) == 'number';
+                    // var strLength = is_int ? 0 : 2;
+                    if (v.length > strLenDef || v.length == 0) {
+                        dataTable.columns(n+':name').search(v);
+                    }
                 });
                 dataTable.draw();
             }, 2000);
@@ -86,9 +101,9 @@ $(function () {
 
         $('.search-input-select').on('change', function () {   // for select box
             $.each($searchBoxes, function (index, val) {
-                var i = $(this).attr('data-column');
+                var n = $(this).attr('data-column');
                 var v = $(this).val();
-                dataTable.columns(i).search(v);
+                dataTable.columns(n+':name').search(v);
             });
             dataTable.draw();
         });

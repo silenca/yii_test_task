@@ -83,9 +83,77 @@ class ContactsController extends BaseController
         if (!$hide_columns) {
             $hide_columns = [];
         }
-        return $this->render('index', ['hide_columns' => $hide_columns]);
+        $table_cols = Contact::getColsForTableView();
+        $filter_cols = Contact::getColsForTableView();
+        unset($filter_cols['id']);
+        return $this->render('index', ['hide_columns' => $hide_columns, 'table_cols' => $table_cols, 'filter_cols' => $filter_cols]);
     }
 
+    public function actionGetdata()
+    {
+        $request_data = Yii::$app->request->get();
+        $total_count = Contact::find()->where(['is_deleted' => '0'])->count();
+        $columns = Contact::getColsForTableView();
+        //Sorting
+        $sorting = [];
+        if (isset($request_data['order'])) {
+            $order_by_sort = $request_data['order'][0]['dir'] == 'asc' ? SORT_ASC : SORT_DESC;
+            $sort_column = $columns[$request_data['order'][0]['column']];
+
+            $sorting = [
+                $sort_column => $order_by_sort
+            ];
+        } else {
+            $sorting = [
+                'id' => SORT_DESC
+            ];
+        }
+        $query = Contact::find()->with('manager', 'tags');
+        $query->andWhere(['contact.is_deleted' => '0']);
+        //join Tags
+        $query->leftJoin(ContactTag::tableName() . ' `ct`', '`ct`.`contact_id` = contact.`id`')
+            ->leftJoin(Tag::tableName() . ' `t`', '`t`.`id` = `ct`.`tag_id`');
+
+        //Filtering
+        foreach ($request_data['columns'] as $column) {
+            if (!empty($column['search']['value'])) {
+                if (isset($columns[$column['name']]['db_cols'])) {
+                    foreach ($columns[$column['name']]['db_cols'] as $db_col_i => $db_col_v) {
+                        if ($db_col_i == 0) {
+                            $query->andWhere(['like', 'contact.'.$db_col_v, $column['search']['value']]);
+                        } else {
+                            $query->orWhere(['like', 'contact.'.$db_col_v, $column['search']['value']]);
+                        }
+                    }
+                } elseif ($column['name'] == 'tags') {
+                    $query->andWhere(['like', 't.name', $column['search']['value']]);
+                } else {
+                    $query->andWhere(['like', 'contact.'.$column['name'], $column['search']['value']]);
+                }
+            }
+        }
+
+        $dump = $query->createCommand()->rawSql;
+        $total_filtering_count = $query->count();
+        $query
+            ->orderBy($sorting)
+            ->limit($request_data['length'])
+            ->offset($request_data['start']);
+
+        $contacts = $query->all();
+        $contact_widget = new ContactTableWidget();
+        $contact_widget->contacts = $contacts;
+        $data = $contact_widget->run();
+
+        $json_data = array(
+            "draw" => intval($request_data['draw']),
+            "recordsTotal" => intval($total_count),
+            "recordsFiltered" => intval($total_filtering_count),
+            "data" => $data   // total data array
+        );
+        echo json_encode($json_data);
+        die;
+    }
 
     public function actionEdit()
     {
@@ -184,85 +252,6 @@ class ContactsController extends BaseController
         } else {
             $this->json(false, 415, $link_to_contact->getErrors());
         }
-    }
-
-    public function actionGetdata()
-    {
-        $request_data = Yii::$app->request->get();
-        $total_count = Contact::find()->where(['is_deleted' => '0'])->count();
-        $columns = Contact::getTableColumns();
-        //Sorting
-        $sorting = [];
-        if (isset($request_data['order'])) {
-            $order_by_sort = $request_data['order'][0]['dir'] == 'asc' ? SORT_ASC : SORT_DESC;
-            $sort_column = $columns[$request_data['order'][0]['column']];
-
-            $sorting = [
-                $sort_column => $order_by_sort
-            ];
-        } else {
-            $sorting = [
-                'id' => SORT_DESC
-            ];
-        }
-        $query = Contact::find();
-        $query->andWhere(['is_deleted' => '0']);
-
-        //Filtering
-        if (!empty($request_data['columns'][3]['search']['value'])) {
-            $query->where(['like', 'surname', $request_data['columns'][3]['search']['value']]);
-        }
-        if (!empty($request_data['columns'][4]['search']['value'])) {
-            $query->andWhere(['like', 'name', $request_data['columns'][4]['search']['value']]);
-        }
-        if (!empty($request_data['columns'][5]['search']['value'])) {
-            $query->andWhere(['like', 'middle_name', $request_data['columns'][5]['search']['value']]);
-        }
-
-        if (!empty($request_data['columns'][6]['search']['value'])) {
-            $query->andWhere(['like', 'first_phone', $request_data['columns'][7]['search']['value']])
-                ->orWhere(['like', 'second_phone', $request_data['columns'][7]['search']['value']])
-                ->orWhere(['like', 'third_phone', $request_data['columns'][7]['search']['value']])
-                ->orWhere(['like', 'fourth_phone', $request_data['columns'][7]['search']['value']]);
-        }
-
-        if (!empty($request_data['columns'][7]['search']['value'])) {
-            $query->andWhere(['like', 'first_email', $request_data['columns'][8]['search']['value']])
-                ->orWhere(['like', 'second_email', $request_data['columns'][8]['search']['value']]);
-        }
-
-        if (!empty($request_data['columns'][8]['search']['value'])) {
-//            $query->leftJoin(Tag::tableName() . ' t', 't.id = ' . Contact::tableName() . '.manager_id');
-            $query->leftJoin(ContactTag::tableName() . ' `ct`', '`ct`.`contact_id` = contact.`id`')
-                ->leftJoin(Tag::tableName() . ' `t`', '`t`.`id` = `ct`.`tag_id`');
-            $query->andWhere(['like', 't.name', $request_data['columns'][9]['search']['value']]);
-        } elseif (isset($sort_column) && $sort_column == 't.name') {
-            $query->leftJoin(ContactTag::tableName() . ' `ct`', '`ct`.`contact_id` = contact.`id`')
-                ->leftJoin(Tag::tableName() . ' `t`', '`t`.`id` = `ct`.`tag_id`');
-        }
-
-        $total_filtering_count = $query->count();
-        $query
-            ->with('manager')
-            ->with('tags')
-            ->orderBy($sorting)
-            ->limit($request_data['length'])
-            ->offset($request_data['start']);
-
-//        $dump = $query->createCommand()->rawSql;
-        $contacts = $query->all();
-        $contact_widget = new ContactTableWidget();
-        $contact_widget->contacts = $contacts;
-        $data = $contact_widget->run();
-
-        $json_data = array(
-            "draw" => intval($request_data['draw']),
-            "recordsTotal" => intval($total_count),
-            "recordsFiltered" => intval($total_filtering_count),
-            "data" => $data   // total data array
-        );
-        echo json_encode($json_data);
-        die;
     }
 
     public function actionView()
