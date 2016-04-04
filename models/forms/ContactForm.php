@@ -87,10 +87,11 @@ class ContactForm extends Model
             [['emails'], 'emailArray'],
 
             [['name', 'surname'], 'match', 'pattern' => "/^[\p{Cyrillic}\-]*$/u", 'message' => '{attribute} - Недопустимые символы'],
-            [['name', 'surname', 'middle_name'], 'string', 'length' => [4, 150],
+            [['name', 'surname', 'middle_name'], 'string', 'length' => [1, 150],
                 'tooShort' => '{attribute} должен содержать больше {min} символов',
                 'tooLong' => '{attribute} должен содержать до {max} символов'],
             [['middle_name'], 'match', 'pattern' => "/^[\p{Cyrillic}\-\s]*$/u", 'message' => 'Недопустимые символы'],
+            [['country'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => 'Недопустимые символы'],
             [['region', 'area'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => 'Недопустимые символы'],
             [['city'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)\d]*$/u", 'message' => 'Недопустимые символы'],
             [['street'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d]*$/u", 'message' => 'Недопустимые символы'],
