@@ -54,6 +54,10 @@ class Tag extends \yii\db\ActiveRecord {
         return self::find()->where(['id' => $id])->one();
     }
 
+    public static function getByName($name) {
+        return self::find()->where(['name' => $name])->one();
+    }
+
     public function edit() {
 
     }

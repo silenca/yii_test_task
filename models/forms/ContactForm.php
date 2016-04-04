@@ -3,6 +3,7 @@
 namespace app\models\forms;
 
 use app\models\Contact;
+use app\models\Tag;
 use Yii;
 use yii\base\Model;
 use yii\validators\EmailValidator;
@@ -28,6 +29,9 @@ class ContactForm extends Model
 
     var $first_email;
     var $second_email;
+
+    var $tags_str;
+    var $tags;
 
     var $country;
     var $region;
@@ -91,6 +95,8 @@ class ContactForm extends Model
             [['city'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)\d]*$/u", 'message' => 'Недопустимые символы'],
             [['street'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d]*$/u", 'message' => 'Недопустимые символы'],
             [['house', 'flat'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d\/]*$/u", 'message' => 'Недопустимые символы'],
+
+            [['tags_str'], 'tagsArray'],
 
             [[
                 'first_phone', 'second_phone', 'third_phone', 'fourth_phone',
@@ -172,6 +178,23 @@ class ContactForm extends Model
             $res_data = implode(', ', $data);
         }
         return $res_data;
+    }
+
+    public function tagsArray($attribute, $params)
+    {
+        $tags = array_map('trim', explode(',', $this->$attribute));
+        foreach ($tags as $tag) {
+            $this->checkTag($tag, $attribute);
+            $tag_obj = Tag::getByName($tag);
+            $this->tags[] = $tag_obj ?: (new Tag(['name' => $tag]));
+        }
+    }
+
+    public function checkTag($tag, $attribute)
+    {
+        if (!preg_match("/^[\p{Cyrillic}\-]*$/u", $tag)) {
+            $this->addError($attribute, 'Теги содержат недопустимые символы');
+        }
     }
 
     public function phoneArray($attribute, $params)

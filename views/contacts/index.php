@@ -113,4 +113,5 @@ $this->params['active'] = 'contact';
 <script type="text/javascript">
     var hide_columns = <?= json_encode($hide_columns); ?>;
     var columns = <?= json_encode(array_keys($table_cols)); ?>;
+    var columns_full = <?= json_encode($table_cols); ?>;
 </script>

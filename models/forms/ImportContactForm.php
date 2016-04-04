@@ -27,7 +27,8 @@ class ImportContactForm extends ContactForm
             'city',
             'street',
             'house',
-            'flat'
+            'flat',
+            'tags_str'
         ];
     }
 

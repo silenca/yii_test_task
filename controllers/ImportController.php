@@ -73,7 +73,7 @@ class ImportController extends BaseController
                     $contact->manager_id = Yii::$app->user->identity->id;
                     $contact->attributes = $import_contact_form->attributes;
 
-                    if ($contact->edit()) {
+                    if ($contact->edit(['tags' => $import_contact_form->tags])) {
                         $imported++;
                     } else {
                         $this->writeReport($report_file_name, $attributes, $contact->getErrors());

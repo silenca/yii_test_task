@@ -98,7 +98,8 @@ class ContactsController extends BaseController
         $sorting = [];
         if (isset($request_data['order'])) {
             $order_by_sort = $request_data['order'][0]['dir'] == 'asc' ? SORT_ASC : SORT_DESC;
-            $sort_column = $columns[$request_data['order'][0]['column']];
+//            $sort_column = $columns[$request_data['order'][0]['column']];
+            $sort_column = array_keys($columns)[$request_data['order'][0]['column']];
 
             $sorting = [
                 $sort_column => $order_by_sort
@@ -164,6 +165,9 @@ class ContactsController extends BaseController
         }
         $contact_form->attributes = $post;
 
+//        $contact_form->tags_str = 'полисмен, комбайнер';
+        $contact_form->tags_str = 'трактарист, бизнесмен, учитель';
+
         if ($contact_form->validate()) {
             try {
                 $contact = null;
@@ -182,8 +186,9 @@ class ContactsController extends BaseController
                 }
                 unset($post['_csrf']);
                 unset($post['id']);
+//                $contact->setTags($contact_form->tags);
                 $contact->attributes = $contact_form->attributes;
-                if ($contact->edit()) {
+                if ($contact->edit(['tags' => $contact_form->tags])) {
                     $this->json(['id' => $contact->id], 200);
                 } else {
                     $this->json(false, 415, $contact->getErrors());

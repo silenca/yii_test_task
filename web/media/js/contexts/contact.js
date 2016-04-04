@@ -51,12 +51,12 @@ $(function () {
                 }
             },
             "columnDefs": [
-                {"orderable": false, "targets": show_columns.indexOf('delete_button')},
-                {"orderable": false, "targets": show_columns.indexOf('phones')},
-                {"orderable": false, "targets": show_columns.indexOf('emails')},
-                {"orderable": false, "targets": show_columns.indexOf('tags')},
-                {"orderable": false, "targets": show_columns.indexOf('link_with')},
-                {"visible": false, "targets": [show_columns.indexOf('id')]}
+                {"visible": false, "targets": [show_columns.indexOf('id')]},
+                {"orderable": false, "targets": []}
+                // {"orderable": false, "targets": show_columns.indexOf('phones')},
+                // {"orderable": false, "targets": show_columns.indexOf('emails')},
+                // {"orderable": false, "targets": show_columns.indexOf('tags')},
+                // {"orderable": false, "targets": show_columns.indexOf('link_with')},
             ],
             "createdRow": function (row, data, index) {
                 $(row).attr('data-id', data[show_columns.indexOf('id')]);
@@ -64,14 +64,23 @@ $(function () {
             }
         };
         $.each(show_columns, function(col_index, col_val) {
-            settings.columnDefs.push({ "name": col_val, "targets": col_index })
+            settings.columnDefs.push({ "name": col_val, "targets": col_index });
+        });
+
+        $.each(columns, function(col_index, col_val) {
+            if (!columns_full[col_val]['orderable']) {
+                settings.columnDefs[1].targets.push(col_index);
+            }
+            // var db_col = columns_full[col_val]['orderable'];
+            // settings.columnDefs[1].targets.push({ "orderable": columns_full[col_val]['orderable'], "targets": col_index })
         });
 
         $.each(hide_columns, function(i ,val) {
             var index = columns.indexOf(val);
-            settings.columnDefs.push({
-                "visible": false, "targets" : index
-            });
+            settings.columnDefs[0].targets.push(index);
+            // settings.columnDefs.push({
+            //     "visible": false, "targets" : index
+            // });
         });
         dataTable = table.DataTable(settings);
 

@@ -55,6 +55,7 @@ class Contact extends \yii\db\ActiveRecord {
         'manager_id',
         'is_deleted'
     ];
+
 //    private $new_phones = [];
 //    private $new_emails = [];
 
@@ -129,23 +130,23 @@ class Contact extends \yii\db\ActiveRecord {
 
     public static function getColsForTableView() {
         return [
-            'id' => ['label' => 'ID', 'have_search' => false],
-            'int_id' => ['label' => '№', 'have_search' => false,],
-            'surname' => ['label' => 'Фамилия', 'have_search' => true],
-            'name' => ['label' => 'Имя', 'have_search' => true],
-            'middle_name' => ['label' => 'Отчество', 'have_search' => true],
-            'link_with' => ['label' => 'Связать', 'have_search' => false],
-            'phones' => ['label' => 'Телефоны', 'have_search' => true, 'db_cols' => ['first_phone','second_phone','third_phone','fourth_phone']],
-            'emails' => ['label' => 'Email', 'have_search' => true, 'db_cols' => ['first_email','second_email']],
-            'tags' => ['label' => 'Теги', 'have_search' => true],
-            'country' => ['label' => 'Страна', 'have_search' => true],
-            'region' => ['label' => 'Регион', 'have_search' => true],
-            'area' => ['label' => 'Область', 'have_search' => true],
-            'city' => ['label' => 'Город', 'have_search' => true],
-            'street' => ['label' => 'Улица', 'have_search' => true],
-            'house' => ['label' => 'Дом', 'have_search' => true],
-            'flat' => ['label' => 'Квартира', 'have_search' => true],
-            'delete_button' => ['label' => 'Удалить', 'have_search' => false]
+            'id' => ['label' => 'ID', 'have_search' => false, 'orderable' => true],
+            'int_id' => ['label' => '№', 'have_search' => false, 'orderable' => false],
+            'surname' => ['label' => 'Фамилия', 'have_search' => true, 'orderable' => true],
+            'name' => ['label' => 'Имя', 'have_search' => true, 'orderable' => true],
+            'middle_name' => ['label' => 'Отчество', 'have_search' => true, 'orderable' => true],
+            'link_with' => ['label' => 'Связать', 'have_search' => false, 'orderable' => false],
+            'phones' => ['label' => 'Телефоны', 'have_search' => true, 'orderable' => false, 'db_cols' => ['first_phone','second_phone','third_phone','fourth_phone']],
+            'emails' => ['label' => 'Email', 'have_search' => true, 'orderable' => false, 'db_cols' => ['first_email','second_email']],
+            'tags' => ['label' => 'Теги', 'have_search' => true, 'orderable' => false],
+            'country' => ['label' => 'Страна', 'have_search' => true, 'orderable' => true],
+            'region' => ['label' => 'Регион', 'have_search' => true, 'orderable' => true],
+            'area' => ['label' => 'Область', 'have_search' => true, 'orderable' => true],
+            'city' => ['label' => 'Город', 'have_search' => true, 'orderable' => true],
+            'street' => ['label' => 'Улица', 'have_search' => true, 'orderable' => true],
+            'house' => ['label' => 'Дом', 'have_search' => true, 'orderable' => true],
+            'flat' => ['label' => 'Квартира', 'have_search' => true, 'orderable' => true],
+            'delete_button' => ['label' => 'Удалить', 'have_search' => false, 'orderable' => false]
         ];
     }
 
@@ -412,12 +413,15 @@ class Contact extends \yii\db\ActiveRecord {
 //        }
 //    }
 
-    public function edit() {
+    public function edit($related) {
         $is_new_record = $this->isNewRecord;
         $transaction = Yii::$app->db->beginTransaction();
         $call = new Call();
         try {
             $this->save();
+            if (isset($related['tags'])) {
+                $this->tags = $related['tags'];
+            }
             if ($is_new_record) {
                 $contact_history = new ContactHistory();
                 $contact_history->add($this->id, 'создан контакт', 'new_contact');
@@ -425,7 +429,6 @@ class Contact extends \yii\db\ActiveRecord {
                 $contactStatusHistory = new ContactStatusHistory();
                 $contactStatusHistory->add($this->id, $this->manager_id, 'lead');
                 $contactStatusHistory->save();
-
 //                $call->setContactIdByPhone($this->new_phone, $this->id);
             }
             $transaction->commit();
@@ -440,4 +443,10 @@ class Contact extends \yii\db\ActiveRecord {
         return $this->hasMany(Tag::className(), ['id' => 'tag_id'])->viaTable('contact_tag', ['contact_id' => 'id']);
     }
 
+    public function setTags($new_tags) {
+        foreach ($new_tags as $new_tag) {
+            $new_tag->save();
+            $this->link('tags', $new_tag);
+        }
+    }
 }
