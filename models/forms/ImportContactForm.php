@@ -99,9 +99,7 @@ class ImportContactForm extends ContactForm
     {
         if ($phone !== null) {
             if (!preg_match('/^(7|8)\d{10}$/', $phone)) {
-                if ($this->getFirstError($attribute) == null) {
-                    $this->addError($attribute, 'ошибка - номер не из России');
-                }
+                $this->addError($attribute, 'ошибка - номер ('.$phone.') не из России');
             }
         }
     }

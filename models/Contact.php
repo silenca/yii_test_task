@@ -67,9 +67,7 @@ class Contact extends \yii\db\ActiveRecord {
     }
 
     public function getManager() {
-        return $this->hasOne(User::className(), ['id' => 'manager_id'])->andWhere([
-                    'role' => User::ROLE_MANAGER
-        ]);
+        return $this->hasOne(User::className(), ['id' => 'manager_id']);
     }
 
     public function beforeValidate() {

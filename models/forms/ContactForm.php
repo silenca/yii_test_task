@@ -145,7 +145,7 @@ class ContactForm extends Model
     public function requiredForContact($attribute, $params)
     {
         if (empty($this->name) || empty($this->surname) || empty($this->phones)) {
-            $this->addError($attribute, 'Необходимо заполнить ФИО и телефон');
+            $this->addCustomError($attribute, 'Необходимо заполнить ФИО и телефон');
         }
     }
 
@@ -194,7 +194,7 @@ class ContactForm extends Model
     public function checkTag($tag, $attribute)
     {
         if (!preg_match("/^[\p{Cyrillic}\-]*$/u", $tag)) {
-            $this->addError($attribute, 'Теги содержат недопустимые символы');
+            $this->addCustomError($attribute, 'Теги содержат недопустимые символы');
         }
     }
 
@@ -205,7 +205,7 @@ class ContactForm extends Model
             $this->checkPhone($phone_val, $attribute);
             $fields = Contact::getPhoneCols();
             $this->isUnique($phone_val, $attribute, $fields, function($attr, $value, $contact_id) {
-                $this->addError($attr, $value.', уже существует в базе');
+                $this->addCustomError($attr, $value.', уже существует в базе');
             });
             $this->$phone_key = $phone_val;
         }
@@ -215,11 +215,11 @@ class ContactForm extends Model
     {
         if ($phone !== null) {
             if (!preg_match('/^\d*$/', $phone)) {
-                $this->addError($attribute, 'Телефон не должен содержать буквенные символы');
+                $this->addCustomError($attribute, 'Телефон не должен содержать буквенные символы');
             } elseif (strlen($phone) == 10) {
-                $this->addError($attribute, 'Код страны не введен. Код России: 7');
+                $this->addCustomError($attribute, 'Код страны не введен. Код России: 7');
             } elseif (strlen($phone) < 10 || strlen($phone) > 15) {
-                $this->addError($attribute, 'Телефон заполнен некорректно');
+                $this->addCustomError($attribute, 'Телефон заполнен некорректно');
             }
 //            elseif (!preg_match('/^(8|7|\+7)/', $phone)) {
 //                if ($this->getFirstError($attribute) == null) {
@@ -238,7 +238,7 @@ class ContactForm extends Model
         if ($email !== null) {
             $email_validator = new EmailValidator();
             if (!$email_validator->validate($email)) {
-                $this->addError($attribute, 'Email введен не верно');
+                $this->addCustomError($attribute, 'Email введен не верно');
             }
         }
 
@@ -251,16 +251,16 @@ class ContactForm extends Model
             $this->checkEmail($email_val, $attribute);
             $fields = Contact::getEmailCols();
             $this->isUnique($email_val, $attribute, $fields, function($attr, $value, $contact_id) {
-                $this->addError($attr, $value.', уже существует в базе');
+                $this->addCustomError($attr, $value.', уже существует в базе');
             });
             $this->$email_key = $email_val;
         }
     }
 
-    public function addError($attribute, $message)
+    public function addCustomError($attribute, $message = '')
     {
         if ($this->getFirstError($attribute) == null) {
-            parent::addError($attribute, $message);
+            $this->addError($attribute, $message);
         }
     }
 

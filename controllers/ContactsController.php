@@ -92,7 +92,10 @@ class ContactsController extends BaseController
     public function actionGetdata()
     {
         $request_data = Yii::$app->request->get();
-        $total_count = Contact::find()->where(['is_deleted' => '0'])->count();
+        $query = Contact::find()->with('manager', 'tags');
+        $query->andWhere(['contact.is_deleted' => '0']);
+        $query_total = clone $query;
+        $total_count = $query_total->count();
         $columns = Contact::getColsForTableView();
         //Sorting
         $sorting = [];
@@ -109,11 +112,11 @@ class ContactsController extends BaseController
                 'id' => SORT_DESC
             ];
         }
-        $query = Contact::find()->with('manager', 'tags');
-        $query->andWhere(['contact.is_deleted' => '0']);
+//        $query = Contact::find()->with('manager', 'tags');
+//        $query->andWhere(['contact.is_deleted' => '0']);
         //join Tags
-        $query->leftJoin(ContactTag::tableName() . ' `ct`', '`ct`.`contact_id` = contact.`id`')
-            ->leftJoin(Tag::tableName() . ' `t`', '`t`.`id` = `ct`.`tag_id`');
+//        $query->leftJoin(ContactTag::tableName() . ' `ct`', '`ct`.`contact_id` = contact.`id`')
+//            ->leftJoin(Tag::tableName() . ' `t`', '`t`.`id` = `ct`.`tag_id`');
 
         //Filtering
         foreach ($request_data['columns'] as $column) {
@@ -127,7 +130,7 @@ class ContactsController extends BaseController
                         }
                     }
                 } elseif ($column['name'] == 'tags') {
-                    $query->andWhere(['like', 't.name', $column['search']['value']]);
+                    $query->joinWith('tags')->andWhere(['like', 'tag.name', $column['search']['value']]);
                 } else {
                     $query->andWhere(['like', 'contact.'.$column['name'], $column['search']['value']]);
                 }
@@ -166,7 +169,7 @@ class ContactsController extends BaseController
         $contact_form->attributes = $post;
 
 //        $contact_form->tags_str = 'полисмен, комбайнер';
-        $contact_form->tags_str = 'трактарист, бизнесмен, учитель';
+//        $contact_form->tags_str = 'трактарист, бизнесмен, учитель';
 
         if ($contact_form->validate()) {
             try {
@@ -337,10 +340,10 @@ class ContactsController extends BaseController
     public function actionObjectschedulecall() {
         $contact_id = Yii::$app->request->post('id');
         $schedule_date = Yii::$app->request->post('schedule_date');
-        $action_comment = Yii::$app->request->post('action_comment');
+        $action_comment_text = Yii::$app->request->post('action_comment');
         $contact_schedule_call = new ContactScheduledCall();
         $contact_schedule_call->manager_id = Yii::$app->user->identity->id;
-        if ($contact_schedule_call->add($contact_id, $schedule_date, $action_comment)) {
+        if ($contact_schedule_call->add($contact_id, $schedule_date, $action_comment_text)) {
             $history_text = $contact_schedule_call->getHistoryText();
             $response_date = [
                 'id' => $contact_schedule_call->id,
