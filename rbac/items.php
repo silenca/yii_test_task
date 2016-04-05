@@ -33,6 +33,15 @@ return [
     'import' => [
         'type' => 2,
     ],
+    'users' => [
+        'type' => 2,
+    ],
+    'updateUser' => [
+        'type' => 2,
+    ],
+    'delete_user' => [
+        'type' => 2,
+    ],
     'manager' => [
         'type' => 1,
         'ruleName' => 'userRole',
@@ -71,6 +80,9 @@ return [
             'updateContact',
             'tags',
             'import',
+            'users',
+            'updateUser',
+            'delete_user',
         ],
     ],
 ];

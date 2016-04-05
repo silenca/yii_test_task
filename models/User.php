@@ -18,6 +18,15 @@ class User extends ActiveRecord implements IdentityInterface {
         return '{{%user}}';
     }
 
+    public static $safe_fields = [
+        'int_id',
+        'firstname',
+        'lastname',
+        'patronymic',
+        'email',
+        'role',
+    ];
+
     /**
      * @inheritdoc
      */
@@ -33,6 +42,7 @@ class User extends ActiveRecord implements IdentityInterface {
     public function rules() {
         return [
             [['firstname', 'lastname', 'patronymic', 'email', 'password_hash'], 'required'],
+            [['int_id', 'role'], 'integer'],
             [['notification_key'], 'string', 'max' => 32],
             [['email'], 'email'],
             [['email'], 'unique'],
@@ -193,6 +203,32 @@ class User extends ActiveRecord implements IdentityInterface {
 
     public function getTags() {
         return $this->hasMany(Tag::className(), ['id' => 'tag_id'])->viaTable('user_tag', ['user_id' => 'id']);
+    }
+
+    public static function getColsForTableView() {
+        return [
+            'id' => ['label' => 'ID', 'have_search' => false],
+            'name' => ['label' => 'ФИО', 'have_search' => true, 'db_cols' => ['firstname'], 'lastname', 'patronymic'],
+            'role' => ['label' => 'Роль', 'have_search' => false],
+            'int_id' => ['label' => '№', 'have_search' => false,],
+            'email' => ['label' => 'Email', 'have_search' => true],
+            'tags' => ['label' => 'Теги', 'have_search' => true],
+            'delete_button' => ['label' => 'Удалить', 'have_search' => false]
+        ];
+    }
+
+    public function edit() {
+        $this->save();
+        return true;
+    }
+
+    public static function deleteById($id) {
+        $user = self::find()->where(['id' => $id])->one();
+        if ($user) {
+            $user->delete();
+            return true;
+        }
+        return false;
     }
 
 }

@@ -180,6 +180,15 @@ if (!Yii::$app->user->isGuest) {
                                 </a>
                             </li>
                         <?php endif; ?>
+                        <?php if (Yii::$app->user->can('users')): ?>
+                            <li>
+                                <a href="/users" class="detailed">
+                                    <span class="title">Пользователи</span>
+                                    <span class="details"></span>
+                                    <span class="icon-thumbnail <?= $this->params['active'] == 'users' ? 'bg-success' : null ?>" title="Пользователи"><i class="fa fa-user"></i></span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                     <div class="clearfix"></div>
                 </div>

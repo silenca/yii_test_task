@@ -12964,7 +12964,7 @@ table.table-hover .more:hover {
 .solution_form .close {
     font-size: 8px;
 }
-.contact-deleted {
+.contact-deleted, .user-deleted {
     display: none;
 }
 

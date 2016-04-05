@@ -1,17 +1,17 @@
-#modalAddContact {
+#modalAddContact, #modalAddUser {
     left: auto;
     overflow: visible;
 }
 
 
 @media (min-width: 992px){
-    #modalAddContact.modal-lg {
+    #modalAddContact.modal-lg, #modalAddUser.modal-lg {
         width: 1200px;
     }
-    #modalAddContact.modal-md {
+    #modalAddContact.modal-md, #modalAddUser.modal-md {
         width: 900px;
     }
-    #modalAddContact .modal-md, #modalAddContact .modal-lg {
+    #modalAddContact .modal-md, #modalAddContact .modal-lg, #modalAddUser .modal-md, #modalAddUser .modal-lg {
         max-width: 100%;
     }
 }
