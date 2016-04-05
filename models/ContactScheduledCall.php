@@ -67,26 +67,32 @@ class ContactScheduledCall extends \yii\db\ActiveRecord {
         return $this->hasOne(User::className(), ['id' => 'manager_id']);
     }
 
-    public function add($contact_id, $schedule_date) {
+    public function add($contact_id, $schedule_date, $action_comment_text) {
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $this->contact_id = $contact_id;
             $this->system_date = date('Y-m-d G:i:s', time());
-            $this->schedule_date = date('Y-m-d G:i:s', strtotime($schedule_date));
             $action = new Action();
             $action_type = ActionType::find()->where(['name' => 'scheduled_call'])->one();
             $action->add($contact_id, $action_type->id, [], $schedule_date);
-            $action->addManagerNotification($action->id, $this->system_date, 'scheduled_call', $this->manager_id, $this->contact_id);
+            if (strlen($schedule_date) > 0) {
+                $this->schedule_date = date('Y-m-d G:i:s', strtotime($schedule_date));
+                $action->addManagerNotification($action->id, $this->system_date, 'scheduled_call', $this->manager_id, $this->contact_id);
+            }
+            if ($action_comment_text != null) {
+                $action_comment = new ActionComment();
+                $action_comment->add($action->id, $action_comment_text);
+            }
             $this->save();
 
             $contact_history = new ContactHistory();
             $history_text = $this->buildHistory($schedule_date);
-            $contact_history->add($contact_id, $history_text, $this->id, 'scheduled_call', $this->system_date);
+            $contact_history->add($contact_id, $history_text, 'scheduled_call', $this->system_date);
             $this->setHistoryText($history_text);
             $transaction->commit();
             return true;
         } catch (\Exception $ex) {
-            $transaction->rollback();
+            $transaction->rollBack();
             return false;
         }
     }

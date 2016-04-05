@@ -83,17 +83,16 @@ class ContactScheduledEmail extends \yii\db\ActiveRecord {
                 $action_comment = new ActionComment();
                 $action_comment->add($action->id, $action_comment_text);
             }
-            
             $this->save();
 
             $contact_history = new ContactHistory();
             $history_text = $this->buildHistory($schedule_date);
-            $contact_history->add($contact_id, $history_text, $this->id, 'scheduled_email', $this->system_date);
+            $contact_history->add($contact_id, $history_text, 'scheduled_email', $this->system_date);
             $this->setHistoryText($history_text);
             $transaction->commit();
             return true;
         } catch (\Exception $ex) {
-            $transaction->rollback();
+            $transaction->rollBack();
             return false;
         }
     }

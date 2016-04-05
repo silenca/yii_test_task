@@ -118,3 +118,7 @@
 .dropdown .dropdown-menu {
     background: #E0E0E0;
 }
+
+#modalAddContact .contact-action .attitude label {
+    margin-left: 16px;
+}

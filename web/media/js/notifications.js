@@ -9,8 +9,6 @@ $(function () {
         if (data.contact_name) {
             $message_content.append("<div class='alert-link'><a href=/contacts#contact=" + data.id + ">" + data.contact_name + "</a></div>");
             $message_content.append("<div class='alert-details'><span>Номер: </span><span>" + data.phone + "</span></div>");
-            var language = data.language === 'rus' ? 'Рус' : 'Укр';
-            $message_content.append("<div class='alert-details'><span>Язык: </span><span>" + language + "</span></div>");
         } else {
             $message_content.append("<div class='alert-link'><a href=/contacts#number=" + data.phone + ">" + data.phone + "</a></div>");
         }
@@ -18,14 +16,14 @@ $(function () {
         showNotification('body', $message_content.html(), 'bottom-right', 'info', 'circle',30000);
     });
     
-    socket.on('new_contract', function (data) {
-        var $message_content = $('<div></div>');
-        $message_content.append("<div class='alert-header'>Новый договор</div>");
-        showNotification('body', $message_content.html(), 'bottom-right', 'info', 'circle',30000);
-        var $count_countent = $('ul.menu-items .js-contract_count');
-        var contract_count = parseInt($count_countent.text());
-        $count_countent.text(++contract_count);
-    });
+    // socket.on('new_contract', function (data) {
+    //     var $message_content = $('<div></div>');
+    //     $message_content.append("<div class='alert-header'>Новый договор</div>");
+    //     showNotification('body', $message_content.html(), 'bottom-right', 'info', 'circle',30000);
+    //     var $count_countent = $('ul.menu-items .js-contract_count');
+    //     var contract_count = parseInt($count_countent.text());
+    //     $count_countent.text(++contract_count);
+    // });
 });
 
 /*

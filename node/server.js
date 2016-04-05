@@ -78,7 +78,7 @@ app.post('/incoming', function (req, res) {
     var data = {
         'contact_name': req.body.contact_name,
         'phone': req.body.phone,
-        'language': req.body.language,
+        // 'language': req.body.language,
         'id': req.body.id
     };
     io.to('operator').emit('call_incoming', data);

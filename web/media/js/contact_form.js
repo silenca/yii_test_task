@@ -2,7 +2,7 @@ var bind_inputs = {};
 var $contact_form;
 var $contact_data_form;
 
-var action_shedule_call_form_validate = {
+var form_action_call_validate = {
     rules: {
         schedule_date: {dateFormat: true, required: true}
     },
@@ -32,6 +32,7 @@ var action_shedule_call_form_validate = {
             $(form).find('input[name="_csrf"]').remove();
             var result = $.parseJSON(response);
             if (result.status === 200) {
+                resetForm(form);
                 if ($(form).find('.google-cal-show').is(':checked')) {
                     var event = createGEventData('action_call', $(form).find('input[name="schedule_date"]').val());
                     createGCalEvent(event);
@@ -70,7 +71,7 @@ var action_shedule_call_form_validate = {
 //     }
 // };
 
-var action_email_date_form_validate = {
+var form_action_email_validate = {
     rules: {
         schedule_date: {dateFormat: true, required: true}
     },
@@ -112,9 +113,9 @@ var action_email_date_form_validate = {
 };
 
 $(function() {
-    $('#action_call #form_action_call').validate(action_shedule_call_form_validate);
+    $('#action_call #form_action_call').validate(form_action_call_validate);
     // $('#action_email #form_action_email_now').validate(action_email_now_form_validate);
-    $('#action_email #form_action_email').validate(action_email_date_form_validate);
+    $('#action_email #form_action_email').validate(form_action_email_validate);
 
     $contact_form = $('#modalAddContact');
     $contact_data_form = $contact_form.find('.contact-data');
@@ -143,19 +144,14 @@ $(function() {
     });
 
     $('.action_send_now').on('change', function() {
-        var $form = $(this).closest('form');
+        var $form = $(this).closest('form'),
+            opts = $form.attr('id') == 'form_action_call' ? form_action_call_validate : form_action_email_validate;
         if ($(this).is(':checked')) {
-            $form.find('input[name="schedule_date"]').val('').attr('disabled', true);
-            $form.find('.google-cal-show').attr('checked', false).attr('disabled', true);
-            changeValidationRequired(action_email_date_form_validate, false);
+            disableDatepicker($form, 'disable', opts);
         } else {
-            $form.find('input[name="schedule_date"]').val('').attr('disabled', false);
-            $form.find('.google-cal-show').attr('checked', false).attr('disabled', false);
-            changeValidationRequired(action_email_date_form_validate, true);
+            disableDatepicker($form, 'enable', opts);
         }
     });
-
-
 
     var date = new Date();
     var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -171,6 +167,13 @@ $(function() {
         }
     });
 });
+
+function disableDatepicker($form, action, opts) {
+    var state = action == 'disable';
+    $form.find('input[name="schedule_date"]').val('').attr('disabled', state);
+    $form.find('.google-cal-show').attr('checked', false).attr('disabled', state);
+    changeValidationRequired(opts, !state);
+}
 
 function resetForm(form) {
     $(form).trigger('reset');
@@ -390,28 +393,28 @@ function addComment(id, $form) {
     });
 }
 
-function addActionComment(id, $form) {
-    if (!id) {
-        var message = 'Контакт еще не добавлен';
-        showNotification('#modalAddContact', message, 'top', 'danger', 'bar');
-        return false;
-    }
-    var $contact_comment = $form.find('.action-comment');
-    var comment_text = $contact_comment.val();
-    var data = {
-        id: id,
-        _csrf: _csrf,
-        comment: comment_text
-    };
-    $.post('/action/addcomment', data, function (response) {
-        var result = $.parseJSON(response);
-        if (result.status === 200) {
-            // $form.find('.history_content').append("<div>" + result.data.datetime + " - " + result.data.text + "</div>");
-            showNotification('#modalAddContact', 'Комментарий к действию добавлен', 'top', 'success', 'bar');
-            $contact_comment.val('');
-        }
-    });
-}
+// function addActionComment(id, $form) {
+//     if (!id) {
+//         var message = 'Контакт еще не добавлен';
+//         showNotification('#modalAddContact', message, 'top', 'danger', 'bar');
+//         return false;
+//     }
+//     var $contact_comment = $form.find('.action-comment');
+//     var comment_text = $contact_comment.val();
+//     var data = {
+//         id: id,
+//         _csrf: _csrf,
+//         comment: comment_text
+//     };
+//     $.post('/action/addcomment', data, function (response) {
+//         var result = $.parseJSON(response);
+//         if (result.status === 200) {
+//             // $form.find('.history_content').append("<div>" + result.data.datetime + " - " + result.data.text + "</div>");
+//             showNotification('#modalAddContact', 'Комментарий к действию добавлен', 'top', 'success', 'bar');
+//             $contact_comment.val('');
+//         }
+//     });
+// }
 
 function addError($form, name, errors) {
     var $field = $form.find('[name="' + name + '"]');

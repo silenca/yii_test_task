@@ -102,13 +102,8 @@ class AsteriskController extends BaseController {
                 $request_params['phone'] = $callerid;
                 if ($contact) {
                     $contact_id = $contact->id;
-                    $request_params['language'] = $contact->language;
                     $request_params['id'] = $contact_id;
-                    if (strlen($contact->first_name) > 0) {
-                        $request_params['contact_name'] = $contact->first_name;
-                    } else {
-                        $request_params['contact_name'] = $contact->second_name;
-                    }
+                    $request_params['contact_name'] = implode(' ', array_filter([$contact->surname, $contact->name, $contact->middle_name]));
                 }
                 Notification::incomingCall($request_params);
                 $call->outgoing($call_uniqueid, $contact_id, $callerid);

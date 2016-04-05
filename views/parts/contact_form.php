@@ -121,7 +121,7 @@ use app\models\User;
                                     </div>
                                 </div>
                                 <div
-                                    class="contact-history col-md-5">
+                                    class="contact-history col-md-4">
                                     <div class="panel panel-transparent ">
                                         <!-- Nav tabs -->
                                         <ul class="nav nav-tabs nav-tabs-fillup">
@@ -167,7 +167,7 @@ use app\models\User;
                                         </div>
                                     </div>
                                 </div>
-                                <div class="contact-actions col-md-3">
+                                <div class="contact-actions col-md-4">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <div class="panel-title block">
@@ -185,6 +185,14 @@ use app\models\User;
                                             <div id="action_call" class="contact-action" style="display: none">
                                                 <form id="form_action_call" action="/contacts/objectschedulecall"
                                                       method="POST">
+                                                    <div class="panel panel-default block form-group">
+                                                        <div class="row">
+                                                            <div class="checkbox check-success text-left p-l-10">
+                                                                <input type="checkbox" name="action_send_now" class="action_send_now" id="action_send_now_phone">
+                                                                <label for="action_send_now_phone">Отправить сейчас</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <div class="form-group">
                                                         <label>Запланировать звонок</label>
                                                     </div>
@@ -209,6 +217,26 @@ use app\models\User;
                                                                       placeholder="Комментарий"
                                                                       class="action-comment form-control"></textarea>
                                                     </div>
+                                                    <div class="panel panel-default block form-group attitude padding-10">
+                                                        <div class="row">
+                                                            <div class="text-left">Отношение человека к звонку:</div>
+                                                            <div class="inline m-r-20">Негативное</div>
+                                                            <div class="inline m-r-20">Нейтральное</div>
+                                                            <div class="inline">Позитивное</div>
+                                                            <div class="radio radio-primary">
+                                                                    <input type="radio" name="attitude" class="call-attitude" value="1" id="action_call_attitude_1">
+                                                                <label for="action_call_attitude_1"></label>
+                                                                    <input type="radio" name="attitude" class="call-attitude" value="2" id="action_call_attitude_2">
+                                                                <label for="action_call_attitude_2"></label>
+                                                                    <input type="radio" name="attitude" class="call-attitude" value="3" id="action_call_attitude_3" checked="checked">
+                                                                <label for="action_call_attitude_3"></label>
+                                                                    <input type="radio" name="attitude" class="call-attitude" value="4" id="action_call_attitude_4">
+                                                                <label for="action_call_attitude_4"></label>
+                                                                    <input type="radio" name="attitude" class="call-attitude" value="5" id="action_call_attitude_5">
+                                                                <label for="action_call_attitude_5"></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <div class="form-group">
                                                         <button class="btn btn-complete btn-block" type="submit">
                                                             Добавить
@@ -218,7 +246,6 @@ use app\models\User;
                                                 </form>
                                             </div>
                                             <div id="action_email" class="contact-action" style="display: none">
-
                                                 <form id="form_action_email" action="/contacts/objectscheduleemail"
                                                       method="POST">
                                                     <div class="panel panel-default block form-group">
