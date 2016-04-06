@@ -21,12 +21,18 @@ class ActionComment extends \yii\db\ActiveRecord {
         return 'action_comment';
     }
 
+    public function __construct(array $config)
+    {
+        $this->datetime = date('Y-m-d H:i:s');
+        parent::__construct($config);
+    }
+
     /**
      * @inheritdoc
      */
     public function rules() {
         return [
-            [['action_id', 'datetime'], 'required'],
+            [['datetime'], 'required'],
             [['action_id'], 'integer'],
             [['comment'], 'string'],
 //            [['comment'], 'required', 'message' => '{attribute} не может быть пустым'],

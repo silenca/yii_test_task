@@ -27,6 +27,10 @@ class Action extends \yii\db\ActiveRecord {
         return $this->hasOne(Contact::className(), ['id' => 'contact_id']);
     }
 
+    public function getComment() {
+        return $this->hasOne(ActionComment::className(), ['action_id' => 'id']);
+    }
+
     /**
      * @inheritdoc
      */

@@ -4,7 +4,8 @@ var $contact_data_form;
 
 var form_action_call_validate = {
     rules: {
-        schedule_date: {dateFormat: true, required: true}
+        schedule_date: {dateFormat: true, required: true},
+        call_order_token: {required: false}
     },
     messages: {
         schedule_date: {
@@ -32,7 +33,7 @@ var form_action_call_validate = {
             $(form).find('input[name="_csrf"]').remove();
             var result = $.parseJSON(response);
             if (result.status === 200) {
-                resetForm(form);
+                resetActionForm(form);
                 if ($(form).find('.google-cal-show').is(':checked')) {
                     var event = createGEventData('action_call', $(form).find('input[name="schedule_date"]').val());
                     createGCalEvent(event);
@@ -101,7 +102,7 @@ var form_action_email_validate = {
             $(form).find('input[name="_csrf"]').remove();
             var result = $.parseJSON(response);
             if (result.status === 200) {
-                resetForm(form);
+                resetActionForm(form);
                 if ($(form).find('.google-cal-show').is(':checked')) {
                     var event = createGEventData('action_email', $(form).find('input[name="schedule_date"]').val());
                     createGCalEvent(event);
@@ -131,7 +132,11 @@ $(function() {
     });
 
     $('#contact-action').on('change', function (e) {
-        var action = $(this).val();
+        var action = $(this).val(),
+            $forms = $('#contact-actions').find('form');
+        $.each($forms, function(i, form) {
+            resetActionForm(form);
+        });
         changeActionsForm(action);
     });
 
@@ -146,10 +151,11 @@ $(function() {
     $('.action_send_now').on('change', function() {
         var $form = $(this).closest('form'),
             opts = $form.attr('id') == 'form_action_call' ? form_action_call_validate : form_action_email_validate;
+        // $(this).parents('.panel').
         if ($(this).is(':checked')) {
-            disableDatepicker($form, 'disable', opts);
+            changeActionSendNow($form, 'enable', opts);
         } else {
-            disableDatepicker($form, 'enable', opts);
+            changeActionSendNow($form, 'disable', opts);
         }
     });
 
@@ -168,20 +174,47 @@ $(function() {
     });
 });
 
-function disableDatepicker($form, action, opts) {
-    var state = action == 'disable';
+function changeActionSendNow($form, action, opts) {
+    var state = action == 'enable';
     $form.find('input[name="schedule_date"]').val('').attr('disabled', state);
     $form.find('.google-cal-show').attr('checked', false).attr('disabled', state);
-    changeValidationRequired(opts, !state);
+    if (state) {
+        $form.find('.attitude').show();
+    } else {
+        $form.find('.attitude').hide();
+    }
+    changeValidationRequired(opts, state);
 }
 
-function resetForm(form) {
+function resetActionForm(form) {
     $(form).trigger('reset');
-    $(form).find('input').attr('disabled', false);
+    $(form).find('input').val('').attr('disabled', false);
+    $(form).find('textarea').val('').attr('disabled', false);
+    $(form).find('input[type="checkbox"]').prop('checked', false);
+    if ($(form).attr('id') == 'form_action_call') {
+        $(form).find('.attitude').hide();
+    }
+}
+
+function openCallNow(contactId, phone) {
+    openContactForm(contactId);
+    $('.contact-actions .cs-options li[data-value="call"]').click();
+    $('#action_send_now_phone').click();
+    $.post('asterisk/send-incoming-call', {phone: phone, _csrf: _csrf}, function (response) {
+        var result = $.parseJSON(response);
+        if (result.status === 200) {
+            $('#form_action_call .call_order_token').val(result.data.call_order_token);
+        } else {
+            console.log('incoming call not done');
+        }
+    });
 }
 
 function changeValidationRequired(options, state) {
-    options.rules.schedule_date.required = state;
+    options.rules.schedule_date.required = !state;
+    if (options.rules.call_order_token !== undefined) {
+        options.rules.call_order_token.required = state;
+    }
 }
 
 function openContactForm(id) {
@@ -214,6 +247,10 @@ function buildContactForm(id, $form, callback) {
     hideNotifications($form);
     getHistory(id, $form);
     $form.find('#contact-id').val(id);
+    var $actionForms = $form.find('#contact-actions').find('form');
+    $.each($actionForms, function(i, form) {
+        resetActionForm(form);
+    });
     $.getJSON('/contacts/view', {id: id}, function (response) {
         if (response.status === 200) {
             var data = response.data;

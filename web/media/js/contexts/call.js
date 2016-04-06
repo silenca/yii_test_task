@@ -83,6 +83,12 @@ $(function () {
         var id = $(this).closest('tr').attr('id');
         viewNotify(id);
     });
+
+    // $(document).on('click', '#call-table .contact', function(e) {
+    //     var contactId = $(this).parents('tr').data('id'),
+    //         phone = $(this).text();
+    //     openCallNow(contactId, phone);
+    // });
 });
 
 

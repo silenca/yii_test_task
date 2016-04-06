@@ -79,6 +79,7 @@ class CallTableWidget extends Widget {
                     $contact_name = $call['phone_number'];
                 }
                 $data[$i][] = "<a class='contact' href='/contacts#" . $contact_href . "'>" . $contact_name . "</a>";
+//                $phones[] = '<a class="contact-phone contact_open_disable" href="javascript:void(0)">' . $contact_prop_val . '</a>';
                 if (Yii::$app->user->can('listen_call')) {
                     if ($call_success) {
                         $data[$i][] = "<audio controls src='" . $call["record"] . "' type='audio/mpeg'>";

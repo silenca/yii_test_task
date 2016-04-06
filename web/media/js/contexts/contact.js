@@ -181,9 +181,9 @@ $(function () {
             }
         });
 
-        $contact_table.on('click', 'a', function (e) {
-            e.stopPropagation();
-        });
+        // $contact_table.on('click', 'a', function (e) {
+        //     e.stopPropagation();
+        // });
 
         initTable();
 
@@ -288,10 +288,15 @@ $(function () {
                             $dropdown.find('.result').html('<div class="error">'+ error +'</div><br>');
                         });
                     }
-
                 });
             }
 
+        });
+
+        $(document).on('click', '#contacts-table .contact-phone', function(e) {
+            var contactId = $(this).parents('tr').data('id'),
+                phone = $(this).text();
+            openCallNow(contactId, phone);
         });
     }
 });

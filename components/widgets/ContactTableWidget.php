@@ -28,7 +28,7 @@ class ContactTableWidget extends Widget {
             $emails = [];
             foreach ($contact as $contact_prop_key => $contact_prop_val) {
                 if (preg_match('/(.*)_phone/', $contact_prop_key) && $contact_prop_val !== null) {
-                    $phones[] = '<a href="javascript:void(0)">' . $contact_prop_val . '</a>';
+                    $phones[] = '<a class="contact-phone contact_open_disable" href="javascript:void(0)">' . $contact_prop_val . '</a>';
                 } elseif (preg_match('/(.*)_email/', $contact_prop_key) && $contact_prop_val !== null) {
                     $emails[] = $contact_prop_val;
                 }
@@ -37,7 +37,7 @@ class ContactTableWidget extends Widget {
             $data[$i][] = implode(', ', $emails);
             $tags = [];
             foreach ($contact->tags as $tag) {
-                $tags[] = '<a href="javascript:void(0)">' . $tag->name . '</a>';
+                $tags[] = '<a class="contact_open_disable" href="javascript:void(0)">' . $tag->name . '</a>';
             }
             $data[$i][] = implode(', ', $tags);
 

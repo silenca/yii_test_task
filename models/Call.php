@@ -39,9 +39,9 @@ class Call extends \yii\db\ActiveRecord {
     public function rules() {
         return [
             [['date_time', 'type', 'unique_id'], 'required'],
-            [['date_time'], 'safe'],
-            [['type', 'status', 'unique_id'], 'string'],
-            [['contact_id', 'phone_number', 'total_time', 'answered_time'], 'integer'],
+            [['date_time', 'attitude_level', 'call_order_token'], 'safe'],
+            [['type', 'status', 'unique_id', 'call_order_token'], 'string'],
+            [['contact_id', 'phone_number', 'total_time', 'answered_time', 'attitude_level'], 'integer'],
             [['record'], 'string', 'max' => 255],
         ];
     }
@@ -86,13 +86,14 @@ class Call extends \yii\db\ActiveRecord {
         return $select;
     }
 
-    public function incoming($unique_id, $contact_id, $phone_number) {
+    public function incoming($unique_id, $contact_id, $phone_number, $call_order_token) {
         $this->unique_id = $unique_id;
         $this->date_time = date('Y-m-d H:i:s');
         $this->type = Call::CALL_INCOMING;
         $this->phone_number = $phone_number;
         $this->contact_id = $contact_id;
         $this->status = Call::CALL_STATUS_NEW;
+        $this->call_order_token = $call_order_token;
         return $this->save();
     }
 

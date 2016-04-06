@@ -67,7 +67,7 @@ class ContactScheduledCall extends \yii\db\ActiveRecord {
         return $this->hasOne(User::className(), ['id' => 'manager_id']);
     }
 
-    public function add($contact_id, $schedule_date, $action_comment_text) {
+    public function add($contact_id, $schedule_date, $action_comment_text, $call_order_token, $attitude_level) {
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $this->contact_id = $contact_id;
@@ -80,8 +80,17 @@ class ContactScheduledCall extends \yii\db\ActiveRecord {
                 $action->addManagerNotification($action->id, $this->system_date, 'scheduled_call', $this->manager_id, $this->contact_id);
             }
             if ($action_comment_text != null) {
-                $action_comment = new ActionComment();
-                $action_comment->add($action->id, $action_comment_text);
+                $action_comment = new ActionComment(['comment' => $action_comment_text]);
+                $action_comment->save();
+                $action->link('comment', $action_comment);
+//                $action_comment->add($action->id, $action_comment_text);
+            }
+            if ($call_order_token != null) {
+                $call = Call::findOne(['call_order_token' => $call_order_token]);
+                if ($call) {
+                    $call->attitude_level = $attitude_level;
+                    $call->save();
+                }
             }
             $this->save();
 
@@ -98,7 +107,10 @@ class ContactScheduledCall extends \yii\db\ActiveRecord {
     }
 
     private function buildHistory($schedule_date) {
-        $history_text = "Запланирован звонок на " . date('d-m-Y G:i:s', strtotime($schedule_date));
+        $history_text = "Звонок клиенту";
+        if (strlen($schedule_date) > 0) {
+            $history_text.=" на время " . date('d-m-Y G:i:s', strtotime($schedule_date));
+        }
         return $history_text;
     }
 

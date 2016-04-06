@@ -185,10 +185,12 @@ use app\models\User;
                                             <div id="action_call" class="contact-action" style="display: none">
                                                 <form id="form_action_call" action="/contacts/objectschedulecall"
                                                       method="POST">
-                                                    <div class="panel panel-default block form-group">
+                                                    <input type="hidden" name="call_order_token" class="call_order_token">
+                                                    <div class="panel panel-default block form-group" style="display: none">
                                                         <div class="row">
                                                             <div class="checkbox check-success text-left p-l-10">
-                                                                <input type="checkbox" name="action_send_now" class="action_send_now" id="action_send_now_phone">
+                                                                <input type="checkbox" name="action_send_now"
+                                                                       class="action_send_now" id="action_send_now_phone">
                                                                 <label for="action_send_now_phone">Отправить сейчас</label>
                                                             </div>
                                                         </div>
@@ -217,9 +219,9 @@ use app\models\User;
                                                                       placeholder="Комментарий"
                                                                       class="action-comment form-control"></textarea>
                                                     </div>
-                                                    <div class="panel panel-default block form-group attitude padding-10">
+                                                    <div class="panel panel-default block form-group attitude padding-10" style="display: none">
                                                         <div class="row">
-                                                            <div class="text-left">Отношение человека к звонку:</div>
+                                                            <div class="text-left m-b-10">Отношение человека к звонку:</div>
                                                             <div class="inline m-r-20">Негативное</div>
                                                             <div class="inline m-r-20">Нейтральное</div>
                                                             <div class="inline">Позитивное</div>

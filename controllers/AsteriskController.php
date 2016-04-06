@@ -38,6 +38,7 @@ class AsteriskController extends BaseController {
                     'answeredoperator' => ['put'],
                     'callstart' => ['put'],
                     'callend' => ['put'],
+                    'send-incoming-call' => ['post']
                 ],
             ],
         ];
@@ -83,6 +84,28 @@ class AsteriskController extends BaseController {
 //        }
     }
 
+    public function actionSendIncomingCall()
+    {
+        $phone = Yii::$app->request->post('phone');
+        $call_order_script = Yii::$app->params['call_order_script'];
+        require_once $call_order_script;
+
+        if (function_exists('call_order')) {
+            $user_id = Yii::$app->user->identity->id;
+            $user_int_id = Yii::$app->user->identity->int_id;
+            $call_order_token = time().$user_id;
+            $options = array("external" => $phone, "internal" => $user_int_id, "call_order_token" => $call_order_token);
+            $res = call_order($options);
+
+            if ($res[0] == true) {
+                $this->json(['call_order_token' => $call_order_token], 200);
+            } else {
+                $this->json([], 415);
+            }
+        }
+
+    }
+
     public function actionCallstart() {
         $call_form = new CallForm();
         $json = file_get_contents('php://input');
@@ -97,7 +120,7 @@ class AsteriskController extends BaseController {
             $contact_id = null;
             $call = new Call();
             if (strlen($callerid) !== self::INT_ID_LENGTH && strlen($answered) !== self::INT_ID_LENGTH) {
-                //Входыщий звонок
+                //Входящий звонок
                 $contact = Contact::getContactByPhone($callerid);
                 $request_params['phone'] = $callerid;
                 if ($contact) {
@@ -117,7 +140,8 @@ class AsteriskController extends BaseController {
                 if ($contact) {
                     $contact_id = $contact->id;
                 }
-                $call->incoming($call_uniqueid, $contact_id, $answered);
+                $call_order_token = $post['call_order_token'] !== 'unknown' ? $post['call_order_token'] : null;
+                $call->incoming($call_uniqueid, $contact_id, $answered, $call_order_token);
             }
             $this->json([], 200);
         } else {
