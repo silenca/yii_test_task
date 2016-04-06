@@ -39,6 +39,7 @@ class UserForm extends Model
     {
         return [
             [['firstname', 'lastname', 'patronymic'], 'requiredForUser'],
+            [['email'], 'validateEmail'],
             [['email'], 'email'],
 
             [['firstname', 'lastname', 'patronymic'], 'string'],
@@ -63,6 +64,15 @@ class UserForm extends Model
             }
         }
         return true;
+    }
+
+    public function validateEmail()
+    {
+        $user = User::find()->asArray()->where(['email' => $this->email])->one();
+
+        if (!empty($user)) {
+            $this->addCustomError('email', 'Такой пользователь уже существует в системе.');
+        }
     }
 
     public function attributeLabels()
