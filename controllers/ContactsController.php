@@ -210,6 +210,7 @@ class ContactsController extends BaseController
     public function actionSearch()
     {
         $search_term = Yii::$app->request->post('search_term');
+        $id = Yii::$app->request->post('id');
 
         $query = Contact::find()->select(['id', 'int_id', 'surname', 'name', 'middle_name', 'first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email']);
         $query->andWhere(['is_deleted' => '0']);
@@ -222,7 +223,13 @@ class ContactsController extends BaseController
 
         $contacts = $query->asArray()->all();
 
-        foreach ($contacts as &$contact) {
+        foreach ($contacts as $key => &$contact) {
+            // don't show user for himself
+            if ($contact['id'] == $id) {
+                unset($contacts[$key]);
+                continue;
+            }
+
             $contact['fio'] = implode(" ", array_filter([$contact['surname'], $contact['name'], $contact['middle_name']]));
             $contact['phones'] = implode("<br>", array_filter([$contact['first_phone'], $contact['second_phone'], $contact['third_phone'], $contact['fourth_phone']]));
             $contact['emails'] = implode("<br>", array_filter([$contact['first_email'], $contact['second_email']]));

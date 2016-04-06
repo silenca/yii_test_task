@@ -230,13 +230,14 @@ $(function () {
             var $this = $(this),
                 $form = $this.parents('form'),
                 search_term = $(this).val(),
-                result_items = '';
+                result_items = '',
+                id = $(this).closest('tr.open-link').data('id');
 
             if (search_term.length < 2 || search_term.length == 0) {
                 $form.find('.result').html('');
             } else if (search_term.length > 2) {
                 delay(function () {
-                    $.post('contacts/search', {search_term: search_term, _csrf: _csrf}, function (response) {
+                    $.post('contacts/search', {search_term: search_term, id: id, _csrf: _csrf}, function (response) {
                         var result = $.parseJSON(response);
                         if (result.status === 200) {
                             $.each(result.data, function(i, el) {

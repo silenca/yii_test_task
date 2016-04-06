@@ -90,12 +90,12 @@ class ContactForm extends Model
             [['name', 'surname', 'middle_name'], 'string', 'length' => [1, 150],
                 'tooShort' => '{attribute} должен содержать больше {min} символов',
                 'tooLong' => '{attribute} должен содержать до {max} символов'],
-            [['middle_name'], 'match', 'pattern' => "/^[\p{Cyrillic}\-\s]*$/u", 'message' => 'Недопустимые символы'],
-            [['country'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => 'Недопустимые символы'],
-            [['region', 'area'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => 'Недопустимые символы'],
-            [['city'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)\d]*$/u", 'message' => 'Недопустимые символы'],
-            [['street'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d]*$/u", 'message' => 'Недопустимые символы'],
-            [['house', 'flat'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d\/]*$/u", 'message' => 'Недопустимые символы'],
+            [['middle_name'], 'match', 'pattern' => "/^[\p{Cyrillic}\-\s]*$/u", 'message' => '{attribute} - Недопустимые символы'],
+            [['country'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => '{attribute} - Недопустимые символы'],
+            [['region', 'area'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => '{attribute} - Недопустимые символы'],
+            [['city'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)\d]*$/u", 'message' => '{attribute} - Недопустимые символы'],
+            [['street'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d]*$/u", 'message' => '{attribute} - Недопустимые символы'],
+            [['house', 'flat'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d\/]*$/u", 'message' => '{attribute} - Недопустимые символы'],
 
             [['tags_str'], 'tagsArray'],
 
@@ -193,8 +193,8 @@ class ContactForm extends Model
 
     public function checkTag($tag, $attribute)
     {
-        if (!preg_match("/^[\p{Cyrillic}\-]*$/u", $tag)) {
-            $this->addCustomError($attribute, 'Теги содержат недопустимые символы');
+        if (strlen($tag) > 150) {
+            $this->addCustomError($attribute, 'Длина тега не должна превышать 150 символов');
         }
     }
 
