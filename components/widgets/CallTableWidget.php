@@ -72,13 +72,11 @@ class CallTableWidget extends Widget {
                 }
                 $data[$i][] = "<span>".$call['manager']."</span>";
                 if ($call['contact_id']) {
-                    $contact_href = "contact=" . $call['contact_id'];
                     $contact_name = $call['contact'];
                 } else {
-                    $contact_href = "number=" . $call['phone_number'];
                     $contact_name = $call['phone_number'];
                 }
-                $data[$i][] = "<a class='contact' href='/contacts#" . $contact_href . "'>" . $contact_name . "</a>";
+                $data[$i][] = "<a class='contact' data-contact_id='".$call['contact_id']."' href='javascript:void(0)'>" . $contact_name . "</a>";
 //                $phones[] = '<a class="contact-phone contact_open_disable" href="javascript:void(0)">' . $contact_prop_val . '</a>';
                 if (Yii::$app->user->can('listen_call')) {
                     if ($call_success) {

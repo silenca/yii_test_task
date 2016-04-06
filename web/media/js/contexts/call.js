@@ -84,11 +84,16 @@ $(function () {
         viewNotify(id);
     });
 
-    // $(document).on('click', '#call-table .contact', function(e) {
-    //     var contactId = $(this).parents('tr').data('id'),
-    //         phone = $(this).text();
-    //     openCallNow(contactId, phone);
-    // });
+    $(document).on('click', '#call-table .contact', function(e) {
+        var contactId = $(this).data('contact_id'),
+            phone = $(this).text();
+        if (contactId !== "") {
+            openContactForm(contactId);
+        } else {
+            openNewContactFormWithPhone(phone);
+            initCallNow(phone);
+        }
+    });
 });
 
 

@@ -188,7 +188,7 @@ function changeActionSendNow($form, action, opts) {
 
 function resetActionForm(form) {
     $(form).trigger('reset');
-    $(form).find('input').val('').attr('disabled', false);
+    $(form).find('input:not(:radio)').val('').attr('disabled', false);
     $(form).find('textarea').val('').attr('disabled', false);
     $(form).find('input[type="checkbox"]').prop('checked', false);
     if ($(form).attr('id') == 'form_action_call') {
@@ -196,8 +196,7 @@ function resetActionForm(form) {
     }
 }
 
-function openCallNow(contactId, phone) {
-    openContactForm(contactId);
+function initCallNow(phone) {
     $('.contact-actions .cs-options li[data-value="call"]').click();
     $('#action_send_now_phone').click();
     $.post('asterisk/send-incoming-call', {phone: phone, _csrf: _csrf}, function (response) {
@@ -228,6 +227,13 @@ function openNewContactForm() {
     clearContactForm($contact_form);
     $contact_form.modal({});
     bindLiveChange($contact_data_form);
+}
+
+function openNewContactFormWithPhone(phone) {
+    clearContactForm($contact_form);
+    $contact_form.modal({});
+    bindLiveChange($contact_data_form);
+    $contact_data_form.find('#contact_phones').val(phone);
 }
 
 function clearContactForm($form) {

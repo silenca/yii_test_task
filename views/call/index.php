@@ -61,3 +61,5 @@ $this->params['active'] = 'call';
         <!-- END PANEL -->
     </div>
 </div>
+
+<?php echo $this->render('/parts/contact_form'); ?>

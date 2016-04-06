@@ -296,7 +296,8 @@ $(function () {
         $(document).on('click', '#contacts-table .contact-phone', function(e) {
             var contactId = $(this).parents('tr').data('id'),
                 phone = $(this).text();
-            openCallNow(contactId, phone);
+            openContactForm(contactId);
+            initCallNow(phone);
         });
     }
 });

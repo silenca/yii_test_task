@@ -80,8 +80,9 @@ class ContactScheduledEmail extends \yii\db\ActiveRecord {
                 $action->addManagerNotification($action->id, $this->system_date, 'scheduled_email', $this->manager_id, $this->contact_id);
             }
             if ($action_comment_text != null) {
-                $action_comment = new ActionComment();
-                $action_comment->add($action->id, $action_comment_text);
+                $action_comment = new ActionComment(['comment' => $action_comment_text]);
+                $action_comment->save();
+                $action->link('comment', $action_comment);
             }
             $this->save();
 
