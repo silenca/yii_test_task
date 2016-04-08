@@ -140,7 +140,7 @@ class AsteriskController extends BaseController {
                 if ($contact) {
                     $contact_id = $contact->id;
                 }
-                $call_order_token = $post['call_order_token'] !== 'unknown' ? $post['call_order_token'] : null;
+                $call_order_token = (isset($post['call_order_token']) && $post['call_order_token'] !== 'unknown') ? $post['call_order_token'] : null;
                 $call->incoming($call_uniqueid, $contact_id, $answered, $call_order_token);
             }
             $this->json([], 200);

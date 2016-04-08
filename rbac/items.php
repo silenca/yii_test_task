@@ -59,7 +59,6 @@ return [
         'children' => [
             'contacts',
             'actions',
-            'reports',
             'calls',
             'listen_call',
             'delete_contact',

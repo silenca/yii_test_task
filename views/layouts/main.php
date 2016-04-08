@@ -114,17 +114,17 @@ if (!Yii::$app->user->isGuest) {
                                 </a>
                             </li>
                         <?php endif; ?>
-<!--                        --><?php //if (Yii::$app->user->can('reports')): ?>
-<!--                            <li>-->
-<!--                                <a href="/reports" class="detailed">-->
-<!--                                    <span class="title">Отчеты</span>-->
-<!--                                    <span class="details"></span>-->
-<!--                                    <span class="icon-thumbnail --><?//= $this->params['active'] == 'reports' ? 'bg-success' : null ?><!--" title="Отчеты">-->
-<!--                                        <i class="pg-tables"></i>-->
-<!--                                    </span>-->
-<!--                                </a>-->
-<!--                            </li>-->
-<!--                        --><?php //endif; ?>
+                        <?php if (Yii::$app->user->can('reports')): ?>
+                            <li>
+                                <a href="/reports/index" class="detailed">
+                                    <span class="title">Отчеты</span>
+                                    <span class="details"></span>
+                                    <span class="icon-thumbnail <?= $this->params['active'] == 'reports' ? 'bg-success' : null ?>" title="Отчеты">
+                                        <i class="pg-tables"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
 <!--                        --><?php //if (Yii::$app->user->can('receivables')): ?>
 <!--                            <li>-->
 <!--                                <a href="/receivable" class="detailed">-->
@@ -222,7 +222,7 @@ if (!Yii::$app->user->isGuest) {
                             <div class="dropdown pull-right">
                                 <button class="profile-dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <span class="thumbnail-wrapper d32 circular inline m-t-5">
-                                        <img src="media/img/avatar.jpg" alt="" data-src="media/img/avatar.jpg" data-src-retina="media/img/avatar_small2x.jpg" width="32" height="32">
+                                        <img src="<?= Yii::getAlias('@web') ?>/media/img/avatar.jpg" alt="" data-src="<?= Yii::getAlias('@web') ?>/media/img/avatar.jpg" data-src-retina="<?= Yii::getAlias('@web') ?>/media/img/avatar_small2x.jpg" width="32" height="32">
                                     </span>
                                 </button>
                                 <ul class="dropdown-menu profile-dropdown" role="menu">

@@ -44,9 +44,6 @@ $this->params['active'] = 'reports';
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
                         </tr>
                     </thead>
                     <thead>
@@ -54,10 +51,7 @@ $this->params['active'] = 'reports';
                             <th>Менеджер</th>
                             <th>Исходящие звонки</th>
                             <th>Входящие звонки</th>
-                            <th>Лиды</th>
-                            <th>Визит</th>
-                            <th>Показ</th>
-                            <th>Сделка</th>
+                            <th>Контакты</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
