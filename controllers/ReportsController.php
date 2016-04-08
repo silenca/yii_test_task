@@ -87,10 +87,12 @@ class ReportsController extends BaseController
         if (!empty($request_data['columns'][0]['search']['value'])) {
             $query1->andWhere(['`u`.`id`' => $request_data['columns'][0]['search']['value']]);
             $query2->where(['`u`.`id`' => $request_data['columns'][0]['search']['value']]);
+            $query3->where(['`u`.`id`' => $request_data['columns'][0]['search']['value']]);
         }
         if (!empty($request_data['columns'][1]['search']['value']) and (!empty($request_data['columns'][2]['search']['value']))) {
             $query1->andWhere(['between', '`c`.`date_time`', $request_data['columns'][1]['search']['value'], $request_data['columns'][2]['search']['value']]);
             $query2->andWhere(['between', '`csh`.`date_time`', $request_data['columns'][1]['search']['value'], $request_data['columns'][2]['search']['value']]);
+            $query3->andWhere(['between', '`c`.`date_time`', $request_data['columns'][1]['search']['value'], $request_data['columns'][2]['search']['value']]);
         }
         //union all the queries
         $query1
