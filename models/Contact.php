@@ -148,11 +148,21 @@ class Contact extends \yii\db\ActiveRecord {
         ];
     }
 
+
+
     public static function getFIOCols() {
         return [
             'surname',
             'name',
             'middle_name'
+        ];
+    }
+
+    public function getFIOValues() {
+        return [
+            'surname' => $this->surname,
+            'name' => $this->name,
+            'middle_name' => $this->middle_name,
         ];
     }
 
@@ -165,14 +175,23 @@ class Contact extends \yii\db\ActiveRecord {
         ];
     }
 
-    public function getPhoneColsWithVal() {
-        $phones = [];
-        isset($this->first_phone) ? $phones['first_phone'] = $this->first_phone : null;
-        isset($this->second_phone) ? $phones['second_phone'] = $this->second_phone : null;
-        isset($this->third_phone) ? $phones['third_phone'] = $this->third_phone : null;
-        isset($this->fourth_phone) ? $phones['fourth_phone'] = $this->fourth_phone : null;
-        return $phones;
+    public function getPhoneValues() {
+        return [
+            'first_phone' => $this->first_phone,
+            'second_phone' => $this->second_phone,
+            'third_phone' => $this->third_phone,
+            'fourth_phone' => $this->fourth_phone
+        ];
     }
+
+//    public function getPhoneColsWithVal() {
+//        $phones = [];
+//        isset($this->first_phone) ? $phones['first_phone'] = $this->first_phone : null;
+//        isset($this->second_phone) ? $phones['second_phone'] = $this->second_phone : null;
+//        isset($this->third_phone) ? $phones['third_phone'] = $this->third_phone : null;
+//        isset($this->fourth_phone) ? $phones['fourth_phone'] = $this->fourth_phone : null;
+//        return $phones;
+//    }
 
     public static function getEmailCols() {
         return [
@@ -181,12 +200,19 @@ class Contact extends \yii\db\ActiveRecord {
         ];
     }
 
-    public function getEmailColsWithVal() {
-        $emails = [];
-        isset($this->first_email) ? $emails['first_email'] = $this->first_email : null;
-        isset($this->second_email) ? $emails['second_email'] = $this->second_email : null;
-        return $emails;
+    public function getEmailValues() {
+        return [
+            'first_email' => $this->first_email,
+            'second_email' => $this->second_email
+        ];
     }
+
+//    public function getEmailColsWithVal() {
+//        $emails = [];
+//        isset($this->first_email) ? $emails['first_email'] = $this->first_email : null;
+//        isset($this->second_email) ? $emails['second_email'] = $this->second_email : null;
+//        return $emails;
+//    }
 
     public static function getLocationCols() {
         return [
@@ -412,15 +438,14 @@ class Contact extends \yii\db\ActiveRecord {
 //    }
 
     public function edit($related) {
-        $is_new_record = $this->isNewRecord;
         $transaction = Yii::$app->db->beginTransaction();
-        $call = new Call();
+//        $call = new Call();
         try {
             $this->save();
             if (isset($related['tags'])) {
                 $this->tags = $related['tags'];
             }
-            if ($is_new_record) {
+            if ($this->isNewRecord) {
                 $contact_history = new ContactHistory();
                 $contact_history->add($this->id, 'создан контакт', 'new_contact');
                 $contact_history->save();
@@ -435,6 +460,10 @@ class Contact extends \yii\db\ActiveRecord {
             $transaction->rollback();
             return false;
         }
+    }
+
+    public function getPhones() {
+        return $this->hasMany(Call::className(), ['contact_id' => 'id']);
     }
 
     public function getTags() {

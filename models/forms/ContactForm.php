@@ -149,34 +149,29 @@ class ContactForm extends Model
         }
     }
 
-    public static function dataConvert($data, $type, $action) {
-        if ($action == 'explode') {
-            $res_data = [];
-            $data = array_map('trim', explode(',', $data));
-            if ($type == 'phones') {
-                $data = array_map(function($el) {
-                    return preg_replace("/[^a-zA-Z0-9]/i","", $el);
-                }, $data);
-                $data_cols = Contact::getPhoneCols();
-            } else {
-                $data_cols = Contact::getEmailCols();
-            }
-            $count = 0;
-            foreach ($data_cols as $col) {
-                if (isset($data[$count])) {
-                    if ($type == 'emails') {
-                        $res_data[$col] = strtolower($data[$count]);
-                    } else {
-                        $res_data[$col] = $data[$count];
-                    }
+    public static function dataConvert($data, $type) {
+        $res_data = [];
+        $data = array_map('trim', explode(',', $data));
+        if ($type == 'phones') {
+            $data = array_map(function($el) {
+                return preg_replace("/[^a-zA-Z0-9]/i","", $el);
+            }, $data);
+            $data_cols = Contact::getPhoneCols();
+        } else {
+            $data_cols = Contact::getEmailCols();
+        }
+        $count = 0;
+        foreach ($data_cols as $col) {
+            if (isset($data[$count])) {
+                if ($type == 'emails') {
+                    $res_data[$col] = strtolower($data[$count]);
                 } else {
-                    $res_data[$col] = null;
+                    $res_data[$col] = $data[$count];
                 }
-                $count++;
+            } else {
+                $res_data[$col] = null;
             }
-        } elseif ($action == 'implode') {
-            $res_data = '';
-            $res_data = implode(', ', $data);
+            $count++;
         }
         return $res_data;
     }
@@ -200,7 +195,7 @@ class ContactForm extends Model
 
     public function phoneArray($attribute, $params)
     {
-        $phones = self::dataConvert($this->$attribute, 'phones', 'explode');
+        $phones = self::dataConvert($this->$attribute, 'phones');
         foreach ($phones as $phone_key => $phone_val) {
             $this->checkPhone($phone_val, $attribute);
             $fields = Contact::getPhoneCols();
@@ -246,7 +241,7 @@ class ContactForm extends Model
 
     public function emailArray($attribute, $params)
     {
-        $emails = self::dataConvert($this->$attribute, 'emails', 'explode');
+        $emails = self::dataConvert($this->$attribute, 'emails');
         foreach ($emails as $email_key => $email_val) {
             $this->checkEmail($email_val, $attribute);
             $fields = Contact::getEmailCols();

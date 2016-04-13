@@ -38,4 +38,23 @@ class Filter {
         }
     }
 
+    public static function dataImplode($data, $glue = ', ', $wrapper = null, $partial = false)
+    {
+        $data = array_filter($data);
+        if ($wrapper) {
+            if ($partial) {
+                $data = implode($glue, array_map(function($el) use($wrapper) {
+                    return str_replace('{value}', $el, $wrapper);
+                }, $data));
+
+            } else {
+                $data = implode($glue, $data);
+                $data = str_replace('{value}', $data, $wrapper);
+            }
+        } else {
+            $data = implode($glue, $data);
+        }
+        return $data;
+    }
+
 }

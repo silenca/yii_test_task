@@ -38,11 +38,7 @@ class ActionTableWidget extends Widget
                     break;
             }
 
-            $fio_str = implode(" ", array_filter([$action['surname'], $action['name'], $action['middle_name']]));
-//            $fio_cols = Contact::getFIOCols();
-//            $fio_str = Filter::strConverter($action, $fio_cols);
-            $data[$i][] = "<div><a class='open_contact' data-id='" . $action['contact_id'] . "'>" . $fio_str . "</a></div>";
-            //$data[$i][] = "<a href='" . $action['object_link'] . "' target='_blank'>" . $action['object_link'] . "</a>";
+            $data[$i][] = Filter::dataImplode([$action['surname'], $action['name'], $action['middle_name']], ' ', "<div><a class='open_contact' data-id='" . $action['contact_id'] . "'>{value}</a></div>");
             if ($action['schedule_date']) {
                 $data[$i][] = date("d-m-Y G:i:s", strtotime($action['schedule_date']));
             } else {

@@ -4,6 +4,7 @@ namespace app\components\widgets;
 
 use yii\base\Widget;
 use Yii;
+use app\components\Filter;
 
 class ContactTableWidget extends Widget {
 
@@ -24,22 +25,24 @@ class ContactTableWidget extends Widget {
             $data[$i][] = '<div class="dropdown contact_open_disable">
                                 <button class="btn btn-sm btn-default dropdown-toggle" href="javascript:void(0)" aria-expanded="true">Связать с...</button>
                             </div>';
-            $phones = [];
-            $emails = [];
-            foreach ($contact as $contact_prop_key => $contact_prop_val) {
-                if (preg_match('/(.*)_phone/', $contact_prop_key) && $contact_prop_val !== null) {
-                    $phones[] = '<a class="contact-phone contact_open_disable" href="javascript:void(0)">' . $contact_prop_val . '</a>';
-                } elseif (preg_match('/(.*)_email/', $contact_prop_key) && $contact_prop_val !== null) {
-                    $emails[] = $contact_prop_val;
-                }
-            }
-            $data[$i][] =  implode(', ', $phones);
-            $data[$i][] = implode(', ', $emails);
-            $tags = [];
+//            $phones = [];
+//            $emails = [];
+//            foreach ($contact as $contact_prop_key => $contact_prop_val) {
+//                if (preg_match('/(.*)_phone/', $contact_prop_key) && $contact_prop_val !== null) {
+//                    $phones[] = '<a class="contact-phone contact_open_disable" href="javascript:void(0)">' . $contact_prop_val . '</a>';
+//                } elseif (preg_match('/(.*)_email/', $contact_prop_key) && $contact_prop_val !== null) {
+//                    $emails[] = $contact_prop_val;
+//                }
+//            }
+//            $data[$i][] =  implode(', ', $phones);
+//            $data[$i][] = implode(', ', $emails);
+            $data[$i][] =  Filter::dataImplode($contact->getPhoneValues(), ', ', '<a class="contact-phone contact_open_disable" href="javascript:void(0)">{value}</a>', true);
+            $data[$i][] = Filter::dataImplode($contact->getEmailValues());
+            $tag_names = [];
             foreach ($contact->tags as $tag) {
-                $tags[] = '<a class="contact_open_disable" href="javascript:void(0)">' . $tag->name . '</a>';
+                $tag_names[] = $tag->name;
             }
-            $data[$i][] = implode(', ', $tags);
+            $data[$i][] = Filter::dataImplode($tag_names, ', ', '<a class="contact_open_disable" href="javascript:void(0)">{value}</a>', true);
 
             $data[$i][] = $contact->country;
             $data[$i][] = $contact->region;

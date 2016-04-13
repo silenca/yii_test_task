@@ -22,6 +22,7 @@ use app\models\forms\CommentForm;
 use app\models\Tag;
 use app\components\widgets\ContactTableWidget;
 use yii\web\UploadedFile;
+use app\components\Filter;
 
 class ContactsController extends BaseController
 {
@@ -98,7 +99,6 @@ class ContactsController extends BaseController
         $total_count = $query_total->count();
         $columns = Contact::getColsForTableView();
         //Sorting
-        $sorting = [];
         if (isset($request_data['order'])) {
             $order_by_sort = $request_data['order'][0]['dir'] == 'asc' ? SORT_ASC : SORT_DESC;
 //            $sort_column = $columns[$request_data['order'][0]['column']];
@@ -280,18 +280,10 @@ class ContactsController extends BaseController
         $contact_arr = $contact->asArray()->one();
         $contact_data = array_intersect_key($contact_arr, array_flip(Contact::$safe_fields));
 
-        $phones_arr = $contact2->getPhoneColsWithVal();
-//        $phones_arr = [( comparison ? $contact_data['first_phone'] : if false );, $contact_data['second_phone'], $contact_data['third_phone'], $contact_data['fourth_phone']];
-        $contact_data['phones'] = ContactForm::dataConvert($phones_arr, 'phones', 'implode');
-        $emails_arr = $contact2->getEmailColsWithVal();
-//        $emails_arr = [$contact_data['first_email'], $contact_data['second_email']];
-        $contact_data['emails'] = ContactForm::dataConvert($emails_arr, 'emails', 'implode');
-        
-//        if (Yii::$app->user->can('show_payments') || $contact_data['manager_id'] == Yii::$app->user->identity->id) {
-//            $contact_data['payment_access'] = true;
-//        } else {
-//            $contact_data['payment_access'] = false;
-//        }
+        $contact_data['phones'] = Filter::dataImplode($contact2->getPhoneValues());
+
+        $contact_data['emails'] = Filter::dataImplode($contact2->getEmailValues());
+
         $contact_manager = User::find()->where(['id' => $contact_data['manager_id']])->one();
         $contact_data['manager_name'] = $contact_manager['firstname'];
         $this->json($contact_data, 200);

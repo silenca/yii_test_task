@@ -1,10 +1,24 @@
-var dataTable;
-var bind_inputs = {};
+var $tagContactsTable, $contactsModalTable;
+var tagContactsdataTable, contactsModaldataTable;
+var tagSelect;
+var tagUsersSelect;
 
 $(function () {
-    var initTable = function () {
-        var table = $('#tags-table');
+    $tagContactsTable = $('#tag_contacts_table');
 
+    var $tagForm = $('#tag_form'),
+        $tagId = $('#tag_id'),
+        $tagSelectBox = $('#tag_search_select'),
+        $tagUsersSelectBox = $('#tag_users_select'),
+        $tagToggle = $('#tag_toggle'),
+        $tagAdd = $('.tag-add'),
+        $tagStartDate = $('#tag_start_date'),
+        $tagSubmit = $('#tag_submit'),
+        $addContactTable = $('#add_contact_table'),
+        $tagName = $('#tag_name'),
+        $contactsList = $('#contacts_list');
+
+    var initTagContactsTable = function () {
         var settings = {
             "sDom": "<'table-responsive't><'row'<p i>>",
             "sPaginationType": "bootstrap",
@@ -20,168 +34,351 @@ $(function () {
             "order": [],
             "ajax": {
                 url: "/tags/getdata", // json datasource
-                type: "get", // method  , by default get
+                type: "GET", // method  , by default get
                 error: function () {  // error handling
                     //alert('error data');
                 }
             },
+            "ordering": false,
             "columnDefs": [
-                {
-                    "targets": [3, 4],
-                    "orderable": false
-                },
                 {"visible": false, "targets": [0]}
             ],
             "createdRow": function (row, data, index) {
                 $(row).attr('data-id', data[0]);
             }
         };
-        dataTable = table.DataTable(settings);
+
+        tagContactsdataTable = $tagContactsTable.DataTable(settings);
+    };
+
+
+    if ($tagContactsTable.length) {
+        initTagContactsTable();
+    }
+
+    var show_columns = columns.filter(function(item) {
+        return hide_columns.indexOf(item) === -1;
+    });
+
+
+    var initContactsModalTable = function () {
+        var $contactsModalTable = $('#contacts-table');
+
+        var settings = {
+            "sDom": "<'table-responsive't><'row'<p i>>",
+            "sPaginationType": "bootstrap",
+            "destroy": true,
+            "scrollCollapse": true,
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ ",
+                "sInfo": "Showing <b>_START_ to _END_</b> of _TOTAL_ entries"
+            },
+            "iDisplayLength": 5,
+            "processing": true,
+            "serverSide": true,
+            "order": [],
+            "ajax": {
+                url: "/tags/getcontacts", // json datasource
+                type: "get", // method  , by default get
+                error: function () {  // error handling
+                    //alert('error data');
+                }
+            },
+            "columnDefs": [
+                {"visible": false, "targets": [show_columns.indexOf('id')]},
+                {"orderable": false, "targets": []}
+            ],
+            "createdRow": function (row, data, index) {
+                $(row).attr('data-id', data[show_columns.indexOf('id')]);
+                $(row).addClass('open-link');
+            },
+            'fnDrawCallback': function() {
+                $('input[name="contacts[]"]').each(function() {
+                    // console.log($(this).val());
+                    if ($.inArray($(this).val(), contacts) != -1) {
+                        $(this).prop('checked', true);
+                    }
+                })
+            }
+        };
+        $.each(show_columns, function(col_index, col_val) {
+            settings.columnDefs.push({ "name": col_val, "targets": col_index });
+        });
+
+        $.each(columns, function(col_index, col_val) {
+            if (!columns_full[col_val]['orderable']) {
+                settings.columnDefs[1].targets.push(col_index);
+            }
+        });
+
+        $.each(hide_columns, function(i ,val) {
+            var index = columns.indexOf(val);
+            settings.columnDefs[0].targets.push(index);
+        });
+
+        contactsModaldataTable = $contactsModalTable.DataTable(settings);
 
         var $searchBoxes = $('input.search-input-text, select.search-input-select');
 
         $('.search-input-text').on('keyup', function () {   // for text boxes
-            delay(function(){
+            delay(function () {
                 $.each($searchBoxes, function (index, val) {
-                    var i = $(this).attr('data-column');
+                    var n = $(this).attr('data-column');
                     var v = $(this).val();
-                    dataTable.columns(i).search(v);
+                    var strLenDef = 2;
+                    if (n == 'city' || n == 'street' || n == 'house' || n == 'flat') {
+                        strLenDef = 0;
+                    }
+                    if (v.length > strLenDef || v.length == 0) {
+                        contactsModaldataTable.columns(n+':name').search(v);
+                    }
                 });
-                dataTable.draw();
-            }, 1200 );
+                contactsModaldataTable.draw();
+            }, 2000);
         });
 
         $('.search-input-select').on('change', function () {   // for select box
             $.each($searchBoxes, function (index, val) {
-                var i = $(this).attr('data-column');
+                var n = $(this).attr('data-column');
                 var v = $(this).val();
-                dataTable.columns(i).search(v);
+                contactsModaldataTable.columns(n+':name').search(v);
             });
-            dataTable.draw();
+            contactsModaldataTable.draw();
         });
     };
 
-    initTable();
+    initContactsModalTable();
 
-    //evenets on tags page
-    if ($('#tags-table').length) {
-        var $tags_table = $('#tags-table'),
-            $tag_form = $('#modalTagForm');
+    var tagSelectOpts = {
+            placeholder: "Имя тега",
+            ajax: {
+                url: "/tags/gettags",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        term: params.term
+                    };
+                },
+                processResults: function (data, params) {
+                    var items = data.data.items;
 
-        //open new form
-        $('#open-new-tag-form').on('click', function (e) {
-            clearTagForm($tag_form);
-            bindLiveChange($tag_form);
-            $tag_form.modal({});
+                    // data formatting
+                    $.map(items, function(item, i) {
+                        items[i].as_task = item.as_task == 1;
+                    });
+
+                    return {
+                        results: items
+                    };
+                },
+                cache: true
+            },
+            escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+            minimumInputLength: 2,
+            allowClear: true,
+            theme: "default", // "classic"
+            debug: true // remove in production
+        },
+        tagUsersSelectOpts = {
+            escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+            theme: "default", // "classic"
+            debug: true, // remove in production
+            multiple: true
+        };
+
+    //init selects
+    tagSelect = $tagSelectBox.select2(tagSelectOpts);
+    tagUsersSelect = $tagUsersSelectBox.select2(tagUsersSelectOpts);
+
+    // fill users select
+    $.get('/tags/getusers', function (response) {
+        var result = $.parseJSON(response),
+            items = result.data.items;
+        $.map(items, function(item, i) {
+            items[i].text = item.firstname;
         });
+        if (result.status === 200) {
+            tagUsersSelect.select2({data: result.data.items, placeholder: "Имя пользователя", allowClear: true});
+        } else {
 
-        //open form to edit
-        $tags_table.on('click', '.edit', function (e) {
-            var $tr = $(this).closest('tr');
-            var tagId = $tr.data('id'),
-                tagName = $tr.find('.tag-name').text(),
-                tagDesc =  $tr.find('.tag-description').text();
+        }
+    });
 
-            $("#tag_id").val(tagId);
-            $("#tag_name").val(tagName);
-            $("#tag_description").val(tagDesc);
-            bindLiveChange($tag_form);
-        });
+    //events on tags page
+    $tagToggle.on('click', function(e) {
+        e.preventDefault();
+        var $this = $(this),
+            todayDate = moment().format('YYYY-MM-DD HH:mm:ss');
 
-        $tag_form.on('click', '.add_tag-btn', function() {
-            if (checkChanges($tag_form)) {
-                editTag($tag_form);
-            }
-        });
+        if (!$this.hasClass('create_tag-active')) {
+            manageTagData('clear');
+            tagSelect.val(null).trigger("change");
+            tagSelect.select2("destroy").attr('disabled', true).hide();
+            $tagAdd.show().find('input').attr('disabled', false);
+            $tagStartDate.val(todayDate);
+            $this.text('Поиск тегов');
+        } else {
+            manageTagData('clear');
+            tagSelect.select2(tagSelectOpts).attr('disabled', false).show();
+            $tagAdd.hide().find('input').val('').attr('disabled', true);
+            $this.text('Создать тег');
+        }
 
-        //remove contact
-        $tags_table.on('click', '.remove', function (e) {
-            e.stopPropagation();
-            if (confirm('Вы действительно хотите удалить ?')) {
-                var $tr = $(this).closest('tr');
-                var id = $tr.data('id');
-                $.post('/tags/delete', {id: id, _csrf: _csrf}, function (response) {
-                    var result = $.parseJSON(response);
-                    if (result.status === 200) {
-                        dataTable.row($tr).remove().draw(false);
-                    } else {
-                        console.log('Fail');
-                    }
+        $this.toggleClass('create_tag-active');
+    });
+
+    $tagSubmit.on('click', function(e) {
+        e.preventDefault();
+        var $this = $(this);
+        var data = prepareData($tagForm);
+        $.post('/tags/edit', data, function (response) {
+            var result = $.parseJSON(response);
+            if (result.status === 200) {
+                showNotification('.content', 'Данные сохранены', 'top', 'success', 'bar', 5000);
+                $tagId.val(result.data.id);
+            } else if(result.status === 415) {
+                var error_txt = '';
+                $.each(result.errors, function (name, errors) {
+                    error_txt += name + ' - ' + errors;
                 });
+                showNotification('.content', error_txt, 'top', 'danger', 'bar', 125000);
+            } else {
+                showNotification('.content', 'Ошибка сервера', 'top', 'danger', 'bar', 125000);
             }
         });
-    }
+    });
+
+    $addContactTable.on('click', function(e) {
+        if ($('.tag-name:enabled').val() == '') {
+            alert('Выберите тег');
+        } else {
+            $('#modalAddContactToTag').modal();
+        }
+
+        e.preventDefault();
+    });
+
+    $('#add_contact_csv').on('click', function(e) {
+        e.preventDefault();
+    });
+
+    var contacts = [];
+
+    $('#add_contact').on('click', function(e) {
+        // var contacts_line = '';
+        // contacts.forEach(function(element, index, array) {
+        //     contacts_line += element + ','
+        // });
+        // contacts_line = contacts_line.slice(0,-1);
+        // $('input[name="contacts_list"]').val(contacts_line);
+        $contactsList.val(contacts.join(',')).trigger('change');
+        $('#modalAddContactToTag').modal('hide');
+        // console.log(contacts_line);
+
+        // if (tagSelect.is(':enabled')) {
+        //     $('#tag_submit').trigger('click');
+        // }
+    });
+
+    $(document.body).on('change', 'input[name="contacts[]"]', function() {
+        if($(this).is(':checked')) {
+            contacts.push($(this).val());
+        } else {
+            delete contacts[contacts.indexOf($(this).val())];
+        }
+    });
+
+    tagSelect.on('select2:open', function(evt) {
+        var eventParams = evt.params;
+    });
+
+    tagSelect.on('change', function (e) {
+        manageTagData('clear');
+        if ($(this).val() != '') {
+            $tagSubmit.removeClass('disabled');
+        } else {
+            $tagSubmit.addClass('disabled');
+        }
+    });
+
+    $tagName.on('keyup', function(e) {
+        if ($(this).val() != '') {
+            $tagSubmit.removeClass('disabled');
+        } else {
+            $tagSubmit.addClass('disabled');
+        }
+    });
+
+    tagSelect.on('select2:select', function(evt) {
+        var eventParams = evt.params,
+            data = eventParams.data;
+        for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+                data[key] = data[key] == null ? '' : data[key];
+            }
+        }
+        manageTagData('fill', data);
+    });
+
+    $contactsList.on('change', function (e) {
+        tagContactsdataTable.columns(0).search($(this).val()).draw();
+        contacts = $(this).val().split(',');
+        contactsModaldataTable.columns().search('').draw();
+    });
 });
 
-function bindLiveChange($form) {
-    $.each($('input[type=text],input[type=email],textarea', $form), function (i, input) {
-        var name = $(input).attr('name');
-        var val = $(input).val();
-        bind_inputs[name] = val;
-    });
-    bind_inputs['id'] = $('#tag_id').val();
-    bind_inputs['is_changed'] = false;
-}
-
-function checkChanges($form) {
-    $.each($('input[type=text],input[type=email],textarea', $form), function (i, input) {
-        var name = $(input).attr('name');
-        var value = $(input).val();
-        if (bind_inputs[name] !== value) {
-            //bind_inputs[name] = value;
-            bind_inputs['is_changed'] = true;
-        }
-    });
-    return bind_inputs['is_changed'];
-}
-
-function editTag($form) {
+function prepareData($form) {
     var data = {};
-    var $bind_inputs = $form.find('.form-input');
-    $.each($bind_inputs, function () {
-        data[this.name] = $(this).val();
+    $.each($form.find('input[type="text"]:enabled, textarea:enabled'), function (i, el) {
+        var elName = $(el).attr('name');
+        data[elName] = $(el).val();
     });
-    data['_csrf'] = _csrf;
-    $.post('/tags/edit', data, function (response) {
-        $form.find('label.error').remove();
-        $form.find('.error').removeClass('error');
-        var result = $.parseJSON(response);
-        if (result.status == 200) {
-            $form.modal('hide');
-            showNotification('.page-content-wrapper', 'Тег сохранен.', 'top', 'success', 'bar', 5000);
-            dataTable.draw(false);
+    if (tagSelect.val() != '') {
+        data.name = tagSelect.select2('data')[0].text;
+        data.id = tagSelect.val();
+    } else {
+        data.id = $('#tag_id').val();
+    }
+    data.tag_users = tagUsersSelect.val();
 
-        } else if (result.status == 415) {
-            $.each(result.errors, function (name, errors) {
-                addError($form, name, errors);
-            });
-            //showNotification('body', result.errors, 'top', 'success', 'bar', 5000);
-        } else if (result.status == 500) {
-            showNotification('.page-content-wrapper', 'Внутренняя ошибка.', 'top', 'success', 'bar', 5000);
-        }
-        //if (result.status == 415) {
-        //    $.each(result.errors, function (name, errors) {
-        //        console.log(errors);
-        //        //addError($form, name, errors);
-        //    });
-        //
-        //}
-    });
-
+    data.tag_contacts = $('#contacts_list').val().split(',');
+    data.as_task = $('#tag_as_task').is(':checked') ? 1 : 0;
+    data._csrf = _csrf;
+    return data;
 }
 
-function addError($form, name, errors) {
-    var $field = $form.find('[name="' + name + '"]');
-    $.each(errors, function (i, error) {
-        $field.addClass('error');
-        $field.after("<label class='error'>" + error + "</lable>");
-    });
+function select2Search ($el, term) {
+    $el.select2('open');
 
+    // Get the search box within the dropdown or the selection
+    // Dropdown = single, Selection = multiple
+    var $search = $el.data('select2').dropdown.$search || $el.data('select2').selection.$search;
+    // This is undocumented and may change in the future
+
+    $search.val(term);
+    $search.trigger('keyup');
 }
 
-function clearTagForm($form) {
-    $form.find('#tag_id').val('');
-    $form.find('#tag_name').val('');
-    $form.find('#tag_description').val('');
-    hideNotifications($form);
+function manageTagData(action, data) {
+    var $description = $('#tag_description'),
+        $script = $('#tag_script'),
+        $as_task = $('#tag_as_task'),
+        $contactsList = $('#contacts_list');
+    switch (action) {
+        case 'fill':
+            $description.text(data.description);
+            $script.text(data.script);
+            tagUsersSelect.val(data.tag_users).trigger("change");
+            $as_task.prop('checked', data.as_task);
+            $contactsList.val(data.tag_contacts).trigger('change');
+            break;
+        case 'clear':
+            $description.text('');
+            $script.text('');
+            tagUsersSelect.val([]).trigger("change");
+            $as_task.prop('checked', false);
+            $contactsList.val('').trigger('change');
+            break;
+    }
 }

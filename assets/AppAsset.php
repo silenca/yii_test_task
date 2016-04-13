@@ -42,7 +42,7 @@ class AppAsset extends AssetBundle {
         '/media/plugins/jquery-ios-list/jquery.ioslist.min.js',
         '/media/plugins/jquery-actual/jquery.actual.min.js',
         '/media/plugins/jquery-scrollbar/jquery.scrollbar.min.js',
-        '/media/plugins/bootstrap-select2/select2.min.js',
+        '/media/plugins/bootstrap-select2/select2.js',
         '/media/plugins/bootstrap-select/js/bootstrap-select.js',
         '/media/plugins/classie/classie.js',
         '/media/plugins/switchery/js/switchery.min.js',

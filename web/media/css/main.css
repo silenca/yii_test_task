@@ -3,6 +3,13 @@
     overflow: visible;
 }
 
+#modalAddContactToTag {
+	overflow: scroll;
+}
+
+#modalAddContactToTag .modal-content {
+    width: 800px;
+}
 
 @media (min-width: 992px){
     #modalAddContact.modal-lg, #modalAddUser.modal-lg {

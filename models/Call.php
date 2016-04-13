@@ -39,9 +39,9 @@ class Call extends \yii\db\ActiveRecord {
     public function rules() {
         return [
             [['date_time', 'type', 'unique_id'], 'required'],
-            [['date_time', 'attitude_level', 'call_order_token'], 'safe'],
+            [['date_time', 'attitude_level', 'call_order_token', 'tag_id'], 'safe'],
             [['type', 'status', 'unique_id', 'call_order_token'], 'string'],
-            [['contact_id', 'phone_number', 'total_time', 'answered_time', 'attitude_level'], 'integer'],
+            [['contact_id', 'phone_number', 'total_time', 'answered_time', 'attitude_level', 'tag_id'], 'integer'],
             [['record'], 'string', 'max' => 255],
         ];
     }
@@ -162,6 +162,10 @@ class Call extends \yii\db\ActiveRecord {
     
     public function setContactIdByPhone($phone, $contact_id) {
         $this->updateAll(['contact_id' => $contact_id], ['phone_number' => $phone]);
+    }
+
+    public function getTag() {
+        return $this->hasOne(Tag::className(), ['id' => 'tag_id']);
     }
 
 }
