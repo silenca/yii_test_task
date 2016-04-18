@@ -114,7 +114,17 @@ class TagsController extends BaseController {
         $contact_widget->contacts = $contacts;
         $data = $contact_widget->run();
 
+        $query_all = clone $query;
+        $query_all->select('id')->limit(null)->offset(null);
+        $contacts_all = $query_all->all();
+        $contacts_str = '';
+        foreach ($contacts_all as $contact) {
+            $contacts_str .= $contact['id'] . ',';
+        }
+        $contacts_str = rtrim($contacts_str, ",");
+
         $json_data = array(
+            "contacts" => $contacts_str,
             "draw" => intval($request_data['draw']),
             "recordsTotal" => intval($total_count),
             "recordsFiltered" => intval($total_filtering_count),

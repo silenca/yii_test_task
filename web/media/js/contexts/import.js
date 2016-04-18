@@ -12,6 +12,11 @@ $(function () {
         $('#file-name').text(file_name);
     });
 
+    function onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
+    }
+
+
     $('form').on('submit', function (e) {
         e.preventDefault();
         var $form = $(this);
@@ -43,6 +48,13 @@ $(function () {
                     if (result.status != 200) {
                         $form.find('.result').append("<a href='" + result.data.report_file + "' target='_blank'>Отчет об ошибках</a>");
                     }
+                    $contactsList = $('#contacts_list');
+                    var current_contacts = $contactsList.val().split(",");
+                    var new_contacts = result.data.contact_list.split(',');
+                    var merged = current_contacts.concat(new_contacts);
+                    merged = merged.filter( onlyUnique );
+                    var resulting_contacts = merged.join(',');
+                    $contactsList.val(resulting_contacts).trigger('change');
                 }
 
             }

@@ -155,6 +155,43 @@ $this->params['active'] = 'tags';
 </div>
 <!-- /.modal-dialog -->
 
+<!-- Modal: Import from CSV -->
+<div class="modal fade slide-up disable-scroll" id="modalImportCsv" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
+    <div class="modal-dialog ">
+        <div class="modal-content-wrapper">
+            <div class="modal-content">
+                <div class="modal-header clearfix text-left">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        <i class="pg-close fs-14"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="panel panel-transparent">
+                        <div class="panel-heading">
+                            <button class="btn btn-primary btn-cons" id="choose-file"><i class="fa fa-plus"></i> Выбрать
+                                файл
+                            </button>
+
+                            <div id="file-name"></div>
+                        </div>
+                        <div class="panel-body">
+                            <form action="import/csv" method="POST" enctype="application/x-www-form-urlencoded">
+                                <input type="file" name="csv_file" id="csv-file" style="display: none" accept=".csv"/>
+                                <input type="submit" class="btn btn-complete btn-cons" value="Начать импорт"/>
+                                <div class="result">
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+</div>
+<!-- /.modal-dialog -->
+
 <script type="text/javascript">
     var hide_columns = <?= json_encode($hide_contact_columns); ?>;
     var columns = <?= json_encode(array_keys($table_contact_cols)); ?>;

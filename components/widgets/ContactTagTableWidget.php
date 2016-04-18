@@ -17,6 +17,7 @@ class ContactTagTableWidget extends Widget {
     public function run() {
         $data = [];
         foreach ($this->contacts as $i => $contact) {
+//            $data[$i][] = "<input type='checkbox' name='contacts[]' value='".$contact->id."'>";
             $data[$i][] = $contact->id;
             $data[$i][] = $contact->int_id;
             $data[$i][] = Filter::dataImplode(array_filter([$contact->surname, $contact->name, $contact->middle_name]), ' ');
@@ -43,7 +44,6 @@ class ContactTagTableWidget extends Widget {
             $data[$i][] = $contact->country;
             $data[$i][] = $contact->region;
             $data[$i][] = $contact->city;
-            $data[$i][] = "<input type='checkbox' name='contacts[]' value='".$contact->id."'>";
         }
         return $data;
     }

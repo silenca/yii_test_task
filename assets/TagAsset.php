@@ -12,6 +12,7 @@ class TagAsset extends AssetBundle
     public $js = [
         'media/js/contexts/tag.js',
         'media/js/contact_form.js',
+        'media/js/contexts/import.js',
     ];
     public $depends = [
         'app\assets\DatapickerAsset'

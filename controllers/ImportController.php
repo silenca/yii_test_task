@@ -87,16 +87,28 @@ class ImportController extends BaseController
                 $error = true;
             }
         }
+        // Получить список контактов (для вставки в тег)
+
+        $contact_list = '';
+        foreach ($new_contacts as $contact) {
+            $email = $contact[4];
+            $contact_row = Contact::find()->where(['first_email' => $email])->one();
+            $contact_list .= $contact_row['id'] .',';
+        }
+        $contact_list = rtrim($contact_list, ",");
+
         if ($error) {
             $this->json([
                 'report_file' => Yii::getAlias('@web') . '/reports/' . $report_file_name,
                 'imported' => $imported,
-                'count' => count($new_contacts) - 1
+                'count' => count($new_contacts) - 1,
+                'contact_list' => $contact_list
             ], 415);
         } else {
             $this->json([
                 'imported' => $imported,
-                'count' => count($new_contacts) - 1
+                'count' => count($new_contacts) - 1,
+                'contact_list' => $contact_list
             ], 200);
         }
 

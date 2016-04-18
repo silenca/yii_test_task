@@ -118,6 +118,12 @@ $(function () {
 
         contactsModaldataTable = $contactsModalTable.DataTable(settings);
 
+        contactsModaldataTable.on( 'xhr', function () {
+            var json = contactsModaldataTable.ajax.json();
+            var contacts = json.contacts;
+            $contactsList.val(contacts);
+        } );
+
         var $searchBoxes = $('input.search-input-text, select.search-input-select');
 
         $('.search-input-text').on('keyup', function () {   // for text boxes
@@ -260,6 +266,11 @@ $(function () {
     });
 
     $('#add_contact_csv').on('click', function(e) {
+        if ($tagSelectBox.val() == '') {
+            alert('Выберите тег');
+        } else {
+            $('#modalImportCsv').modal();
+        }
         e.preventDefault();
     });
 
@@ -272,7 +283,8 @@ $(function () {
         // });
         // contacts_line = contacts_line.slice(0,-1);
         // $('input[name="contacts_list"]').val(contacts_line);
-        $contactsList.val(contacts.join(',')).trigger('change');
+        $contactsList.trigger('change');
+        contactsModaldataTable.columns().draw();
         $('#modalAddContactToTag').modal('hide');
         // console.log(contacts_line);
 
@@ -324,7 +336,7 @@ $(function () {
     $contactsList.on('change', function (e) {
         tagContactsdataTable.columns(0).search($(this).val()).draw();
         contacts = $(this).val().split(',');
-        contactsModaldataTable.columns().search('').draw();
+        //contactsModaldataTable.columns().search('').draw();
     });
 });
 

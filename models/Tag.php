@@ -83,6 +83,7 @@ class Tag extends \yii\db\ActiveRecord {
 
     public static function getContactsForTagTableView() {
         return [
+//            'contacts' => ['label' => 'Добавить', 'have_search' => false, 'orderable' => false],
             'id' => ['label' => 'ID', 'have_search' => false, 'orderable' => true],
             'int_id' => ['label' => '№', 'have_search' => false, 'orderable' => false],
             'fio' => ['label' => 'ФИО', 'have_search' => true, 'db_cols' => ['surname', 'name', 'middle_name']],
@@ -91,8 +92,7 @@ class Tag extends \yii\db\ActiveRecord {
             'tags' => ['label' => 'Теги', 'have_search' => true, 'orderable' => false],
             'country' => ['label' => 'Страна', 'have_search' => true, 'orderable' => true],
             'region' => ['label' => 'Регион', 'have_search' => true, 'orderable' => true],
-            'city' => ['label' => 'Город', 'have_search' => true, 'orderable' => true],
-            'contacts' => ['label' => 'Добавить', 'have_search' => false, 'orderable' => false]
+            'city' => ['label' => 'Город', 'have_search' => true, 'orderable' => true]
         ];
     }
 
