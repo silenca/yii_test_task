@@ -34,11 +34,11 @@ $this->params['active'] = 'tags';
                                     <input type="hidden" name="id" id="tag_id" disabled="disabled"/>
                                 </div>
                                 <div class="input-group">
-                                    <label class="input-group-addon info" for="tag_start_date"><i
-                                            class="pg pg-calender"></i></label>
+                                    <label class="input-group-addon info" for="tag_start_date" style="display: none"><i
+                                            class="pg pg-calender" ></i></label>
                                     <input type="text" class="form-control datepicker"
                                            placeholder="Дата" name="start_date"
-                                           id="tag_start_date" style="width: 60%" disabled="disabled">
+                                           id="tag_start_date" style="width: 60%; display: none" disabled="disabled">
                                 </div>
                             </div>
                         </div>
@@ -67,7 +67,7 @@ $this->params['active'] = 'tags';
                                   placeholder="Скрипт тега"
                                   class="form-control"></textarea>
                         </div>
-                        <div class="col-md-6 m-t-10">
+                        <div class="col-md-6 m-t-10 add-contacts">
                             <label class="">Добавить контакты:</label>
                             <div class="input-group">
                                 <button class="btn btn-info" id="add_contact_table">Таблица контактов</button>
@@ -196,4 +196,5 @@ $this->params['active'] = 'tags';
     var hide_columns = <?= json_encode($hide_contact_columns); ?>;
     var columns = <?= json_encode(array_keys($table_contact_cols)); ?>;
     var columns_full = <?= json_encode($table_contact_cols); ?>;
+    var userRole = <?= json_encode($user_role); ?>;
 </script>

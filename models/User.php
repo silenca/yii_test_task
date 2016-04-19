@@ -59,6 +59,19 @@ class User extends ActiveRecord implements IdentityInterface {
         ];
     }
 
+    public function getUserRole()
+    {
+        $user_role = '';
+        if (Yii::$app->user->can('admin')) {
+            $user_role = 'admin';
+        } elseif (Yii::$app->user->can('manager')) {
+            $user_role = 'manager';
+        } elseif (Yii::$app->user->can('operator')) {
+            $user_role = 'operator';
+        }
+        return $user_role;
+    }
+
     /**
      * @inheritdoc
      */

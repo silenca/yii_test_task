@@ -50,7 +50,9 @@ return [
             'actions',
             'calls',
             'notifications',
+            'tags',
             'updateContact',
+            'listen_call',
         ],
     ],
     'operator' => [
@@ -60,10 +62,9 @@ return [
             'contacts',
             'actions',
             'calls',
-            'listen_call',
-            'delete_contact',
-            'edit_comment',
+            'notifications',
             'updateContact',
+            'tags',
         ],
     ],
     'admin' => [
@@ -72,6 +73,7 @@ return [
         'children' => [
             'contacts',
             'actions',
+            'notifications',
             'reports',
             'calls',
             'listen_call',

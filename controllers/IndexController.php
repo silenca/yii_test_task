@@ -42,6 +42,12 @@ class IndexController extends BaseController
         if (Yii::$app->user->isGuest) {
             return $this->redirect('/login');
         }
-        return $this->redirect('/contacts'); 
+        $permissions = Yii::$app->authManager->getPermissions();
+        foreach ($permissions as $permission) {
+            if (Yii::$app->user->can($permission->name)) {
+                return $this->redirect("/$permission->name");
+            }
+        }
+        return $this->redirect('/contacts');
     }
 }

@@ -66,19 +66,23 @@ class RbacController extends Controller {
         $authManager->addChild($manager, $actions);
         $authManager->addChild($manager, $calls);
         $authManager->addChild($manager, $notifications);
+        $authManager->addChild($manager, $tags);
         $authManager->addChild($manager, $updateContact);
+        $authManager->addChild($manager, $listen_call);
         
         $authManager->addChild($operator, $contacts);
         $authManager->addChild($operator, $actions);
-//        $authManager->addChild($operator, $reports);
         $authManager->addChild($operator, $calls);
-        $authManager->addChild($operator, $listen_call);
-        $authManager->addChild($operator, $delete_contact);
-        $authManager->addChild($operator, $edit_comment);
+        $authManager->addChild($operator, $notifications);
+//        $authManager->addChild($operator, $listen_call);
+//        $authManager->addChild($operator, $delete_contact);
+//        $authManager->addChild($operator, $edit_comment);
         $authManager->addChild($operator, $updateContact);
+        $authManager->addChild($operator, $tags);
         
         $authManager->addChild($admin, $contacts);
         $authManager->addChild($admin, $actions);
+        $authManager->addChild($admin, $notifications);
         $authManager->addChild($admin, $reports);
         $authManager->addChild($admin, $calls);
         $authManager->addChild($admin, $listen_call);

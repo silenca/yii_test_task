@@ -23,13 +23,24 @@ class TagsController extends BaseController {
                             'index',
                             'gettags',
                             'getdata',
+                            'getusers',
+                            'getcontacts',
                             'edit',
                             'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['admin', 'manager'],
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'gettags',
+                            'getdata',
                             'getusers',
                             'getcontacts',
                         ],
                         'allow' => true,
-                        'roles' => ['admin'],
+                        'roles' => ['operator'],
                     ],
                 ],
             ],
@@ -56,7 +67,38 @@ class TagsController extends BaseController {
         $table_contact_cols =  $contact_cols;
         $filter_contact_cols =  $contact_cols;
         unset($filter_contact_cols['id']);
-        return $this->render('index', ['hide_contact_columns' => $hide_contact_columns, 'table_contact_cols' => $table_contact_cols, 'filter_contact_cols' => $filter_contact_cols]);
+
+        $user_role = Yii::$app->user->identity->getUserRole();
+
+        return $this->render('index', [
+            'hide_contact_columns' => $hide_contact_columns,
+            'table_contact_cols' => $table_contact_cols,
+            'filter_contact_cols' => $filter_contact_cols,
+            'user_role' => $user_role
+        ]);
+    }
+
+    public function actionGettags() {
+        $request_data = Yii::$app->request->get();
+        $term = $request_data['term'];
+        $query = Tag::find();
+        $user_id = Yii::$app->user->identity->getId();
+        $user_oper = Yii::$app->user->can('operator');
+        if ($user_oper) {
+            $query->joinWith('users')->andWhere(['=', 'user.id', $user_id]);
+        }
+        $query->andWhere(['like', 'tag.name', $term]);
+
+        $tags = $query->all();
+        $tags_widget = new TagsSelectWidget();
+        $tags_widget->tags = $tags;
+        $data = $tags_widget->run();
+
+        if (count($tags) > 0) {
+            $this->json(['items' => $data], 200);
+        } else {
+            $this->json(['items' => []], 404);
+        }
     }
 
     // Получение списка контактов для вывода в модальном окне.
@@ -162,31 +204,24 @@ class TagsController extends BaseController {
     {
 //        $request_data = Yii::$app->request->get();
         $query = User::find();
+        $user_role = Yii::$app->user->identity->getUserRole();
+        switch ($user_role) {
+            case 'admin':
+                $query->andWhere(['role' => [User::ROLE_OPERATOR, User::ROLE_MANAGER]]);
+                break;
+            case 'manager':
+                $query->andWhere(['role' => User::ROLE_OPERATOR]);
+                break;
+            case 'operator':
+                $query->andWhere(['role' => User::ROLE_OPERATOR]);
+                break;
+        }
 
         $dump = $query->createCommand()->rawSql;
         $users = $query->asArray()->all();
 
         if (count($users) > 0) {
             $this->json(['items' => $users], 200);
-        } else {
-            $this->json(['items' => []], 404);
-        }
-    }
-
-    public function actionGettags() {
-        $request_data = Yii::$app->request->get();
-        $term = $request_data['term'];
-        $query = Tag::find();
-
-        $query->andWhere(['like', 'name', $term]);
-
-        $tags = $query->all();
-        $tags_widget = new TagsSelectWidget();
-        $tags_widget->tags = $tags;
-        $data = $tags_widget->run();
-
-        if (count($tags) > 0) {
-            $this->json(['items' => $data], 200);
         } else {
             $this->json(['items' => []], 404);
         }

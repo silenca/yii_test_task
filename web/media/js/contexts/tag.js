@@ -2,9 +2,12 @@ var $tagContactsTable, $contactsModalTable;
 var tagContactsdataTable, contactsModaldataTable;
 var tagSelect;
 var tagUsersSelect;
+var contacts;
 
 $(function () {
     $tagContactsTable = $('#tag_contacts_table');
+
+    console.log(userRole); //TODO remove this later
 
     var $tagForm = $('#tag_form'),
         $tagId = $('#tag_id'),
@@ -120,8 +123,9 @@ $(function () {
 
         contactsModaldataTable.on( 'xhr', function () {
             var json = contactsModaldataTable.ajax.json();
-            var contacts = json.contacts;
-            $contactsList.val(contacts);
+            contacts = json.contacts;
+
+
         } );
 
         var $searchBoxes = $('input.search-input-text, select.search-input-select');
@@ -184,12 +188,12 @@ $(function () {
             minimumInputLength: 2,
             allowClear: true,
             theme: "default", // "classic"
-            debug: true // remove in production
+            debug: true  //TODO remove this later
         },
         tagUsersSelectOpts = {
             escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
             theme: "default", // "classic"
-            debug: true, // remove in production
+            debug: true,  //TODO remove this later
             multiple: true
         };
 
@@ -215,14 +219,16 @@ $(function () {
     $tagToggle.on('click', function(e) {
         e.preventDefault();
         var $this = $(this),
-            todayDate = moment().format('YYYY-MM-DD HH:mm:ss');
+            startDate = moment().format('YYYY-MM-DD HH:mm:ss'),
+            tagNameDate = moment().format('DD/MM/YYYY');
 
         if (!$this.hasClass('create_tag-active')) {
             manageTagData('clear');
             tagSelect.val(null).trigger("change");
             tagSelect.select2("destroy").attr('disabled', true).hide();
             $tagAdd.show().find('input').attr('disabled', false);
-            $tagStartDate.val(todayDate);
+            $tagStartDate.val(startDate);
+            $tagName.val(tagNameDate + ' ');
             $this.text('Поиск тегов');
         } else {
             manageTagData('clear');
@@ -283,8 +289,19 @@ $(function () {
         // });
         // contacts_line = contacts_line.slice(0,-1);
         // $('input[name="contacts_list"]').val(contacts_line);
+
+        // Объединение скрытого поля и отфильтрованных контактов
+        var hidden_arr = $contactsList.val().split(',');
+        var contacts_arr = contacts.split(',');
+
+        var concat_arr = hidden_arr.concat(contacts_arr);
+        var result_arr = concat_arr.filter(function (item, pos) {return concat_arr.indexOf(item) == pos});
+
+        var result = result_arr.join(',');
+        $contactsList.val(result);
+
         $contactsList.trigger('change');
-        contactsModaldataTable.columns().draw();
+        //contactsModaldataTable.columns().draw();
         $('#modalAddContactToTag').modal('hide');
         // console.log(contacts_line);
 
@@ -338,6 +355,8 @@ $(function () {
         contacts = $(this).val().split(',');
         //contactsModaldataTable.columns().search('').draw();
     });
+
+    userScenario(userRole);
 });
 
 function prepareData($form) {
@@ -379,18 +398,45 @@ function manageTagData(action, data) {
         $contactsList = $('#contacts_list');
     switch (action) {
         case 'fill':
-            $description.text(data.description);
-            $script.text(data.script);
+            $description.val(data.description);
+            $script.val(data.script);
             tagUsersSelect.val(data.tag_users).trigger("change");
             $as_task.prop('checked', data.as_task);
             $contactsList.val(data.tag_contacts).trigger('change');
             break;
         case 'clear':
-            $description.text('');
-            $script.text('');
+            $description.val('');
+            $script.val('');
             tagUsersSelect.val([]).trigger("change");
             $as_task.prop('checked', false);
             $contactsList.val('').trigger('change');
+            break;
+    }
+}
+
+function userScenario(userRole) {
+    var $description = $('#tag_description'),
+        $script = $('#tag_script'),
+        $as_task = $('#tag_as_task'),
+        $contactsList = $('#contacts_list'),
+        $tagToggle = $('#tag_toggle'),
+        $tagSubmit = $('#tag_submit'),
+        $addContacts = $('.add-contacts');
+    switch (userRole) {
+        case 'operator':
+            $tagToggle.hide();
+            tagUsersSelect.attr('disabled', true);
+            $as_task.parent().hide();
+            $tagSubmit.parent().hide();
+            $description.attr('disabled', true);
+            $script.parent().hide();
+            $addContacts.hide();
+            // $addContactTable.parent().hide();
+            // $description.val(data.description);
+            // $script.val(data.script);
+            // tagUsersSelect.val(data.tag_users).trigger("change");
+            // $as_task.prop('checked', data.as_task);
+            // $contactsList.val(data.tag_contacts).trigger('change');
             break;
     }
 }

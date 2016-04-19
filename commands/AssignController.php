@@ -17,9 +17,9 @@ class AssignController extends Controller {
         $managerRole = $authManager->getRole('manager');
         $authManager->assign($managerRole, 2);
         
-        $supervisorRole = $authManager->getRole('operator');
-        $authManager->assign($supervisorRole, 3);
-        $authManager->assign($supervisorRole, 4);
-        $authManager->assign($supervisorRole, 5);
+        $operatorRole = $authManager->getRole('operator');
+        $authManager->assign($operatorRole, 3);
+        $authManager->assign($operatorRole, 4);
+        $authManager->assign($operatorRole, 5);
     }
 }
