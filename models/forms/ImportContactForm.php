@@ -64,6 +64,13 @@ class ImportContactForm extends ContactForm
         return $rules;
     }
 
+    public function requiredForContact($attribute, $params)
+    {
+        if (empty($this->phones)) {
+            $this->addCustomError($attribute, 'Необходимо заполнить телефон');
+        }
+    }
+
     public function formName()
     {
         return 'import_contact';
