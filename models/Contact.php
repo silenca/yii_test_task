@@ -127,7 +127,7 @@ class Contact extends \yii\db\ActiveRecord {
     }
 
     public static function getColsForTableView() {
-        return [
+        $result =  [
             'id' => ['label' => 'ID', 'have_search' => false, 'orderable' => true],
             'int_id' => ['label' => '№', 'have_search' => false, 'orderable' => false],
             'surname' => ['label' => 'Фамилия', 'have_search' => true, 'orderable' => true],
@@ -146,6 +146,10 @@ class Contact extends \yii\db\ActiveRecord {
             'flat' => ['label' => 'Квартира', 'have_search' => true, 'orderable' => true],
             'delete_button' => ['label' => 'Удалить', 'have_search' => false, 'orderable' => false]
         ];
+        if (!Yii::$app->user->can('delete_contact')) {
+            unset($result['delete_button']);
+        }
+        return $result;
     }
 
 

@@ -266,6 +266,9 @@ $(function () {
             alert('Выберите тег');
         } else {
             $('#modalAddContactToTag').modal();
+            $('.search-input-text').val('');
+            contactsModaldataTable.search( '' )
+                .columns().search( '' ).draw();
         }
 
         e.preventDefault();

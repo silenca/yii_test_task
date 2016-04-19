@@ -82,7 +82,7 @@ class ContactForm extends Model
     public function rules()
     {
         return [
-            [['name', 'surname', 'phones'], 'requiredForContact'],
+            [['phones'], 'requiredForContact'],
             [['phones'], 'phoneArray'],
             [['emails'], 'emailArray'],
 
@@ -144,8 +144,8 @@ class ContactForm extends Model
 
     public function requiredForContact($attribute, $params)
     {
-        if (empty($this->name) || empty($this->surname) || empty($this->phones)) {
-            $this->addCustomError($attribute, 'Необходимо заполнить ФИО и телефон');
+        if (empty($this->phones)) {
+            $this->addCustomError($attribute, 'Необходимо заполнить телефон');
         }
     }
 

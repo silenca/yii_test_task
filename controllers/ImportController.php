@@ -91,8 +91,10 @@ class ImportController extends BaseController
 
         $contact_list = '';
         foreach ($new_contacts as $contact) {
-            $email = $contact[4];
-            $contact_row = Contact::find()->where(['first_email' => $email])->one();
+            $phones_str = $contact[2];
+            $phones = explode(',', $phones_str);
+            $first_phone = $phones[0];
+            $contact_row = Contact::find()->where(['first_phone' => $first_phone])->one();
             $contact_list .= $contact_row['id'] .',';
         }
         $contact_list = rtrim($contact_list, ",");
