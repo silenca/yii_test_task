@@ -99,14 +99,20 @@ class Tag extends \yii\db\ActiveRecord {
     public function edit($related) {
         $transaction = Yii::$app->db->beginTransaction();
         $is_new = $this->isNewRecord;
+        $user_id = Yii::$app->user->identity->getId();
+        $user_role = Yii::$app->user->identity->getUserRole();
         try {
             if ($is_new) {
                 $this->start_date = date('Y-m-d G:i:s', strtotime($this->start_date));
                 $this->end_date = date('Y-m-d G:i:s');
             }
             $this->save();
+            if ($user_role == 'manager') {
+                $related['user_ids'][] = $user_id;
+            }
             $this->setRelation('users', $related['user_ids']);
             $this->setRelation('contacts', $related['contact_ids']);
+
             if ($this->hasErrors()) {
                 $transaction->rollback();
                 return false;

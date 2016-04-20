@@ -10,13 +10,12 @@ use Yii;
  * @property integer $id
  * @property integer $contact_id
  * @property string $system_date
- * @property string $schedule_date
  * @property integer $manager_id
  *
  * @property Contact $contact
  * @property User $manager
  */
-class ContactScheduledCall extends \yii\db\ActiveRecord {
+class ContactRingRound extends \yii\db\ActiveRecord {
     
     public $history_text;
 
@@ -24,7 +23,7 @@ class ContactScheduledCall extends \yii\db\ActiveRecord {
      * @inheritdoc
      */
     public static function tableName() {
-        return 'contact_scheduled_call';
+        return 'contact_ring_round';
     }
 
     /**
@@ -34,7 +33,7 @@ class ContactScheduledCall extends \yii\db\ActiveRecord {
         return [
             [['contact_id', 'system_date', 'manager_id'], 'required'],
             [['contact_id', 'manager_id'], 'integer'],
-            [['system_date', 'schedule_date'], 'safe'],
+            [['system_date'], 'safe'],
             [['contact_id'], 'exist', 'skipOnError' => true, 'targetClass' => Contact::className(), 'targetAttribute' => ['contact_id' => 'id']],
             [['manager_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['manager_id' => 'id']],
         ];
@@ -48,7 +47,6 @@ class ContactScheduledCall extends \yii\db\ActiveRecord {
             'id' => 'ID',
             'contact_id' => 'Contact ID',
             'system_date' => 'System Date',
-            'schedule_date' => 'Schedule Date',
             'manager_id' => 'Manager ID',
         ];
     }
@@ -67,18 +65,14 @@ class ContactScheduledCall extends \yii\db\ActiveRecord {
         return $this->hasOne(User::className(), ['id' => 'manager_id']);
     }
 
-    public function add($contact_id, $schedule_date, $action_comment_text, $call_order_token, $attitude_level) {
+    public function add($contact_id, $action_comment_text, $call_order_token, $attitude_level, $action_tag_id) {
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $this->contact_id = $contact_id;
             $this->system_date = date('Y-m-d G:i:s', time());
             $action = new Action();
-            $action_type = ActionType::find()->where(['name' => 'scheduled_call'])->one();
-            $action->add($contact_id, $action_type->id, [], $schedule_date);
-            if (strlen($schedule_date) > 0) {
-                $this->schedule_date = date('Y-m-d G:i:s', strtotime($schedule_date));
-                $action->addManagerNotification($action->id, $this->system_date, 'scheduled_call', $this->manager_id, $this->contact_id);
-            }
+            $action_type = ActionType::find()->where(['name' => 'ring_round'])->one();
+            $action->add($contact_id, $action_type->id, []);
             if (!is_null($action_comment_text)) {
                 $action_comment = new ActionComment(['comment' => $action_comment_text]);
                 $action_comment->save();
@@ -88,6 +82,10 @@ class ContactScheduledCall extends \yii\db\ActiveRecord {
                 $call = Call::findOne(['call_order_token' => $call_order_token]);
                 if ($call) {
                     $call->attitude_level = $attitude_level;
+
+                    if (!is_null($action_tag_id)) {
+                        $call->tag_id = $action_tag_id;
+                    }
                     $call->save();
                 }
             }
@@ -95,8 +93,8 @@ class ContactScheduledCall extends \yii\db\ActiveRecord {
             $this->save();
 
             $contact_history = new ContactHistory();
-            $history_text = $this->buildHistory($schedule_date);
-            $contact_history->add($contact_id, $history_text, 'scheduled_call', $this->system_date);
+            $history_text = $this->buildHistory();
+            $contact_history->add($contact_id, $history_text, 'ring_round', $this->system_date);
             $this->setHistoryText($history_text);
             $transaction->commit();
             return true;
@@ -106,11 +104,8 @@ class ContactScheduledCall extends \yii\db\ActiveRecord {
         }
     }
 
-    private function buildHistory($schedule_date) {
-        $history_text = "Звонок клиенту";
-        if (strlen($schedule_date) > 0) {
-            $history_text.=" на время " . date('d-m-Y G:i:s', strtotime($schedule_date));
-        }
+    private function buildHistory() {
+        $history_text = "Прозвон контакта";
         return $history_text;
     }
 

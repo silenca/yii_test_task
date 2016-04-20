@@ -38,46 +38,19 @@ var form_action_call_validate = {
                     $contact_form.modal('hide');
                     tagContactsdataTable.columns(0).search($('#contacts_list').val()).draw();
                     contactsModaldataTable.columns().search('').draw();
+                    $contact_form.find('.history_content').append("<div class='ring_round' id='ring_round_call_id-" + result.data.id + "'>" + result.data.system_date + " - " + result.data.history + "</div>");
                 } else {
                     resetActionForm(form);
                     if ($(form).find('.google-cal-show').is(':checked')) {
                         var event = createGEventData('action_call', $(form).find('input[name="schedule_date"]').val());
                         createGCalEvent(event);
                     }
-                    $contact_form.find('.history_content').append("<div class='visit' id='shedule_call_id-" + result.data.id + "'>" + result.data.system_date + " - " + result.data.history + "</div>");
+                    $contact_form.find('.history_content').append("<div class='scheduled_call' id='shedule_call_id-" + result.data.id + "'>" + result.data.system_date + " - " + result.data.history + "</div>");
                 }
             }
         });
     }
 };
-
-
-// var action_email_now_form_validate = {
-//     rules: {},
-//     messages: {},
-//     submitHandler: function (form) {
-//         var contact_id = $('#contact-id').val();
-//         if (!contact_id) {
-//             showNotification($contact_form, 'Контакт еще не создан', 'top', 'danger', 'bar');
-//             return false;
-//         }
-//         $('<input />').attr('type', 'hidden')
-//             .attr('name', "id")
-//             .attr('value', $('#contact-id').val())
-//             .appendTo(form);
-//         $('<input />').attr('type', 'hidden')
-//             .attr('name', "_csrf")
-//             .attr('value', _csrf)
-//             .appendTo(form);
-//         var data = $(form).serialize();
-//         $.post($(form).attr('action'), data, function (response) {
-//             var result = $.parseJSON(response);
-//             if (result.status === 200) {
-//                 $contact_form.find('.history_content').append("<div class='visit' id='visit_id-" + result.data.id + "'>" + result.data.system_date + " - " + result.data.history + "</div>");
-//             }
-//         });
-//     }
-// };
 
 var form_action_email_validate = {
     rules: {
@@ -114,7 +87,7 @@ var form_action_email_validate = {
                     var event = createGEventData('action_email', $(form).find('input[name="schedule_date"]').val());
                     createGCalEvent(event);
                 }
-                $contact_form.find('.history_content').append("<div class='visit' id='visit_id-" + result.data.id + "'>" + result.data.system_date + " - " + result.data.history + "</div>");
+                $contact_form.find('.history_content').append("<div class='scheduled_email' id='shedule_email_id-" + result.data.id + "'>" + result.data.system_date + " - " + result.data.history + "</div>");
             }
         });
     }
@@ -220,13 +193,15 @@ function initRingRound($tagForm) {
     var tagIdVal = $tagForm.find('#tag_search_select').val(),
         tagDescrVal = $tagForm.find('#tag_description').val(),
         tagScriptVal = $tagForm.find('#tag_script').val(),
-        $actionCallForm = $('#form_action_call');
+        $actionCallForm = $('#form_action_call'),
+        ringRoundActionUrl = '/contacts/ring-round';
 
     $contact_form.find('.script_content').html(tagScriptVal);
     $contact_form.find('.contact-history').find('.script-tab').show().find('a').trigger('click');
     $contact_form.find('#action_tag_id').val(tagIdVal);
     $contact_form.find('#action_tag_description').val(tagDescrVal).attr('disabled', true).parent().show();
     $actionCallForm.addClass('ring-round');
+    $actionCallForm.attr('action', ringRoundActionUrl);
     $actionCallForm.find('.action-title').hide();
     $actionCallForm.find('input[name="schedule_date"]').parents('.form-group').hide();
     $actionCallForm.find('#google_cal_show_call').parents('.form-group').hide();
@@ -402,26 +377,14 @@ function getHistory(id, $form) {
             $.each(response.data, function (i, val) {
                 var $item = $('<div/>');
                 switch (val.type) {
-                    case "show":
-                        $item.addClass('show');
-                        $item.attr('id', 'show_id-' + val.contact_action_id);
-                        break;
-                    case "visit":
-                        $item.addClass('show');
-                        $item.attr('id', 'object_id-' + val.contact_action_id);
-                        break;
-                    case "contract":
-                        $item.addClass('contract');
-                        $item.attr('id', 'contract_id-' + val.contact_action_id);
-                        break;
                     case "scheduled_call":
                         $item.addClass('scheduled_call');
                         break;
                     case "scheduled_email":
                         $item.addClass('scheduled_email');
                         break;
-                    case "payment":
-                        $item.addClass('payment');
+                    case 'ring_round':
+                        $item.addClass('ring_round');
                         break;
                 }
                 $item.append(val.datetime + " - " + val.text);

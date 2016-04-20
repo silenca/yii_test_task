@@ -15,6 +15,7 @@ use app\models\ContactContract;
 use app\models\ContactVisit;
 use app\models\ContactScheduledCall;
 use app\models\ContactScheduledEmail;
+use app\models\ContactRingRound;
 use app\models\User;
 use app\models\UploadDoc;
 use app\models\forms\ContactForm;
@@ -53,6 +54,7 @@ class ContactsController extends BaseController
                         'actions' => [
                             'objectschedulecall',
                             'objectscheduleemail',
+                            'ring-round'
                         ],
                         'allow' => true,
                         'roles' => ['manager', 'operator', 'admin'],
@@ -338,16 +340,35 @@ class ContactsController extends BaseController
         $this->json(false, 200);
     }
 
+    public function actionRingRound() {
+        $contact_id = Yii::$app->request->post('id');
+        $action_comment_text = Yii::$app->request->post('action_comment');
+        $call_order_token = Yii::$app->request->post('call_order_token');
+        $action_tag_id = Yii::$app->request->post('action_tag_id');
+        $attitude_level = Yii::$app->request->post('attitude');
+        $contact_ring_round = new ContactRingRound();
+        $contact_ring_round->manager_id = Yii::$app->user->identity->getId();
+        if ($contact_ring_round->add($contact_id, $action_comment_text, $call_order_token, $attitude_level, $action_tag_id)) {
+            $history_text = $contact_ring_round->getHistoryText();
+            $response_date = [
+                'id' => $contact_ring_round->id,
+                'system_date' => date('d-m-Y G:i:s', strtotime($contact_ring_round->system_date)),
+                'history' => $history_text
+            ];
+            $this->json($response_date, 200);
+        }
+        $this->json(false, 500);
+    }
+
     public function actionObjectschedulecall() {
         $contact_id = Yii::$app->request->post('id');
         $schedule_date = Yii::$app->request->post('schedule_date');
         $action_comment_text = Yii::$app->request->post('action_comment');
         $call_order_token = Yii::$app->request->post('call_order_token');
-        $action_tag_id = Yii::$app->request->post('action_tag_id');
         $attitude_level = Yii::$app->request->post('attitude');
         $contact_schedule_call = new ContactScheduledCall();
-        $contact_schedule_call->manager_id = Yii::$app->user->identity->id;
-        if ($contact_schedule_call->add($contact_id, $schedule_date, $action_comment_text, $call_order_token, $attitude_level, $action_tag_id)) {
+        $contact_schedule_call->manager_id = Yii::$app->user->identity->getId();
+        if ($contact_schedule_call->add($contact_id, $schedule_date, $action_comment_text, $call_order_token, $attitude_level)) {
             $history_text = $contact_schedule_call->getHistoryText();
             $response_date = [
                 'id' => $contact_schedule_call->id,

@@ -31,10 +31,17 @@ class ActionTableWidget extends Widget
             $data[$i][] = date("d-m-Y", strtotime($action['system_date']));
             switch ($action['type']) {
                 case "scheduled_call":
-                    $data[$i][] = "Запланирован звонок";
+                    if (is_null($action['schedule_date'])) {
+                        $data[$i][] = "Звонок клиенту";
+                    } else {
+                        $data[$i][] = "Запланирован звонок";
+                    }
                     break;
                 case "scheduled_email":
                     $data[$i][] = "Запланирован Email";
+                    break;
+                case "ring_round":
+                    $data[$i][] = "Прозвон контакта";
                     break;
             }
 

@@ -12,7 +12,7 @@ $(function () {
         $('#file-name').text(file_name);
     });
 
-    $('form').on('submit', function (e) {
+    $('#import_csv_form').on('submit', function (e) {
         e.preventDefault();
         var $form = $(this);
         if ($('#csv-file').val() == '') {

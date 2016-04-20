@@ -177,7 +177,7 @@ $this->params['active'] = 'tags';
                             <div id="file-name"></div>
                         </div>
                         <div class="panel-body">
-                            <form action="import/csv" method="POST" enctype="application/x-www-form-urlencoded">
+                            <form action="import/csv" id="import_csv_form" method="POST" enctype="application/x-www-form-urlencoded">
                                 <input type="file" name="csv_file" id="csv-file" style="display: none" accept=".csv"/>
                                 <input type="submit" class="btn btn-complete btn-cons" value="Начать импорт"/>
                                 <div class="result">
