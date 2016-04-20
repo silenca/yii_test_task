@@ -87,7 +87,7 @@ class TagsController extends BaseController {
         $user_id = Yii::$app->user->identity->getId();
 //        $user_oper = Yii::$app->user->can('operator');
         $user_role = Yii::$app->user->identity->getUserRole();
-        if ($user_role !== 'admin') {
+        if ($user_role == 'manager' || $user_role == 'operator') {
             $query->joinWith('users')->andWhere(['=', 'user.id', $user_id]);
             if ($user_role == 'operator') {
                 $query->andWhere(['=', 'tag.as_task', 1]);

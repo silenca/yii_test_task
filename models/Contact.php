@@ -344,103 +344,6 @@ class Contact extends \yii\db\ActiveRecord {
         return false;
     }
 
-    //works only on active contacts (skips records marked as deleted)
-//    public function isPhoneNumberExists() {
-//        if (count($this->new_phones) > 0) {
-//            foreach ($this->new_phones as $new_phone) {
-//                $contact = self::find()
-//                    ->andWhere(['is_deleted' => false])
-//                    ->andWhere(
-//                        [
-//                            'or',
-//                            ['first_phone' => $new_phone],
-//                            ['second_phone' => $new_phone],
-//                            ['third_phone' => $new_phone],
-//                            ['fourth_phone' => $new_phone]
-//                        ]
-//                    )
-//                    ->one();
-//                if ($contact) {
-//                    $this->addError('new_phones', $new_phone.', такой телефон уже существует в базе');
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
-//
-//    public function isEmailExists() {
-//        if (count($this->new_emails) > 0) {
-//            foreach ($this->new_emails as $new_email) {
-//                $contact = self::find()
-//                    ->andWhere(['is_deleted' => false])
-//                    ->andWhere(
-//                        [
-//                            'or',
-//                            ['first_email' => $new_email],
-//                            ['second_email' => $new_email],
-//                        ]
-//                    )
-//                    ->one();
-//                if ($contact) {
-//                    $this->addError('new_emails', $new_email.', такой Email уже существует в базе');
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
-
-//    public function buildData($data) {
-//        if (isset($data['phones'])) {
-//            $db_phones = $this->getPhoneColsWithVal();
-//            if (!empty($data['phones'])) {
-//                $phones = forms\ContactForm::dataConvert($data['phones'], 'phones', 'explode');
-//                foreach ($phones as $phone_key => $phone_val) {
-//                    if ($phone_val !== null) {
-////                        if (!ArrayHelper::isIn($phone_val, $db_phones)) {
-////                            $this->new_phones[] = $phone_val;
-////                        }
-//                        if (!in_array($phone_val, $db_phones)) {
-//                            $this->new_phones[] = $phone_val;
-//                        }
-//                    }
-//                    $this->$phone_key = $phone_val;
-//                }
-//            } else {
-//                foreach ($db_phones as $phone_key => $phone_val) {
-//                    $this->$phone_key = null;
-//                }
-//            }
-//            unset($data['phones']);
-//        }
-//        if (isset($data['emails'])) {
-//            $db_emails = $this->getEmailColsWithVal();
-//            if (!empty($data['emails'])) {
-//                $emails = forms\ContactForm::dataConvert($data['emails'], 'emails', 'explode');
-//                foreach ($emails as $email_key => $email_val) {
-//                    if ($email_val !== null) {
-////                        if (!ArrayHelper::isIn($email_val, $db_emails)) {
-////                            $this->new_emails[] = $email_val;
-////                        }
-//                        if (!in_array($email_val, $db_emails)) {
-//                            $this->new_emails[] = $email_val;
-//                        }
-//                    }
-//                    $this->$email_key = $email_val;
-//                }
-//            } else {
-//                foreach ($db_emails as $email_key => $email_val) {
-//                    $this->$email_key = null;
-//                }
-//            }
-//            unset($data['emails']);
-//        }
-//        foreach ($data as $name => $value) {
-//            $this->$name = $value;
-//        }
-//    }
-
     public function edit($related) {
         $transaction = Yii::$app->db->beginTransaction();
 //        $call = new Call();
@@ -505,18 +408,6 @@ class Contact extends \yii\db\ActiveRecord {
             }
         }
         $called_contacts = $query->with('contact')->all();
-//        foreach ($called_contacts as &$called_contact) {
-//            $attr = $called_contact->attributes;
-//            $attr2 = $called_contact->contact->attributes;
-//            $called_contact->attributes = array_merge($called_contact->attributes, $called_contact->contact->attributes);
-//        }
-//        $called_contacts = array_map(function($called_cont) {
-//            return array_merge($called_cont->attributes, $called_cont->contact->attributes);
-////            $res = [];
-////            foreach ($called_cont->contact as $cont) {
-////
-////            }
-//        }, $called_contacts); TODO: remove this
 
         $dump = $query->createCommand()->rawSql;
         return $called_contacts;
