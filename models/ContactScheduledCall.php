@@ -67,7 +67,7 @@ class ContactScheduledCall extends \yii\db\ActiveRecord {
         return $this->hasOne(User::className(), ['id' => 'manager_id']);
     }
 
-    public function add($contact_id, $schedule_date, $action_comment_text, $call_order_token, $attitude_level) {
+    public function add($contact_id, $schedule_date, $action_comment_text, $call_order_token, $attitude_level, $action_tag_id) {
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $this->contact_id = $contact_id;
@@ -79,19 +79,26 @@ class ContactScheduledCall extends \yii\db\ActiveRecord {
                 $this->schedule_date = date('Y-m-d G:i:s', strtotime($schedule_date));
                 $action->addManagerNotification($action->id, $this->system_date, 'scheduled_call', $this->manager_id, $this->contact_id);
             }
-            if ($action_comment_text != null) {
+            if (!is_null($action_comment_text)) {
                 $action_comment = new ActionComment(['comment' => $action_comment_text]);
                 $action_comment->save();
                 $action->link('comment', $action_comment);
 //                $action_comment->add($action->id, $action_comment_text);
             }
-            if ($call_order_token != null) {
+            if (!is_null($call_order_token)) {
                 $call = Call::findOne(['call_order_token' => $call_order_token]);
                 if ($call) {
                     $call->attitude_level = $attitude_level;
+
+                    if (!is_null($action_tag_id)) {
+                        $call->tag_id = $action_tag_id;
+//                        $cont_called = new ContactCalled(['contact_id' => $contact_id, 'call_id' => $call->phone_number, 'manager_id' => $this->manager_id]);
+//                        $cont_called->save();
+                    }
                     $call->save();
                 }
             }
+
             $this->save();
 
             $contact_history = new ContactHistory();

@@ -8,6 +8,7 @@ use yii\filters\VerbFilter;
 use app\models\Contact;
 use app\models\User;
 use app\models\Call;
+use app\models\TempContactsPool;
 use app\components\SessionHelper;
 use app\components\Filter;
 use app\components\Notification;
@@ -176,6 +177,13 @@ class AsteriskController extends BaseController {
                         $total_time = $post['totaltime'];
                         $answered_time = $post['answeredtime'];
                         $record_file = $post['record_file'];
+
+                        if (isset($call->contact_id)) {
+                            if ($cont_pool = TempContactsPool::findOne(['contact_id' => $call->contact_id])) {
+                                Contact::addContactCalled($call->contact_id, $call->id, $cont_pool->manager_id);
+                                $cont_pool->delete();
+                            }
+                        }
                     }
                     if ($call->callEnd($date_time, $total_time, $answered_time, $record_file, $status, $managers)) {
                         $this->json([], 200);

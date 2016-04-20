@@ -124,42 +124,62 @@ use app\models\User;
                                     class="contact-history col-md-4">
                                     <div class="panel panel-transparent ">
                                         <!-- Nav tabs -->
-                                        <ul class="nav nav-tabs nav-tabs-fillup">
+                                        <ul class="nav nav-tabs nav-tabs-fillup history-header">
                                             <li class="history-tab active">
                                                 <a data-toggle="tab" href="#history"
                                                    aria-expanded="true"><span>История</span></a>
                                             </li>
-                                            <li class="contract-tab" style="display: none">
-                                                <a data-toggle="tab" href="#contracts" aria-expanded="false"><span>Контракты</span></a>
+                                            <li class="script-tab">
+                                                <a data-toggle="tab" href="#script" aria-expanded="false"><span>Скрипт</span></a>
                                             </li>
                                         </ul>
                                         <!-- Tab panes -->
-                                        <div class="tab-pane slide-left active" id="history">
-                                            <div class="row">
-                                                <div class="panel panel-default contact-history-rel">
-                                                    <div class="panel-heading">
-                                                        <div class="panel-title">История взаимоотношений</div>
-                                                    </div>
-                                                    <div class="panel-body">
-                                                        <div class="form-group">
-                                                            <div class="scroll-window-content" style="height: 250px">
-                                                                <img
-                                                                    class="history_loader image-responsive-height m-t-45 demo-mw-100"
-                                                                    src="media/img/progress/progress.svg" alt="Progress"
-                                                                    style="display: none">
-                                                                <div class="history_content">
+                                        <div class="tab-content">
+                                            <div class="tab-pane slide-left active" id="history">
+                                                <div class="row">
+                                                    <div class="panel panel-default contact-history-rel">
+                                                        <div class="panel-heading">
+                                                            <div class="panel-title">История взаимоотношений</div>
+                                                        </div>
+                                                        <div class="panel-body">
+                                                            <div class="form-group">
+                                                                <div class="scroll-window-content" style="height: 250px">
+                                                                    <img
+                                                                        class="history_loader image-responsive-height m-t-45 demo-mw-100"
+                                                                        src="media/img/progress/progress.svg" alt="Progress"
+                                                                        style="display: none">
+                                                                    <div class="history_content">
+                                                                    </div>
                                                                 </div>
                                                             </div>
+                                                            <div class="form-group">
+                                                                <textarea id="contact-comment" rows="6" cols="10"
+                                                                          placeholder="Комментарий"
+                                                                          class="form-control"></textarea>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <button id="add-comment" class="btn btn-complete btn-block">
+                                                                    Добавить
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                        <div class="form-group">
-                                                            <textarea id="contact-comment" rows="6" cols="10"
-                                                                      placeholder="Комментарий"
-                                                                      class="form-control"></textarea>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <button id="add-comment" class="btn btn-complete btn-block">
-                                                                Добавить
-                                                            </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane slide-left" id="script">
+                                                <div class="row">
+                                                    <div class="panel panel-default contact-script-rel">
+                                                        <div class="panel-body">
+                                                            <div class="form-group">
+                                                                <div class="" style="height: 600px; overflow-y: auto">
+                                                                    <img
+                                                                        class="script_loader image-responsive-height m-t-45 demo-mw-100"
+                                                                        src="media/img/progress/progress.svg" alt="Progress"
+                                                                        style="display: none">
+                                                                    <div class="script_content text-left">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -195,12 +215,12 @@ use app\models\User;
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="form-group action-title">
                                                         <label>Запланировать звонок</label>
                                                     </div>
                                                     <div class="form-group input-group datepicker-content">
                                                         <label class="input-group-addon success"
-                                                               for="contact-first_name"><i
+                                                               for=""><i
                                                                 class="fa fa-fw fa-calendar"></i></label>
                                                         <input name="schedule_date" type="text"
                                                                class="form-control object-schedule-datetime datepicker"
@@ -213,9 +233,15 @@ use app\models\User;
                                                             <label for="google_cal_show_call">В Google Calendar</label>
                                                         </div>
                                                     </div>
+                                                    <div class="form-group text-left" style="display: none">
+                                                        <label for="action_tag_description">Описание:</label>
+                                                        <textarea name="action_tag_description" id="action_tag_description" rows="10" cols="10"
+                                                                      class="action-tag-description form-control"></textarea>
+                                                        <input type="hidden" name="action_tag_id" id="action_tag_id">
+                                                    </div>
                                                     <hr>
                                                     <div class="form-group">
-                                                            <textarea name="action_comment" id="call_action-comment" rows="6" cols="10"
+                                                        <textarea name="action_comment" id="call_action-comment" rows="6" cols="10"
                                                                       placeholder="Комментарий"
                                                                       class="action-comment form-control"></textarea>
                                                     </div>
@@ -258,12 +284,12 @@ use app\models\User;
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="form-group action-title">
                                                         <label>Запланировать Email</label>
                                                     </div>
                                                     <div class="form-group input-group datepicker-content">
                                                         <label class="input-group-addon success"
-                                                               for="contact-first_name"><i
+                                                               for=""><i
                                                                 class="fa fa-fw fa-calendar"></i></label>
                                                         <input name="schedule_date" type="text"
                                                                class="form-control object-schedule-datetime datepicker"

@@ -480,4 +480,96 @@ class Contact extends \yii\db\ActiveRecord {
             $this->link('tags', $new_tag);
         }
     }
+
+    public static function getCalledContacts($filter_ids = [], $select = [], $manager_id = null, $as_array = false, $array_val = '', $rawSql = false)
+    {
+        $query = ContactCalled::find()->select($select);
+        if ($filter_ids) {
+            $query->where(['contact_id' => $filter_ids]);
+        }
+        if ($manager_id) {
+            $query->andWhere(['=', ContactCalled::tableName().'.manager_id', $manager_id]);
+        }
+        if ($rawSql) {
+            return $query->createCommand()->rawSql;
+        }
+        if ($as_array) {
+            $query->asArray();
+            if ($array_val != '') {
+                $contacts = $query->all();
+                $res = [];
+                foreach ($contacts as $contact) {
+                    $res[] = $contact[$array_val];
+                }
+                return $res;
+            }
+        }
+        $called_contacts = $query->with('contact')->all();
+//        foreach ($called_contacts as &$called_contact) {
+//            $attr = $called_contact->attributes;
+//            $attr2 = $called_contact->contact->attributes;
+//            $called_contact->attributes = array_merge($called_contact->attributes, $called_contact->contact->attributes);
+//        }
+//        $called_contacts = array_map(function($called_cont) {
+//            return array_merge($called_cont->attributes, $called_cont->contact->attributes);
+////            $res = [];
+////            foreach ($called_cont->contact as $cont) {
+////
+////            }
+//        }, $called_contacts); TODO: remove this
+
+        $dump = $query->createCommand()->rawSql;
+        return $called_contacts;
+    }
+
+    public static function getContactsInPool($select = [], $manager_id = null, $as_array = false, $array_val = '', $rawSql = false)
+    {
+        $query = TempContactsPool::find()->select($select)->joinWith('contact');
+        if ($manager_id) {
+            $query->andWhere(['!=', TempContactsPool::tableName().'.manager_id', $manager_id]);
+        }
+        if ($rawSql) {
+            return $query->createCommand()->rawSql;
+        }
+        if ($as_array) {
+            $query->asArray();
+            if ($array_val != '') {
+                $contacts = $query->all();
+                $res = [];
+                foreach ($contacts as $contact) {
+                    $res[] = $contact[$array_val];
+                }
+                return $res;
+            }
+        }
+        $dump = $query->createCommand()->rawSql;
+        return $query->all();
+    }
+
+    public static function addContInPool($contact_id, $manager_id)
+    {
+        if (!TempContactsPool::find()->where(['contact_id' => $contact_id])->exists()) {
+            $cont_pool = new TempContactsPool(['contact_id' => $contact_id, 'manager_id' => $manager_id]);
+            return $cont_pool->save();
+        }
+        return false;
+    }
+
+    public static function removeContInPool($contact_id)
+    {
+        $cont_pool = TempContactsPool::findOne(['contact_id' => $contact_id]);
+        if ($cont_pool) {
+            return $cont_pool->delete();
+        }
+        return false;
+    }
+
+    public static function addContactCalled($contact_id, $call_id, $manager_id)
+    {
+        if (!ContactCalled::find()->where(['contact_id' => $contact_id])->exists()) {
+            $cont_called = new ContactCalled(['contact_id' => $contact_id, 'call_id' => $call_id, 'manager_id' => $manager_id]);
+            return $cont_called->save();
+        }
+        return false;
+    }
 }

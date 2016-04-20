@@ -33,12 +33,19 @@ var form_action_call_validate = {
             $(form).find('input[name="_csrf"]').remove();
             var result = $.parseJSON(response);
             if (result.status === 200) {
-                resetActionForm(form);
-                if ($(form).find('.google-cal-show').is(':checked')) {
-                    var event = createGEventData('action_call', $(form).find('input[name="schedule_date"]').val());
-                    createGCalEvent(event);
+                // TODO: переделать это
+                if ($(form).hasClass('ring-round')) {
+                    $contact_form.modal('hide');
+                    tagContactsdataTable.columns(0).search($('#contacts_list').val()).draw();
+                    contactsModaldataTable.columns().search('').draw();
+                } else {
+                    resetActionForm(form);
+                    if ($(form).find('.google-cal-show').is(':checked')) {
+                        var event = createGEventData('action_call', $(form).find('input[name="schedule_date"]').val());
+                        createGCalEvent(event);
+                    }
+                    $contact_form.find('.history_content').append("<div class='visit' id='shedule_call_id-" + result.data.id + "'>" + result.data.system_date + " - " + result.data.history + "</div>");
                 }
-                $contact_form.find('.history_content').append("<div class='visit' id='shedule_call_id-" + result.data.id + "'>" + result.data.system_date + " - " + result.data.history + "</div>");
             }
         });
     }
@@ -209,12 +216,33 @@ function initCallNow(phone) {
     });
 }
 
+function initRingRound($tagForm) {
+    var tagIdVal = $tagForm.find('#tag_search_select').val(),
+        tagDescrVal = $tagForm.find('#tag_description').val(),
+        tagScriptVal = $tagForm.find('#tag_script').val(),
+        $actionCallForm = $('#form_action_call');
+
+    $contact_form.find('.script_content').html(tagScriptVal);
+    $contact_form.find('.contact-history').find('.script-tab').show().find('a').trigger('click');
+    $contact_form.find('#action_tag_id').val(tagIdVal);
+    $contact_form.find('#action_tag_description').val(tagDescrVal).attr('disabled', true).parent().show();
+    $actionCallForm.addClass('ring-round');
+    $actionCallForm.find('.action-title').hide();
+    $actionCallForm.find('input[name="schedule_date"]').parents('.form-group').hide();
+    $actionCallForm.find('#google_cal_show_call').parents('.form-group').hide();
+    // $('.contact-actions').find('.cs-select').on('click', function (e) { e.preventDefault(); });
+}
+
 function changeValidationRequired(options, state) {
     options.rules.schedule_date.required = !state;
     if (options.rules.call_order_token !== undefined) {
         options.rules.call_order_token.required = state;
     }
 }
+
+// function changeActionSubmitHandler(options, callback) {
+//     options.submitHandler = callback;
+// }
 
 function openContactForm(id) {
     buildContactForm(id, $contact_form, function () {
@@ -240,6 +268,7 @@ function clearContactForm($form) {
     $form.find('#contact-id').val('');
     $form.find('.contact-title').text('Новый контакт');
     $form.find('.history_content').empty();
+    $form.find('.script_content').empty();
     $form.find('input').val('');
     $form.find('#contact_manager_name').text('');
     $form.find('.contact-manager-name-cont').hide();
@@ -247,8 +276,8 @@ function clearContactForm($form) {
 }
 
 function buildContactForm(id, $form, callback) {
-    $form.find('.contact-history').find('.contract-tab, #contracts').removeClass('active');
-    $form.find('.contact-history').find('.contract-tab').hide();
+    $form.find('.contact-history .history-header li').removeClass('active');
+    $form.find('.contact-history').find('.script-tab').hide();
     $form.find('.contact-history').find('.history-tab, #history').addClass('active');
     hideNotifications($form);
     getHistory(id, $form);
@@ -266,10 +295,6 @@ function buildContactForm(id, $form, callback) {
             $form.find('#contact_surname').val(data.surname);
             $form.find('#contact_name').val(data.name);
             $form.find('#contact_middle_name').val(data.middle_name);
-            // var first_phone = data.first_mobile;
-            // if (data.first_landline) {
-            //     first_phone += ', ' + data.first_landline;
-            // }
             if (data.is_deleted == 1) {
                 $('.contact-deleted').show();
             } else {
@@ -304,11 +329,7 @@ function editContact(name, value, $form) {
     $.each(bind_inputs, function (key, value) {
         data[key] = value;
     });
-    //data[name] = value;
     data['_csrf'] = _csrf;
-//    if (bind_inputs['id']) {
-//        data['id'] = bind_inputs['id'];
-//    }
     if (bind_inputs['name'] && bind_inputs['surname'] && bind_inputs['phones']) {
         $.post('/contacts/edit', data, function (response) {
             $form.find('label.error').remove();

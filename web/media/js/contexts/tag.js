@@ -7,8 +7,6 @@ var contacts;
 $(function () {
     $tagContactsTable = $('#tag_contacts_table');
 
-    console.log(userRole); //TODO remove this later
-
     var $tagForm = $('#tag_form'),
         $tagId = $('#tag_id'),
         $tagSelectBox = $('#tag_search_select'),
@@ -359,6 +357,14 @@ $(function () {
         //contactsModaldataTable.columns().search('').draw();
     });
 
+    $(document).on('click', '#tag_contacts_table .contact-phone', function(e) {
+        var contactId = $(this).parents('tr').data('id'),
+            phone = $(this).text();
+        openContactForm(contactId);
+        initCallNow(phone);
+        initRingRound($tagForm);
+    });
+
     userScenario(userRole);
 });
 
@@ -376,6 +382,9 @@ function prepareData($form) {
     }
     data.tag_users = tagUsersSelect.val();
 
+    // if ($('#contacts_list').val() != "") {
+    //     data.tag_contacts = $('#contacts_list').val().split(',');
+    // }
     data.tag_contacts = $('#contacts_list').val().split(',');
     data.as_task = $('#tag_as_task').is(':checked') ? 1 : 0;
     data._csrf = _csrf;
@@ -434,12 +443,6 @@ function userScenario(userRole) {
             $description.attr('disabled', true);
             $script.parent().hide();
             $addContacts.hide();
-            // $addContactTable.parent().hide();
-            // $description.val(data.description);
-            // $script.val(data.script);
-            // tagUsersSelect.val(data.tag_users).trigger("change");
-            // $as_task.prop('checked', data.as_task);
-            // $contactsList.val(data.tag_contacts).trigger('change');
             break;
     }
 }

@@ -8,6 +8,8 @@ use yii\filters\VerbFilter;
 use app\models\Tag;
 use app\models\User;
 use app\models\Contact;
+//use app\models\ContactCalled;
+//use app\models\TempContactsPool;
 use app\components\widgets\TagContactsTableWidget;
 use app\components\widgets\TagsSelectWidget;
 use app\components\widgets\ContactTagTableWidget;
@@ -83,12 +85,15 @@ class TagsController extends BaseController {
         $term = $request_data['term'];
         $query = Tag::find();
         $user_id = Yii::$app->user->identity->getId();
-        $user_oper = Yii::$app->user->can('operator');
-        if ($user_oper) {
+//        $user_oper = Yii::$app->user->can('operator');
+        $user_role = Yii::$app->user->identity->getUserRole();
+        if ($user_role == 'operator') {
             $query->joinWith('users')->andWhere(['=', 'user.id', $user_id]);
+            $query->andWhere(['=', 'tag.as_task', 1]);
         }
         $query->andWhere(['like', 'tag.name', $term]);
 
+        $dump = $query->createCommand()->rawSql;
         $tags = $query->all();
         $tags_widget = new TagsSelectWidget();
         $tags_widget->tags = $tags;
@@ -229,15 +234,43 @@ class TagsController extends BaseController {
 
     public function actionGetdata() {
         $request_data = Yii::$app->request->get();
-        $filter_ids = explode(',', $request_data['columns'][0]['search']['value']);
+        if (!empty($request_data['columns'][0]['search']['value'])) {
+            $filter_ids = explode(',', $request_data['columns'][0]['search']['value']);
+        }
 
         if (isset($filter_ids) && count($filter_ids) > 0) {
-            $query = Contact::find()->with('phones');
+            $user_id = Yii::$app->user->identity->getId();
+            $user_role = Yii::$app->user->identity->getUserRole();
+
+            $query = Contact::find()->with('phones')->orderBy('id');
             $query->where(['id' => $filter_ids]);
 
-            $contacts = $query->all();
+//            $cont_called_tbl_name = ContactCalled::tableName();
+            if ($user_role == 'operator') {
+//                $cont_tbl_name = Contact::tableName();
+                $called_contacts = Contact::getCalledContacts($filter_ids, [], $user_id);
+                $called_ids = Contact::getCalledContacts([], ['contact_id'], null, true, 'contact_id');
+                $queue_ids = Contact::getContactsInPool(['contact_id'], $user_id, true, 'contact_id');
+                $query->andWhere(['not in', 'id', $called_ids]);
+                $query->andWhere(['not in', 'id', $queue_ids]);
+
+                $dump = $query->createCommand()->rawSql;
+                $contacts[0] = $query->one();
+                Contact::addContInPool($contacts[0]['id'], $user_id);
+//                Contact::removeContInPool($contacts[0]['id']);
+            } else {
+                $called_contacts = Contact::getCalledContacts($filter_ids);
+                $called_ids = Contact::getCalledContacts([], ['contact_id'], null, true, 'contact_id');
+                $query->andWhere(['not in', 'id', $called_ids]);
+
+                $dump = $query->createCommand()->rawSql;
+                $contacts = $query->all();
+            }
+
+            $contacts = array_merge($called_contacts, $contacts);
             $total_count = count($contacts);
             $total_filtering_count = $total_count;
+
             $tag_contacts_widget = new TagContactsTableWidget();
             $tag_contacts_widget->tag_contacts = $contacts;
             $data = $tag_contacts_widget->run();
@@ -260,63 +293,8 @@ class TagsController extends BaseController {
             echo json_encode($json_data);
             die;
         }
-
-//        $request_data = Yii::$app->request->get();
-//        $filter_id = $request_data['columns'][0]['search']['value'];
-//
-//        if (isset($filter_id) && !empty($filter_id)) {
-//            $query = Tag::find()->with('contacts', 'contacts.phones');
-//            $query->where(['id' => $filter_id]);
-//
-//            $tag = $query->one();
-//            $tag_contacts = $tag->contacts;
-//            $total_count = count($tag_contacts);
-//            $total_filtering_count = $total_count;
-//            $tag_contacts_widget = new TagContactsTableWidget();
-//            $tag_contacts_widget->tag_contacts = $tag_contacts;
-//            $data = $tag_contacts_widget->run();
-//
-//            $json_data = array(
-//                "draw" => intval($request_data['draw']),
-//                "recordsTotal" => intval($total_count),
-//                "recordsFiltered" => intval($total_filtering_count),
-//                "data" => $data   // total data array
-//            );
-//            echo json_encode($json_data);
-//            die;
-//        } else {
-//            $json_data = array(
-//                "draw" => intval($request_data['draw']),
-//                "recordsTotal" => 0,
-//                "recordsFiltered" => 0,
-//                "data" => []   // total data array
-//            );
-//            echo json_encode($json_data);
-//            die;
-//        }
     }
 
-//    public function actionEdit() {
-//        $post = Yii::$app->request->post();
-//        try {
-//            if (isset($post['id']) && !empty($post['id'])) {
-//                $tag = Tag::getById($post['id']);
-//            } else {
-//                $tag = new Tag();
-//            }
-//            unset($post['_csrf']);
-//            unset($post['id']);
-//            $tag->attributes = $post;
-//            if ($tag->save()) {
-//                $this->json(['id' => $tag->id], 200);
-//            } else {
-//                $this->json(false, 415, $tag->getErrors());
-//            }
-//        } catch (\Exception $ex) {
-//                $this->json(false, 500);
-//        }
-//    }
-//
 //    public function actionDelete() {
 //        $tag_id = Yii::$app->request->post('id');
 //        $tag = Tag::getById($tag_id);

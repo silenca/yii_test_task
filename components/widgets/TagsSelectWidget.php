@@ -29,12 +29,7 @@ class TagsSelectWidget extends Widget {
                 $tag_contacts[] = $contact->id;
             }
             $data[$i]['tag_users'] = $tag_users;
-            $data[$i]['tag_contacts'] = $tag_contacts;
-
-
-//            $data[$i][] = '<div class="tag-description">' . $tag->description . '</div>';
-//            $data[$i][] = '<div class="col-md-offset-1 edit open-link" data-toggle="modal" data-target="#modalTagForm"><i class="fa fa-edit"></i></div>';
-//            $data[$i][] = '<div class="col-md-offset-1 remove open-link"><i class="fa fa-remove"></i></div>';
+            $data[$i]['tag_contacts'] = (count($tag_contacts) > 0) ? implode(',', $tag_contacts) : '';
         }
         return $data;
     }
