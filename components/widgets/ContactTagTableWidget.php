@@ -37,7 +37,7 @@ class ContactTagTableWidget extends Widget {
             $data[$i][] = implode(', ', $emails);
             $tags = [];
             foreach ($contact->tags as $tag) {
-                $tags[] = '<a class="contact_open_disable" href="javascript:void(0)">' . $tag->name . '</a>';
+                $tags[] = '<a class="contact-tags contact_open_disable" href="javascript:void(0)">' . $tag->name . '</a>';
             }
             $data[$i][] = implode(', ', $tags);
 

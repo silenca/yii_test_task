@@ -31,7 +31,7 @@ class ContactTableWidget extends Widget {
             foreach ($contact->tags as $tag) {
                 $tag_names[] = $tag->name;
             }
-            $data[$i][] = Filter::dataImplode($tag_names, ', ', '<a class="contact_open_disable" href="javascript:void(0)">{value}</a>', true);
+            $data[$i][] = Filter::dataImplode($tag_names, ', ', '<a class="contact_open_disable contact-tags" href="javascript:void(0)">{value}</a>', true);
 
             $data[$i][] = $contact->country;
             $data[$i][] = $contact->region;

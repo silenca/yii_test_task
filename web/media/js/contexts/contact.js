@@ -300,6 +300,12 @@ $(function () {
             openContactForm(contactId);
             initCallNow(phone);
         });
+
+        $(document).on('click', '#contacts-table .contact-tags', function(e) {
+            var tag_name = $(this).text();
+            $('.search-input-text[data-column="tags"]').val(tag_name);
+            dataTable.columns('tags:name').search(tag_name).draw();
+        });
     }
 });
 

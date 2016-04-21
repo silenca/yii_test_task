@@ -164,7 +164,7 @@ class TagsController extends BaseController {
         $data = $contact_widget->run();
 
         $query_all = clone $query;
-        $query_all->select('id')->limit(null)->offset(null);
+        $query_all->limit(null)->offset(null);
         $contacts_all = $query_all->all();
         $contacts_str = '';
         foreach ($contacts_all as $contact) {

@@ -365,6 +365,12 @@ $(function () {
         initRingRound($tagForm);
     });
 
+    $(document).on('click', '#contacts-table .contact-tags', function(e) {
+        var tag_name = $(this).text();
+        $('.search-input-text[data-column="tags"]').val(tag_name);
+        contactsModaldataTable.columns('tags:name').search(tag_name).draw();
+    });
+
     userScenario(userRole);
 });
 
