@@ -2,25 +2,6 @@ var dataTable,
     dropDownOpened = false;
 
 $(function () {
-    // var columns = [
-    //     'id',
-    //     'int_id',
-    //     'surname',
-    //     'name',
-    //     'middle_name',
-    //     'link_with',
-    //     'phones',
-    //     'emails',
-    //     'tags',
-    //     'country',
-    //     'region',
-    //     'area',
-    //     'city',
-    //     'street',
-    //     'house',
-    //     'flat',
-    //     'delete_button'
-    // ];
 
     var show_columns = columns.filter(function(item) {
         return hide_columns.indexOf(item) === -1;
@@ -53,10 +34,6 @@ $(function () {
             "columnDefs": [
                 {"visible": false, "targets": [show_columns.indexOf('id')]},
                 {"orderable": false, "targets": []}
-                // {"orderable": false, "targets": show_columns.indexOf('phones')},
-                // {"orderable": false, "targets": show_columns.indexOf('emails')},
-                // {"orderable": false, "targets": show_columns.indexOf('tags')},
-                // {"orderable": false, "targets": show_columns.indexOf('link_with')},
             ],
             "createdRow": function (row, data, index) {
                 $(row).attr('data-id', data[show_columns.indexOf('id')]);
@@ -71,25 +48,17 @@ $(function () {
             if (!columns_full[col_val]['orderable']) {
                 settings.columnDefs[1].targets.push(col_index);
             }
-            // var db_col = columns_full[col_val]['orderable'];
-            // settings.columnDefs[1].targets.push({ "orderable": columns_full[col_val]['orderable'], "targets": col_index })
         });
 
         $.each(hide_columns, function(i ,val) {
             var index = columns.indexOf(val);
             settings.columnDefs[0].targets.push(index);
-            // settings.columnDefs.push({
-            //     "visible": false, "targets" : index
-            // });
         });
         dataTable = table.DataTable(settings);
 
         var $searchBoxes = $('input.search-input-text, select.search-input-select');
 
         $('.search-input-text').on('keyup', function () {   // for text boxes
-            // var $currBox = $(this),
-            //     currBoxCol = $currBox.data('column'),
-            //     currBoxVal = $currBox.val();
             delay(function () {
                 $.each($searchBoxes, function (index, val) {
                     var n = $(this).attr('data-column');
@@ -98,8 +67,6 @@ $(function () {
                     if (n == 'city' || n == 'street' || n == 'house' || n == 'flat') {
                         strLenDef = 0;
                     }
-                    // var is_int = typeof Number($(this).val()) == 'number';
-                    // var strLength = is_int ? 0 : 2;
                     if (v.length > strLenDef || v.length == 0) {
                         dataTable.columns(n+':name').search(v);
                     }

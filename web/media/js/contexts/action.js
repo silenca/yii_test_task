@@ -44,19 +44,23 @@ $(function () {
         };
         dataTable = table.DataTable(settings);
 
+        var $searchBoxes = $('input.search-input-text, select.search-input-select');
+
         $('.search-input-text').on('keyup', function () {   // for text boxes
-            var inputs = $('.search-input-text');
-            $.each(inputs, function (index, val) {
-                var i = $(this).attr('data-column');
-                var v = $(this).val();
-                dataTable.columns(i).search(v);
-            });
-            dataTable.draw();
+            delay(function () {
+                $.each($searchBoxes, function (index, val) {
+                    var i = $(this).attr('data-column');
+                    var v = $(this).val();
+                    if (v.length >= 0) {
+                        dataTable.columns(i).search(v);
+                    }
+                });
+                dataTable.draw();
+            }, 2000);
         });
 
         $('.search-input-select').on('change', function () {   // for select box
-            var selects = $('.search-input-select');
-            $.each(selects, function (index, val) {
+            $.each($searchBoxes, function (index, val) {
                 var i = $(this).attr('data-column');
                 var v = $(this).val();
                 dataTable.columns(i).search(v);

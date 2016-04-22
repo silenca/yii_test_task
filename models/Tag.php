@@ -125,6 +125,7 @@ class Tag extends \yii\db\ActiveRecord {
         }
     }
 
+    //TODO: вынести эту функцию в отдельный класс наследованный от \yii\db\ActiveRecord, переопределить у всех моделей
     public function setRelation($relation, $models = [])
     {
         $this->unlinkAll($relation);

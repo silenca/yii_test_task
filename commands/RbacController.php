@@ -19,7 +19,7 @@ class RbacController extends Controller {
         $admin = $authManager->createRole('admin');
 
         $contacts = $authManager->createPermission('contacts');
-        $actions = $authManager->createPermission('actions');
+        $actions = $authManager->createPermission('action');
         $reports = $authManager->createPermission('reports');
         $calls = $authManager->createPermission('calls');
         $notifications = $authManager->createPermission('notifications');
@@ -70,7 +70,7 @@ class RbacController extends Controller {
         $authManager->addChild($manager, $updateContact);
         $authManager->addChild($manager, $listen_call);
         
-        $authManager->addChild($operator, $contacts);
+//        $authManager->addChild($operator, $contacts);
         $authManager->addChild($operator, $actions);
         $authManager->addChild($operator, $calls);
         $authManager->addChild($operator, $notifications);

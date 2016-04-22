@@ -27,17 +27,16 @@ $this->params['active'] = 'call';
                             <th>Дата</th>
                             <th>Время</th>
                             <th>
-                                <select data-column="0" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                <select data-column="4" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
                                     <option value="0">Тип</option>
-                                    <option value="incoming">Исходящий</option>
-                                    <option value="outgoing">Входящий</option>
-                                    <option value="missed">Пропущенный</option>
-                                    <option value="failure">Сбой</option>
+                                    <?php foreach ($call_statuses as $call_status): ?>
+                                        <option value="<?php echo $call_status['name'] ?>"><?php echo $call_status['label'] ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                             </th>
                             <th>
                                 <?php if (isset($managers)): ?>
-                                    <select data-column="1" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                    <select data-column="6" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
                                         <option value="0">Менеджер</option>
                                         <?php foreach ($managers as $manager): ?>
                                             <option value="<?php echo $manager->id ?>"><?php echo $manager->firstname ?></option>

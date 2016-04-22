@@ -359,7 +359,7 @@ $(function () {
 
     $(document).on('click', '#tag_contacts_table .contact-phone', function(e) {
         var contactId = $(this).parents('tr').data('id'),
-            phone = $(this).text();
+            phone = $(this).data('phone');
         openContactForm(contactId);
         initCallNow(phone);
         initRingRound($tagForm);
@@ -449,6 +449,7 @@ function userScenario(userRole) {
             $description.attr('disabled', true);
             $script.parent().hide();
             $addContacts.hide();
+            tagContactsdataTable.columns(2).visible(false);
             break;
     }
 }

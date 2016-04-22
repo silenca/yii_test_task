@@ -10,11 +10,12 @@ class ActionTableWidget extends Widget
 {
 
     public $actions;
+    public $user_role;
 
-    public function init()
-    {
-        parent::init();
-    }
+//    public function init()
+//    {
+//        parent::init();
+//    }
 
     public function run()
     {
@@ -26,10 +27,22 @@ class ActionTableWidget extends Widget
             //if (($index = array_search($action['id'], $existing)) !== false) {
             //    $data[$index][3] .= "<div><a href='" . $action['object_link'] . "' target='_blank'>" . $action['object_link'] . "</a></div>";
             //} else {
-            $existing[$i] = $action['id'];
+//            $existing[$i] = $action['id'];
+
+            $action_type = $action->actionType;
+            $action_comment = $action->comment;
+            $action_user = $action->user;
+            $action_contact = $action->contact;
+            $cont_comments = $action_contact->comments;
+            if (count($cont_comments) >= 1) {
+                $action_contactComment = $cont_comments[count($cont_comments) - 1];
+            } else {
+                $action_contactComment = $cont_comments;
+            }
+
             $data[$i][] = $action['id'];
             $data[$i][] = date("d-m-Y", strtotime($action['system_date']));
-            switch ($action['type']) {
+            switch ($action_type->name) {
                 case "scheduled_call":
                     if (is_null($action['schedule_date'])) {
                         $data[$i][] = "Звонок клиенту";
@@ -45,18 +58,32 @@ class ActionTableWidget extends Widget
                     break;
             }
 
-            $data[$i][] = Filter::dataImplode([$action['surname'], $action['name'], $action['middle_name']], ' ', "<div><a class='open_contact' data-id='" . $action['contact_id'] . "'>{value}</a></div>");
-            if ($action['schedule_date']) {
+            switch ($this->user_role) {
+                case 'operator':
+                    $data[$i][] = "<div><a class='open_contact' data-id='" . $action['contact_id'] . "'>" . $action_contact->int_id . "</a></div>";
+                    break;
+                default:
+                    $data[$i][] = Filter::dataImplode([$action_contact['surname'], $action_contact['name'], $action_contact['middle_name']], ' ', "<div><a class='open_contact' data-id='" . $action['contact_id'] . "'>{value}</a></div>");
+            }
+
+
+            if (!is_null($action['schedule_date'])) {
                 $data[$i][] = date("d-m-Y G:i:s", strtotime($action['schedule_date']));
             } else {
                 $data[$i][] = '';
             }
-            $data[$i][] = $action['contact_comment'];
-            $data[$i][] = $action['manager_name'];
+            if (!is_null($action_comment)) {
+                $data[$i][] = $action_comment->comment;
+            } else if ($action_contactComment) {
+                $data[$i][] = $action_contactComment->comment;
+            } else {
+                $data[$i][] = '';
+            }
+
+            $data[$i][] = $action_user->firstname;
             $data[$i][] = $action['viewed'];
-            // $i++;
-            //}
         }
+
         return $data;
     }
 

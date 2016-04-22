@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\Query;
 
 /**
  * This is the model class for table "action".
@@ -27,9 +28,23 @@ class Action extends \yii\db\ActiveRecord {
         return $this->hasOne(Contact::className(), ['id' => 'contact_id']);
     }
 
+    public function getUser() {
+        return $this->hasOne(User::className(), ['id' => 'manager_id']);
+    }
+
+    public function getActionType() {
+        return $this->hasOne(ActionType::className(), ['id' => 'action_type_id']);
+    }
+
     public function getComment() {
         return $this->hasOne(ActionComment::className(), ['action_id' => 'id']);
     }
+
+//    public function getContactComment() {
+////        $query = (new Query())->select('MAX(`id`)')->from(ContactComment::tableName())->where([]);
+//        return $this->hasOne(ContactComment::className(), ['id' => 'contact_id']);
+////            ->where([ContactComment::tableName().'.id' => '(SELECT MAX(`id`) FROM '.ContactComment::tableName().' WHERE '.ContactComment::tableName().'.`contact_id` = '.self::tableName().'.`contact_id`)']);
+//    }
 
     /**
      * @inheritdoc

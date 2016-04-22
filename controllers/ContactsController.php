@@ -45,19 +45,24 @@ class ContactsController extends BaseController
                             'hide-columns',
                             'get-contact-by-phone',
                             'search',
-                            'link-with'
+                            'link-with',
+                            'objectschedulecall',
+                            'objectscheduleemail',
+                            'ring-round',
                         ],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                     [
                         'actions' => [
-                            'objectschedulecall',
-                            'objectscheduleemail',
-                            'ring-round'
+                            'index',
+                            'getdata',
+                            'hide-columns',
+                            'search',
+                            'link-with',
                         ],
-                        'allow' => true,
-                        'roles' => ['manager', 'operator', 'admin'],
+                        'allow' => false,
+                        'roles' => ['operator'],
                     ],
                     [
                         'actions' => ['delete'],
@@ -69,11 +74,14 @@ class ContactsController extends BaseController
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
+                    'edit' => ['post'],
                     'delete' => ['post'],
                     'addcomment' => ['post'],
-                    'objectshow' => ['post'],
-                    'objectvisit' => ['post'],
-                    'objectcontract' => ['post'],
+                    'objectschedulecall' => ['post'],
+                    'objectscheduleemail' => ['post'],
+                    'ring-round' => ['post'],
+                    'link-with' => ['post'],
+                    'search' => ['post']
                 ],
             ],
         ];
@@ -98,6 +106,7 @@ class ContactsController extends BaseController
         $query = Contact::find()->with('manager', 'tags')->distinct('contact.id');
         $query->where(['contact.is_deleted' => '0']);
         $columns = Contact::getColsForTableView();
+        $user_id = Yii::$app->user->identity->getId();
         $user_role = Yii::$app->user->identity->getUserRole();
 
         //Sorting
@@ -114,17 +123,13 @@ class ContactsController extends BaseController
                 'id' => SORT_DESC
             ];
         }
-//        $query = Contact::find()->with('manager', 'tags');
-//        $query->andWhere(['contact.is_deleted' => '0']);
-        //join Tags
-//        $query->leftJoin(ContactTag::tableName() . ' `ct`', '`ct`.`contact_id` = contact.`id`')
-//            ->leftJoin(Tag::tableName() . ' `t`', '`t`.`id` = `ct`.`tag_id`');
 
         if ($user_role == 'manager' || $user_role == 'operator') {
-            $user_tags = Yii::$app->user->identity->getTags()->asArray()->all();
-            $user_tags = array_map(function($tag) { return $tag['id']; }, $user_tags);
-
-            $query->joinWith('tags')->andWhere(['tag.id' => $user_tags]);
+//            $user_tags = Yii::$app->user->identity->getTags()->asArray()->all();
+//            $user_tags = array_map(function($tag) { return $tag['id']; }, $user_tags);
+//
+//            $query->joinWith('tags')->andWhere(['tag.id' => $user_tags]);
+            $query->joinWith('tags.users')->andWhere(['user.id' => $user_id]);
         }
         $query_total = clone $query;
         $total_count = $query_total->count();

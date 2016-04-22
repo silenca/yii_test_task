@@ -369,6 +369,10 @@ class Contact extends \yii\db\ActiveRecord {
         }
     }
 
+    public function getComments() {
+        return $this->hasMany(ContactComment::className(), ['contact_id' => 'id']);
+    }
+
     public function getPhones() {
         return $this->hasMany(Call::className(), ['contact_id' => 'id']);
     }

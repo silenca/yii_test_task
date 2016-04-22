@@ -69,11 +69,20 @@ class Call extends \yii\db\ActiveRecord {
             'manager' => '`u`.`firstname`',
             'contact_id' => '`c`.`contact_id`',
             'phone_number' => '`c`.`phone_number`',
-            'contact_id' => '`c`.`contact_id`',
             'contact' => '`ct`.`name`',
             'record' => '`c`.`record`',
             'status' => '`c`.`status`',
             //'missed_call_id' => '`mc`.`id`',
+        ];
+    }
+
+    public static function getCallStatuses()
+    {
+        return [
+            ['name' => self::CALL_STATUS_ANSWERED.'_'.self::CALL_STATUS_MISSED.'|'.self::CALL_INCOMING, 'label' => 'Исходящий'],
+            ['name' => self::CALL_STATUS_ANSWERED.'|'.self::CALL_OUTGOING, 'label' => 'Входящий'],
+            ['name' => self::CALL_STATUS_MISSED.'|'.self::CALL_OUTGOING, 'label' => 'Пропущенный'],
+            ['name' => self::CALL_STATUS_FAILURE.'|'.self::CALL_INCOMING.'_'.self::CALL_OUTGOING, 'label' => 'Сбой'],
         ];
     }
 
@@ -167,5 +176,18 @@ class Call extends \yii\db\ActiveRecord {
     public function getTag() {
         return $this->hasOne(Tag::className(), ['id' => 'tag_id']);
     }
+
+    public function getMissedCall() {
+        return $this->hasOne(MissedCall::className(), ['call_id' => 'id']);
+    }
+
+    public function getContact() {
+        return $this->hasOne(Contact::className(), ['id' => 'contact_id']);
+    }
+
+    public function getCallManagers() {
+        return $this->hasMany(CallManager::className(), ['call_id' => 'id']);
+    }
+
 
 }

@@ -58,7 +58,7 @@ if (!Yii::$app->user->isGuest) {
         <?php if (!Yii::$app->user->isGuest): ?>
             <nav class="page-sidebar" data-pages="sidebar-custom">
                 <!-- BEGIN SIDEBAR MENU HEADER-->
-                <div class="sidebar-header">
+                <div class="sidebar-header m-b-20">
                     <div class="brand">Silent CRM</div>
                     <div class="sidebar-header-controls">
                         <button type="button" class="btn btn-link visible-lg-inline" data-toggle-pin="sidebar-custom"><i class="fa fs-12"></i>
@@ -74,7 +74,7 @@ if (!Yii::$app->user->isGuest) {
                     <!-- BEGIN SIDEBAR MENU ITEMS-->
                     <ul class="menu-items">
                         <?php if (Yii::$app->user->can('contacts')): ?>
-                            <li class="m-t-30 ">
+                            <li>
                                 <a href="/contacts" class="detailed">
                                     <span class="title">Контакты</span>
                                     <span class="details"></span>
@@ -91,7 +91,7 @@ if (!Yii::$app->user->isGuest) {
 <!--                                </a>-->
 <!--                            </li>-->
 <!--                        --><?php //endif; ?>
-                        <?php if (Yii::$app->user->can('actions')): ?>
+                        <?php if (Yii::$app->user->can('action')): ?>
                             <li>
                                 <a href="/action" class="detailed">
                                     <span class="title">Действия</span>

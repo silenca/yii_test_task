@@ -26,13 +26,11 @@ $this->params['active'] = 'action';
                             <th>ID</th>
                             <th>Дата</th>
                             <th>
-                                <select data-column="1"  class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                <select data-column="2"  class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
                                     <option value="0">Тип действия</option>
-                                    <option value="scheduled_call">Запланированный исходящий звонок</option>
-                                    <option value="email_now">Email сообщение</option>
-                                    <option value="scheduled_email">Запланированное Email сообщение</option>
-                                    <option value="incoming">Исходящий звонок</option>
-                                    <option value="outgoing">Входящий звонок</option>
+                                    <?php foreach ($action_types as $action_type): ?>
+                                        <option value="<?php echo $action_type->id ?>"><?php echo $action_type->label ?></option>
+                                    <?php endforeach; ?>
                                 </select>
 
                             </th>
@@ -41,7 +39,7 @@ $this->params['active'] = 'action';
                             <th>Комментарий</th>
                             <th>
                                 <?php if(isset($managers)): ?>
-                                <select data-column="0"  class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                <select data-column="6"  class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
                                     <option value="0">Менеджер</option>
                                     <?php foreach ($managers as $manager): ?>
                                         <option value="<?php echo $manager->id ?>"><?php echo $manager->firstname ?></option>

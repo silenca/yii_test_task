@@ -39,7 +39,6 @@ class TagsController extends BaseController {
                             'gettags',
                             'getdata',
                             'getusers',
-                            'getcontacts',
                         ],
                         'allow' => true,
                         'roles' => ['operator'],
@@ -112,11 +111,12 @@ class TagsController extends BaseController {
     public function actionGetcontacts()
     {
         $request_data = Yii::$app->request->get();
-        $query = Contact::find()->with('manager', 'tags');
+        $query = Contact::find()->with('manager', 'tags')->distinct('contact.id');
         $query->andWhere(['contact.is_deleted' => '0']);
-        $query_total = clone $query;
-        $total_count = $query_total->count();
         $columns = Tag::getContactsForTagTableView();
+        $user_id = Yii::$app->user->identity->getId();
+        $user_role = Yii::$app->user->identity->getUserRole();
+
         //Sorting
         $sorting = [];
         if (isset($request_data['order'])) {
@@ -128,21 +128,25 @@ class TagsController extends BaseController {
             ];
         } else {
             $sorting = [
-                'id' => SORT_DESC
+                Contact::tableName().'.id' => SORT_DESC
             ];
         }
+
+        if ($user_role == 'manager') {
+            $query->joinWith('tags.users')->andWhere(['user.id' => $user_id]);
+        }
+        $query_total = clone $query;
+        $total_count = $query_total->count();
 
         //Filtering
         foreach ($request_data['columns'] as $column) {
             if (!empty($column['search']['value'])) {
                 if (isset($columns[$column['name']]['db_cols'])) {
+                    $db_cols_where = ['or'];
                     foreach ($columns[$column['name']]['db_cols'] as $db_col_i => $db_col_v) {
-                        if ($db_col_i == 0) {
-                            $query->andWhere(['like', 'contact.'.$db_col_v, $column['search']['value']]);
-                        } else {
-                            $query->orWhere(['like', 'contact.'.$db_col_v, $column['search']['value']]);
-                        }
+                        $db_cols_where[] = ['like', 'contact.'.$db_col_v, $column['search']['value']];
                     }
+                    $query->andWhere($db_cols_where);
                 } elseif ($column['name'] == 'tags') {
                     $query->joinWith('tags')->andWhere(['like', 'tag.name', $column['search']['value']]);
                 } else {
@@ -150,6 +154,24 @@ class TagsController extends BaseController {
                 }
             }
         }
+
+//        foreach ($request_data['columns'] as $column) {
+//            if (!empty($column['search']['value'])) {
+//                if (isset($columns[$column['name']]['db_cols'])) {
+//                    foreach ($columns[$column['name']]['db_cols'] as $db_col_i => $db_col_v) {
+//                        if ($db_col_i == 0) {
+//                            $query->andWhere(['like', 'contact.'.$db_col_v, $column['search']['value']]);
+//                        } else {
+//                            $query->orWhere(['like', 'contact.'.$db_col_v, $column['search']['value']]);
+//                        }
+//                    }
+//                } elseif ($column['name'] == 'tags') {
+//                    $query->joinWith('tags')->andWhere(['like', 'tag.name', $column['search']['value']]);
+//                } else {
+//                    $query->andWhere(['like', 'contact.'.$column['name'], $column['search']['value']]);
+//                }
+//            }
+//        }
 
         $dump = $query->createCommand()->rawSql;
         $total_filtering_count = $query->count();
@@ -275,6 +297,7 @@ class TagsController extends BaseController {
 
             $tag_contacts_widget = new TagContactsTableWidget();
             $tag_contacts_widget->tag_contacts = $contacts;
+            $tag_contacts_widget->user_role = $user_role;
             $data = $tag_contacts_widget->run();
 
             $json_data = array(

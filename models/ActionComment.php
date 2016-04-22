@@ -21,11 +21,11 @@ class ActionComment extends \yii\db\ActiveRecord {
         return 'action_comment';
     }
 
-    public function __construct(array $config)
-    {
-        $this->datetime = date('Y-m-d H:i:s');
-        parent::__construct($config);
-    }
+//    public function __construct(array $config)
+//    {
+//        $this->datetime = date('Y-m-d H:i:s');
+//        parent::__construct($config);
+//    }
 
     /**
      * @inheritdoc

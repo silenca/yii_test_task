@@ -38,12 +38,22 @@ class ActionController extends BaseController {
     }
 
     public function actionIndex() {
-        if (Yii::$app->user->identity->role == User::ROLE_MANAGER) {
-            return $this->render('index');
-        } else {
-            $managers = User::find()->where(['role' => User::ROLE_MANAGER])->all();
+        $action_types = ActionType::find()->all();
+        if (Yii::$app->user->identity->role == User::ROLE_ADMIN) {
+            $managers = User::find()->all();
             return $this->render('index', [
-                        'managers' => $managers
+                'managers' => $managers,
+                'action_types' => $action_types
+            ]);
+        } else if (Yii::$app->user->identity->role == User::ROLE_MANAGER) {
+            $managers = User::find()->where(['role' => [User::ROLE_MANAGER, User::ROLE_OPERATOR]])->all();
+            return $this->render('index', [
+                        'managers' => $managers,
+                        'action_types' => $action_types
+                   ]);
+        } else {
+            return $this->render('index', [
+                'action_types' => $action_types
             ]);
         }
     }
@@ -51,8 +61,12 @@ class ActionController extends BaseController {
     public function actionGetdata() {
         $request_data = Yii::$app->request->get();
         $columns = Action::getTableColumns();
-        $query = new Query();
-        $from_query = new Query();
+        $query = Action::find()->joinWith(['user', 'actionType'])->with('actionType', 'contact', 'user', 'comment');
+//        $from_query = new Query();
+        $user_id = Yii::$app->user->identity->getId();
+        $user_role = Yii::$app->user->identity->getUserRole();
+
+        //Sorting
         if (isset($request_data['order'])) {
             $order_by_sort = $request_data['order'][0]['dir'] == 'asc' ? SORT_ASC : SORT_DESC;
             $sort_column = $columns[$request_data['order'][0]['column']];
@@ -61,42 +75,40 @@ class ActionController extends BaseController {
             ];
         } else {
             $sorting = [
-                '`a`.`id`' => SORT_DESC
+                Action::tableName().'.`id`' => SORT_DESC
             ];
         }
-        $from_query->from(Action::tableName() . " `a`")
-                ->limit($request_data['length'])
-                ->offset($request_data['start'])
-                ->orderBy($sorting);
 
-        if (Yii::$app->user->identity->role == User::ROLE_MANAGER) {
-            $from_query->where(['`a`.`manager_id`' => Yii::$app->user->identity->id]);
-            $total_filtering_count = $from_query->count();
-            $total_count = $from_query->count();
-        } else {
-            if (!empty($request_data['columns'][0]['search']['value'])) {
-                $from_query->where(['`a`.`manager_id`' => $request_data['columns'][0]['search']['value']]);
-            }
-            $total_filtering_count = $from_query->count();
-            $total_count = $from_query->count();
+        //User role restrictions
+        switch ($user_role) {
+            case 'operator':
+                $query->andWhere([User::tableName().'.id' => $user_id]);
+                break;
+            case 'manager':
+                $query->andWhere([User::tableName().'.role' => [User::ROLE_MANAGER, User::ROLE_OPERATOR]]);
+                break;
         }
-        
-        $from_query_sql = $from_query->createCommand()->rawSql;
-        $query->from("(" . $from_query_sql . ") `a`");
-        $query->select(implode(',', $columns))
-                //->from("(SELECT * FROM " . Action::tableName() . " LIMIT " . $request_data['length'] . ") `a`")
-                ->join('LEFT JOIN', ActionType::tableName() . ' `at`', '`at`.`id` = `a`.`action_type_id`')
-                ->join('LEFT JOIN', Contact::tableName() . ' `c`', '`c`.`id` = `a`.`contact_id`')
-                ->join('LEFT JOIN', User::tableName() . ' `u`', '`u`.`id` = `a`.`manager_id`')
-                ->join('LEFT JOIN', ContactComment::tableName() . ' `cc`', '`cc`.`id` = (SELECT MAX(`id`) FROM `contact_comment` WHERE `contact_comment`.`contact_id` = `a`.`contact_id`)');
-                //->join('LEFT OUTER JOIN', ActionObject::tableName() . ' `ao`', '`a`.`id` = `ao`.`action_id`')
-                //->join('LEFT OUTER JOIN', ObjectApartment::tableName() . ' `oa`', '`oa`.`id` = `ao`.`object_id`');
-        //$dump = $query->prepare(Yii::$app->db->queryBuilder)->createCommand()->rawSql;
-        $query->orderBy($sorting);
-        $actions = $query->all();
+        $total_count = $query->count();
 
+        //Filtering
+        $filter_action_type_id = $request_data['columns'][2]['search']['value'];
+        $filter_manager_id = $request_data['columns'][6]['search']['value'];
+        if (!empty($filter_action_type_id)) {
+            $query->andWhere([ActionType::tableName().'.id' => $filter_action_type_id]);
+        }
+        if (!empty($filter_manager_id)) {
+            $query->andWhere([User::tableName().'.id' => $filter_manager_id]);
+        }
+        $total_filtering_count = $query->count();
+
+        $query->limit($request_data['length'])
+            ->offset($request_data['start'])
+            ->orderBy($sorting);
+
+        $actions = $query->all();
         $action_widget = new ActionTableWidget();
         $action_widget->actions = $actions;
+        $action_widget->user_role = $user_role;
         $data = $action_widget->run();
 
         $json_data = array(

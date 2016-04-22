@@ -3,7 +3,7 @@ return [
     'contacts' => [
         'type' => 2,
     ],
-    'actions' => [
+    'action' => [
         'type' => 2,
     ],
     'reports' => [
@@ -47,7 +47,7 @@ return [
         'ruleName' => 'userRole',
         'children' => [
             'contacts',
-            'actions',
+            'action',
             'calls',
             'notifications',
             'tags',
@@ -59,8 +59,7 @@ return [
         'type' => 1,
         'ruleName' => 'userRole',
         'children' => [
-            'contacts',
-            'actions',
+            'action',
             'calls',
             'notifications',
             'updateContact',
@@ -72,7 +71,7 @@ return [
         'ruleName' => 'userRole',
         'children' => [
             'contacts',
-            'actions',
+            'action',
             'notifications',
             'reports',
             'calls',
