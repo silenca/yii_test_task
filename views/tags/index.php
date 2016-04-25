@@ -87,6 +87,10 @@ $this->params['active'] = 'tags';
                 </div>
             </div>
             <div class="panel-body">
+                <div id="ring_counter" class="m-b-10 m-l-10">
+                    <span>0</span> из <span>0</span> Контактов<br>
+                    Осталось обзвонить <span>0</span>
+                </div>
                 <table class="table table-hover" id="tag_contacts_table">
                     <thead>
                     <tr>
@@ -200,5 +204,4 @@ $this->params['active'] = 'tags';
     var hide_columns = <?= json_encode($hide_contact_columns); ?>;
     var columns = <?= json_encode(array_keys($table_contact_cols)); ?>;
     var columns_full = <?= json_encode($table_contact_cols); ?>;
-    var userRole = <?= json_encode($user_role); ?>;
 </script>

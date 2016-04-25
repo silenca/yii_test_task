@@ -17,7 +17,8 @@ $(function () {
         $tagSubmit = $('#tag_submit'),
         $addContactTable = $('#add_contact_table'),
         $tagName = $('#tag_name'),
-        $contactsList = $('#contacts_list');
+        $contactsList = $('#contacts_list'),
+        $contactsCounter = $('#ring_counter');
 
     var initTagContactsTable = function () {
         var settings = {
@@ -39,6 +40,14 @@ $(function () {
                 error: function () {  // error handling
                     //alert('error data');
                 }
+            },
+            'fnDrawCallback': function(data) {
+                var count = data.json.contact_count;
+                $contactsCounter.find('span:first').text(count.count_called);
+                $contactsCounter.find('span:nth-child(2)').text(count.count_all);
+                $contactsCounter.find('span:last').text(count.count_all - count.count_called);
+                // $('#ring_counter span:nth-child(2)')
+                console.log(data.json);
             },
             "ordering": false,
             "columnDefs": [
@@ -155,7 +164,9 @@ $(function () {
         });
     };
 
-    initContactsModalTable();
+    if (userRole !== 'operator') {
+        initContactsModalTable();
+    }
 
     var tagSelectOpts = {
             placeholder: "Имя тега",
@@ -198,6 +209,8 @@ $(function () {
     //init selects
     tagSelect = $tagSelectBox.select2(tagSelectOpts);
     tagUsersSelect = $tagUsersSelectBox.select2(tagUsersSelectOpts);
+
+    userScenario(userRole);
 
     // fill users select
     $.get('/tags/getusers', function (response) {
@@ -370,8 +383,6 @@ $(function () {
         $('.search-input-text[data-column="tags"]').val(tag_name);
         contactsModaldataTable.columns('tags:name').search(tag_name).draw();
     });
-
-    userScenario(userRole);
 });
 
 function prepareData($form) {

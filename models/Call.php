@@ -168,6 +168,63 @@ class Call extends \yii\db\ActiveRecord {
             }
         }
     }
+
+    public static function getCallAttitudeLabel(Call $call)
+    {
+        $res = '';
+        $attitude = $call->attitude_level;
+        $mediana = 3;
+        if ($attitude === $mediana) {
+            $res = '+-';
+        } else if ($attitude > $mediana) {
+            for ($i = $mediana; $i < $attitude; $i++) {
+                $res .= '+';
+            }
+        } else if ($attitude < $mediana) {
+            for ($i = $mediana; $i > $attitude; $i--) {
+                $res .= '-';
+            }
+        }
+        return $res;
+    }
+
+    public static function getCallStatusLabel(Call $call)
+    {
+        $res = '';
+        switch ($call->status) {
+            case "answered":
+                switch ($call->type) {
+                    case "incoming":
+                        $res = "Исходящий";
+                        break;
+                    case "outgoing":
+                        $res = "Входящий";
+                        break;
+                }
+                break;
+            case "missed":
+                switch ($call->type) {
+                    case "incoming":
+                        $res = "Исходящий";
+                        break;
+                    case "outgoing":
+                        $res = "Пропущенный";
+                        break;
+                }
+                break;
+            case "failure":
+                switch ($call->type) {
+                    case "incoming":
+                        $res = "Исходящий - сбой";
+                        break;
+                    case "outgoing":
+                        $res = "Входящий - сбой";
+                        break;
+                }
+                break;
+        }
+        return $res;
+    }
     
     public function setContactIdByPhone($phone, $contact_id) {
         $this->updateAll(['contact_id' => $contact_id], ['phone_number' => $phone]);

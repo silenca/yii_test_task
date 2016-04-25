@@ -39,4 +39,8 @@ class ContactCalled extends \yii\db\ActiveRecord
     public function getManager() {
         return $this->hasOne(User::className(), ['id' => 'manager_id']);
     }
+
+    public function getCall() {
+        return $this->hasOne(Call::className(), ['id' => 'call_id']);
+    }
 }

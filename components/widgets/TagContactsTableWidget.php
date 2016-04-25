@@ -5,7 +5,9 @@ namespace app\components\widgets;
 use app\components\Filter;
 use yii\base\Widget;
 use Yii;
-use app\models\Contact;
+//use app\models\Contact;
+use app\models\Call;
+use app\models\ActionType;
 
 class TagContactsTableWidget extends Widget {
     public $tag_contacts;
@@ -36,8 +38,6 @@ class TagContactsTableWidget extends Widget {
                     $phone_wrapper = '<a class="'.$phone_class.'" data-phone="{value}" href="javascript:void(0)">{value}</a>';
                     $data[$i][] = Filter::dataImplode($contact->getPhoneValues(), ', ', $phone_wrapper, true);
             }
-//            $phone_wrapper = '<a class="'.$phone_class.'" data-phone="{value}" href="javascript:void(0)">{value}</a>';
-//            $data[$i][] = Filter::dataImplode($contact->getPhoneValues(), ', ', $phone_wrapper, true);
 
             if ($is_called_contact) {
                 $manager = $tag_contact->manager;
@@ -50,9 +50,26 @@ class TagContactsTableWidget extends Widget {
                 $data[$i][] = '';
             }
 
-            $data[$i][] = '';
-            $data[$i][] = '';
-            $data[$i][] = '';
+            if ($is_called_contact) {
+                $call = $tag_contact->call;
+                $data[$i][] = Call::getCallStatusLabel($call);
+
+                $action_type = ActionType::find()->where(['name' => 'ring_round'])->one();
+                $action = $contact->getActions()->where(['action_type_id' => $action_type->id])->orderBy(['action.id' => SORT_DESC])->one();
+                if ($action && $action->comment) {
+                    $data[$i][] = $action->comment->comment;
+                } else {
+                    $data[$i][] = '';
+                }
+
+                $data[$i][] = Call::getCallAttitudeLabel($call);
+            } else {
+                $data[$i][] = '';
+                $data[$i][] = '';
+                $data[$i][] = '';
+            }
+
+
         }
         return $data;
     }

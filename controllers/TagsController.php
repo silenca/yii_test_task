@@ -69,13 +69,10 @@ class TagsController extends BaseController {
         $filter_contact_cols =  $contact_cols;
         unset($filter_contact_cols['id']);
 
-        $user_role = Yii::$app->user->identity->getUserRole();
-
         return $this->render('index', [
             'hide_contact_columns' => $hide_contact_columns,
             'table_contact_cols' => $table_contact_cols,
             'filter_contact_cols' => $filter_contact_cols,
-            'user_role' => $user_role
         ]);
     }
 
@@ -268,6 +265,7 @@ class TagsController extends BaseController {
 
             $query = Contact::find()->with('phones')->orderBy('id');
             $query->where(['id' => $filter_ids]);
+            $count_all = $query->count();
 
 //            $cont_called_tbl_name = ContactCalled::tableName();
             if ($user_role == 'operator') {
@@ -304,7 +302,11 @@ class TagsController extends BaseController {
                 "draw" => intval($request_data['draw']),
                 "recordsTotal" => intval($total_count),
                 "recordsFiltered" => intval($total_filtering_count),
-                "data" => $data   // total data array
+                "data" => $data,   // total data array
+                "contact_count" => [
+                    "count_all" => $count_all,
+                    "count_called" => count($called_contacts)
+                ]
             );
             echo json_encode($json_data);
             die;
@@ -313,7 +315,11 @@ class TagsController extends BaseController {
                 "draw" => intval($request_data['draw']),
                 "recordsTotal" => 0,
                 "recordsFiltered" => 0,
-                "data" => []   // total data array
+                "data" => [],   // total data array
+                "contact_count" => [
+                    "count_all" => 0,
+                    "count_called" => 0
+                ]
             );
             echo json_encode($json_data);
             die;

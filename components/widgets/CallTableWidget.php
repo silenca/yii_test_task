@@ -5,6 +5,7 @@ namespace app\components\widgets;
 use app\components\Filter;
 use yii\base\Widget;
 use Yii;
+use app\models\Call;
 
 class CallTableWidget extends Widget {
 
@@ -43,40 +44,7 @@ class CallTableWidget extends Widget {
             }
             $data[$i][] = date('d-m-Y', strtotime($call['date_time']));
             $data[$i][] = date('H-i-s', strtotime($call['date_time']));
-            switch ($call['status']) {
-                case "answered":
-                    switch ($call['type']) {
-                        case "incoming":
-                            $data[$i][] = "Исходящий";
-                            break;
-                        case "outgoing":
-                            $data[$i][] = "Входящий";
-                            break;
-                    }
-                    break;
-                case "missed":
-                    $call_success = false;
-                    switch ($call['type']) {
-                        case "incoming":
-                            $data[$i][] = "Исходящий";
-                            break;
-                        case "outgoing":
-                            $data[$i][] = "Пропущенный";
-                            break;
-                    }
-                    break;
-                case "failure":
-                    $call_success = false;
-                    switch ($call['type']) {
-                        case "incoming":
-                            $data[$i][] = "Исходящий - сбой";
-                            break;
-                        case "outgoing":
-                            $data[$i][] = "Входящий - сбой";
-                            break;
-                    }
-                    break;
-            }
+            $data[$i][] = Call::getCallStatusLabel($call);
             $managers = [];
             foreach ($call_managers as $call_manager) {
                 $managers[] = $call_manager->manager->firstname;

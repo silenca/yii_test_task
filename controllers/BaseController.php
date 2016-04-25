@@ -26,6 +26,10 @@ class BaseController extends Controller {
                 $new_contract_count = ContactContract::find()->where(['solution_id' => null])->count();
                 $this->view->params['new_contract_count'] = $new_contract_count;
             }
+            if (!Yii::$app->user->getIsGuest()) {
+                $user_role = Yii::$app->user->identity->getUserRole();
+                $this->view->params['user_role'] = $user_role;
+            }
             return true;
         }
 

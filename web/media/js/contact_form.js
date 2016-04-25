@@ -102,7 +102,8 @@ $(function() {
     $contact_data_form = $contact_form.find('.contact-data');
 
     $('input[type=text], input[type=email]', $contact_data_form).on('blur', function () {
-        checkChanges($(this).attr('name'), $(this).val(), $contact_form);
+        $(this).data('value', $(this).val());
+        checkChanges($(this).attr('name'), $(this).data('value'), $contact_form);
     });
 
     //add new comment for contact
@@ -264,29 +265,74 @@ function buildContactForm(id, $form, callback) {
     $.getJSON('/contacts/view', {id: id}, function (response) {
         if (response.status === 200) {
             var data = response.data;
-            $('#contact_manager_name').text(data.manager_name);
-            $('.contact-manager-name-cont').show();
-            $form.find('.contact-title').text('Контакт №' + data.int_id);
-            $form.find('#contact_surname').val(data.surname);
-            $form.find('#contact_name').val(data.name);
-            $form.find('#contact_middle_name').val(data.middle_name);
-            if (data.is_deleted == 1) {
-                $('.contact-deleted').show();
-            } else {
-                $('.contact-deleted').hide();
-            }
-            $form.find('#contact_phones').val(data.phones);
-            $form.find('#contact_emails').val(data.emails);
-
-            $form.find('#contact_country').val(data.country);
-            $form.find('#contact_region').val(data.region);
-            $form.find('#contact_area').val(data.area);
-            $form.find('#contact_city').val(data.city);
-            $form.find('#contact_street').val(data.street);
-            $form.find('#contact_house').val(data.house);
-            $form.find('#contact_flat').val(data.flat);
+            fillContactData(data, $form);
+            // $('#contact_manager_name').text(data.manager_name);
+            // $('.contact-manager-name-cont').show();
+            // $form.find('.contact-title').text('Контакт №' + data.int_id);
+            // $form.find('#contact_surname').val(data.surname);
+            // $form.find('#contact_name').val(data.name);
+            // $form.find('#contact_middle_name').val(data.middle_name);
+            // if (data.is_deleted == 1) {
+            //     $('.contact-deleted').show();
+            // } else {
+            //     $('.contact-deleted').hide();
+            // }
+            // $form.find('#contact_phones').val(data.phones);
+            // $form.find('#contact_emails').val(data.emails);
+            //
+            // $form.find('#contact_country').val(data.country);
+            // $form.find('#contact_region').val(data.region);
+            // $form.find('#contact_area').val(data.area);
+            // $form.find('#contact_city').val(data.city);
+            // $form.find('#contact_street').val(data.street);
+            // $form.find('#contact_house').val(data.house);
+            // $form.find('#contact_flat').val(data.flat);
+            manageContactFormPermissions(userRole);
 
             callback();
+        }
+    });
+}
+
+function manageContactFormPermissions(userRole) {
+    var inputsToHide;
+    switch (userRole) {
+        case 'operator':
+            inputsToHide = [
+                $('#contact_surname'),
+                $('#contact_name'),
+                $('#contact_middle_name'),
+                $('#contact_phones')
+            ];
+            $.each(inputsToHide, function(index, input) {
+                $(input).val('');
+                $(input).on('focus', function() {
+                    $(input).val($(input).data('value'));
+                });
+            });
+            break;
+    }
+}
+
+function fillContactData(data, $form) {
+    $.each(data, function(key, value) {
+        switch (key) {
+            case 'int_id':
+                $form.find('.contact-title').text('Контакт №' + value);
+                break;
+            case 'is_deleted':
+                value == 1 ? $('.contact-deleted').show() : $('.contact-deleted').hide();
+                break;
+            case 'manager_name':
+                $('#contact_manager_name').text(value);
+                $('.contact-manager-name-cont').show();
+                break;
+            default:
+                if (value) {
+                    $form.find('#contact_' + key).val(value).attr('data-value', value);
+                } else {
+                    $form.find('#contact_' + key).val('').attr('data-value', '');
+                }
         }
     });
 }
@@ -314,7 +360,9 @@ function editContact(name, value, $form) {
                 bind_inputs['id'] = result.data.id;
                 bind_inputs[name] = value;
                 $form.find('#contact-id').val(result.data.id);
-                dataTable.draw(false);
+                if (typeof dataTable !== 'undefined') { dataTable.draw(false); }
+                if (typeof tagContactsdataTable !== 'undefined') { tagContactsdataTable.columns(0).search($('#contacts_list').val()).draw(); }
+                if (typeof contactsModaldataTable !== 'undefined') { contactsModaldataTable.columns().search('').draw(); }
                 if (!data['id']) {
                     getHistory(result.data.id, $form);
                 }
@@ -336,7 +384,6 @@ function editContact(name, value, $form) {
     }
 
 }
-
 
 function changeActionsForm(action) {
     switch (action) {
@@ -360,11 +407,9 @@ function changeActionsForm(action) {
 function bindLiveChange($form) {
     $.each($('input[type=text],input[type=email]', $form), function (i, input) {
         var name = $(input).attr('name');
-        var val = $(input).val();
-        bind_inputs[name] = val;
+        bind_inputs[name] = $(input).data('value') + '';
     });
-    var contact_id = $('#contact-id').val();
-    bind_inputs['id'] = contact_id;
+    bind_inputs['id'] = $('#contact-id').val();
 }
 
 
@@ -449,5 +494,4 @@ function addError($form, name, errors) {
         $field.addClass('error');
         $field.after("<label class='error'>" + error + "</lable>");
     });
-
 }
