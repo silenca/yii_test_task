@@ -56,6 +56,7 @@ class ImportController extends BaseController
         $imported = 0;
 
         $report_file_name = time() . '.txt';
+        $contact_ids = [];
         for ($i = 1; $i <= count($new_contacts); $i++) {
             $contact_data = $new_contacts[$i];
             $import_contact_form_cols = ImportContactForm::getAllCols();
@@ -75,6 +76,7 @@ class ImportController extends BaseController
 
                     if ($contact->edit(['tags' => $import_contact_form->tags])) {
                         $imported++;
+                        $contact_ids[] = $contact->id;
                     } else {
                         $this->writeReport($report_file_name, $attributes, $contact->getErrors());
                         $error = true;
@@ -89,28 +91,28 @@ class ImportController extends BaseController
         }
         // Получить список контактов (для вставки в тег)
 
-        $contact_list = '';
-        foreach ($new_contacts as $contact) {
-            $phones_str = $contact[2];
-            $phones = explode(',', $phones_str);
-            $first_phone = $phones[0];
-            $contact_row = Contact::find()->where(['first_phone' => $first_phone])->one();
-            $contact_list .= $contact_row['id'] .',';
-        }
-        $contact_list = rtrim($contact_list, ",");
+//        $contact_list = '';
+//        foreach ($new_contacts as $contact) {
+//            $phones_str = $contact[2];
+//            $phones = explode(',', $phones_str);
+//            $first_phone = $phones[0];
+//            $contact_row = Contact::find()->where(['first_phone' => $first_phone])->one();
+//            $contact_list .= $contact_row['id'] .',';
+//        }
+//        $contact_list = rtrim($contact_list, ",");
 
         if ($error) {
             $this->json([
                 'report_file' => Yii::getAlias('@web') . '/reports/' . $report_file_name,
                 'imported' => $imported,
                 'count' => count($new_contacts) - 1,
-                'contact_list' => $contact_list
+//                'contact_list' => $contact_list
             ], 415);
         } else {
             $this->json([
                 'imported' => $imported,
                 'count' => count($new_contacts) - 1,
-                'contact_list' => $contact_list
+                'contact_ids' => $contact_ids
             ], 200);
         }
 

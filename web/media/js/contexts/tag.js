@@ -46,8 +46,6 @@ $(function () {
                 $contactsCounter.find('span:first').text(count.count_called);
                 $contactsCounter.find('span:nth-child(2)').text(count.count_all);
                 $contactsCounter.find('span:last').text(count.count_all - count.count_called);
-                // $('#ring_counter span:nth-child(2)')
-                console.log(data.json);
             },
             "ordering": false,
             "columnDefs": [
@@ -297,13 +295,6 @@ $(function () {
     var contacts = [];
 
     $('#add_contact').on('click', function(e) {
-        // var contacts_line = '';
-        // contacts.forEach(function(element, index, array) {
-        //     contacts_line += element + ','
-        // });
-        // contacts_line = contacts_line.slice(0,-1);
-        // $('input[name="contacts_list"]').val(contacts_line);
-
         // Объединение скрытого поля и отфильтрованных контактов
         var hidden_arr = $contactsList.val().split(',');
         var contacts_arr = contacts.split(',');
@@ -315,13 +306,7 @@ $(function () {
         $contactsList.val(result);
 
         $contactsList.trigger('change');
-        //contactsModaldataTable.columns().draw();
         $('#modalAddContactToTag').modal('hide');
-        // console.log(contacts_line);
-
-        // if (tagSelect.is(':enabled')) {
-        //     $('#tag_submit').trigger('click');
-        // }
     });
 
     $(document.body).on('change', 'input[name="contacts[]"]', function() {

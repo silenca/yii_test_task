@@ -43,17 +43,26 @@ $(function () {
                     if (result.status != 200) {
                         $form.find('.result').append("<a href='" + result.data.report_file + "' target='_blank'>Отчет об ошибках</a>");
                     }
-                    $contactsList = $('#contacts_list');
 
                     // Объединение скрытого поля и импортированных контактов
-                    var hidden_arr = $contactsList.val().split(',');
-                    var contacts_arr = result.data.contact_list.split(',');
+                    var contactIds = result.data.contact_ids,
+                        resultArr,
+                        hiddenArr,
+                        concatArr;
+                    var $contactsList = $('#contacts_list');
 
-                    var concat_arr = hidden_arr.concat(contacts_arr);
-                    var result_arr = concat_arr.filter(function (item, pos) {return concat_arr.indexOf(item) == pos});
-
-                    var result = result_arr.join(',');
-                    $contactsList.val(result).trigger('change');
+                    if (typeof contactIds !== 'undefined') {
+                        if ($contactsList.val() !== '') {
+                            hiddenArr = $contactsList.val().split(',');
+                            concatArr = hiddenArr.concat(contactIds);
+                            resultArr = concatArr.filter(function (item, pos) {
+                                return concatArr.indexOf(item) == pos;
+                            });
+                        } else {
+                            resultArr = contactIds;
+                        }
+                        $contactsList.val(resultArr.join(',')).trigger('change');
+                    }
                 }
 
             }

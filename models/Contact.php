@@ -306,12 +306,15 @@ class Contact extends \yii\db\ActiveRecord {
     }
 
     public static function getContactByPhone($phone) {
-        return self::find()
-                        ->where(['first_phone' => $phone])
-                        ->orWhere(['second_phone' => $phone])
-                        ->orWhere(['third_phone' => $phone])
-                        ->orWhere(['fourth_phone' => $phone])
+        return self::find()->where(['is_deleted' => '0'])
+                        ->andWhere(['or', ['first_phone' => $phone], ['second_phone' => $phone], ['third_phone' => $phone], ['fourth_phone' => $phone]])
                         ->one();
+//        return self::find()->where(['is_deleted' => '0'])
+//            ->andWhere(['first_phone' => $phone])
+//            ->orWhere(['second_phone' => $phone])
+//            ->orWhere(['third_phone' => $phone])
+//            ->orWhere(['fourth_phone' => $phone])
+//            ->one();
     }
 
     public function getManagerId() {

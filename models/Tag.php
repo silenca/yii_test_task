@@ -42,6 +42,7 @@ class Tag extends \yii\db\ActiveRecord {
     public function rules() {
         return [
             [['name'], 'required'],
+            [['name'], 'unique'],
             [['name', 'description', 'script'], 'string'],
             [['as_task'], 'integer'],
             [['start_date', 'end_date', 'as_task'], 'safe'],

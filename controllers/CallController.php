@@ -37,15 +37,6 @@ class CallController extends BaseController {
     }
 
     public function actionIndex() {
-//        if (Yii::$app->user->identity->role == User::ROLE_MANAGER) {
-//            return $this->render('index');
-//        } else {
-//            $managers = User::find()->where(['role' => User::ROLE_MANAGER])->all();
-//            return $this->render('index', [
-//                        'managers' => $managers
-//            ]);
-//        }
-
         $call_statuses = Call::getCallStatuses();
         if (Yii::$app->user->identity->role == User::ROLE_ADMIN) {
             $managers = User::find()->all();

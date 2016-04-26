@@ -89,7 +89,7 @@ $this->params['active'] = 'tags';
             <div class="panel-body">
                 <div id="ring_counter" class="m-b-10 m-l-10">
                     <span>0</span> из <span>0</span> Контактов<br>
-                    Осталось обзвонить <span>0</span>
+                    Осталось обзвонить: <span>0</span>
                 </div>
                 <table class="table table-hover" id="tag_contacts_table">
                     <thead>
