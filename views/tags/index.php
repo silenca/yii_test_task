@@ -80,7 +80,7 @@ $this->params['active'] = 'tags';
                             </div>
                         </div>
                         <div class="form-group col-md-2 pull-right">
-                            <button type="button" class="btn btn-complete pull-right btn-animated from-left fa fa-check disabled" id="tag_submit"><span>Применить</span></button>
+                            <button type="button" class="btn btn-complete pull-right disabled" id="tag_submit">Применить</button>
                         </div>
                         <div class="clearfix"></div>
                     </form>

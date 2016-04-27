@@ -103,8 +103,9 @@ class ContactsController extends BaseController
     public function actionGetdata()
     {
         $request_data = Yii::$app->request->get();
-        $query = Contact::find()->with('manager', 'tags')->distinct('contact.id');
-        $query->where(['contact.is_deleted' => '0']);
+        $contact_tableName = Contact::tableName();
+        $query = Contact::find()->with('manager', 'tags')->distinct($contact_tableName.'.id');
+        $query->where([$contact_tableName.'.is_deleted' => '0']);
         $columns = Contact::getColsForTableView();
         $user_id = Yii::$app->user->identity->getId();
         $user_role = Yii::$app->user->identity->getUserRole();
@@ -112,15 +113,17 @@ class ContactsController extends BaseController
         //Sorting
         if (isset($request_data['order'])) {
             $order_by_sort = $request_data['order'][0]['dir'] == 'asc' ? SORT_ASC : SORT_DESC;
-//            $sort_column = $columns[$request_data['order'][0]['column']];
             $sort_column = array_keys($columns)[$request_data['order'][0]['column']];
+            if (isset($columns[$sort_column]['db_cols'])) {
+                $sort_column = $columns[$sort_column]['db_cols'][0];
+            }
 
             $sorting = [
-                $sort_column => $order_by_sort
+                $contact_tableName.'.'.$sort_column => $order_by_sort
             ];
         } else {
             $sorting = [
-                'id' => SORT_DESC
+                Contact::tableName().'.id' => SORT_DESC
             ];
         }
 
@@ -140,13 +143,13 @@ class ContactsController extends BaseController
                 if (isset($columns[$column['name']]['db_cols'])) {
                     $db_cols_where = ['or'];
                     foreach ($columns[$column['name']]['db_cols'] as $db_col_i => $db_col_v) {
-                        $db_cols_where[] = ['like', 'contact.'.$db_col_v, $column['search']['value']];
+                        $db_cols_where[] = ['like', $contact_tableName.'.'.$db_col_v, $column['search']['value']];
                     }
                     $query->andWhere($db_cols_where);
                 } elseif ($column['name'] == 'tags') {
                     $query->joinWith('tags')->andWhere(['like', 'tag.name', $column['search']['value']]);
                 } else {
-                    $query->andWhere(['like', 'contact.'.$column['name'], $column['search']['value']]);
+                    $query->andWhere(['like', $contact_tableName.'.'.$column['name'], $column['search']['value']]);
                 }
             }
         }

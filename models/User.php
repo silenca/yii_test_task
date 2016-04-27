@@ -221,7 +221,7 @@ class User extends ActiveRecord implements IdentityInterface {
     public static function getColsForTableView() {
         return [
             'id' => ['label' => 'ID', 'have_search' => false],
-            'name' => ['label' => 'ФИО', 'have_search' => true, 'db_cols' => ['firstname'], 'lastname', 'patronymic'],
+            'name' => ['label' => 'ФИО', 'have_search' => true, 'db_cols' => ['firstname', 'lastname', 'patronymic']],
             'role' => ['label' => 'Роль', 'have_search' => false],
             'int_id' => ['label' => '№', 'have_search' => false,],
             'email' => ['label' => 'Email', 'have_search' => true],

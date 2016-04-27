@@ -39,7 +39,7 @@ $(function () {
                 "sLengthMenu": "_MENU_ ",
                 "sInfo": "Showing <b>_START_ to _END_</b> of _TOTAL_ entries"
             },
-            "iDisplayLength": 20,
+            "iDisplayLength": 10,
             "processing": true,
             "serverSide": true,
             "order": [],

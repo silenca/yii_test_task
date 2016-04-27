@@ -66,44 +66,64 @@ class UsersController extends BaseController
     public function actionGetdata()
     {
         $request_data = Yii::$app->request->get();
-        $total_count = User::find()->count();
+        $user_tableName = User::tableName();
+        $query = User::find()->with('tags');
+        $query_total = clone $query;
+        $total_count = $query_total->count();
         $columns = User::getColsForTableView();
         //Sorting
         if (isset($request_data['order'])) {
             $order_by_sort = $request_data['order'][0]['dir'] == 'asc' ? SORT_ASC : SORT_DESC;
-            $sort_column = $columns[$request_data['order'][0]['column']];
-
+            $sort_column = array_keys($columns)[$request_data['order'][0]['column']];
+            if (isset($columns[$sort_column]['db_cols'])) {
+                $sort_column = $columns[$sort_column]['db_cols'][0];
+            }
             $sorting = [
-                $sort_column => $order_by_sort
+                $user_tableName.'.'.$sort_column => $order_by_sort
             ];
         } else {
             $sorting = [
-                'id' => SORT_DESC
+                $user_tableName.'.id' => SORT_DESC
             ];
         }
-        $query = User::find()->with('tags');
+//        $query = User::find()->with('tags');
         //join Tags
-        $query->leftJoin(UserTag::tableName() . ' `ct`', '`ct`.`user_id` = user.`id`')
-            ->leftJoin(Tag::tableName() . ' `t`', '`t`.`id` = `ct`.`tag_id`');
+//        $query->leftJoin(UserTag::tableName() . ' `ct`', '`ct`.`user_id` = user.`id`')
+//            ->leftJoin(Tag::tableName() . ' `t`', '`t`.`id` = `ct`.`tag_id`');
 
         //Filtering
         foreach ($request_data['columns'] as $column) {
             if (!empty($column['search']['value'])) {
                 if (isset($columns[$column['name']]['db_cols'])) {
+                    $db_cols_where = ['or'];
                     foreach ($columns[$column['name']]['db_cols'] as $db_col_i => $db_col_v) {
-                        if ($db_col_i == 0) {
-                            $query->andWhere(['like', 'user.'.$db_col_v, $column['search']['value']]);
-                        } else {
-                            $query->orWhere(['like', 'user.'.$db_col_v, $column['search']['value']]);
-                        }
+                        $db_cols_where[] = ['like', $user_tableName.'.'.$db_col_v, $column['search']['value']];
                     }
+                    $query->andWhere($db_cols_where);
                 } elseif ($column['name'] == 'tags') {
-                    $query->andWhere(['like', 't.name', $column['search']['value']]);
+                    $query->joinWith('tags')->andWhere(['like', Tag::tableName().'.name', $column['search']['value']]);
                 } else {
-                    $query->andWhere(['like', 'user.'.$column['name'], $column['search']['value']]);
+                    $query->andWhere(['like', $user_tableName.'.'.$column['name'], $column['search']['value']]);
                 }
             }
         }
+//        foreach ($request_data['columns'] as $column) {
+//            if (!empty($column['search']['value'])) {
+//                if (isset($columns[$column['name']]['db_cols'])) {
+//                    foreach ($columns[$column['name']]['db_cols'] as $db_col_i => $db_col_v) {
+//                        if ($db_col_i == 0) {
+//                            $query->andWhere(['like', 'user.'.$db_col_v, $column['search']['value']]);
+//                        } else {
+//                            $query->orWhere(['like', 'user.'.$db_col_v, $column['search']['value']]);
+//                        }
+//                    }
+//                } elseif ($column['name'] == 'tags') {
+//                    $query->andWhere(['like', 't.name', $column['search']['value']]);
+//                } else {
+//                    $query->andWhere(['like', 'user.'.$column['name'], $column['search']['value']]);
+//                }
+//            }
+//        }
 
         $total_filtering_count = $query->count();
         $query
