@@ -56,9 +56,6 @@ class Contact extends \yii\db\ActiveRecord {
         'is_deleted'
     ];
 
-//    private $new_phones = [];
-//    private $new_emails = [];
-
     /**
      * @inheritdoc
      */

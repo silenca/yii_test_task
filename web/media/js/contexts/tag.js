@@ -16,6 +16,7 @@ $(function () {
         $tagStartDate = $('#tag_start_date'),
         $tagSubmit = $('#tag_submit'),
         $addContactTable = $('#add_contact_table'),
+        $addContactCsv = $('#add_contact_csv'),
         $tagName = $('#tag_name'),
         $contactsList = $('#contacts_list'),
         $contactsCounter = $('#ring_counter');
@@ -283,8 +284,8 @@ $(function () {
         e.preventDefault();
     });
 
-    $('#add_contact_csv').on('click', function(e) {
-        if ($tagSelectBox.val() == '') {
+    $addContactCsv.on('click', function(e) {
+        if ($('.tag-name:enabled').val() == '') {
             alert('Выберите тег');
         } else {
             $('#modalImportCsv').modal();
@@ -325,16 +326,24 @@ $(function () {
         manageTagData('clear');
         if ($(this).val() != '') {
             $tagSubmit.removeClass('disabled');
+            $addContactCsv.removeClass('disabled');
+            $addContactTable.removeClass('disabled');
         } else {
             $tagSubmit.addClass('disabled');
+            $addContactCsv.addClass('disabled');
+            $addContactTable.addClass('disabled');
         }
     });
 
     $tagName.on('keyup', function(e) {
         if ($(this).val() != '') {
             $tagSubmit.removeClass('disabled');
+            $addContactCsv.removeClass('disabled');
+            $addContactTable.removeClass('disabled');
         } else {
             $tagSubmit.addClass('disabled');
+            $addContactCsv.addClass('disabled');
+            $addContactTable.addClass('disabled');
         }
     });
 
@@ -352,7 +361,6 @@ $(function () {
     $contactsList.on('change', function (e) {
         tagContactsdataTable.columns(0).search($(this).val()).draw();
         contacts = $(this).val().split(',');
-        //contactsModaldataTable.columns().search('').draw();
     });
 
     $(document).on('click', '#tag_contacts_table .contact-phone', function(e) {

@@ -71,11 +71,11 @@ $this->params['active'] = 'tags';
                             <div class="col-md-6 m-t-10 add-contacts">
                                 <label class="">Добавить контакты:</label>
                                 <div class="input-group">
-                                    <button class="btn btn-info" id="add_contact_table">Таблица контактов</button>
+                                    <button class="btn btn-info disabled" id="add_contact_table">Таблица контактов</button>
                                 </div>
                                 <br />
                                 <div class="input-group">
-                                    <button class="btn btn-info" id="add_contact_csv">Импорт из CSV</button>
+                                    <button class="btn btn-info disabled" id="add_contact_csv">Импорт из CSV</button>
                                 </div>
                             </div>
                         </div>
