@@ -181,6 +181,8 @@ class ContactsController extends BaseController
         $contacts = $query->all();
         $contact_widget = new ContactTableWidget();
         $contact_widget->contacts = $contacts;
+        $contact_widget->user_id = $user_id;
+        $contact_widget->user_role = $user_role;
         $data = $contact_widget->run();
 
         $json_data = array(

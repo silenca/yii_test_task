@@ -9,6 +9,8 @@ use app\components\Filter;
 class ContactTableWidget extends Widget {
 
     public $contacts;
+    public $user_id;
+    public $user_role;
 
     public function init() {
         parent::init();
@@ -29,7 +31,19 @@ class ContactTableWidget extends Widget {
             $data[$i][] = Filter::dataImplode($contact->getEmailValues());
             $tag_names = [];
             foreach ($contact->tags as $tag) {
-                $tag_names[] = $tag->name;
+                if ($this->user_role == 'manager' || $this->user_role == 'operator') {
+                    $show_tag = false;
+                    foreach ($tag->users as $user) {
+                        if ($user->id == $this->user_id) {
+                            $show_tag = true;
+                        }
+                    }
+                    if ($show_tag) {
+                        $tag_names[] = $tag->name;
+                    }
+                } else {
+                    $tag_names[] = $tag->name;
+                }
             }
             $data[$i][] = Filter::dataImplode($tag_names, ', ', '<a class="contact_open_disable contact-tags" href="javascript:void(0)">{value}</a>', true);
 
