@@ -51,11 +51,20 @@ class ImportController extends BaseController
                 'Не корректное кол-во колонок'
             ]);
         }
+        //getting CSV headers for report file from imported CSV
+        $report_headers = $new_contacts[0];
+        array_unshift($report_headers,"Error type");
+
         unset($new_contacts[0]);
         $error = false;
         $imported = 0;
 
-        $report_file_name = time() . '.txt';
+        $report_file_name = time() . '.csv';
+        //adding first line to report CSV file
+        $report_file = fopen(Yii::getAlias('@web_folder') . '/reports/' . $report_file_name, "a+");
+        fwrite($report_file, iconv("UTF-8", "windows-1251//TRANSLIT", implode($report_headers, ';')) . "\n");
+        fclose($report_file);
+
         $contact_ids = [];
         for ($i = 1; $i <= count($new_contacts); $i++) {
             $contact_data = $new_contacts[$i];
@@ -78,14 +87,14 @@ class ImportController extends BaseController
                         $imported++;
                         $contact_ids[] = $contact->id;
                     } else {
-                        $this->writeReport($report_file_name, $attributes, $contact->getErrors());
+                        $this->writeReport($report_file_name, $attributes, $contact);
                         $error = true;
                     }
                 } catch (\Exception $ex) {
                     $this->json(false, 500);
                 }
             } else {
-                $this->writeReport($report_file_name, $attributes, $import_contact_form->getErrors());
+                $this->writeReport($report_file_name, $attributes, $import_contact_form);
                 $error = true;
             }
         }
@@ -118,14 +127,19 @@ class ImportController extends BaseController
 
     }
 
-    private function writeReport($file_name, $attributes, $errors)
+    private function writeReport($file_name, $attributes, $instance)
     {
+        //getting errors depending on $intance object
+        $errors = $instance->getErrors();
         $report_file = fopen(Yii::getAlias('@web_folder') . '/reports/' . $file_name, "a+");
-        fwrite($report_file, iconv("UTF-8", "windows-1251//TRANSLIT", implode(array_filter($attributes), ',')) . "\n");
+        //preparing attributes line which called an import error
+        $error_line = iconv("UTF-8", "windows-1251//TRANSLIT", implode($attributes, ';'));
+        //combining error in one object if it's related on same string
+        $combined_error = [];
         foreach ($errors as $error) {
-            fwrite($report_file, iconv("UTF-8", "windows-1251//TRANSLIT", $error[0]) . "\n");
+            array_push($combined_error,$error[0]);
         }
-        fwrite($report_file, "-------------------------------------------------" . "\n");
+        fwrite($report_file, iconv("UTF-8", "windows-1251//TRANSLIT", implode($combined_error, ', ')) . ";" . $error_line . "\n");
         fclose($report_file);
 
     }

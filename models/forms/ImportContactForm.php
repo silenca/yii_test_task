@@ -84,7 +84,7 @@ class ImportContactForm extends ContactForm
             $this->checkPhone($phone_val, $attribute);
             $fields = Contact::getPhoneCols();
             $this->isUnique($phone_val, $attribute, $fields, function($attr, $value, $int_contact_id) {
-                $this->addError($attr, $value.', уже существует в базе. ID контакта: '.$int_contact_id);
+                $this->addError($attr, 'Ошибка: телефон (' . $value . ') уже существует в базе. ID контакта: ' . $int_contact_id);
             });
             $this->$phone_key = $phone_val;
         }
@@ -97,7 +97,7 @@ class ImportContactForm extends ContactForm
             $this->checkEmail($email_val, $attribute);
             $fields = Contact::getEmailCols();
             $this->isUnique($email_val, $attribute, $fields, function($attr, $value, $int_contact_id) {
-                $this->addError($attr, $value.', уже существует в базе. ID контакта: '.$int_contact_id);
+                $this->addError($attr, 'Ошибка: email (' . $value . ') уже существует в базе. ID контакта: ' . $int_contact_id);
             });
             $this->$email_key = $email_val;
         }
@@ -107,7 +107,7 @@ class ImportContactForm extends ContactForm
     {
         if ($phone !== null) {
             if (!preg_match('/^(7|8)\d{10}$/', $phone)) {
-                $this->addError($attribute, 'ошибка - номер ('.$phone.') не из России');
+                $this->addError($attribute, 'Ошибка: номер (' . $phone . ') не принадлежит номерной емкости РФ');
             }
         }
     }

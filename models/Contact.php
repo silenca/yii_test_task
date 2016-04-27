@@ -249,10 +249,10 @@ class Contact extends \yii\db\ActiveRecord {
         $self_emails = self::getPropValues($this, $email_cols);
 
         if (count($contact_phones['exists']) > count($self_phones['empty'])) {
-            $this->addError('prop_count_miss', 'Ошибка - телефоны переполнены');
+            $this->addError('prop_count_miss', 'Ошибка: телефоны переполнены');
             return false;
         } elseif (count($contact_emails['exists']) > count($self_emails['empty'])) {
-            $this->addError('prop_count_miss', 'Ошибка - email-ы переполнены');
+            $this->addError('prop_count_miss', 'Ошибка: email-ы переполнены');
             return false;
         }
 

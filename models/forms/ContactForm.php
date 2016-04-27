@@ -86,16 +86,16 @@ class ContactForm extends Model
             [['phones'], 'phoneArray'],
             [['emails'], 'emailArray'],
 
-            [['name', 'surname'], 'match', 'pattern' => "/^[\p{Cyrillic}\-]*$/u", 'message' => '{attribute} - Недопустимые символы'],
+            [['name', 'surname'], 'match', 'pattern' => "/^[\p{Cyrillic}\-]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
             [['name', 'surname', 'middle_name'], 'string', 'length' => [1, 150],
-                'tooShort' => '{attribute} должен содержать больше {min} символов',
-                'tooLong' => '{attribute} должен содержать до {max} символов'],
-            [['middle_name'], 'match', 'pattern' => "/^[\p{Cyrillic}\-\s]*$/u", 'message' => '{attribute} - Недопустимые символы'],
-            [['country'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => '{attribute} - Недопустимые символы'],
-            [['region', 'area'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => '{attribute} - Недопустимые символы'],
-            [['city'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)\d]*$/u", 'message' => '{attribute} - Недопустимые символы'],
-            [['street'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d]*$/u", 'message' => '{attribute} - Недопустимые символы'],
-            [['house', 'flat'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d\/]*$/u", 'message' => '{attribute} - Недопустимые символы'],
+                'tooShort' => 'Ошибка: поле {attribute} должно содержать не менее {min} символов',
+                'tooLong' => 'Ошибка: поле {attribute} должно содержать не более {max} символов'],
+            [['middle_name'], 'match', 'pattern' => "/^[\p{Cyrillic}\-\s]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
+            [['country'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
+            [['region', 'area'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
+            [['city'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)\d]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
+            [['street'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
+            [['house', 'flat'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d\/]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
 
             [['tags_str'], 'tagsArray'],
 
@@ -200,7 +200,7 @@ class ContactForm extends Model
             $this->checkPhone($phone_val, $attribute);
             $fields = Contact::getPhoneCols();
             $this->isUnique($phone_val, $attribute, $fields, function($attr, $value, $contact_id) {
-                $this->addCustomError($attr, $value.', уже существует в базе');
+                $this->addCustomError($attr, 'Номер - '. $value .' уже существует в базе. ID = '. $contact_id);
             });
             $this->$phone_key = $phone_val;
         }
@@ -246,7 +246,7 @@ class ContactForm extends Model
             $this->checkEmail($email_val, $attribute);
             $fields = Contact::getEmailCols();
             $this->isUnique($email_val, $attribute, $fields, function($attr, $value, $contact_id) {
-                $this->addCustomError($attr, $value.', уже существует в базе');
+                $this->addCustomError($attr, 'Email - ' . $value . ' уже существует в базе. ID = '. $contact_id);
             });
             $this->$email_key = $email_val;
         }
@@ -255,7 +255,7 @@ class ContactForm extends Model
     public function addCustomError($attribute, $message = '')
     {
         if ($this->getFirstError($attribute) == null) {
-            $this->addError($attribute, $message);
+            $this->addError($attribute, 'Ошибка: '. $message);
         }
     }
 
