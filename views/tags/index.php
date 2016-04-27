@@ -78,6 +78,11 @@ $this->params['active'] = 'tags';
                                     <button class="btn btn-info disabled" id="add_contact_csv">Импорт из CSV</button>
                                 </div>
                             </div>
+                            <div class="col-md-6 m-t-35 export-contacts">
+                                <div class="input-group">
+                                    <button class="btn btn-info disabled" id="export_csv" data-href="/tags/export-csv">Экспортировать в CSV файл</button>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group col-md-2 pull-right">
                             <button type="button" class="btn btn-complete pull-right disabled" id="tag_submit">Применить</button>

@@ -12,6 +12,7 @@ use app\models\ActionType;
 class TagContactsTableWidget extends Widget {
     public $tag_contacts;
     public $user_role;
+    public $export;
 
     public function run() {
         $data = [];
@@ -25,7 +26,9 @@ class TagContactsTableWidget extends Widget {
                 $phone_class = 'contact-phone';
             }
 
-            $data[$i][] = $contact->id;
+            if (is_null($this->export)) {
+                $data[$i][] = $contact->id;
+            }
             $data[$i][] = $contact->int_id;
             $data[$i][] = $contact->surname;
 
@@ -35,8 +38,12 @@ class TagContactsTableWidget extends Widget {
                     $data[$i][] = Filter::dataImplode([$contact->getPhoneValues(), 'Телефон №'], ', ', $phone_wrapper, true, true);
                     break;
                 default:
-                    $phone_wrapper = '<a class="'.$phone_class.'" data-phone="{value}" href="javascript:void(0)">{value}</a>';
-                    $data[$i][] = Filter::dataImplode($contact->getPhoneValues(), ', ', $phone_wrapper, true);
+                    if (!is_null($this->export)) {
+                        $data[$i][] = Filter::dataImplode($contact->getPhoneValues());
+                    } else {
+                        $phone_wrapper = '<a class="'.$phone_class.'" data-phone="{value}" href="javascript:void(0)">{value}</a>';
+                        $data[$i][] = Filter::dataImplode($contact->getPhoneValues(), ', ', $phone_wrapper, true);
+                    }
             }
 
             if ($is_called_contact) {

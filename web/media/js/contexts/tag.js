@@ -17,6 +17,7 @@ $(function () {
         $tagSubmit = $('#tag_submit'),
         $addContactTable = $('#add_contact_table'),
         $addContactCsv = $('#add_contact_csv'),
+        $exportCsv = $('#export_csv'),
         $tagName = $('#tag_name'),
         $contactsList = $('#contacts_list'),
         $contactsCounter = $('#ring_counter');
@@ -293,6 +294,11 @@ $(function () {
         e.preventDefault();
     });
 
+    $exportCsv.on('click', function(e) {
+        e.preventDefault();
+        window.location.href = $(this).data('href') + '?filter_ids=' + $contactsList.val();
+    });
+
     var contacts = [];
 
     $('#add_contact').on('click', function(e) {
@@ -361,6 +367,11 @@ $(function () {
     $contactsList.on('change', function (e) {
         tagContactsdataTable.columns(0).search($(this).val()).draw();
         contacts = $(this).val().split(',');
+        if ($(this).val() !== '' && $('.tag-name:enabled').attr('id') == 'tag_search_select') {
+            $exportCsv.removeClass('disabled');
+        } else {
+            $exportCsv.addClass('disabled');
+        }
     });
 
     $(document).on('click', '#tag_contacts_table .contact-phone', function(e) {

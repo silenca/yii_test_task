@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\components\CSVExport;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -29,6 +30,7 @@ class TagsController extends BaseController {
                             'getcontacts',
                             'edit',
                             'delete',
+                            'export-csv'
                         ],
                         'allow' => true,
                         'roles' => ['admin', 'manager'],
@@ -152,24 +154,6 @@ class TagsController extends BaseController {
             }
         }
 
-//        foreach ($request_data['columns'] as $column) {
-//            if (!empty($column['search']['value'])) {
-//                if (isset($columns[$column['name']]['db_cols'])) {
-//                    foreach ($columns[$column['name']]['db_cols'] as $db_col_i => $db_col_v) {
-//                        if ($db_col_i == 0) {
-//                            $query->andWhere(['like', 'contact.'.$db_col_v, $column['search']['value']]);
-//                        } else {
-//                            $query->orWhere(['like', 'contact.'.$db_col_v, $column['search']['value']]);
-//                        }
-//                    }
-//                } elseif ($column['name'] == 'tags') {
-//                    $query->joinWith('tags')->andWhere(['like', 'tag.name', $column['search']['value']]);
-//                } else {
-//                    $query->andWhere(['like', 'contact.'.$column['name'], $column['search']['value']]);
-//                }
-//            }
-//        }
-
         $dump = $query->createCommand()->rawSql;
         $total_filtering_count = $query->count();
         $query
@@ -253,6 +237,48 @@ class TagsController extends BaseController {
         }
     }
 
+    public function actionExportCsv()
+    {
+        $request_data = Yii::$app->request->get();
+
+        if (isset($request_data['filter_ids'])) {
+            $filter_ids = explode(',', $request_data['filter_ids']);
+            $user_role = Yii::$app->user->identity->getUserRole();
+
+            $query = Contact::find()->with('phones')->orderBy('id');
+            $query->where(['id' => $filter_ids]);
+
+            $called_contacts = Contact::getCalledContacts($filter_ids);
+            $called_ids = Contact::getCalledContacts([], ['contact_id'], null, true, 'contact_id');
+            $query->andWhere(['not in', 'id', $called_ids]);
+
+            $dump = $query->createCommand()->rawSql;
+            $contacts = $query->all();
+
+            $contacts = array_merge($called_contacts, $contacts);
+
+            $tag_contacts_widget = new TagContactsTableWidget();
+            $tag_contacts_widget->tag_contacts = $contacts;
+            $tag_contacts_widget->user_role = $user_role;
+            $tag_contacts_widget->export = true;
+            $data = $tag_contacts_widget->run();
+
+            $csv_export = new CSVExport([
+                'filename' => 'called_contacts',
+                'csvOptions' => [
+                    'delimiter' => ';'
+                ]
+            ]);
+            $columns = ['int_id', 'surname', 'Phones', 'operator', 'status', 'comment', 'attitude'];
+            $csv_export->addRow($columns);
+            foreach ($data as $item) {
+                $csv_export->addRow($item);
+            }
+            $csv_export->export();
+        }
+        $this->redirect('/tags');
+    }
+
     public function actionGetdata()
     {
         $request_data = Yii::$app->request->get();
@@ -268,9 +294,7 @@ class TagsController extends BaseController {
             $query->where(['id' => $filter_ids]);
             $count_all = $query->count();
 
-//            $cont_called_tbl_name = ContactCalled::tableName();
             if ($user_role == 'operator') {
-//                $cont_tbl_name = Contact::tableName();
                 $called_contacts = Contact::getCalledContacts($filter_ids, [], $user_id);
                 $called_ids = Contact::getCalledContacts([], ['contact_id'], null, true, 'contact_id');
                 $queue_ids = Contact::getContactsInPool(['contact_id'], $user_id, true, 'contact_id');
