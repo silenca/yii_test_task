@@ -19,8 +19,8 @@ class m160316_071905_add_users extends Migration
             'int_id' => '800',
             'auth_key' => '',
             'role' => 15,
-            'created_at' => $now,
-            'updated_at' => $now,
+            'created_at' => strtotime($now),
+            'updated_at' => strtotime($now),
         ));
         $this->insert('{{%user}}', array(
             'firstname' => 'manager',
@@ -31,8 +31,8 @@ class m160316_071905_add_users extends Migration
             'int_id' => '900',
             'auth_key' => '',
             'role' => 1,
-            'created_at' => $now,
-            'updated_at' => $now,
+            'created_at' => strtotime($now),
+            'updated_at' => strtotime($now),
         ));
         $this->insert('{{%user}}', array(
             'firstname' => 'operator',
@@ -43,8 +43,8 @@ class m160316_071905_add_users extends Migration
             'int_id' => '1000',
             'auth_key' => '',
             'role' => 5,
-            'created_at' => $now,
-            'updated_at' => $now,
+            'created_at' => strtotime($now),
+            'updated_at' => strtotime($now),
         ));
     }
 

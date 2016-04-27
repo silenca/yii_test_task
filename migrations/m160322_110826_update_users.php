@@ -22,8 +22,8 @@ class m160322_110826_update_users extends Migration
             'int_id' => 604,
             'auth_key' => '',
             'role' => 1,
-            'created_at' => $now,
-            'updated_at' => $now,
+            'created_at' => strtotime($now),
+            'updated_at' => strtotime($now),
         ));
         $this->insert('{{%user}}', array(
             'firstname' => 'operator_3',
@@ -34,8 +34,8 @@ class m160322_110826_update_users extends Migration
             'int_id' => 605,
             'auth_key' => '',
             'role' => 1,
-            'created_at' => $now,
-            'updated_at' => $now,
+            'created_at' => strtotime($now),
+            'updated_at' => strtotime($now),
         ));
     }
 
