@@ -113,7 +113,7 @@ class ContactForm extends Model
             foreach ($fields as $field) {
                 $or_where[] = [$field => $value];
             }
-            $contact = Contact::find()->where(['is_deleted' => false])->andWhere($or_where);
+            $contact = Contact::find()->where(['is_deleted' => '0'])->andWhere($or_where);
             if ($this->edited_id) {
                 $contact->andWhere(['!=', 'id', $this->edited_id]);
             }
