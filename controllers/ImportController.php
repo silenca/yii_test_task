@@ -114,7 +114,7 @@ class ImportController extends BaseController
             $this->json([
                 'report_file' => Yii::getAlias('@web') . '/reports/' . $report_file_name,
                 'imported' => $imported,
-                'count' => count($new_contacts) - 1,
+                'count' => count($new_contacts),
 //                'contact_list' => $contact_list
             ], 415);
         } else {

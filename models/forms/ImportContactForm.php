@@ -82,6 +82,14 @@ class ImportContactForm extends ContactForm
         $phones = self::dataConvert($this->$attribute, 'phones');
         foreach ($phones as $phone_key => $phone_val) {
             $this->checkPhone($phone_val, $attribute);
+            $firstNumber = $phone_val[0];
+            if ($firstNumber !== null) {
+                if ($firstNumber == '8') {
+                    $phone_val[0] = '7';
+                } else if ($firstNumber !== '7') {
+                    $this->addError($attribute, 'Ошибка: номер (' . $phone_val . ') не принадлежит номерной ёмкости РФ.');
+                }
+            }
             $fields = Contact::getPhoneCols();
             $this->isUnique($phone_val, $attribute, $fields, function($attr, $value, $int_contact_id) {
                 $this->addError($attr, 'Ошибка: телефон (' . $value . ') уже существует в базе. ID контакта: ' . $int_contact_id);
@@ -106,8 +114,8 @@ class ImportContactForm extends ContactForm
     public function checkPhone($phone, $attribute)
     {
         if ($phone !== null) {
-            if (!preg_match('/^(7|8)\d{10}$/', $phone)) {
-                $this->addError($attribute, 'Ошибка: номер (' . $phone . ') не принадлежит номерной емкости РФ');
+            if (strlen($phone) != 11) {
+                $this->addError($attribute, 'Ошибка: номер (' . $phone . ') записан в ненадлежащем формате.');
             }
         }
     }
