@@ -92,7 +92,7 @@ class ContactsController extends BaseController
         $session = Yii::$app->session;
         $hide_columns = $session->get('contact_hide_columns');
         if (!$hide_columns) {
-            $hide_columns = [];
+            $hide_columns = ["surname","name","middle_name","emails","country","region","area","delete_button"];
         }
         $table_cols = Contact::getColsForTableView();
         $filter_cols = Contact::getColsForTableView();

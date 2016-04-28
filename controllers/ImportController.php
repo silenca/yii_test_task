@@ -120,7 +120,7 @@ class ImportController extends BaseController
         } else {
             $this->json([
                 'imported' => $imported,
-                'count' => count($new_contacts) - 1,
+                'count' => count($new_contacts),
                 'contact_ids' => $contact_ids
             ], 200);
         }
@@ -133,13 +133,17 @@ class ImportController extends BaseController
         $errors = $instance->getErrors();
         $report_file = fopen(Yii::getAlias('@web_folder') . '/reports/' . $file_name, "a+");
         //preparing attributes line which called an import error
-        $error_line = iconv("UTF-8", "windows-1251//TRANSLIT", implode($attributes, ';'));
+        //disabling encoding to Win-1251
+        //$error_line = iconv("UTF-8", "windows-1251//TRANSLIT", implode($attributes, ';'));
+        $error_line = implode($attributes, ';');
         //combining error in one object if it's related on same string
         $combined_error = [];
         foreach ($errors as $error) {
             array_push($combined_error,$error[0]);
         }
-        fwrite($report_file, iconv("UTF-8", "windows-1251//TRANSLIT", implode($combined_error, ', ')) . ";" . $error_line . "\n");
+        //disabling encoding to Win-1251
+        //fwrite($report_file, iconv("UTF-8", "windows-1251//TRANSLIT", implode($combined_error, ', ')) . ";" . $error_line . "\n");
+        fwrite($report_file, implode($combined_error, ', ') . ";" . $error_line . "\n");
         fclose($report_file);
 
     }
