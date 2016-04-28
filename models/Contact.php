@@ -136,7 +136,7 @@ class Contact extends \yii\db\ActiveRecord {
             'tags' => ['label' => 'Теги', 'have_search' => true, 'orderable' => false],
             'country' => ['label' => 'Страна', 'have_search' => true, 'orderable' => true],
             'region' => ['label' => 'Регион', 'have_search' => true, 'orderable' => true],
-            'area' => ['label' => 'Область', 'have_search' => true, 'orderable' => true],
+            'area' => ['label' => 'Район', 'have_search' => true, 'orderable' => true],
             'city' => ['label' => 'Город', 'have_search' => true, 'orderable' => true],
             'street' => ['label' => 'Улица', 'have_search' => true, 'orderable' => true],
             'house' => ['label' => 'Дом', 'have_search' => true, 'orderable' => true],

@@ -80,7 +80,7 @@ use app\models\User;
                                             <div class="input-group">
                                                 <label class="input-group-addon primary" for="contact_area"><i
                                                         class="pg pg-home"></i></label>
-                                                <input type="text" id="contact_area" name="area" placeholder="Область"
+                                                <input type="text" id="contact_area" name="area" placeholder="Район"
                                                        class="form-control">
                                             </div>
                                             <br>
