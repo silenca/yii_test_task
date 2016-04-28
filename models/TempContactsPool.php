@@ -10,6 +10,7 @@ use Yii;
  * @property integer $id
  * @property integer $contact_id
  * @property integer $manager_id
+ * @property integer $tag_id
  */
 class TempContactsPool extends \yii\db\ActiveRecord
 {
@@ -27,12 +28,16 @@ class TempContactsPool extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['contact_id', 'manager_id'], 'integer'],
+            [['contact_id', 'manager_id', 'tag_id'], 'integer'],
         ];
     }
 
     public function getContact() {
         return $this->hasOne(Contact::className(), ['id' => 'contact_id']);
+    }
+
+    public function getTag() {
+        return $this->hasOne(Tag::className(), ['id' => 'tag_id']);
     }
 
 //    public static function isExists($contact_id)

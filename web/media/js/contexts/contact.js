@@ -35,6 +35,10 @@ $(function () {
                 {"visible": false, "targets": [show_columns.indexOf('id')]},
                 {"orderable": false, "targets": []}
             ],
+            // 'fnDrawCallback': function(data) {
+            //     var contactIds = data.json.contact_ids;
+            //     $('#add_tag_to_all').attr('data-contacts', contactIds);
+            // },
             "createdRow": function (row, data, index) {
                 $(row).attr('data-id', data[show_columns.indexOf('id')]);
                 $(row).addClass('open-link');
@@ -274,6 +278,10 @@ $(function () {
             dataTable.columns('tags:name').search(tag_name).draw();
         });
     }
+
+    $('#add_tag_to_all').on('click', function(e) {
+        // window.location.href = '/tags?contacts_filter=' + ;
+    });
 });
 
 function hasTarget($target, elem) {

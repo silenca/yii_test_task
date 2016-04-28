@@ -119,8 +119,8 @@ $this->params['active'] = 'tags';
 </div>
 
 <!-- Modal -->
-<div class="modal fade slide-up disable-scroll" id="modalAddContactToTag" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
-    <div class="modal-dialog ">
+<div class="modal fade slide-up disable-scroll in" id="modalAddContactToTag" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
+    <div class="modal-dialog">
         <div class="modal-content-wrapper">
             <div class="modal-content">
                 <div class="modal-header clearfix text-left">
@@ -209,4 +209,5 @@ $this->params['active'] = 'tags';
     var hide_columns = <?= json_encode($hide_contact_columns); ?>;
     var columns = <?= json_encode(array_keys($table_contact_cols)); ?>;
     var columns_full = <?= json_encode($table_contact_cols); ?>;
+    var extra_contacts_list = <?= json_encode($contacts_list); ?>;
 </script>

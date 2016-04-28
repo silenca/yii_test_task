@@ -11,6 +11,7 @@ use Yii;
  * @property integer $contact_id
  * @property integer $call_id
  * @property integer $manager_id
+ * @property integer $tag_id
  */
 class ContactCalled extends \yii\db\ActiveRecord
 {
@@ -28,7 +29,7 @@ class ContactCalled extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['contact_id', 'call_id', 'manager_id'], 'integer'],
+            [['contact_id', 'call_id', 'manager_id', 'tag_id'], 'integer'],
         ];
     }
 
@@ -42,5 +43,9 @@ class ContactCalled extends \yii\db\ActiveRecord
 
     public function getCall() {
         return $this->hasOne(Call::className(), ['id' => 'call_id']);
+    }
+
+    public function getTag() {
+        return $this->hasOne(Tag::className(), ['id' => 'tag_id']);
     }
 }

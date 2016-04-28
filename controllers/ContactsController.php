@@ -123,15 +123,11 @@ class ContactsController extends BaseController
             ];
         } else {
             $sorting = [
-                Contact::tableName().'.id' => SORT_DESC
+                $contact_tableName.'.id' => SORT_DESC
             ];
         }
 
         if ($user_role == 'manager' || $user_role == 'operator') {
-//            $user_tags = Yii::$app->user->identity->getTags()->asArray()->all();
-//            $user_tags = array_map(function($tag) { return $tag['id']; }, $user_tags);
-//
-//            $query->joinWith('tags')->andWhere(['tag.id' => $user_tags]);
             $query->joinWith('tags.users')->andWhere(['user.id' => $user_id]);
         }
         $query_total = clone $query;
@@ -153,26 +149,14 @@ class ContactsController extends BaseController
                 }
             }
         }
-//        foreach ($request_data['columns'] as $column) {
-//            if (!empty($column['search']['value'])) {
-//                if (isset($columns[$column['name']]['db_cols'])) {
-//                    foreach ($columns[$column['name']]['db_cols'] as $db_col_i => $db_col_v) {
-//                        if ($db_col_i == 0) {
-//                            $query->andWhere(['like', 'contact.'.$db_col_v, $column['search']['value']]);
-//                        } else {
-//                            $query->orWhere(['like', 'contact.'.$db_col_v, $column['search']['value']]);
-//                        }
-//                    }
-//                } elseif ($column['name'] == 'tags') {
-//                    $query->joinWith('tags')->andWhere(['like', 'tag.name', $column['search']['value']]);
-//                } else {
-//                    $query->andWhere(['like', 'contact.'.$column['name'], $column['search']['value']]);
-//                }
-//            }
-//        }
 
         $dump = $query->createCommand()->rawSql;
         $total_filtering_count = $query->count();
+
+//        $query_ids = clone $query;
+//        $contact_ids = $query_ids->asArray()->all();
+//        $contact_ids = implode(',', array_map(function($item) { return $item['id']; }, $contact_ids));
+
         $query
             ->orderBy($sorting)
             ->limit($request_data['length'])
@@ -189,7 +173,8 @@ class ContactsController extends BaseController
             "draw" => intval($request_data['draw']),
             "recordsTotal" => intval($total_count),
             "recordsFiltered" => intval($total_filtering_count),
-            "data" => $data   // total data array
+            "data" => $data,   // total data array
+//            "contact_ids" => $contact_ids
         );
         echo json_encode($json_data);
         die;

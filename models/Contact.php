@@ -392,11 +392,14 @@ class Contact extends \yii\db\ActiveRecord {
         }
     }
 
-    public static function getCalledContacts($filter_ids = [], $select = [], $manager_id = null, $as_array = false, $array_val = '', $rawSql = false)
+    public static function getCalledContacts($filter_ids = [], $tag_id = null, $select = [], $manager_id = null, $as_array = false, $array_val = '', $rawSql = false)
     {
         $query = ContactCalled::find()->select($select);
         if ($filter_ids) {
             $query->where(['contact_id' => $filter_ids]);
+        }
+        if ($tag_id) {
+            $query->andWhere(['tag_id' => $tag_id]);
         }
         if ($manager_id) {
             $query->andWhere(['=', ContactCalled::tableName().'.manager_id', $manager_id]);
@@ -445,10 +448,10 @@ class Contact extends \yii\db\ActiveRecord {
         return $query->all();
     }
 
-    public static function addContInPool($contact_id, $manager_id)
+    public static function addContInPool($contact_id, $manager_id, $tag_id)
     {
         if (!TempContactsPool::find()->where(['contact_id' => $contact_id])->exists()) {
-            $cont_pool = new TempContactsPool(['contact_id' => $contact_id, 'manager_id' => $manager_id]);
+            $cont_pool = new TempContactsPool(['contact_id' => $contact_id, 'manager_id' => $manager_id, 'tag_id' => $tag_id]);
             return $cont_pool->save();
         }
         return false;
@@ -463,10 +466,10 @@ class Contact extends \yii\db\ActiveRecord {
         return false;
     }
 
-    public static function addContactCalled($contact_id, $call_id, $manager_id)
+    public static function addContactCalled($contact_id, $call_id, $manager_id, $tag_id)
     {
         if (!ContactCalled::find()->where(['contact_id' => $contact_id])->exists()) {
-            $cont_called = new ContactCalled(['contact_id' => $contact_id, 'call_id' => $call_id, 'manager_id' => $manager_id]);
+            $cont_called = new ContactCalled(['contact_id' => $contact_id, 'call_id' => $call_id, 'manager_id' => $manager_id, 'tag_id' => $tag_id]);
             return $cont_called->save();
         }
         return false;

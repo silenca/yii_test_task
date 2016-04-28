@@ -57,8 +57,14 @@ class TagsController extends BaseController {
         ];
     }
 
-    public function actionIndex() {
-
+    public function actionIndex()
+    {
+        $request_data = Yii::$app->request->get();
+        if (isset($request_data['contacts_list'])) {
+            $contacts_list = $request_data['contacts_list'];
+        } else {
+            $contacts_list = null;
+        }
         $session = Yii::$app->session;
         $hide_contact_columns = $session->get('contact_hide_columns');
         if (!$hide_contact_columns) {
@@ -75,6 +81,7 @@ class TagsController extends BaseController {
             'hide_contact_columns' => $hide_contact_columns,
             'table_contact_cols' => $table_contact_cols,
             'filter_contact_cols' => $filter_contact_cols,
+            'contacts_list' => $contacts_list
         ]);
     }
 
@@ -243,13 +250,22 @@ class TagsController extends BaseController {
 
         if (isset($request_data['filter_ids'])) {
             $filter_ids = explode(',', $request_data['filter_ids']);
+            $tag_id = $request_data['tag_id'];
+//            if (!empty($request_data['tag_id'])) {
+//                $tag_id = $request_data['tag_id'];
+//            }
             $user_role = Yii::$app->user->identity->getUserRole();
 
             $query = Contact::find()->with('phones')->orderBy('id');
             $query->where(['id' => $filter_ids]);
 
-            $called_contacts = Contact::getCalledContacts($filter_ids);
-            $called_ids = Contact::getCalledContacts([], ['contact_id'], null, true, 'contact_id');
+            if (!empty($tag_id)) {
+                $called_contacts = Contact::getCalledContacts($filter_ids, $tag_id);
+                $called_ids = Contact::getCalledContacts([], $tag_id, ['contact_id'], null, true, 'contact_id');
+            } else {
+                $called_contacts = [];
+                $called_ids = [];
+            }
             $query->andWhere(['not in', 'id', $called_ids]);
 
             $dump = $query->createCommand()->rawSql;
@@ -282,6 +298,12 @@ class TagsController extends BaseController {
     public function actionGetdata()
     {
         $request_data = Yii::$app->request->get();
+        $tag_id = $request_data['columns'][1]['search']['value'];
+//        if (!empty($request_data['columns'][1]['search']['value'])) {
+//            $tag_id = $request_data['columns'][1]['search']['value'];
+//        } else {
+//            $tag_id = null;
+//        }
         if (!empty($request_data['columns'][0]['search']['value'])) {
             $filter_ids = explode(',', $request_data['columns'][0]['search']['value']);
         }
@@ -295,19 +317,30 @@ class TagsController extends BaseController {
             $count_all = $query->count();
 
             if ($user_role == 'operator') {
-                $called_contacts = Contact::getCalledContacts($filter_ids, [], $user_id);
-                $called_ids = Contact::getCalledContacts([], ['contact_id'], null, true, 'contact_id');
+                if (!empty($tag_id)) {
+                    $called_contacts = Contact::getCalledContacts($filter_ids, $tag_id, [], $user_id);
+                    $called_ids = Contact::getCalledContacts([], $tag_id, ['contact_id'], null, true, 'contact_id');
+                } else {
+                    $called_contacts = [];
+                    $called_ids = [];
+                }
+
                 $queue_ids = Contact::getContactsInPool(['contact_id'], $user_id, true, 'contact_id');
                 $query->andWhere(['not in', 'id', $called_ids]);
                 $query->andWhere(['not in', 'id', $queue_ids]);
 
                 $dump = $query->createCommand()->rawSql;
                 $contacts[0] = $query->one();
-                Contact::addContInPool($contacts[0]['id'], $user_id);
-//                Contact::removeContInPool($contacts[0]['id']);
+                Contact::addContInPool($contacts[0]['id'], $user_id, $tag_id);
             } else {
-                $called_contacts = Contact::getCalledContacts($filter_ids);
-                $called_ids = Contact::getCalledContacts([], ['contact_id'], null, true, 'contact_id');
+                if (!empty($tag_id)) {
+                    $called_contacts = Contact::getCalledContacts($filter_ids, $tag_id);
+                    $called_ids = Contact::getCalledContacts([], $tag_id, ['contact_id'], null, true, 'contact_id');
+                } else {
+                    $called_contacts = [];
+                    $called_ids = [];
+                }
+
                 $query->andWhere(['not in', 'id', $called_ids]);
 
                 $dump = $query->createCommand()->rawSql;

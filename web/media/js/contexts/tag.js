@@ -22,6 +22,11 @@ $(function () {
         $contactsList = $('#contacts_list'),
         $contactsCounter = $('#ring_counter');
 
+    // if (typeof extra_contacts_list !== 'undefined') {
+    //     $contactsList.val(extra_contacts_list).trigger('change');
+    //     extra_contacts_list = extra_contacts_list.split(',');
+    // }
+
     var initTagContactsTable = function () {
         var settings = {
             "sDom": "<'table-responsive't><'row'<p i>>",
@@ -131,8 +136,6 @@ $(function () {
         contactsModaldataTable.on( 'xhr', function () {
             var json = contactsModaldataTable.ajax.json();
             contacts = json.contacts;
-
-
         } );
 
         var $searchBoxes = $('input.search-input-text, select.search-input-select');
@@ -303,14 +306,11 @@ $(function () {
 
     $('#add_contact').on('click', function(e) {
         // Объединение скрытого поля и отфильтрованных контактов
-        var hidden_arr = $contactsList.val().split(',');
-        var contacts_arr = contacts.split(',');
+        var hiddenArr = $contactsList.val().split(',');
+        // var contactsArr = contacts.split(',');
 
-        var concat_arr = hidden_arr.concat(contacts_arr);
-        var result_arr = concat_arr.filter(function (item, pos) {return concat_arr.indexOf(item) == pos});
-
-        var result = result_arr.join(',');
-        $contactsList.val(result);
+        var resultArr = mergeArrays(hiddenArr, contacts);
+        $contactsList.val(resultArr.join(','));
 
         $contactsList.trigger('change');
         $('#modalAddContactToTag').modal('hide');
@@ -365,7 +365,20 @@ $(function () {
     });
 
     $contactsList.on('change', function (e) {
-        tagContactsdataTable.columns(0).search($(this).val()).draw();
+        // var resultArr;
+        // if (typeof extra_contacts_list !== 'undefined') {
+        //     resultArr = mergeArrays($(this).val().split(','), extra_contacts_list);
+        //     $(this).val(resultArr.join(','));
+        // }
+        var tagId;
+
+        if (tagSelect.val() != '') {
+            tagId = tagSelect.val();
+        } else {
+            tagId = $('#tag_id').val();
+        }
+        tagContactsdataTable.columns(0).search($(this).val());
+        tagContactsdataTable.columns(1).search(tagId).draw();
         contacts = $(this).val().split(',');
         if ($(this).val() !== '' && $('.tag-name:enabled').attr('id') == 'tag_search_select') {
             $exportCsv.removeClass('disabled');
@@ -389,6 +402,11 @@ $(function () {
     });
 });
 
+function mergeArrays($arr1, $arr2) {
+    var concatArr = $arr1.concat($arr2);
+    return concatArr.filter(function (item, pos) {return concatArr.indexOf(item) == pos});
+}
+
 function prepareData($form) {
     var data = {};
     $.each($form.find('input[type="text"]:enabled, textarea:enabled'), function (i, el) {
@@ -403,9 +421,6 @@ function prepareData($form) {
     }
     data.tag_users = tagUsersSelect.val();
 
-    // if ($('#contacts_list').val() != "") {
-    //     data.tag_contacts = $('#contacts_list').val().split(',');
-    // }
     data.tag_contacts = $('#contacts_list').val().split(',');
     data.as_task = $('#tag_as_task').is(':checked') ? 1 : 0;
     data._csrf = _csrf;
