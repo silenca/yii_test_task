@@ -65,6 +65,7 @@ class ImportController extends BaseController
         fwrite($report_file, iconv("UTF-8", "windows-1251//TRANSLIT", implode($report_headers, ';')) . "\n");
         fclose($report_file);
 
+        $updated = 0;
         $contact_ids = [];
         for ($i = 1; $i <= count($new_contacts); $i++) {
             $contact_data = $new_contacts[$i];
@@ -95,12 +96,17 @@ class ImportController extends BaseController
                 }
             } else {
                 $this->writeReport($report_file_name, $attributes, $import_contact_form);
-                $phones = explode(',', $attributes['phones']);
+                //$phones = explode(',', $attributes['phones']);
+                $phones = [$import_contact_form->first_phone, $import_contact_form->second_phone];
                 if ($phones !== null) {
                     for ($j = 0;$j < count($phones);$j++) {
-                        $curContact = Contact::getContactByPhone($phones[$j]);
-                        if ($curContact !== null) {
-                            $curContact->edit(['tags' => $import_contact_form->tags]);
+                        $cur_contact = Contact::getContactByPhone($phones[$j]);
+                        if ($cur_contact !== null) {
+                            $exists_tags = $cur_contact->tags;
+                            if (count($exists_tags) < count($import_contact_form->tags)) {
+                                $updated++;
+                            }
+                            $cur_contact->edit(['tags' => $import_contact_form->tags]);
                         }
                     }
                 }
@@ -125,6 +131,7 @@ class ImportController extends BaseController
                 'report_file' => Yii::getAlias('@web') . '/reports/' . $report_file_name,
                 'imported' => $imported,
                 'count' => count($new_contacts),
+                'updated' => $updated
 //                'contact_list' => $contact_list
             ], 415);
         } else {

@@ -61,7 +61,7 @@ class ActionController extends BaseController {
     public function actionGetdata() {
         $request_data = Yii::$app->request->get();
         $columns = Action::getTableColumns();
-        $query = Action::find()->joinWith(['user', 'actionType'])->with('actionType', 'contact', 'user', 'comment');
+        $query = Action::find()->joinWith(['user', 'actionType'])->with('actionType', 'contact.tags', 'user', 'comment');
 //        $from_query = new Query();
         $user_id = Yii::$app->user->identity->getId();
         $user_role = Yii::$app->user->identity->getUserRole();
@@ -92,9 +92,13 @@ class ActionController extends BaseController {
 
         //Filtering
         $filter_action_type_id = $request_data['columns'][2]['search']['value'];
-        $filter_manager_id = $request_data['columns'][6]['search']['value'];
+        $filter_tag_name = $request_data['columns'][4]['search']['value'];
+        $filter_manager_id = $request_data['columns'][7]['search']['value'];
         if (!empty($filter_action_type_id)) {
             $query->andWhere([ActionType::tableName().'.id' => $filter_action_type_id]);
+        }
+        if (!empty($filter_tag_name)) {
+            $query->joinWith('contact.tags')->andWhere(['like', 'tag.name', $filter_tag_name]);
         }
         if (!empty($filter_manager_id)) {
             $query->andWhere([User::tableName().'.id' => $filter_manager_id]);
@@ -109,6 +113,7 @@ class ActionController extends BaseController {
         $action_widget = new ActionTableWidget();
         $action_widget->actions = $actions;
         $action_widget->user_role = $user_role;
+        $action_widget->user_id = $user_id;
         $data = $action_widget->run();
 
         $json_data = array(

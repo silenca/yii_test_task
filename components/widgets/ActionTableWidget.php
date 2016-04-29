@@ -11,6 +11,7 @@ class ActionTableWidget extends Widget
 
     public $actions;
     public $user_role;
+    public $user_id;
 
 //    public function init()
 //    {
@@ -65,6 +66,24 @@ class ActionTableWidget extends Widget
                 default:
                     $data[$i][] = Filter::dataImplode([$action_contact['surname'], $action_contact['name'], $action_contact['middle_name']], ' ', "<div><a class='open_contact' data-id='" . $action['contact_id'] . "'>{value}</a></div>");
             }
+
+            $tag_names = [];
+            foreach ($action->contact->tags as $tag) {
+                if ($this->user_role == 'manager' || $this->user_role == 'operator') {
+                    $show_tag = false;
+                    foreach ($tag->users as $user) {
+                        if ($user->id == $this->user_id) {
+                            $show_tag = true;
+                        }
+                    }
+                    if ($show_tag) {
+                        $tag_names[] = $tag->name;
+                    }
+                } else {
+                    $tag_names[] = $tag->name;
+                }
+            }
+            $data[$i][] = Filter::dataImplode($tag_names, ', ', '<a class="contact_open_disable contact-tags" href="javascript:void(0)">{value}</a>', true);
 
 
             if (!is_null($action['schedule_date'])) {

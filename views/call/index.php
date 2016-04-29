@@ -47,6 +47,7 @@ $this->params['active'] = 'call';
                                 <?php endif; ?>
                             </th>
                             <th>Контакт</th>
+                            <th>Теги</th>
                             <?php if (Yii::$app->user->can('listen_call')): ?>
                                 <th>Прослушать</th>
                             <?php endif; ?>

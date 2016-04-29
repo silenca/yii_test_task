@@ -83,6 +83,11 @@ $(function () {
             viewAction(action_id, action_date);
         }
     });
+
+    $(document).on('click', '#action-table .contact-tags', function(e) {
+        var tag_name = $(this).text();
+        dataTable.columns(4).search(tag_name).draw();
+    });
 });
 
 function viewAction(id, date) {

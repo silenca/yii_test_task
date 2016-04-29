@@ -71,7 +71,7 @@ class CallController extends BaseController {
 
         $query = Call::find()
             ->joinWith(['callManagers.manager'])
-            ->with('callManagers', 'callManagers.manager', 'contact', 'missedCall')
+            ->with('callManagers', 'callManagers.manager', 'contact.tags', 'missedCall')
             ->andWhere(['<>', '`call`.`status`', 'new'])
             ->distinct();
 
@@ -110,7 +110,8 @@ class CallController extends BaseController {
 
         //Filtering
         $filter_status = $request_data['columns'][4]['search']['value'];
-        $filter_manager_id = $request_data['columns'][6]['search']['value'];
+        $filter_tag_name = $request_data['columns'][6]['search']['value'];
+        $filter_manager_id = $request_data['columns'][7]['search']['value'];
         if (!empty($filter_status)) {
             $filter_status = explode('|', $filter_status);
             $statuses = explode('_', $filter_status[0]);
@@ -121,6 +122,9 @@ class CallController extends BaseController {
             if (count($types) > 0) {
                 $query->andWhere([Call::tableName().'.type' => $types]);
             }
+        }
+        if (!empty($filter_tag_name)) {
+            $query->joinWith('contact.tags')->andWhere(['like', 'tag.name', $filter_tag_name]);
         }
         if (!empty($filter_manager_id)) {
             $query->andWhere([User::tableName().'.id' => $filter_manager_id]);
@@ -133,6 +137,7 @@ class CallController extends BaseController {
         $call_widget = new CallTableWidget();
         $call_widget->calls = $calls;
         $call_widget->user_role = $user_role;
+        $call_widget->user_id = $user_id;
         $data = $call_widget->run();
 
         $json_data = array(

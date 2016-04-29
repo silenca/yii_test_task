@@ -98,6 +98,11 @@ $(function () {
             initCallNow(phone);
         }
     });
+
+    $(document).on('click', '#call-table .contact-tags', function(e) {
+        var tag_name = $(this).text();
+        dataTable.columns(6).search(tag_name).draw();
+    });
 });
 
 

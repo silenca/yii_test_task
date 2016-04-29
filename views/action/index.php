@@ -35,6 +35,7 @@ $this->params['active'] = 'action';
 
                             </th>
                             <th>Контакт</th>
+                            <th>Теги</th>
                             <th>Запланированное время</th>
                             <th>Комментарий</th>
                             <th>

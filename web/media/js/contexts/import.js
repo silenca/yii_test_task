@@ -40,6 +40,7 @@ $(function () {
                 }
                 if (result.status !== 500) {
                     $form.find('.result').append("<div>Импортировано " + result.data.imported + " из " + result.data.count + "</div>");
+                    $form.find('.result').append("<div>Обновлено теги " + result.data.updated + " контактов</div>");
                     if (result.status != 200) {
                         $form.find('.result').append("<a href='" + result.data.report_file + "' target='_blank'>Отчет об ошибках</a>");
                     }

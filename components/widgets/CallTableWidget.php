@@ -11,6 +11,7 @@ class CallTableWidget extends Widget {
 
     public $calls;
     public $user_role;
+    public $user_id;
 //    public $calls_missed;
 
 //    public function init() {
@@ -67,6 +68,28 @@ class CallTableWidget extends Widget {
                     }
             }
             $data[$i][] = "<a class='contact' data-contact_id='".$call['contact_id']."' data-phone='".$call['phone_number']."' href='javascript:void(0)'>" . $contact_name . "</a>";
+
+
+            $tag_names = [];
+            if (isset($call->contact->tags)) {
+                foreach ($call->contact->tags as $tag) {
+                    if ($this->user_role == 'manager' || $this->user_role == 'operator') {
+                        $show_tag = false;
+                        foreach ($tag->users as $user) {
+                            if ($user->id == $this->user_id) {
+                                $show_tag = true;
+                            }
+                        }
+                        if ($show_tag) {
+                            $tag_names[] = $tag->name;
+                        }
+                    } else {
+                        $tag_names[] = $tag->name;
+                    }
+                }
+            }
+
+            $data[$i][] = Filter::dataImplode($tag_names, ', ', '<a class="contact_open_disable contact-tags" href="javascript:void(0)">{value}</a>', true);
 
             if (Yii::$app->user->can('listen_call')) {
                 if ($call_success) {

@@ -103,10 +103,10 @@ class ImportContactForm extends ContactForm
         $emails = self::dataConvert($this->$attribute, 'emails');
         foreach ($emails as $email_key => $email_val) {
             $this->checkEmail($email_val, $attribute);
-            $fields = Contact::getEmailCols();
-            $this->isUnique($email_val, $attribute, $fields, function($attr, $value, $int_contact_id) {
-                $this->addError($attr, 'Ошибка: email (' . $value . ') уже существует в базе. ID контакта: ' . $int_contact_id);
-            });
+//            $fields = Contact::getEmailCols();
+//            $this->isUnique($email_val, $attribute, $fields, function($attr, $value, $int_contact_id) {
+//                $this->addError($attr, 'Ошибка: email (' . $value . ') уже существует в базе. ID контакта: ' . $int_contact_id);
+//            });
             $this->$email_key = $email_val;
         }
     }
