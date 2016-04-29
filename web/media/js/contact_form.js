@@ -191,22 +191,19 @@ function initCallNow(phone) {
 }
 
 function initRingRound($tagForm) {
-    var tagIdVal = $tagForm.find('#tag_search_select').val(),
-        tagDescrVal = $tagForm.find('#tag_description').val(),
+    var tagDescrVal = $tagForm.find('#tag_description').val(),
         tagScriptVal = $tagForm.find('#tag_script').val(),
         $actionCallForm = $('#form_action_call'),
         ringRoundActionUrl = '/contacts/ring-round';
 
     $contact_form.find('.script_content').html(tagScriptVal);
     $contact_form.find('.contact-history').find('.script-tab').show().find('a').trigger('click');
-    $contact_form.find('#action_tag_id').val(tagIdVal);
     $contact_form.find('#action_tag_description').val(tagDescrVal).attr('disabled', true).parent().show();
     $actionCallForm.addClass('ring-round');
     $actionCallForm.attr('action', ringRoundActionUrl);
     $actionCallForm.find('.action-title').hide();
     $actionCallForm.find('input[name="schedule_date"]').parents('.form-group').hide();
     $actionCallForm.find('#google_cal_show_call').parents('.form-group').hide();
-    // $('.contact-actions').find('.cs-select').on('click', function (e) { e.preventDefault(); });
 }
 
 function changeValidationRequired(options, state) {

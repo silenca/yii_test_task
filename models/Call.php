@@ -86,6 +86,17 @@ class Call extends \yii\db\ActiveRecord {
         ];
     }
 
+    public static function getAttitudeLevels()
+    {
+        return [
+            ['name' => 1, 'label' => '--'],
+            ['name' => 2, 'label' => '-'],
+            ['name' => 3, 'label' => '+-'],
+            ['name' => 4, 'label' => '+'],
+            ['name' => 5, 'label' => '++'],
+        ];
+    }
+
     public static function buildSelectQuery() {
         $columns = self::getTableColumns();
         $select = [];

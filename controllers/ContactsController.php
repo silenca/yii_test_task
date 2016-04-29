@@ -374,11 +374,10 @@ class ContactsController extends BaseController
         $contact_id = Yii::$app->request->post('id');
         $action_comment_text = Yii::$app->request->post('action_comment');
         $call_order_token = Yii::$app->request->post('call_order_token');
-        $action_tag_id = Yii::$app->request->post('action_tag_id');
         $attitude_level = Yii::$app->request->post('attitude');
         $contact_ring_round = new ContactRingRound();
         $contact_ring_round->manager_id = Yii::$app->user->identity->getId();
-        if ($contact_ring_round->add($contact_id, $action_comment_text, $call_order_token, $attitude_level, $action_tag_id)) {
+        if ($contact_ring_round->add($contact_id, $action_comment_text, $call_order_token, $attitude_level)) {
             $history_text = $contact_ring_round->getHistoryText();
             $response_date = [
                 'id' => $contact_ring_round->id,

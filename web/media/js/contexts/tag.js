@@ -3,6 +3,7 @@ var tagContactsdataTable, contactsModaldataTable;
 var tagSelect;
 var tagUsersSelect;
 var contacts;
+var tableFilters = {};
 
 $(function () {
     $tagContactsTable = $('#tag_contacts_table');
@@ -64,6 +65,39 @@ $(function () {
         };
 
         tagContactsdataTable = $tagContactsTable.DataTable(settings);
+
+        var $searchBoxes = $tagContactsTable.find('input.search-input-text, select.search-input-select');
+        
+        $.each($searchBoxes, function () {
+            var column = $(this).data('column_name');
+            tableFilters[column] = $(this).val();
+        });
+
+        $('.search-input-text').on('keyup', function () {   // for text boxes
+            delay(function () {
+                $.each($searchBoxes, function (index, val) {
+                    var i = $(this).attr('data-column');
+                    var n = $(this).attr('data-column_name');
+                    var v = $(this).val();
+                    if (v.length >= 0) {
+                        tagContactsdataTable.columns(i).search(v);
+                    }
+                    tableFilters[n] = v;
+                });
+                tagContactsdataTable.draw();
+            }, 2000);
+        });
+
+        $('.search-input-select').on('change', function () {   // for select box
+            $.each($searchBoxes, function (index, val) {
+                var i = $(this).attr('data-column');
+                var n = $(this).attr('data-column_name');
+                var v = $(this).val();
+                tagContactsdataTable.columns(i).search(v);
+                tableFilters[n] = v;
+            });
+            tagContactsdataTable.draw();
+        });
     };
 
 
@@ -298,8 +332,14 @@ $(function () {
     });
 
     $exportCsv.on('click', function(e) {
+        // e.preventDefault();
+        // var filters = JSON.stringify(tableFilters);
+        // window.location.href = $(this).data('href') + '?filters=' + JSON.stringify(tableFilters);
         e.preventDefault();
-        window.location.href = $(this).data('href') + '?filter_ids=' + $contactsList.val();
+        tableFilters['tag_id'] = tagSelect.val();
+        tableFilters['contact_ids'] = $contactsList.val();
+        var filters = $.param(tableFilters);
+        window.location.href = $(this).data('href') + '?' + filters;
     });
 
     var contacts = [];
@@ -469,7 +509,8 @@ function userScenario(userRole) {
         $contactsList = $('#contacts_list'),
         $tagToggle = $('#tag_toggle'),
         $tagSubmit = $('#tag_submit'),
-        $addContacts = $('.add-contacts');
+        $addContacts = $('.add-contacts'),
+        $exportContacts = $('.export-contacts');
     switch (userRole) {
         case 'operator':
             $tagToggle.hide();
@@ -477,9 +518,12 @@ function userScenario(userRole) {
             $as_task.parent().hide();
             $tagSubmit.parent().hide();
             $description.attr('disabled', true);
-            $script.parent().hide();
+            $script.attr('disabled', true);
+            // $script.parent().hide();
             $addContacts.hide();
+            $exportContacts.hide();
             tagContactsdataTable.columns(2).visible(false);
+            $tagContactsTable.find('thead:last td:nth-child(2)').remove();
             break;
     }
 }

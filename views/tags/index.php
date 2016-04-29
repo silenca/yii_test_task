@@ -109,6 +109,44 @@ $this->params['active'] = 'tags';
                         <th>Реакция</th>
                     </tr>
                     </thead>
+                    <thead>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <?php if (!empty($managers)): ?>
+                                <select data-column="4" data-column_name="manager_id" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                    <option value="0">Все</option>
+                                    <?php foreach ($managers as $manager): ?>
+                                        <option value="<?php echo $manager->id ?>"><?php echo $manager->firstname ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?php if (!empty($call_statuses)): ?>
+                            <select data-column="5" data-column_name="status" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                <option value="0">Все</option>
+                                <?php foreach ($call_statuses as $call_status): ?>
+                                    <option value="<?php echo $call_status['name'] ?>"><?php echo $call_status['label'] ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <?php endif; ?>
+                        </td>
+                        <td><input type="text" data-column="6" data-column_name="comment" class="form-control search-input-text"></td>
+                        <td>
+                            <?php if (!empty($attitude_levels)): ?>
+                            <select data-column="7" data-column_name="attitude_levels" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                <option value="0">Все</option>
+                                <?php foreach ($attitude_levels as $attitude_level): ?>
+                                    <option value="<?php echo $attitude_level['name'] ?>"><?php echo $attitude_level['label'] ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    </thead>
                     <tbody>
                     </tbody>
                 </table>
@@ -209,5 +247,4 @@ $this->params['active'] = 'tags';
     var hide_columns = <?= json_encode($hide_contact_columns); ?>;
     var columns = <?= json_encode(array_keys($table_contact_cols)); ?>;
     var columns_full = <?= json_encode($table_contact_cols); ?>;
-    var extra_contacts_list = <?= json_encode($contacts_list); ?>;
 </script>

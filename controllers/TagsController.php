@@ -9,6 +9,7 @@ use yii\filters\VerbFilter;
 use app\models\Tag;
 use app\models\User;
 use app\models\Contact;
+use app\models\Call;
 //use app\models\ContactCalled;
 //use app\models\TempContactsPool;
 use app\components\widgets\TagContactsTableWidget;
@@ -60,11 +61,11 @@ class TagsController extends BaseController {
     public function actionIndex()
     {
         $request_data = Yii::$app->request->get();
-        if (isset($request_data['contacts_list'])) {
-            $contacts_list = $request_data['contacts_list'];
-        } else {
-            $contacts_list = null;
-        }
+//        if (isset($request_data['contacts_list'])) {
+//            $contacts_list = $request_data['contacts_list'];
+//        } else {
+//            $contacts_list = null;
+//        }
         $session = Yii::$app->session;
         $hide_contact_columns = $session->get('contact_hide_columns');
         if (!$hide_contact_columns) {
@@ -77,12 +78,34 @@ class TagsController extends BaseController {
         $filter_contact_cols =  $contact_cols;
         unset($filter_contact_cols['id']);
 
-        return $this->render('index', [
+        $data = [
             'hide_contact_columns' => $hide_contact_columns,
             'table_contact_cols' => $table_contact_cols,
             'filter_contact_cols' => $filter_contact_cols,
-            'contacts_list' => $contacts_list
-        ]);
+//            'contacts_list' => $contacts_list
+        ];
+
+        $call_statuses = Call::getCallStatuses();
+        $call_statuses[0]['name'] = Call::CALL_STATUS_ANSWERED.'|'.Call::CALL_INCOMING;
+        $call_statuses[0]['label'] = 'Успешный';
+        $call_statuses[2]['name'] = Call::CALL_STATUS_MISSED.'|'.Call::CALL_INCOMING;
+        $call_statuses[3]['name'] = Call::CALL_STATUS_FAILURE.'|'.Call::CALL_INCOMING;
+        unset($call_statuses[1]);
+
+        $attitude_levels = Call::getAttitudeLevels();
+
+        if (Yii::$app->user->identity->role == User::ROLE_ADMIN) {
+            $managers = User::find()->all();
+        } else if (Yii::$app->user->identity->role == User::ROLE_MANAGER) {
+            $managers = User::find()->where(['role' => [User::ROLE_MANAGER, User::ROLE_OPERATOR]])->all();
+        } else {
+            $managers = null;
+        }
+        $data['managers'] = $managers;
+        $data['call_statuses'] = $call_statuses;
+        $data['attitude_levels'] = $attitude_levels;
+
+        return $this->render('index', $data);
     }
 
     public function actionGettags() {
@@ -248,30 +271,36 @@ class TagsController extends BaseController {
     {
         $request_data = Yii::$app->request->get();
 
-        if (isset($request_data['filter_ids'])) {
-            $filter_ids = explode(',', $request_data['filter_ids']);
+        if (!empty($request_data['contact_ids'])) {
+            $contact_ids = explode(',', $request_data['contact_ids']);
             $tag_id = $request_data['tag_id'];
 //            if (!empty($request_data['tag_id'])) {
 //                $tag_id = $request_data['tag_id'];
 //            }
             $user_role = Yii::$app->user->identity->getUserRole();
 
-            $query = Contact::find()->with('phones')->orderBy('id');
-            $query->where(['id' => $filter_ids]);
+//            $query = Contact::find()->with('phones')->orderBy('id');
+//            $query->where(['id' => $contact_ids]);
 
-            if (!empty($tag_id)) {
-                $called_contacts = Contact::getCalledContacts($filter_ids, $tag_id);
-                $called_ids = Contact::getCalledContacts([], $tag_id, ['contact_id'], null, true, 'contact_id');
-            } else {
-                $called_contacts = [];
-                $called_ids = [];
+            $filters = ['main' => [], 'extra' => []];
+            $filters['main']['id'] = $contact_ids;
+            $filters['extra']['tag_id'] = $tag_id;
+            if (!empty($request_data['manager_id'])) {
+                $filters['extra']['manager_id'] = $request_data['manager_id'];
             }
-            $query->andWhere(['not in', 'id', $called_ids]);
+            if (!empty($request_data['status'])) {
+                $filters['extra']['status'] = $request_data['status'];
+            }
+            if (!empty($request_data['comment'])) {
+                $filters['extra']['comment'] = $request_data['comment'];
+            }
+            if (!empty($request_data['attitude_level'])) {
+                $filters['extra']['attitude_level'] = $request_data['attitude_level'];
+            }
 
-            $dump = $query->createCommand()->rawSql;
-            $contacts = $query->all();
+            $tag_contacts = Contact::getTagContacts($filters);
 
-            $contacts = array_merge($called_contacts, $contacts);
+            $contacts = array_merge($tag_contacts['called_contacts'], $tag_contacts['contacts']);
 
             $tag_contacts_widget = new TagContactsTableWidget();
             $tag_contacts_widget->tag_contacts = $contacts;
@@ -299,11 +328,6 @@ class TagsController extends BaseController {
     {
         $request_data = Yii::$app->request->get();
         $tag_id = $request_data['columns'][1]['search']['value'];
-//        if (!empty($request_data['columns'][1]['search']['value'])) {
-//            $tag_id = $request_data['columns'][1]['search']['value'];
-//        } else {
-//            $tag_id = null;
-//        }
         if (!empty($request_data['columns'][0]['search']['value'])) {
             $filter_ids = explode(',', $request_data['columns'][0]['search']['value']);
         }
@@ -312,44 +336,58 @@ class TagsController extends BaseController {
             $user_id = Yii::$app->user->identity->getId();
             $user_role = Yii::$app->user->identity->getUserRole();
 
-            $query = Contact::find()->with('phones')->orderBy('id');
-            $query->where(['id' => $filter_ids]);
-            $count_all = $query->count();
+//            $query = Contact::find()->with('phones')->orderBy('id');
+//            $query->where(['id' => $filter_ids]);
+//            $count_all = $query->count();
 
+            //Filtering
+            $filters = ['main' => [], 'extra' => []];
+            $filters['main']['id'] = $filter_ids;
+            $filters['extra']['tag_id'] = $tag_id;
+            if (!empty($request_data['columns'][4]['search']['value'])) {
+                $filters['extra']['manager_id'] = $request_data['columns'][4]['search']['value'];
+            }
+            if (!empty($request_data['columns'][5]['search']['value'])) {
+                $filters['extra']['status'] = $request_data['columns'][5]['search']['value'];
+            }
+            if (!empty($request_data['columns'][6]['search']['value'])) {
+                $filters['extra']['comment'] = $request_data['columns'][6]['search']['value'];
+            }
+            if (!empty($request_data['columns'][7]['search']['value'])) {
+                $filters['extra']['attitude_level'] = $request_data['columns'][7]['search']['value'];
+            }
+//            if (!empty($filter_status)) {
+//                $filter_status = explode('|', $filter_status);
+//                $statuses = explode('_', $filter_status[0]);
+//                $types = explode('_', $filter_status[1]);
+//                if (count($statuses) > 0) {
+//                    $query->andWhere([Call::tableName().'.status' => $statuses]);
+//                }
+//                if (count($types) > 0) {
+//                    $query->andWhere([Call::tableName().'.type' => $types]);
+//                }
+//            }
+//            if (!empty($filter_manager_id)) {
+//                $query->andWhere([User::tableName().'.id' => $filter_manager_id]);
+//            }
+
+            $contacts = [];
             if ($user_role == 'operator') {
-                if (!empty($tag_id)) {
-                    $called_contacts = Contact::getCalledContacts($filter_ids, $tag_id, [], $user_id);
-                    $called_ids = Contact::getCalledContacts([], $tag_id, ['contact_id'], null, true, 'contact_id');
-                } else {
-                    $called_contacts = [];
-                    $called_ids = [];
-                }
-
+                $filters['extra']['manager_id'] = $user_id;
                 $queue_ids = Contact::getContactsInPool(['contact_id'], $user_id, true, 'contact_id');
-                $query->andWhere(['not in', 'id', $called_ids]);
-                $query->andWhere(['not in', 'id', $queue_ids]);
+                $filters['extra']['queue_ids'] = $queue_ids;
 
-                $dump = $query->createCommand()->rawSql;
-                $contacts[0] = $query->one();
+                $tag_contacts = Contact::getTagContacts($filters);
+//                $dump = $query->createCommand()->rawSql;
+                $contacts[0] = $tag_contacts['contacts'][0];
                 Contact::addContInPool($contacts[0]['id'], $user_id, $tag_id);
             } else {
-                if (!empty($tag_id)) {
-                    $called_contacts = Contact::getCalledContacts($filter_ids, $tag_id);
-                    $called_ids = Contact::getCalledContacts([], $tag_id, ['contact_id'], null, true, 'contact_id');
-                } else {
-                    $called_contacts = [];
-                    $called_ids = [];
-                }
+                $tag_contacts = Contact::getTagContacts($filters);
 
-                $query->andWhere(['not in', 'id', $called_ids]);
-
-                $dump = $query->createCommand()->rawSql;
-                $contacts = $query->all();
+                $contacts = $tag_contacts['contacts'];
             }
 
-            $contacts = array_merge($called_contacts, $contacts);
-            $total_count = count($contacts);
-            $total_filtering_count = $total_count;
+            $contacts = array_merge($tag_contacts['called_contacts'], $contacts);
 
             $tag_contacts_widget = new TagContactsTableWidget();
             $tag_contacts_widget->tag_contacts = $contacts;
@@ -358,12 +396,12 @@ class TagsController extends BaseController {
 
             $json_data = array(
                 "draw" => intval($request_data['draw']),
-                "recordsTotal" => intval($total_count),
-                "recordsFiltered" => intval($total_filtering_count),
+                "recordsTotal" => intval($tag_contacts['total_count']),
+                "recordsFiltered" => intval($tag_contacts['total_filtering_count']),
                 "data" => $data,   // total data array
                 "contact_count" => [
-                    "count_all" => $count_all,
-                    "count_called" => count($called_contacts)
+                    "count_all" => 0,
+                    "count_called" => count($tag_contacts['called_contacts'])
                 ]
             );
             echo json_encode($json_data);

@@ -237,7 +237,6 @@ use app\models\User;
                                                         <label for="action_tag_description">Описание:</label>
                                                         <textarea name="action_tag_description" id="action_tag_description" rows="10" cols="10"
                                                                       class="action-tag-description form-control"></textarea>
-                                                        <input type="hidden" name="action_tag_id" id="action_tag_id">
                                                     </div>
                                                     <hr>
                                                     <div class="form-group">

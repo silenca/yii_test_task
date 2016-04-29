@@ -180,7 +180,7 @@ class AsteriskController extends BaseController {
 
                         if (isset($call->contact_id)) {
                             if ($cont_pool = TempContactsPool::findOne(['contact_id' => $call->contact_id])) {
-                                Contact::addContactCalled($call->contact_id, $call->id, $cont_pool->manager_id, $cont_pool->tag_id);
+                                $call->tag_id = $cont_pool->tag_id;
                                 $cont_pool->delete();
                             }
                         }

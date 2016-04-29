@@ -65,7 +65,7 @@ class ContactRingRound extends \yii\db\ActiveRecord {
         return $this->hasOne(User::className(), ['id' => 'manager_id']);
     }
 
-    public function add($contact_id, $action_comment_text, $call_order_token, $attitude_level, $action_tag_id) {
+    public function add($contact_id, $action_comment_text, $call_order_token, $attitude_level) {
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $this->contact_id = $contact_id;
@@ -82,10 +82,6 @@ class ContactRingRound extends \yii\db\ActiveRecord {
                 $call = Call::findOne(['call_order_token' => $call_order_token]);
                 if ($call) {
                     $call->attitude_level = $attitude_level;
-
-                    if (!is_null($action_tag_id)) {
-                        $call->tag_id = $action_tag_id;
-                    }
                     $call->save();
                 }
             }
