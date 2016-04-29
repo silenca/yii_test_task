@@ -282,20 +282,24 @@ class TagsController extends BaseController {
 //            $query = Contact::find()->with('phones')->orderBy('id');
 //            $query->where(['id' => $contact_ids]);
 
-            $filters = ['main' => [], 'extra' => []];
+            $filters = ['filtering' => false, 'main' => [], 'extra' => []];
             $filters['main']['id'] = $contact_ids;
             $filters['extra']['tag_id'] = $tag_id;
             if (!empty($request_data['manager_id'])) {
                 $filters['extra']['manager_id'] = $request_data['manager_id'];
+                $filters['filtering'] = true;
             }
             if (!empty($request_data['status'])) {
                 $filters['extra']['status'] = $request_data['status'];
+                $filters['filtering'] = true;
             }
             if (!empty($request_data['comment'])) {
                 $filters['extra']['comment'] = $request_data['comment'];
+                $filters['filtering'] = true;
             }
             if (!empty($request_data['attitude_level'])) {
                 $filters['extra']['attitude_level'] = $request_data['attitude_level'];
+                $filters['filtering'] = true;
             }
 
             $tag_contacts = Contact::getTagContacts($filters);
@@ -341,20 +345,24 @@ class TagsController extends BaseController {
 //            $count_all = $query->count();
 
             //Filtering
-            $filters = ['main' => [], 'extra' => []];
+            $filters = ['filtering' => false, 'main' => [], 'extra' => []];
             $filters['main']['id'] = $filter_ids;
             $filters['extra']['tag_id'] = $tag_id;
             if (!empty($request_data['columns'][4]['search']['value'])) {
                 $filters['extra']['manager_id'] = $request_data['columns'][4]['search']['value'];
+                $filters['filtering'] = true;
             }
             if (!empty($request_data['columns'][5]['search']['value'])) {
                 $filters['extra']['status'] = $request_data['columns'][5]['search']['value'];
+                $filters['filtering'] = true;
             }
             if (!empty($request_data['columns'][6]['search']['value'])) {
                 $filters['extra']['comment'] = $request_data['columns'][6]['search']['value'];
+                $filters['filtering'] = true;
             }
             if (!empty($request_data['columns'][7]['search']['value'])) {
                 $filters['extra']['attitude_level'] = $request_data['columns'][7]['search']['value'];
+                $filters['filtering'] = true;
             }
 //            if (!empty($filter_status)) {
 //                $filter_status = explode('|', $filter_status);

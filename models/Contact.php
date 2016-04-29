@@ -440,12 +440,12 @@ class Contact extends \yii\db\ActiveRecord {
                 case 'attitude_level':
                     $extra_where[Call::tableName().'.'.$extra_name] = $extra_val;
                     break;
-                case 'queue_ids':
-                    $extra_where[] = ['not in', Contact::tableName().'.id', $extra_val];
-                    break;
             }
         }
-//        $query->andWhere($extra_where);
+
+        if (!empty($filters['extra']['queue_ids']) && count($filters['extra']['queue_ids']) > 0) {
+            $query->andWhere(['not in', Contact::tableName().'.id', $filters['extra']['queue_ids']]);
+        }
 
         $query_called = clone $query;
         $called_contacts = $query_called
@@ -461,7 +461,7 @@ class Contact extends \yii\db\ActiveRecord {
 
         $res_data['called_contacts'] = $called_contacts;
         $contacts = [];
-        if (count($extra_where) === 0) {
+        if (!$filters['filtering']) {
             $contacts = $query->all();
         }
         $res_data['contacts'] = $contacts;
