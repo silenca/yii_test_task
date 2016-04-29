@@ -388,7 +388,9 @@ class Contact extends \yii\db\ActiveRecord {
     public function setTags($new_tags) {
         foreach ($new_tags as $new_tag) {
             $new_tag->save();
-            $this->link('tags', $new_tag);
+            if (!ContactTag::find()->where(['contact_id' => $this->id, 'tag_id' => $new_tag->id])->exists()) {
+                $this->link('tags', $new_tag);
+            }
         }
     }
 

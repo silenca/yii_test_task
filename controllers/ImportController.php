@@ -95,6 +95,16 @@ class ImportController extends BaseController
                 }
             } else {
                 $this->writeReport($report_file_name, $attributes, $import_contact_form);
+                $phones = explode(',', $attributes['phones']);
+                if ($phones !== null) {
+                    for ($j = 0;$j < count($phones);$j++) {
+                        $curContact = Contact::getContactByPhone($phones[$j]);
+                        if ($curContact !== null) {
+                            $curContact->edit(['tags' => $import_contact_form->tags]);
+                        }
+                    }
+                }
+
                 $error = true;
             }
         }
