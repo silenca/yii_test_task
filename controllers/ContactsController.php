@@ -234,13 +234,24 @@ class ContactsController extends BaseController
         $id = Yii::$app->request->post('id');
 
         $query = Contact::find()->select(['id', 'int_id', 'surname', 'name', 'middle_name', 'first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email']);
+
+        $contact_tableName = Contact::tableName();
+        $query = Contact::find()->with('manager', 'tags')->distinct($contact_tableName.'.id');
+
         $query->andWhere(['is_deleted' => '0']);
 
-        $query->andWhere(['like', 'surname', $search_term])
-            ->orWhere(['like', 'name', $search_term])
-            ->orWhere(['like', 'middle_name', $search_term]);
+        $query->andWhere(['like', $contact_tableName.'.surname', $search_term])
+            ->orWhere(['like', $contact_tableName.'.name', $search_term])
+            ->orWhere(['like', $contact_tableName.'.middle_name', $search_term]);
 
 //        $dump = $query->createCommand()->rawSql;
+
+        $user_id = Yii::$app->user->identity->getId();
+        $user_role = Yii::$app->user->identity->getUserRole();
+
+        if ($user_role == 'manager' || $user_role == 'operator') {
+            $query->joinWith('tags.users')->andWhere(['user.id' => $user_id]);
+        }
 
         $contacts = $query->asArray()->all();
 

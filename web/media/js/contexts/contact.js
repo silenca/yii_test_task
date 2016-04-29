@@ -214,9 +214,11 @@ $(function () {
                             $.each(result.data, function(i, el) {
                                 result_items += '<tr data-id="' + el.id + '">' +
                                                     '<td>' + el.int_id + '</td>' +
-                                                    '<td><a href="javascript:void(0)">' + el.fio + '</a></td>' +
                                                     '<td>' + el.phones + '</td>' +
-                                                    '<td>' + el.emails + '</td>' +
+                                                    '<td>' + (el.city?el.city:'') + '</td>' +
+                                                    '<td>' + (el.street?el.street:'') + '</td>' +
+                                                    '<td>' + (el.house?el.house:'') + '</td>' +
+                                                    '<td>' + (el.flat?el.flat:'') + '</td>' +
                                                 '</tr>';
                             });
 
