@@ -62,7 +62,7 @@ class ImportController extends BaseController
         $report_file_name = time() . '.csv';
         //adding first line to report CSV file
         $report_file = fopen(Yii::getAlias('@web_folder') . '/reports/' . $report_file_name, "a+");
-        fwrite($report_file, iconv("UTF-8", "windows-1251//TRANSLIT", implode($report_headers, ';')) . "\n");
+        fwrite($report_file, iconv("UTF-8", "windows-1251//TRANSLIT", implode($report_headers, ';')) . "\r\n");
         fclose($report_file);
 
         $updated = 0;
@@ -96,20 +96,31 @@ class ImportController extends BaseController
                 }
             } else {
                 $this->writeReport($report_file_name, $attributes, $import_contact_form);
-                //$phones = explode(',', $attributes['phones']);
-                $phones = [$import_contact_form->first_phone, $import_contact_form->second_phone];
-                if ($phones !== null) {
-                    for ($j = 0;$j < count($phones);$j++) {
-                        $cur_contact = Contact::getContactByPhone($phones[$j]);
-                        if ($cur_contact !== null) {
-                            $exists_tags = $cur_contact->tags;
-                            if (count($exists_tags) < count($import_contact_form->tags)) {
-                                $updated++;
-                            }
-                            $cur_contact->edit(['tags' => $import_contact_form->tags]);
+
+                if ($import_contact_form->conflict_id !== null) {
+                    $cur_contact = Contact::findOne($import_contact_form->conflict_id);
+                    if ($cur_contact !== null) {
+                        $exists_tags = $cur_contact->tags;
+                        if (count($exists_tags) < count($import_contact_form->tags)) {
+                            $updated++;
                         }
+                        $cur_contact->edit(['tags' => $import_contact_form->tags]);
                     }
                 }
+
+//                $phones = [$import_contact_form->first_phone, $import_contact_form->second_phone];
+//                if ($phones !== null) {
+//                    for ($j = 0;$j < count($phones);$j++) {
+//                        $cur_contact = Contact::getContactByPhone($phones[$j]);
+//                        if ($cur_contact !== null) {
+//                            $exists_tags = $cur_contact->tags;
+//                            if (count($exists_tags) < count($import_contact_form->tags)) {
+//                                $updated++;
+//                            }
+//                            $cur_contact->edit(['tags' => $import_contact_form->tags]);
+//                        }
+//                    }
+//                }
 
                 $error = true;
             }
@@ -160,8 +171,7 @@ class ImportController extends BaseController
         }
         //disabling encoding to Win-1251
         //fwrite($report_file, iconv("UTF-8", "windows-1251//TRANSLIT", implode($combined_error, ', ')) . ";" . $error_line . "\n");
-        fwrite($report_file, implode($combined_error, ', ') . ";" . $error_line . "\n");
+        fwrite($report_file, implode($combined_error, ', ') . ";" . $error_line . "\r\n");
         fclose($report_file);
-
     }
 }

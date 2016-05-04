@@ -42,6 +42,7 @@ class ContactForm extends Model
     var $flat;
 
     var $edited_id;
+    var $conflict_id;
 
     public static function getAllCols() {
         return [
@@ -120,6 +121,7 @@ class ContactForm extends Model
             $contact = $contact->one();
             if ($contact) {
                 $message_callback($attr, $value, $contact->int_id);
+                $this->conflict_id = $contact->id;
                 return $contact->int_id;
             }
         }
