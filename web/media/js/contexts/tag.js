@@ -73,7 +73,7 @@ $(function () {
             tableFilters[column] = $(this).val();
         });
 
-        $('.search-input-text').on('keyup', function () {   // for text boxes
+        $('#tag_contacts_table .search-input-text').on('keyup', function () {   // for text boxes
             delay(function () {
                 $.each($searchBoxes, function (index, val) {
                     var i = $(this).attr('data-column');
@@ -88,7 +88,7 @@ $(function () {
             }, 2000);
         });
 
-        $('.search-input-select').on('change', function () {   // for select box
+        $('#tag_contacts_table .search-input-select').on('change', function () {   // for select box
             $.each($searchBoxes, function (index, val) {
                 var i = $(this).attr('data-column');
                 var n = $(this).attr('data-column_name');
@@ -172,9 +172,9 @@ $(function () {
             contacts = json.contacts;
         } );
 
-        var $searchBoxes = $('input.search-input-text, select.search-input-select');
+        var $searchBoxes = $contactsModalTable.find('input.search-input-text, select.search-input-select');
 
-        $('.search-input-text').on('keyup', function () {   // for text boxes
+        $('#contacts-table .search-input-text').on('keyup', function () {   // for text boxes
             delay(function () {
                 $.each($searchBoxes, function (index, val) {
                     var n = $(this).attr('data-column');
@@ -191,7 +191,7 @@ $(function () {
             }, 2000);
         });
 
-        $('.search-input-select').on('change', function () {   // for select box
+        $('#contacts-table .search-input-select').on('change', function () {   // for select box
             $.each($searchBoxes, function (index, val) {
                 var n = $(this).attr('data-column');
                 var v = $(this).val();
@@ -332,9 +332,6 @@ $(function () {
     });
 
     $exportCsv.on('click', function(e) {
-        // e.preventDefault();
-        // var filters = JSON.stringify(tableFilters);
-        // window.location.href = $(this).data('href') + '?filters=' + JSON.stringify(tableFilters);
         e.preventDefault();
         tableFilters['tag_id'] = tagSelect.val();
         tableFilters['contact_ids'] = $contactsList.val();

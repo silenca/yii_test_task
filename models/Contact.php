@@ -434,9 +434,9 @@ class Contact extends \yii\db\ActiveRecord {
                         $extra_where[Call::tableName().'.type'] = $types;
                     }
                     break;
-                case 'comment':
-
-                    break;
+//                case 'comment':
+//
+//                    break;
                 case 'attitude_level':
                     $extra_where[Call::tableName().'.'.$extra_name] = $extra_val;
                     break;
@@ -448,10 +448,16 @@ class Contact extends \yii\db\ActiveRecord {
         }
 
         $query_called = clone $query;
+
+        if (!empty($filters['extra']['comment'])) {
+            $query_called->andWhere(['like', ActionComment::tableName().'.comment', $filters['extra']['comment']]);
+        }
+
         $called_contacts = $query_called
             ->andWhere(['=', Call::tableName().'.tag_id', $filters['extra']['tag_id']])
             ->andWhere($extra_where)
             ->all();
+
         $called_ids = [];
         foreach ($called_contacts as &$called) {
             $called_ids[] = $called->id;
@@ -466,7 +472,6 @@ class Contact extends \yii\db\ActiveRecord {
         }
         $res_data['contacts'] = $contacts;
 
-
 //        $dump = $query->createCommand()->rawSql;
 //        if ($as_array) {
 //            $query->asArray();
@@ -479,7 +484,6 @@ class Contact extends \yii\db\ActiveRecord {
 //                return $res;
 //            }
 //        }
-
 
 //        $total_count = count($contacts);
 //        $total_filtering_count = $total_count;

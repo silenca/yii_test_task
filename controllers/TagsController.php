@@ -340,10 +340,6 @@ class TagsController extends BaseController {
             $user_id = Yii::$app->user->identity->getId();
             $user_role = Yii::$app->user->identity->getUserRole();
 
-//            $query = Contact::find()->with('phones')->orderBy('id');
-//            $query->where(['id' => $filter_ids]);
-//            $count_all = $query->count();
-
             //Filtering
             $filters = ['filtering' => false, 'main' => [], 'extra' => []];
             $filters['main']['id'] = $filter_ids;
@@ -364,20 +360,6 @@ class TagsController extends BaseController {
                 $filters['extra']['attitude_level'] = $request_data['columns'][7]['search']['value'];
                 $filters['filtering'] = true;
             }
-//            if (!empty($filter_status)) {
-//                $filter_status = explode('|', $filter_status);
-//                $statuses = explode('_', $filter_status[0]);
-//                $types = explode('_', $filter_status[1]);
-//                if (count($statuses) > 0) {
-//                    $query->andWhere([Call::tableName().'.status' => $statuses]);
-//                }
-//                if (count($types) > 0) {
-//                    $query->andWhere([Call::tableName().'.type' => $types]);
-//                }
-//            }
-//            if (!empty($filter_manager_id)) {
-//                $query->andWhere([User::tableName().'.id' => $filter_manager_id]);
-//            }
 
             $contacts = [];
             if ($user_role == 'operator') {
