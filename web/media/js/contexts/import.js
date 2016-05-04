@@ -40,7 +40,9 @@ $(function () {
                 }
                 if (result.status !== 500) {
                     $form.find('.result').append("<div>Импортировано " + result.data.imported + " из " + result.data.count + "</div>");
-                    $form.find('.result').append("<div>Обновлено теги " + result.data.updated + " контактов</div>");
+                    if (result.data.updated) {
+                        $form.find('.result').append("<div>Обновлено теги " + result.data.updated + " контактов</div>");
+                    }
                     if (result.status != 200) {
                         $form.find('.result').append("<a href='" + result.data.report_file + "' target='_blank'>Отчет об ошибках</a>");
                     }
@@ -52,7 +54,7 @@ $(function () {
                         concatArr;
                     var $contactsList = $('#contacts_list');
 
-                    if (typeof contactIds !== 'undefined') {
+                    if ($contactsList.length && typeof contactIds !== 'undefined') {
                         if ($contactsList.val() !== '') {
                             hiddenArr = $contactsList.val().split(',');
                             concatArr = hiddenArr.concat(contactIds);
