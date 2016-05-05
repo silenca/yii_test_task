@@ -57,7 +57,7 @@ ExtList.prototype.init = function () {
 
 function triggerChoise_CsSelect(el, val) {
     $(el).val(val);
-    $(el).closest('.cs-select-container').find('.cs-placeholder').text($(el).find('option:selected').text());
+    $(el).closest('.cs-wrapper').find('.cs-placeholder').text($(el).find('option:selected').text());
 }
 //
 //ExtList.prototype.clearr = function () {

@@ -137,7 +137,7 @@ $this->params['active'] = 'tags';
                         <td><input type="text" data-column="6" data-column_name="comment" class="form-control search-input-text"></td>
                         <td>
                             <?php if (!empty($attitude_levels)): ?>
-                            <select data-column="7" data-column_name="attitude_levels" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                            <select data-column="7" data-column_name="attitude_level" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
                                 <option value="0">Все</option>
                                 <?php foreach ($attitude_levels as $attitude_level): ?>
                                     <option value="<?php echo $attitude_level['name'] ?>"><?php echo $attitude_level['label'] ?></option>

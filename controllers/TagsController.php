@@ -274,13 +274,7 @@ class TagsController extends BaseController {
         if (!empty($request_data['contact_ids'])) {
             $contact_ids = explode(',', $request_data['contact_ids']);
             $tag_id = $request_data['tag_id'];
-//            if (!empty($request_data['tag_id'])) {
-//                $tag_id = $request_data['tag_id'];
-//            }
             $user_role = Yii::$app->user->identity->getUserRole();
-
-//            $query = Contact::find()->with('phones')->orderBy('id');
-//            $query->where(['id' => $contact_ids]);
 
             $filters = ['filtering' => false, 'main' => [], 'extra' => []];
             $filters['main']['id'] = $contact_ids;
@@ -302,7 +296,7 @@ class TagsController extends BaseController {
                 $filters['filtering'] = true;
             }
 
-            $tag_contacts = Contact::getTagContacts($filters);
+            $tag_contacts = Contact::getTagContacts($filters, $user_role);
 
             $contacts = array_merge($tag_contacts['called_contacts'], $tag_contacts['contacts']);
 
@@ -361,23 +355,14 @@ class TagsController extends BaseController {
                 $filters['filtering'] = true;
             }
 
-            $contacts = [];
             if ($user_role == 'operator') {
-                $filters['extra']['manager_id'] = $user_id;
-                $queue_ids = Contact::getContactsInPool(['contact_id'], $user_id, true, 'contact_id');
-                $filters['extra']['queue_ids'] = $queue_ids;
-
-                $tag_contacts = Contact::getTagContacts($filters);
+                $tag_contacts = Contact::getTagContacts($filters, $user_role, $user_id);
 //                $dump = $query->createCommand()->rawSql;
-                $contacts[0] = $tag_contacts['contacts'][0];
-                Contact::addContInPool($contacts[0]['id'], $user_id, $tag_id);
             } else {
-                $tag_contacts = Contact::getTagContacts($filters);
-
-                $contacts = $tag_contacts['contacts'];
+                $tag_contacts = Contact::getTagContacts($filters, $user_role);
             }
 
-            $contacts = array_merge($tag_contacts['called_contacts'], $contacts);
+            $contacts = array_merge($tag_contacts['called_contacts'], $tag_contacts['contacts']);
 
             $tag_contacts_widget = new TagContactsTableWidget();
             $tag_contacts_widget->tag_contacts = $contacts;
@@ -386,12 +371,12 @@ class TagsController extends BaseController {
 
             $json_data = array(
                 "draw" => intval($request_data['draw']),
-                "recordsTotal" => intval($tag_contacts['total_count']),
-                "recordsFiltered" => intval($tag_contacts['total_filtering_count']),
+                "recordsTotal" => $tag_contacts['total_count'],
+                "recordsFiltered" => $tag_contacts['total_filtering_count'],
                 "data" => $data,   // total data array
                 "contact_count" => [
-                    "count_all" => 0,
-                    "count_called" => count($tag_contacts['called_contacts'])
+                    "count_all" => $tag_contacts['count_all'],
+                    "count_called" => $tag_contacts['count_called']
                 ]
             );
             echo json_encode($json_data);
