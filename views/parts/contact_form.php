@@ -113,9 +113,8 @@ use app\models\User;
                                             </div>
 
                                             <hr>
-                                            <div class="form-group">
-                                                <div class="row">
-                                                </div>
+                                            <div class="form-group text-left">
+                                                <input id="contact_tags" name="tags_str" class="contact-tags" type="text" />
                                             </div>
                                         </div>
                                     </div>

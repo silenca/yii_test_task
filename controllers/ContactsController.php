@@ -214,6 +214,7 @@ class ContactsController extends BaseController
                 unset($post['id']);
 //                $contact->setTags($contact_form->tags);
                 $contact->attributes = $contact_form->attributes;
+                $contact->remove_tags = true;
                 if ($contact->edit(['tags' => $contact_form->tags])) {
                     $this->json(['id' => $contact->id], 200);
                 } else {
@@ -305,8 +306,9 @@ class ContactsController extends BaseController
 
     public function actionView()
     {
+        $user_id = Yii::$app->user->identity->getId();
         $contact_id = Yii::$app->request->get('id');
-        $contact = Contact::find()->where(['id' => $contact_id]);
+        $contact = Contact::find()->with('tags')->where(['id' => $contact_id]);
         $contact2 = clone $contact;
         $contact2 = $contact2->one();
         $contact_arr = $contact->asArray()->one();
@@ -315,6 +317,17 @@ class ContactsController extends BaseController
         $contact_data['phones'] = Filter::dataImplode($contact2->getPhoneValues());
 
         $contact_data['emails'] = Filter::dataImplode($contact2->getEmailValues());
+
+        if (count($contact_arr['tags']) > 0) {
+            $contact_data['tags'] = $contact_arr['tags'];
+//            $dummp_c = $contact2->getTags()->joinWith(['users'])->where([User::tableName().'.id' => $user_id]);
+//            $dump = $dummp_c->createCommand()->rawSql;
+            $manager_tags = $contact2->getTags()->joinWith(['users'])->where([User::tableName().'.id' => $user_id])->asArray()->all();
+            $manager_tags = array_map(function($item) {
+                return $item['name'];
+            }, $manager_tags);
+            $contact_data['manager_tags'] = $manager_tags;
+        }
 
         $contact_manager = User::find()->where(['id' => $contact_data['manager_id']])->one();
         $contact_data['manager_name'] = $contact_manager['firstname'];

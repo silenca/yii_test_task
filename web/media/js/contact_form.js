@@ -1,6 +1,7 @@
 var bind_inputs = {};
 var $contact_form;
 var $contact_data_form;
+var managerTags;
 
 var form_action_call_validate = {
     rules: {
@@ -106,6 +107,25 @@ $(function() {
         checkChanges($(this).attr('name'), $(this).data('value'), $contact_form);
     });
 
+    $('#contact_tags', $contact_data_form).on('beforeItemRemove', function (event) {
+        var tag = event.item;
+        switch (userRole) {
+            case 'operator':
+                event.cancel = true;
+                break;
+            case 'manager':
+                if (managerTags.indexOf(tag.text) === -1) {
+                    event.cancel = true;
+                }
+                break;
+        }
+    });
+    $('#contact_tags', $contact_data_form).on('itemAdded, itemRemoved', function () {
+        $(this).data('value', $(this).val());
+        bind_inputs['tags_str'] = $(this).val();
+        editContact($contact_form);
+    });
+
     //add new comment for contact
     $('#add-comment').on('click', function (e) {
         var id = $contact_form.find('#contact-id').val();
@@ -152,6 +172,17 @@ $(function() {
         if ($(this).is(':checked')) {
             processGApiAuth();
         }
+    });
+
+    var $tagsInput = $('#contact_tags');
+    $tagsInput.tagsinput({
+        itemValue: 'text',
+        itemText: 'text'
+        // typeaheadjs: {
+        //     name: 'cities',
+        //     displayKey: 'text',
+        //     source: cities.ttAdapter()
+        // }
     });
 });
 
@@ -262,28 +293,9 @@ function buildContactForm(id, $form, callback) {
     $.getJSON('/contacts/view', {id: id}, function (response) {
         if (response.status === 200) {
             var data = response.data;
+
             fillContactData(data, $form);
-            // $('#contact_manager_name').text(data.manager_name);
-            // $('.contact-manager-name-cont').show();
-            // $form.find('.contact-title').text('Контакт №' + data.int_id);
-            // $form.find('#contact_surname').val(data.surname);
-            // $form.find('#contact_name').val(data.name);
-            // $form.find('#contact_middle_name').val(data.middle_name);
-            // if (data.is_deleted == 1) {
-            //     $('.contact-deleted').show();
-            // } else {
-            //     $('.contact-deleted').hide();
-            // }
-            // $form.find('#contact_phones').val(data.phones);
-            // $form.find('#contact_emails').val(data.emails);
-            //
-            // $form.find('#contact_country').val(data.country);
-            // $form.find('#contact_region').val(data.region);
-            // $form.find('#contact_area').val(data.area);
-            // $form.find('#contact_city').val(data.city);
-            // $form.find('#contact_street').val(data.street);
-            // $form.find('#contact_house').val(data.house);
-            // $form.find('#contact_flat').val(data.flat);
+
             manageContactFormPermissions(userRole);
 
             callback();
@@ -292,7 +304,8 @@ function buildContactForm(id, $form, callback) {
 }
 
 function manageContactFormPermissions(userRole) {
-    var inputsToHide;
+    var inputsToHide,
+        $tagsInput = $('#contact_tags');
     switch (userRole) {
         case 'operator':
             inputsToHide = [
@@ -307,6 +320,9 @@ function manageContactFormPermissions(userRole) {
                     $(input).val($(input).data('value'));
                 });
             });
+
+            // $tagsInput.attr('disabled', true);
+            // $tagsInput.prop('disabled', true);
             break;
     }
 }
@@ -324,6 +340,19 @@ function fillContactData(data, $form) {
                 $('#contact_manager_name').text(value);
                 $('.contact-manager-name-cont').show();
                 break;
+            case 'tags':
+                var $tagsInput = $('#contact_tags');
+                // var tags = [];
+                $tagsInput.tagsinput('removeAll');
+                $.each(value, function(tag_key, tag_value) {
+                    $tagsInput.tagsinput('add', { id: tag_value.id, text: tag_value.name });
+                    // tags.push({ id: tag_value.id, text: tag_value.name });
+                });
+                // $tagsInput.tagsinput('add', tags);
+                break;
+            case 'manager_tags':
+                managerTags = value;
+                break;
             default:
                 if (value) {
                     $form.find('#contact_' + key).val(value).attr('data-value', value);
@@ -338,11 +367,11 @@ function fillContactData(data, $form) {
 function checkChanges(name, value, $form) {
     if (bind_inputs[name] !== value) {
         bind_inputs[name] = value;
-        editContact(name, value, $form);
+        editContact($form, name, value);
     }
 }
 
-function editContact(name, value, $form) {
+function editContact($form, name, value) {
     var data = {};
     $.each(bind_inputs, function (key, value) {
         data[key] = value;
@@ -355,7 +384,9 @@ function editContact(name, value, $form) {
             var result = $.parseJSON(response);
             if (result.status == 200) {
                 bind_inputs['id'] = result.data.id;
-                bind_inputs[name] = value;
+                if (name && value) {
+                    bind_inputs[name] = value;
+                }
                 $form.find('#contact-id').val(result.data.id);
                 if (typeof dataTable !== 'undefined') { dataTable.draw(false); }
                 if (typeof tagContactsdataTable !== 'undefined') { tagContactsdataTable.columns(0).search($('#contacts_list').val()).draw(); }
@@ -461,29 +492,6 @@ function addComment(id, $form) {
         }
     });
 }
-
-// function addActionComment(id, $form) {
-//     if (!id) {
-//         var message = 'Контакт еще не добавлен';
-//         showNotification('#modalAddContact', message, 'top', 'danger', 'bar');
-//         return false;
-//     }
-//     var $contact_comment = $form.find('.action-comment');
-//     var comment_text = $contact_comment.val();
-//     var data = {
-//         id: id,
-//         _csrf: _csrf,
-//         comment: comment_text
-//     };
-//     $.post('/action/addcomment', data, function (response) {
-//         var result = $.parseJSON(response);
-//         if (result.status === 200) {
-//             // $form.find('.history_content').append("<div>" + result.data.datetime + " - " + result.data.text + "</div>");
-//             showNotification('#modalAddContact', 'Комментарий к действию добавлен', 'top', 'success', 'bar');
-//             $contact_comment.val('');
-//         }
-//     });
-// }
 
 function addError($form, name, errors) {
     var $field = $form.find('[name="' + name + '"]');

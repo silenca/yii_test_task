@@ -53,10 +53,12 @@ class Contact extends \yii\db\ActiveRecord {
         'flat',
         'status',
         'manager_id',
-        'is_deleted'
+        'is_deleted',
+        'remove_tags'
     ];
 
     public $is_called;
+    public $remove_tags;
 
     /**
      * @inheritdoc
@@ -389,6 +391,9 @@ class Contact extends \yii\db\ActiveRecord {
 //    }
 
     public function setTags($new_tags) {
+        if ($this->remove_tags == true) {
+            $this->unlinkAll('tags');
+        }
         foreach ($new_tags as $new_tag) {
             $new_tag->save();
             if (!ContactTag::find()->where(['contact_id' => $this->id, 'tag_id' => $new_tag->id])->exists()) {

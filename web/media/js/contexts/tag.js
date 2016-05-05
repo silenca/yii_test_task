@@ -38,7 +38,9 @@ $(function () {
                 "sLengthMenu": "_MENU_ ",
                 "sInfo": "Showing <b>_START_ to _END_</b> of _TOTAL_ entries"
             },
-            "iDisplayLength": 20,
+            "iDisplayLength": -1,
+            // "bPaginate": false,
+            // "paging": false,
             "processing": true,
             "serverSide": true,
             "order": [],
@@ -61,7 +63,7 @@ $(function () {
             ],
             "createdRow": function (row, data, index) {
                 $(row).attr('data-id', data[0]);
-            }
+            },
         };
 
         tagContactsdataTable = $tagContactsTable.DataTable(settings);

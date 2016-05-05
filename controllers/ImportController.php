@@ -100,6 +100,7 @@ class ImportController extends BaseController
                 if ($import_contact_form->conflict_id !== null) {
                     $cur_contact = Contact::findOne($import_contact_form->conflict_id);
                     if ($cur_contact !== null) {
+                        $contact_ids[] = $cur_contact->id;
                         $exists_tags = $cur_contact->tags;
                         if (count($exists_tags) < count($import_contact_form->tags)) {
                             $updated++;
@@ -142,8 +143,8 @@ class ImportController extends BaseController
                 'report_file' => Yii::getAlias('@web') . '/reports/' . $report_file_name,
                 'imported' => $imported,
                 'count' => count($new_contacts),
-                'updated' => $updated
-//                'contact_list' => $contact_list
+                'updated' => $updated,
+                'contact_ids' => $contact_ids
             ], 415);
         } else {
             $this->json([
