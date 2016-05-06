@@ -67,6 +67,14 @@ $(function () {
     if ($('#reports-table').length) {
         initTable();
     }
+
+    var date = new Date();
+    var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+    var firstDayFormatted = (firstDay.getDate()) + '/' + (firstDay.getMonth() + 1) + '/' + firstDay.getFullYear();
+    var lastDayFormatted = (lastDay.getDate()) + '/' + (lastDay.getMonth() + 1) + '/' + lastDay.getFullYear();
+
     $('input[name="daterange"]').daterangepicker(
             {
                 "locale": {
@@ -102,8 +110,8 @@ $(function () {
                     ],
                     "firstDay": 1
                 },
-                "startDate": "01/01/2015",
-                "endDate": "31/12/2015",
+                "startDate": firstDayFormatted,
+                "endDate": lastDayFormatted,
                 "opens": "left",
                 "linkedCalendars": true,
                 "ranges": {

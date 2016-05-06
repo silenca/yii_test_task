@@ -93,6 +93,10 @@ class ReportsController extends BaseController
             $query1->andWhere(['between', '`c`.`date_time`', $request_data['columns'][1]['search']['value'], $request_data['columns'][2]['search']['value']]);
             $query2->andWhere(['between', '`csh`.`date_time`', $request_data['columns'][1]['search']['value'], $request_data['columns'][2]['search']['value']]);
             $query3->andWhere(['between', '`c`.`date_time`', $request_data['columns'][1]['search']['value'], $request_data['columns'][2]['search']['value']]);
+        } else {
+            $query1->andWhere(['between', '`c`.`date_time`', date('Y-m-01'), date('Y-m-t')]);
+            $query2->andWhere(['between', '`csh`.`date_time`', date('Y-m-01'), date('Y-m-t')]);
+            $query3->andWhere(['between', '`c`.`date_time`', date('Y-m-01'), date('Y-m-t')]);
         }
         //union all the queries
         $query1
