@@ -1,7 +1,7 @@
 var bind_inputs = {};
 var $contact_form;
 var $contact_data_form;
-var managerTags;
+var managerTags = [];
 
 var form_action_call_validate = {
     rules: {
@@ -177,7 +177,16 @@ $(function() {
     var $tagsInput = $('#contact_tags');
     $tagsInput.tagsinput({
         itemValue: 'text',
-        itemText: 'text'
+        itemText: 'text',
+        tagClass: function(item) {
+            if (userRole == 'admin') {
+                return 'label label-success';
+            } else if (managerTags.indexOf(item.text) === -1) {
+                return 'label';
+            } else {
+                return 'label label-success';
+            }
+        }
         // typeaheadjs: {
         //     name: 'cities',
         //     displayKey: 'text',
@@ -304,8 +313,7 @@ function buildContactForm(id, $form, callback) {
 }
 
 function manageContactFormPermissions(userRole) {
-    var inputsToHide,
-        $tagsInput = $('#contact_tags');
+    var inputsToHide;
     switch (userRole) {
         case 'operator':
             inputsToHide = [
@@ -320,9 +328,6 @@ function manageContactFormPermissions(userRole) {
                     $(input).val($(input).data('value'));
                 });
             });
-
-            // $tagsInput.attr('disabled', true);
-            // $tagsInput.prop('disabled', true);
             break;
     }
 }
@@ -341,18 +346,24 @@ function fillContactData(data, $form) {
                 $('.contact-manager-name-cont').show();
                 break;
             case 'tags':
-                var $tagsInput = $('#contact_tags');
+                var $tagsInput = $('#contact_tags'),
+                    tags_str = [];
+                if (data.manager_tags) {
+                    managerTags = data.manager_tags;
+                }
                 // var tags = [];
                 $tagsInput.tagsinput('removeAll');
                 $.each(value, function(tag_key, tag_value) {
                     $tagsInput.tagsinput('add', { id: tag_value.id, text: tag_value.name });
+                    tags_str.push(tag_value.name);
                     // tags.push({ id: tag_value.id, text: tag_value.name });
                 });
+                $tagsInput.attr('data-value', tags_str.join(','));
                 // $tagsInput.tagsinput('add', tags);
                 break;
-            case 'manager_tags':
-                managerTags = value;
-                break;
+            // case 'manager_tags':
+            //     managerTags = value;
+            //     break;
             default:
                 if (value) {
                     $form.find('#contact_' + key).val(value).attr('data-value', value);
@@ -435,7 +446,9 @@ function changeActionsForm(action) {
 function bindLiveChange($form) {
     $.each($('input[type=text],input[type=email]', $form), function (i, input) {
         var name = $(input).attr('name');
-        bind_inputs[name] = $(input).data('value') + '';
+        if (name) {
+            bind_inputs[name] = $(input).data('value') + '';
+        }
     });
     bind_inputs['id'] = $('#contact-id').val();
 }

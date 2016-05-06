@@ -2210,32 +2210,32 @@ hr.dotted {
     text-shadow: none;
     background-color: #e6e6e6;
     font-weight: 600;
-    color: #626262;
+    color: #626262 !important;
 }
 .label-success {
     background-color: #10cfbd;
-    color: #fff;
+    color: #fff !important;
 }
 .label-warning {
     background-color: #f8d053;
-    color: #fff;
+    color: #fff !important;
 }
 .label-important,
 .label-danger {
     background-color: #f55753;
-    color: #fff;
+    color: #fff !important;
 }
 .label-info {
     background-color: #48b0f7;
-    color: #fff;
+    color: #fff !important;
 }
 .label-inverse {
     background-color: #3a8fc8;
-    color: #fff;
+    color: #fff !important;
 }
 .label-white {
     background-color: #fff;
-    color: #626262;
+    color: #626262 !important;
 }
 /* Font Sizes
 ------------------------------------
