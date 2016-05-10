@@ -239,11 +239,11 @@ class ContactsController extends BaseController
         $contact_tableName = Contact::tableName();
         $query = Contact::find()->with('manager', 'tags')->distinct($contact_tableName.'.id');
 
-        $query->andWhere(['is_deleted' => '0']);
-
         $query->andWhere(['like', $contact_tableName.'.first_phone', $search_term])
             ->orWhere(['like', $contact_tableName.'.second_phone', $search_term])
             ->orWhere(['like', $contact_tableName.'.third_phone', $search_term]);
+
+        $query->andWhere(['is_deleted' => '0']);
 
 //        $dump = $query->createCommand()->rawSql;
 
