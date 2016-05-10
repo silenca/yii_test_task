@@ -241,9 +241,9 @@ class ContactsController extends BaseController
 
         $query->andWhere(['is_deleted' => '0']);
 
-        $query->andWhere(['like', $contact_tableName.'.surname', $search_term])
-            ->orWhere(['like', $contact_tableName.'.name', $search_term])
-            ->orWhere(['like', $contact_tableName.'.middle_name', $search_term]);
+        $query->andWhere(['like', $contact_tableName.'.first_phone', $search_term])
+            ->orWhere(['like', $contact_tableName.'.second_phone', $search_term])
+            ->orWhere(['like', $contact_tableName.'.third_phone', $search_term]);
 
 //        $dump = $query->createCommand()->rawSql;
 
