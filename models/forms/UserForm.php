@@ -5,6 +5,7 @@ namespace app\models\forms;
 use app\models\User;
 use Yii;
 use yii\base\Model;
+use app\models\Tag;
 use yii\validators\EmailValidator;
 use app\components\Filter;
 
@@ -19,6 +20,9 @@ class UserForm extends Model
     var $patronymic;
     var $role;
     var $int_id;
+    var $edit_tags;
+    var $tags_str;
+    var $tags;
 
     var $email;
 
@@ -41,11 +45,29 @@ class UserForm extends Model
             [['firstname', 'lastname', 'patronymic'], 'requiredForUser'],
             [['email'], 'validateEmail'],
             [['email'], 'email'],
+            [['tags_str'], 'tagsArray'],
 
             [['firstname', 'lastname', 'patronymic'], 'string'],
             [['int_id', 'role'], 'integer']
         ];
     }
+
+    public function tagsArray($attribute, $params)
+    {
+        $tags = array_map('trim', explode(',', $this->$attribute));
+        foreach ($tags as $tag) {
+            $this->checkTag($tag, $attribute);
+            $tag_obj = Tag::getByName($tag);
+            $this->tags[] = $tag_obj ?: (new Tag(['name' => $tag]));
+        }
+    }
+    public function checkTag($tag, $attribute)
+    {
+        if (strlen($tag) > 150) {
+            $this->addCustomError($attribute, 'Длина тега не должна превышать 150 символов');
+        }
+    }
+
 
     public function isUnique($value, $attr, $fields, $message_callback) {
         if ($value != null) {
@@ -70,7 +92,7 @@ class UserForm extends Model
     {
         $user = User::find()->asArray()->where(['email' => $this->email])->one();
 
-        if (!empty($user)) {
+        if (!empty($user) && $this->edit_tags == false) {
             $this->addCustomError('email', 'Такой пользователь уже существует в системе.');
         }
     }

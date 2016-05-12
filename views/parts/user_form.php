@@ -86,6 +86,11 @@ use app\models\User;
                                                 <input type="password" id="user_password_confirm" name="user_password_confirm" placeholder="Подтвердите пароль"
                                                        class="form-control">
                                             </div>
+
+                                            <hr>
+                                            <div class="form-group text-left">
+                                                <input id="user_tags" name="tags_str" class="user-tags" type="text" />
+                                            </div>
                                             <br>
 
 <!--                                            <div class="form-group">-->

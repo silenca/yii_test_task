@@ -153,6 +153,9 @@ class UsersController extends BaseController
         if ($post['id']) {
             $user_form->edited_id = $post['id'];
         }
+        if ($post['edit_tags']) {
+            $user_form->edit_tags = true;
+        }
         $user_form->attributes = $post;
 
         if ($user_form->validate()) {
@@ -177,7 +180,8 @@ class UsersController extends BaseController
                 unset($post['_csrf']);
                 unset($post['id']);
                 $user->attributes = $user_form->attributes;
-                if ($user->edit()) {
+                $user->remove_tags = true;
+                if ($user->edit(['tags' => $user_form->tags])) {
                     $this->json(['id' => $user->id], 200);
                 } else {
                     $this->json(false, 415, $user->getErrors());
@@ -194,11 +198,15 @@ class UsersController extends BaseController
     public function actionView()
     {
         $user_id = Yii::$app->request->get('id');
-        $user = User::find()->where(['id' => $user_id]);
+        $user = User::find()->with('tags')->where(['id' => $user_id]);
         $user2 = clone $user;
         $user2 = $user2->one();
         $user_arr = $user->asArray()->one();
         $user_data = array_intersect_key($user_arr, array_flip(User::$safe_fields));
+
+        if (count($user_arr['tags']) > 0) {
+            $user_data['tags'] = $user_arr['tags'];
+        }
 
         $this->json($user_data, 200);
     }

@@ -385,7 +385,8 @@ function checkChanges(name, value, $form) {
 function editContact($form, name, value) {
     var data = {};
     $.each(bind_inputs, function (key, value) {
-        data[key] = value;
+        if (value != "undefined")
+            data[key] = value;
     });
     data['_csrf'] = _csrf;
     if (bind_inputs['name'] && bind_inputs['surname'] && bind_inputs['phones']) {

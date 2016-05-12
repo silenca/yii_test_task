@@ -18,6 +18,8 @@ class User extends ActiveRecord implements IdentityInterface {
         return '{{%user}}';
     }
 
+    public $remove_tags;
+
     public static $safe_fields = [
         'int_id',
         'firstname',
@@ -230,9 +232,19 @@ class User extends ActiveRecord implements IdentityInterface {
         ];
     }
 
-    public function edit() {
-        $this->save();
-        return true;
+    public function edit($related) {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $this->save();
+            if (isset($related['tags'])) {
+                $this->tags = $related['tags'];
+            }
+            $transaction->commit();
+            return true;
+        } catch (\Exception $ex) {
+            $transaction->rollback();
+            return false;
+        }
     }
 
     public static function deleteById($id) {
@@ -242,6 +254,22 @@ class User extends ActiveRecord implements IdentityInterface {
             return true;
         }
         return false;
+    }
+
+    public function setTags($new_tags) {
+        if ($this->remove_tags == true) {
+            $this->unlinkAll('tags');
+        }
+
+        foreach ($new_tags as $new_tag) {
+            $new_tag->save();
+
+            $user_has_tag = UserTag::find()->where(['user_id' => $this->id, 'tag_id' => $new_tag->id])->exists();
+
+            if ($user_has_tag == false) {
+                $this->link('tags', $new_tag);
+            }
+        }
     }
 
 }

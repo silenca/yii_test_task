@@ -11,6 +11,19 @@ $(function() {
         checkChanges($(this).attr('name'), $(this).val(), $user_form);
     });
 
+    $('#user_tags', $user_data_form).on('itemAdded, itemRemoved', function () {
+        $(this).data('value', $(this).val());
+        bind_inputs['tags_str'] = $(this).val();
+        bind_inputs['edit_tags'] = true;
+        editUser($user_form);
+    });
+
+    var $tagsInput = $('#user_tags');
+    $tagsInput.tagsinput({
+        itemValue: 'text',
+        itemText: 'text'
+    });
+
 });
 
 function resetForm(form) {
@@ -55,6 +68,16 @@ function buildUserForm(id, $form, callback) {
 
             $form.find('#user_email').val(data.email);
 
+            var $tagsInput = $('#user_tags'),
+                tags_str = [];
+            $tagsInput.tagsinput('removeAll');
+
+            $.each(data.tags, function(tag_key, tag_value) {
+                $tagsInput.tagsinput('add', { id: tag_value.id, text: tag_value.name });
+                tags_str.push(tag_value.name);
+            });
+            $tagsInput.attr('data-value', tags_str.join(','));
+
             callback();
         }
     });
@@ -68,7 +91,7 @@ function checkChanges(name, value, $form) {
     }
 }
 
-function editUser(name, value, $form) {
+function editUser($form, name, value) {
     var data = {};
     $.each(bind_inputs, function (key, value) {
         data[key] = value;
