@@ -11,6 +11,15 @@ $(function() {
         checkChanges($(this).attr('name'), $(this).val(), $user_form);
     });
 
+    $('#user_tags', $user_data_form).on('beforeItemRemove', function (event) {
+        var tag = event.item;
+        if (confirm("Вы действительно хотите удалить тег "+ tag.text +"?")) {
+            event.cancel = false;
+        } else {
+            event.cancel = true;
+        }
+    });
+
     $('#user_tags', $user_data_form).on('itemAdded, itemRemoved', function () {
         $(this).data('value', $(this).val());
         bind_inputs['tags_str'] = $(this).val();

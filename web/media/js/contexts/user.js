@@ -144,7 +144,7 @@ $(function () {
 
         //open form
         $users_table.on('click', 'tr', function (e) {
-            if (!$(this).parent('thead').length && !$(this).find('.dataTables_empty').length && !hasTarget($(e.target), '.contact_open_disable') && !dropDownOpened) {
+            if (!$(this).parent('thead').length && !$(this).find('.dataTables_empty').length && !hasTarget($(e.target), '.user_open_disable') && !dropDownOpened) {
                 var id = $(this).data('id');
                 openUserForm(id);
             }
@@ -172,9 +172,9 @@ $(function () {
             }
         });
 
-        $users_table.on('click', 'a', function (e) {
-            e.stopPropagation();
-        });
+        //$users_table.on('click', 'a', function (e) {
+        //    e.stopPropagation();
+        //});
 
         initTable();
 

@@ -38,7 +38,7 @@ class UserTableWidget extends Widget {
 
             $tags = [];
             foreach ($user->tags as $tag) {
-                $tags[] = '<a href="javascript:void(0)" class="user-tags">' . $tag->name . '</a>';
+                $tags[] = '<a href="javascript:void(0)" class="user_open_disable user-tags">' . $tag->name . '</a>';
             }
             $data[$i][] = implode(', ', $tags);
 
