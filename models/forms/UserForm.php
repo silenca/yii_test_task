@@ -92,7 +92,7 @@ class UserForm extends Model
     {
         $user = User::find()->asArray()->where(['email' => $this->email])->one();
 
-        if (!empty($user) && $this->edit_tags == false) {
+        if (!empty($user) && $this->edit_tags == false && !$this->edited_id) {
             $this->addCustomError('email', 'Такой пользователь уже существует в системе.');
         }
     }

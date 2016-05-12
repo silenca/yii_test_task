@@ -72,10 +72,13 @@ function buildUserForm(id, $form, callback) {
                 tags_str = [];
             $tagsInput.tagsinput('removeAll');
 
-            $.each(data.tags, function(tag_key, tag_value) {
-                $tagsInput.tagsinput('add', { id: tag_value.id, text: tag_value.name });
-                tags_str.push(tag_value.name);
-            });
+            if (data.tags) {
+                $.each(data.tags, function(tag_key, tag_value) {
+                    $tagsInput.tagsinput('add', { id: tag_value.id, text: tag_value.name });
+                    tags_str.push(tag_value.name);
+                });
+            }
+
             $tagsInput.attr('data-value', tags_str.join(','));
 
             callback();
@@ -87,7 +90,7 @@ function buildUserForm(id, $form, callback) {
 function checkChanges(name, value, $form) {
     if (bind_inputs[name] !== value) {
         bind_inputs[name] = value;
-        editUser(name, value, $form);
+        editUser($form, name, value);
     }
 }
 
