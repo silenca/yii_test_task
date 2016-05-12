@@ -255,6 +255,12 @@ $(function () {
             $(this).toggleClass('selected');
         });
 
+        $(document).on('click', '#users-table .user-tags', function(e) {
+            var tag_name = $(this).text();
+            $('.search-input-text[data-column="tags"]').val(tag_name);
+            dataTable.columns('tags:name').search(tag_name).draw();
+        });
+
 /*        $(document).on('click', '.link_with-dropdown .link_btn', function(e) {
             e.preventDefault();
             var $dropdown = $(this).parents('.dropdown'),
