@@ -109,6 +109,13 @@ $(function() {
 
     $('#contact_tags', $contact_data_form).on('beforeItemRemove', function (event) {
         var tag = event.item;
+
+        if (confirm("Вы действительно хотите удалить тег "+ tag.text +"?")) {
+            event.cancel = false;
+        } else {
+            event.cancel = true;
+        }
+
         switch (userRole) {
             case 'operator':
                 event.cancel = true;
@@ -389,7 +396,7 @@ function editContact($form, name, value) {
             data[key] = value;
     });
     data['_csrf'] = _csrf;
-    if (bind_inputs['name'] && bind_inputs['surname'] && bind_inputs['phones']) {
+    if (bind_inputs['phones']) {
         $.post('/contacts/edit', data, function (response) {
             $form.find('label.error').remove();
             $form.find('.error').removeClass('error');
