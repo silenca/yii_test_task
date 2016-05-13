@@ -110,8 +110,8 @@ class CallController extends BaseController {
 
         //Filtering
         $filter_status = $request_data['columns'][4]['search']['value'];
+        $filter_manager_id = $request_data['columns'][5]['search']['value'];
         $filter_tag_name = $request_data['columns'][6]['search']['value'];
-        $filter_manager_id = $request_data['columns'][7]['search']['value'];
         if (!empty($filter_status)) {
             $filter_status = explode('|', $filter_status);
             $statuses = explode('_', $filter_status[0]);

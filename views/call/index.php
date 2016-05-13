@@ -36,7 +36,7 @@ $this->params['active'] = 'call';
                             </th>
                             <th>
                                 <?php if (isset($managers)): ?>
-                                    <select data-column="6" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                    <select data-column="5" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
                                         <option value="0">Менеджер</option>
                                         <?php foreach ($managers as $manager): ?>
                                             <option value="<?php echo $manager->id ?>"><?php echo $manager->firstname ?></option>
