@@ -355,7 +355,7 @@ class TagsController extends BaseController {
                 $filters['filtering'] = true;
             }
 
-            if ($user_role == 'operator') {
+            if ($user_role == 'operator' || $user_role == 'manager') {
                 $tag_contacts = Contact::getTagContacts($filters, $user_role, $user_id);
 //                $dump = $query->createCommand()->rawSql;
             } else {

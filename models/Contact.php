@@ -404,7 +404,7 @@ class Contact extends \yii\db\ActiveRecord {
 
     public static function getTagContacts($filters, $user_role, $user_id = null)
     {
-        if ($user_role == 'operator') {
+        if ($user_role == 'operator' || $user_role == 'manager') {
             $filters['extra']['operator_id'] = $user_id;
             $queue_ids = Contact::getContactsInPool(['contact_id'], $user_id, true, 'contact_id');
             $filters['extra']['queue_ids'] = $queue_ids;
@@ -508,7 +508,7 @@ class Contact extends \yii\db\ActiveRecord {
 
         $res_data['count_all'] += count($contacts);
 
-        if ($user_role == 'operator') {
+        if ($user_role == 'operator' || $user_role == 'manager') {
             $contacts = array_slice($contacts, 0, 1);
             Contact::addContInPool($contacts[0]['id'], $user_id, $filters['extra']['tag_id']);
         }
