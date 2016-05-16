@@ -150,6 +150,8 @@ $this->params['active'] = 'tags';
                     <tbody>
                     </tbody>
                 </table>
+                <br />
+                <input type="button" id="update_contacts_table" class="btn btn-info" value="Обновить список контактов" />
             </div>
         </div>
         <!-- END PANEL -->

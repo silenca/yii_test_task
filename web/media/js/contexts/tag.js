@@ -21,7 +21,8 @@ $(function () {
         $exportCsv = $('#export_csv'),
         $tagName = $('#tag_name'),
         $contactsList = $('#contacts_list'),
-        $contactsCounter = $('#ring_counter');
+        $contactsCounter = $('#ring_counter'),
+        $updateContactsTable = $('#update_contacts_table');
 
     // if (typeof extra_contacts_list !== 'undefined') {
     //     $contactsList.val(extra_contacts_list).trigger('change');
@@ -339,6 +340,10 @@ $(function () {
         tableFilters['contact_ids'] = $contactsList.val();
         var filters = $.param(tableFilters);
         window.location.href = $(this).data('href') + '?' + filters;
+    });
+
+    $updateContactsTable.on('click', function() {
+        tagContactsdataTable.draw();
     });
 
     var contacts = [];
