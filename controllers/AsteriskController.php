@@ -178,15 +178,18 @@ class AsteriskController extends BaseController {
                         $answered_time = $post['answeredtime'];
                         $record_file = $post['record_file'];
                     }
-                    if ($call->callEnd($date_time, $total_time, $answered_time, $record_file, $status, $managers)) {
-                        if (isset($call->contact_id)) {
-                            if ($cont_pool = TempContactsPool::findOne(['contact_id' => $call->contact_id])) {
-                                $call->tag_id = $cont_pool->tag_id;
-                                $cont_pool->delete();
-                            }
+
+                    if (isset($call->contact_id)) {
+                        if ($cont_pool = TempContactsPool::findOne(['contact_id' => $call->contact_id])) {
+                            $call->tag_id = $cont_pool->tag_id;
+                            $cont_pool->delete();
                         }
+                    }
+
+                    if ($call->callEnd($date_time, $total_time, $answered_time, $record_file, $status, $managers)) {
                         $this->json([], 200);
                     }
+
                     $this->json([], 500);
                 } else {
                     $this->json([], 415, ['uniqueid' => 'Not found']);
