@@ -61,10 +61,8 @@ class TagContactsTableWidget extends Widget {
                 $call = $contact_phones[0];
                 $data[$i][] = Call::getCallStatusLabel($call);
 
-                $action_type = ActionType::find()->where(['name' => 'ring_round'])->one();
-                $action = $tag_contact->getActions()->where(['action_type_id' => $action_type->id])->orderBy(['action.id' => SORT_DESC])->one();
-                if ($action && $action->comment) {
-                    $data[$i][] = $action->comment->comment;
+                if ($call && $call->comment) {
+                    $data[$i][] = $call->comment;
                 } else {
                     $data[$i][] = '';
                 }

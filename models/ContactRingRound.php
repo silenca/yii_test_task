@@ -82,6 +82,7 @@ class ContactRingRound extends \yii\db\ActiveRecord {
                 $call = Call::findOne(['call_order_token' => $call_order_token]);
                 if ($call) {
                     $call->attitude_level = $attitude_level;
+                    $call->comment = $action_comment_text;
                     $call->save();
                 }
             }
