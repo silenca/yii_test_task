@@ -84,6 +84,12 @@ $(function () {
         }
     });
 
+    $(document).on('click', '#action-table .contact-phone', function(e) {
+        var contactId = $(this).parents('tr').data('id'),
+            phone = $(this).data('phone');
+        initCallNow(phone);
+    });
+
     $(document).on('click', '#action-table .contact-tags', function(e) {
         var tag_name = $(this).text();
         dataTable.columns(4).search(tag_name).draw();

@@ -41,6 +41,12 @@ class ActionTableWidget extends Widget
                 $action_contactComment = $cont_comments;
             }
 
+            if ($action_contact->is_called) {
+                $phone_class = '';
+            } else {
+                $phone_class = 'contact-phone';
+            }
+
             $data[$i][] = $action['id'];
             $data[$i][] = date("d-m-Y", strtotime($action['system_date']));
             switch ($action_type->name) {
@@ -73,15 +79,18 @@ class ActionTableWidget extends Widget
                             ' ',
                             "<div><a class='open_contact' data-id='" . $action['contact_id'] . "'>{value}</a></div>");
                     } else {
-                        $data[$i][] = Filter::dataImplode([
-                                $action_contact['first_phone'],
-                                $action_contact['second_phone'],
-                                $action_contact['third_phone'],
-                                $action_contact['fourth_phone']
-                            ],
-                            ', ',
-                            "<div><a class='open_contact' data-id='" . $action['contact_id'] . "'>{value}</a></div>");
+                        $data[$i][] = "<div><a class='open_contact' data-id='" . $action['contact_id'] . "'>" . $action_contact['int_id'] . "</a></div>";
                     }
+            }
+
+            switch ($this->user_role) {
+                case 'operator':
+                    $phone_wrapper = '<a class="'.$phone_class.'" data-phone="{value_1}" href="javascript:void(0)">{value_2}</a>';
+                    $data[$i][] = Filter::dataImplode([$action_contact->getPhoneValues(), 'Телефон №'], ', ', $phone_wrapper, true, true);
+                    break;
+                default:
+                    $phone_wrapper = '<a class="'.$phone_class.'" data-phone="{value}" href="javascript:void(0)">{value}</a>';
+                    $data[$i][] = Filter::dataImplode($action_contact->getPhoneValues(), ', ', $phone_wrapper, true);
             }
 
             $tag_names = [];
