@@ -47,9 +47,12 @@ $(function () {
             "order": [],
             "ajax": {
                 url: "/tags/getdata", // json datasource
-                type: "GET", // method  , by default get
+                type: "POST", // method
                 error: function () {  // error handling
                     //alert('error data');
+                },
+                "data": function ( d ) {
+                    d._csrf = $('meta[name="csrf-token"]').attr('content');
                 }
             },
             'fnDrawCallback': function(data) {

@@ -324,7 +324,7 @@ class TagsController extends BaseController {
 
     public function actionGetdata()
     {
-        $request_data = Yii::$app->request->get();
+        $request_data = Yii::$app->request->post();
         $tag_id = $request_data['columns'][1]['search']['value'];
         if (!empty($request_data['columns'][0]['search']['value'])) {
             $filter_ids = explode(',', $request_data['columns'][0]['search']['value']);
