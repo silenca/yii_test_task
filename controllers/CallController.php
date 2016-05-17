@@ -104,10 +104,6 @@ class CallController extends BaseController {
         }
         $total_count = $query->count();
 
-        $query->limit($request_data['length'])
-            ->offset($request_data['start'])
-            ->orderBy($sorting);
-
         //Filtering
         $filter_status = $request_data['columns'][4]['search']['value'];
         $filter_manager_id = $request_data['columns'][5]['search']['value'];
@@ -133,6 +129,9 @@ class CallController extends BaseController {
         $total_filtering_count = $query->count();
 
         $dump = $query->createCommand()->rawSql;
+        $query->limit($request_data['length'])
+            ->offset($request_data['start'])
+            ->orderBy($sorting);
         $calls = $query->all();
         $call_widget = new CallTableWidget();
         $call_widget->calls = $calls;
