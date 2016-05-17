@@ -404,6 +404,7 @@ class Contact extends \yii\db\ActiveRecord {
 
     public static function getTagContacts($filters, $user_role, $user_id = null)
     {
+        // Отображать контакты из временной таблицы
         if ($user_role == 'operator' || $user_role == 'manager') {
             $filters['extra']['operator_id'] = $user_id;
             $queue_ids = Contact::getContactsInPool(['contact_id'], $user_id, true, 'contact_id');
@@ -449,7 +450,7 @@ class Contact extends \yii\db\ActiveRecord {
                     }
                     break;
 //                case 'comment':
-//
+//                    $extra_where[Call::tableName().'.'.$extra_name] = $extra_val;
 //                    break;
                 case 'attitude_level':
                     $extra_where[Call::tableName().'.'.$extra_name] = $extra_val;
@@ -463,7 +464,7 @@ class Contact extends \yii\db\ActiveRecord {
 
         $query_called = clone $query;
 
-//        $dump = $query_called->createCommand()->rawSql;
+        $dump = $query_called->createCommand()->rawSql;
 
         $query_called->andWhere(['=', Call::tableName().'.tag_id', $filters['extra']['tag_id']]);
 
@@ -492,7 +493,7 @@ class Contact extends \yii\db\ActiveRecord {
         $res_data['total_count'] = $query_called->count();
 
         if (!empty($filters['extra']['comment'])) {
-            $query_called->andWhere(['like', ActionComment::tableName().'.comment', $filters['extra']['comment']]);
+            $query_called->andWhere(['like', Call::tableName().'.comment', $filters['extra']['comment']]);
         }
 
         $query_called->andWhere($extra_where);
