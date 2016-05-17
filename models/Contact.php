@@ -464,7 +464,7 @@ class Contact extends \yii\db\ActiveRecord {
 
         $query_called = clone $query;
 
-        $dump = $query_called->createCommand()->rawSql;
+//        $dump = $query_called->createCommand()->rawSql;
 
         $query_called->andWhere(['=', Call::tableName().'.tag_id', $filters['extra']['tag_id']]);
 

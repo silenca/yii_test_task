@@ -61,7 +61,7 @@ class CallTableWidget extends Widget {
                     }
                     break;
                 default:
-                    if ($call['contact_id']) {
+                    if ($call['contact_id'] && !empty($call_contact->name)) {
                         $contact_name = $call_contact->name;
                     } else {
                         $contact_name = $call['phone_number'];

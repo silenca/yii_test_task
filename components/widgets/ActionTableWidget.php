@@ -64,7 +64,24 @@ class ActionTableWidget extends Widget
                     $data[$i][] = "<div><a class='open_contact' data-id='" . $action['contact_id'] . "'>" . $action_contact->int_id . "</a></div>";
                     break;
                 default:
-                    $data[$i][] = Filter::dataImplode([$action_contact['surname'], $action_contact['name'], $action_contact['middle_name']], ' ', "<div><a class='open_contact' data-id='" . $action['contact_id'] . "'>{value}</a></div>");
+                    if (strlen($action_contact['surname']) > 0 || strlen($action_contact['name']) > 0 || strlen($action_contact['middle_name']) > 0) {
+                        $data[$i][] = Filter::dataImplode([
+                                $action_contact['surname'],
+                                $action_contact['name'],
+                                $action_contact['middle_name']
+                            ],
+                            ' ',
+                            "<div><a class='open_contact' data-id='" . $action['contact_id'] . "'>{value}</a></div>");
+                    } else {
+                        $data[$i][] = Filter::dataImplode([
+                                $action_contact['first_phone'],
+                                $action_contact['second_phone'],
+                                $action_contact['third_phone'],
+                                $action_contact['fourth_phone']
+                            ],
+                            ', ',
+                            "<div><a class='open_contact' data-id='" . $action['contact_id'] . "'>{value}</a></div>");
+                    }
             }
 
             $tag_names = [];
