@@ -249,4 +249,5 @@ $this->params['active'] = 'tags';
     var hide_columns = <?= json_encode($hide_contact_columns); ?>;
     var columns = <?= json_encode(array_keys($table_contact_cols)); ?>;
     var columns_full = <?= json_encode($table_contact_cols); ?>;
+    var contact_ids = <?= (!empty(Yii::$app->request->post('contact_ids')) ? '"' . Yii::$app->request->post('contact_ids') . '"' : '""'); ?>
 </script>

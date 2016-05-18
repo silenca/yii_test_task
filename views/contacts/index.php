@@ -45,12 +45,12 @@ $this->params['active'] = 'contact';
                     </div>
                 </div>
                 <div class="pull-right">
-                    <div class="col-xs-12">
+                    <div class="col-xs-6">
                         <button class="btn btn-primary btn-cons pull-right" id="open-new-contact-from"><i
                                 class="fa fa-plus"></i> Добавить контакт
                         </button>
                     </div>
-                    <div class="col-xs-6 hide">
+                    <div class="col-xs-6">
                         <button class="btn btn-primary btn-cons pull-right" id="add_tag_to_all"><i
                                 class="fa fa-plus"></i> Добавить тег всем
                         </button>
@@ -120,3 +120,5 @@ $this->params['active'] = 'contact';
     var columns = <?= json_encode(array_keys($table_cols)); ?>;
     var columns_full = <?= json_encode($table_cols); ?>;
 </script>
+
+

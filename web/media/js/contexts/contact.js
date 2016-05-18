@@ -35,10 +35,10 @@ $(function () {
                 {"visible": false, "targets": [show_columns.indexOf('id')]},
                 {"orderable": false, "targets": []}
             ],
-            // 'fnDrawCallback': function(data) {
-            //     var contactIds = data.json.contact_ids;
-            //     $('#add_tag_to_all').attr('data-contacts', contactIds);
-            // },
+             'fnDrawCallback': function(data) {
+                 var contactIds = data.json.contact_ids;
+                 $('#add_tag_to_all').attr('data-contacts', contactIds);
+             },
             "createdRow": function (row, data, index) {
                 $(row).attr('data-id', data[show_columns.indexOf('id')]);
                 $(row).addClass('open-link');
@@ -282,7 +282,15 @@ $(function () {
     }
 
     $('#add_tag_to_all').on('click', function(e) {
-        // window.location.href = '/tags?contacts_filter=' + ;
+        // window.location.href = '/tags?contact_tags=' + $('.search-input-text[data-column="tags"]').val();
+
+        var url = '/tags';
+        var form = $('<form action="' + url + '" method="post">' +
+            '<input type="text" name="contact_ids" value="' + $('#add_tag_to_all').attr('data-contacts') + '" />' +
+            '<input type="text" name="_csrf" value="'+ $('meta[name="csrf-token"]').attr('content')+ '" />' +
+            '</form>');
+        $('body').append(form);
+        form.submit();
     });
 });
 

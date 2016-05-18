@@ -277,7 +277,9 @@ $(function () {
             tagNameDate = moment().format('DD/MM/YYYY');
 
         if (!$this.hasClass('create_tag-active')) {
-            manageTagData('clear');
+            if (contact_ids.length == 0) {
+                manageTagData('clear');
+            }
             tagSelect.val(null).trigger("change");
             tagSelect.select2("destroy").attr('disabled', true).hide();
             $tagAdd.show().find('input').attr('disabled', false);
@@ -285,7 +287,9 @@ $(function () {
             $tagName.val(tagNameDate + ' ');
             $this.text('Поиск тегов');
         } else {
-            manageTagData('clear');
+            if (contact_ids.length == 0) {
+                manageTagData('clear');
+            }
             tagSelect.select2(tagSelectOpts).attr('disabled', false).show();
             $tagAdd.hide().find('input').val('').attr('disabled', true);
             $this.text('Создать тег');
@@ -376,7 +380,9 @@ $(function () {
     });
 
     tagSelect.on('change', function (e) {
-        manageTagData('clear');
+        if (contact_ids.length == 0) {
+            manageTagData('clear');
+        }
         if ($(this).val() != '') {
             $tagSubmit.removeClass('disabled');
             $addContactCsv.removeClass('disabled');
@@ -447,6 +453,11 @@ $(function () {
         $('.search-input-text[data-column="tags"]').val(tag_name);
         contactsModaldataTable.columns('tags:name').search(tag_name).draw();
     });
+
+    if (contact_ids.length > 0) {
+        $contactsList.val(contact_ids);
+        $contactsList.trigger('change');
+    }
 });
 
 function clearFilters($filters) {
@@ -512,7 +523,15 @@ function manageTagData(action, data) {
             $script.val(data.script);
             tagUsersSelect.val(data.tag_users).trigger("change");
             $as_task.prop('checked', data.as_task);
-            $contactsList.val(data.tag_contacts).trigger('change');
+
+
+            var hiddenArr = $contactsList.val().split(',');
+            var contactsArr = data.tag_contacts.split(',');
+
+            var resultArr = mergeArrays(hiddenArr, contactsArr);
+            $contactsList.val(resultArr.join(',')).trigger('change');
+
+            // $contactsList.val(data.tag_contacts).trigger('change');
             break;
         case 'clear':
             $description.val('');
