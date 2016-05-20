@@ -555,7 +555,8 @@ class Contact extends \yii\db\ActiveRecord {
 
     public static function addContInPool($contact_id, $manager_id, $tag_id)
     {
-        if (!TempContactsPool::find()->where(['contact_id' => $contact_id])->exists()) {
+        // Добавлять новую запись во временную таблицу только если там еще нету записи для соотвествующих контакта и менеджера.
+        if (!TempContactsPool::find()->where(['contact_id' => $contact_id, 'manager_id' => $manager_id])->exists()) {
             $cont_pool = new TempContactsPool(['contact_id' => $contact_id, 'manager_id' => $manager_id, 'tag_id' => $tag_id]);
             return $cont_pool->save();
         }
