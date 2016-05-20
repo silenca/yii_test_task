@@ -13,6 +13,9 @@ use Yii;
 class BaseController extends Controller {
 
     public function beforeAction($action) {
+        if (Yii::$app->controller->id == 'contacts' && $action->id == 'save') {
+            $this->enableCsrfValidation = false;
+        }
         if (parent::beforeAction($action)) {
             if (Yii::$app->user->can('notifications')) {
                 $notify_count = ManagerNotification::find()->where(['manager_id' => Yii::$app->user->identity->id])->andWhere(['viewed' => 0])->count();
@@ -30,6 +33,7 @@ class BaseController extends Controller {
                 $user_role = Yii::$app->user->identity->getUserRole();
                 $this->view->params['user_role'] = $user_role;
             }
+
             return true;
         }
 

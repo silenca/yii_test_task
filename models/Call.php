@@ -97,6 +97,27 @@ class Call extends \yii\db\ActiveRecord {
         ];
     }
 
+    public static function getAttitubeLevelLabel($level) {
+        switch ($level) {
+            case '1':
+                $label = '-2';
+                break;
+            case '2':
+                $label = '-1';
+                break;
+            case '3':
+                $label = '0';
+                break;
+            case '4':
+                $label = '1';
+                break;
+            case '5':
+                $label = '2';
+                break;
+        }
+        return $label;
+    }
+
     public static function buildSelectQuery() {
         $columns = self::getTableColumns();
         $select = [];
@@ -148,8 +169,50 @@ class Call extends \yii\db\ActiveRecord {
             $this->status = Call::CALL_STATUS_FAILURE;
         }
         $this->setManagersForCall($managers_id, $status);
+
         return $this->save();
     }
+
+    public static function sendToCRM($call_order_token, $manager_id) {
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+
+        $url = "http://localhost/post.php";
+
+        $call = Call::find()->where(['call_order_token' => $call_order_token])->one();
+        
+        $calls['phone_number'] = $call->phone_number;
+        $calls['type'] = $call->type;
+        $calls['date_time'] = $call->date_time;
+        $calls['status'] = $call->status;
+        $calls['total_time'] = $call->total_time;
+        $calls['comment'] = $call->comment;
+        $calls['emotion'] = Call::getAttitubeLevelLabel($call->attitude_level); 
+
+        $manager = User::find('int_id')->where(['id' => $manager_id])->one();
+        $calls['internal_no'] = $manager->int_id;
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, array('calls' => json_encode($calls)));
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $server_output = curl_exec ($ch);
+
+//        $log_data = date("Y-m-d H:i:s"). "\n";
+//        $log_data .= "\n$url\n";
+//        $log_data .= "data=".$data.'&token='.$token;
+//        $log_data .= "\nResponse: \n" . $server_output;
+//        $log_data .= "\n\n===============\n\n";
+//        file_put_contents(Yii::getAlias('@webroot').'/json.txt', $log_data, FILE_APPEND);
+
+        curl_close ($ch);
+    }
+
 
     public function setManagersForCall($managers_id, $status) {
         $contact_manager = null;

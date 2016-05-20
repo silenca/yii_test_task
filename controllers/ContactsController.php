@@ -6,9 +6,11 @@ use app\models\ContactTag;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use app\models\Call;
 use app\models\Contact;
 use app\models\ChannelAttraction;
 use app\models\ContactHistory;
+use app\models\ContactStatusHistory;
 use app\models\ContactComment;
 use app\models\ContactShow;
 use app\models\ContactContract;
@@ -52,6 +54,13 @@ class ContactsController extends BaseController
                         ],
                         'allow' => true,
                         'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => [
+                            'save',
+                        ],
+                        'allow' => true,
+                        'roles' => ['?'],
                     ],
                     [
                         'actions' => [
@@ -210,11 +219,17 @@ class ContactsController extends BaseController
                     $contact = new Contact();
                     $contact->manager_id = Yii::$app->user->identity->id;
                 }
+                // send contact to CRM
+                if ($post['id']) {
+//                    Contact::sendToCRM($post['id']);
+                }
+
                 unset($post['_csrf']);
                 unset($post['id']);
 //                $contact->setTags($contact_form->tags);
                 $contact->attributes = $contact_form->attributes;
                 $contact->remove_tags = true;
+
                 if ($contact->edit(['tags' => $contact_form->tags])) {
                     $this->json(['id' => $contact->id], 200);
                 } else {
@@ -228,6 +243,56 @@ class ContactsController extends BaseController
             $this->json(false, 415, $errors);
         }
     }
+
+    public function actionSave()
+    {
+        $post = Yii::$app->request->post();
+        $contact_form = new ContactForm();
+        $contact_form->attributes = $post;
+
+        if ($contact_form->validate()) {
+            try {
+                $contact = null;
+                $contact = new Contact();
+
+                $contact->first_phone   = $post['phone1'];
+                $contact->second_phone  = $post['phone2'];
+                $contact->third_phone   = $post['phone3'];
+                $contact->fourth_phone  = $post['phone4'];
+                $contact->first_email   = $post['email1'];
+                $contact->second_email  = $post['email2'];
+                $contact->name          = $post['first_name'];
+                $contact->surname       = $post['last_name'];
+                $contact->middle_name   = $post['middle_name'];
+                $contact->country       = $post['country'];
+                $contact->region        = $post['region'];
+                $contact->area          = $post['area'];
+                $contact->city          = $post['city'];
+                $contact->street        = $post['street'];
+                $contact->house         = $post['house'];
+                $contact->flat          = $post['flat'];
+                $contact->int_id        = $post['internal_no'];
+
+                if ($contact->save()) {
+                    $contact_history = new ContactHistory();
+                    $contact_history->add($this->id, 'создан контакт (API)', 'new_contact');
+                    $contact_history->save();
+                    $contactStatusHistory = new ContactStatusHistory();
+                    $contactStatusHistory->add($this->id, $this->manager_id, 'lead');
+                    $contactStatusHistory->save();
+                    $this->json(['id' => $contact->id], 200);
+                } else {
+                    $this->json(false, 415, $contact->getErrors());
+                }
+            } catch (\Exception $ex) {
+                $this->json(false, 500);
+            }
+        } else {
+            $errors = $contact_form->getErrors();
+            $this->json(false, 415, $errors);
+        }
+    }
+
 
     public function actionSearch()
     {
@@ -397,6 +462,7 @@ class ContactsController extends BaseController
                 'system_date' => date('d-m-Y G:i:s', strtotime($contact_ring_round->system_date)),
                 'history' => $history_text
             ];
+//            Call::sendToCRM($call_order_token, Yii::$app->user->identity->getId());
             $this->json($response_date, 200);
         }
         $this->json(false, 500);

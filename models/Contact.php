@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\models\ContactTag;
 use app\components\UtilHelper;
 use yii\helpers\ArrayHelper;
 
@@ -333,8 +334,14 @@ class Contact extends \yii\db\ActiveRecord {
     }
 
     public static function deleteById($id) {
-        $contact = self::find()->where(['id' => $id])->one();
+        $contact = self::find()->with('tags')->where(['id' => $id])->one();
         if ($contact) {
+            // Удаление временных записей связанных с контаком
+            Contact::removeContInPool($id);
+
+            // Удаление тегов связанных с контактом
+            $contact->unlink('tags', $contact->tags[0]);
+
             $contact->is_deleted = 1;
             $contact->save();
             return true;

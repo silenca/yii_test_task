@@ -83,7 +83,7 @@ class ContactForm extends Model
     public function rules()
     {
         return [
-            [['phones'], 'requiredForContact'],
+            [['phones'], 'required', 'message' => 'Необходимо заполнить телефон'],
             [['phones'], 'phoneArray'],
             [['emails'], 'emailArray'],
 
