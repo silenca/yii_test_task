@@ -36,8 +36,8 @@ $(function () {
                 {"orderable": false, "targets": []}
             ],
              'fnDrawCallback': function(data) {
-                 var contactIds = data.json.contact_ids;
-                 $('#add_tag_to_all').attr('data-contacts', contactIds);
+                 // var contactIds = data.json.contact_ids;
+                 // $('#add_tag_to_all').attr('data-contacts', contactIds);
              },
             "createdRow": function (row, data, index) {
                 $(row).attr('data-id', data[show_columns.indexOf('id')]);

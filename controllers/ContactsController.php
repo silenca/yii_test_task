@@ -159,18 +159,19 @@ class ContactsController extends BaseController
             }
         }
 
-        $dump = $query->createCommand()->rawSql;
-        $total_filtering_count = $query->count();
 
-        $query_ids = clone $query;
-        $contact_ids = $query_ids->asArray()->all();
-        $contact_ids = implode(',', array_map(function($item) { return $item['id']; }, $contact_ids));
+        $total_filtering_count = $query->count();
+                            
+//        $query_ids = clone $query;
+//        $contact_ids = $query_ids->asArray()->all();
+//        $contact_ids = implode(',', array_map(function($item) { return $item['id']; }, $contact_ids));
 
         $query
             ->orderBy($sorting)
             ->limit($request_data['length'])
             ->offset($request_data['start']);
 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $dump = $query->createCommand()->rawSql;
         $contacts = $query->all();
         $contact_widget = new ContactTableWidget();
         $contact_widget->contacts = $contacts;
@@ -183,7 +184,7 @@ class ContactsController extends BaseController
             "recordsTotal" => intval($total_count),
             "recordsFiltered" => intval($total_filtering_count),
             "data" => $data,   // total data array
-            "contact_ids" => $contact_ids
+            //"contact_ids" => $contact_ids
         );
         echo json_encode($json_data);
         die;
