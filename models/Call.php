@@ -184,16 +184,17 @@ class Call extends \yii\db\ActiveRecord {
 
         $call = Call::find()->where(['call_order_token' => $call_order_token])->one();
         
-        $calls['phone_number'] = $call->phone_number;
-        $calls['type'] = $call->type;
-        $calls['date_time'] = $call->date_time;
-        $calls['status'] = $call->status;
-        $calls['total_time'] = $call->total_time;
-        $calls['comment'] = $call->comment;
-        $calls['emotion'] = Call::getAttitubeLevelLabel($call->attitude_level); 
+        $calls['PhoneNumber'] = $call->phone_number;
+        $calls['Type'] = $call->type;
+        $calls['DateTime'] = $call->date_time;
+        $calls['Status'] = $call->status;
+        $calls['TotalTime'] = $call->total_time;
+        $calls['Comment'] = $call->comment;
+        $calls['Emotion'] = Call::getAttitubeLevelLabel($call->attitude_level);
 
         $manager = User::find('int_id')->where(['id' => $manager_id])->one();
-        $calls['internal_no'] = $manager->int_id;
+        $calls['InternalNo'] = $manager->int_id;
+        $calls['AudioLink'] = $call->record;
 
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 1);

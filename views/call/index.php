@@ -53,6 +53,17 @@ $this->params['active'] = 'call';
                             <?php endif; ?>
                         </tr>
                     </thead>
+                    <thead>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><input data-column="6" type="text" data-column="tags" class="form-control search-input-text"></td>
+                        <td></td>
+                    </tr>
+                    </thead>
                     <tbody>
                     </tbody>
                 </table>
