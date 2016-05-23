@@ -60,7 +60,7 @@ $this->params['active'] = 'call';
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td><input data-column="6" type="text" data-column="tags" class="form-control search-input-text"></td>
+                        <td><input data-column="6" type="text" class="form-control search-input-text data-column-tags"></td>
                         <td></td>
                     </tr>
                     </thead>

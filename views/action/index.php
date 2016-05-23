@@ -56,15 +56,13 @@ $this->params['active'] = 'action';
 
                     <thead>
                     <tr>
-                        <tr>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td><input type="text" data-column="phones" class="form-control search-input-text"></td>
-                        <td><input data-column="4" type="text" data-column="tags" class="form-control search-input-text"></td>
+                        <td><input data-column="3" type="text" class="form-control search-input-text data-column-phones"></td>
+                        <td><input data-column="4" type="text" class="form-control search-input-text data-column-tags"></td>
                         <td></td>
-                        <td></td>
-                        <td></td>
+                        <td><input data-column="6" type="text" class="form-control search-input-text data-column-comment"></td>
                         <td></td>
                     </tr>
                     </thead>

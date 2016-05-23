@@ -101,6 +101,7 @@ $(function () {
 
     $(document).on('click', '#call-table .contact-tags', function(e) {
         var tag_name = $(this).text();
+        $('.search-input-text.data-column-tags').val(tag_name);
         dataTable.columns(6).search(tag_name).draw();
     });
 });

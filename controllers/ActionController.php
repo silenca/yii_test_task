@@ -92,13 +92,24 @@ class ActionController extends BaseController {
 
         //Filtering
         $filter_action_type_id = $request_data['columns'][2]['search']['value'];
+        $filter_phone = $request_data['columns'][3]['search']['value'];
         $filter_tag_name = $request_data['columns'][4]['search']['value'];
+        $filter_comment = $request_data['columns'][6]['search']['value'];
         $filter_manager_id = $request_data['columns'][7]['search']['value'];
         if (!empty($filter_action_type_id)) {
             $query->andWhere([ActionType::tableName().'.id' => $filter_action_type_id]);
         }
+        if (!empty($filter_phone)) {
+            $query->joinWith('contact')->where(['like', 'contact.first_phone', $filter_phone])
+                ->orWhere(['like', 'contact.second_phone', $filter_phone])
+                ->orWhere(['like', 'contact.third_phone', $filter_phone])
+                ->orWhere(['like', 'contact.fourth_phone', $filter_phone]);
+        }
         if (!empty($filter_tag_name)) {
             $query->joinWith('contact.tags')->andWhere(['like', 'tag.name', $filter_tag_name]);
+        }
+        if (!empty($filter_comment)) {
+            $query->joinWith('comment')->andWhere(['like', 'comment', $filter_comment]);
         }
         if (!empty($filter_manager_id)) {
             $query->andWhere([User::tableName().'.id' => $filter_manager_id]);
