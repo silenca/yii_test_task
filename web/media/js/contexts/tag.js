@@ -341,6 +341,15 @@ $(function () {
         e.preventDefault();
     });
 
+    $('form#exportCsv').on('submit', function(e) {
+        $(this).find('input[name="tag_id"]').val($('#tag_search_select').find('option:checked').val());
+        $(this).find('input[name="manager_id"]').val(tableFilters.manager_id !== '0'?tableFilters.manager_id: null);
+        $(this).find('input[name="status"]').val(tableFilters.status !== '0'?tableFilters.status: null);
+        $(this).find('input[name="comment"]').val(tableFilters.comment.length?tableFilters.comment: null);
+        $(this).find('input[name="attitude_level"]').val(tableFilters.attitude_level !== '0'?tableFilters.attitude_level: null);
+        return true;
+    });
+
     // $exportCsv.on('click', function(e) {
     //     e.preventDefault();
     //     tableFilters['tag_id'] = tagSelect.val();
@@ -349,6 +358,8 @@ $(function () {
     //     var filters = $.param(tableFilters);
     //     window.location.href = $(this).data('href') + '?' + filters;
     // });
+    
+    $
 
     $updateContactsTable.on('click', function() {
         tagContactsdataTable.draw();
@@ -416,6 +427,7 @@ $(function () {
             }
         }
         manageTagData('fill', data);
+        // $('form input[name="tag_id"]').val(data.id);
     });
 
     $contactsList.on('change', function (e) {

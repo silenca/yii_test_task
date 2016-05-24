@@ -62,7 +62,7 @@ class TagContactsTableWidget extends Widget {
                 $data[$i][] = Call::getCallStatusLabel($call);
 
                 if ($call && $call->comment) {
-                    $data[$i][] = $call->comment;
+                    $data[$i][] = preg_replace('/\s\s+/', ' ', $call->comment);
                 } else {
                     $data[$i][] = '';
                 }

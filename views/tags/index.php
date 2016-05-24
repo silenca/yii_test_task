@@ -90,8 +90,13 @@ $this->params['active'] = 'tags';
                         </div>
                         <div class="col-md-6 m-t-35 export-contacts">
                             <div class="input-group">
-                                <form action="/tags/export-csv" method="POST">
+                                <form action="/tags/export-csv" method="POST" id="exportCsv">
                                     <input type="hidden" name="contact_ids" id="contacts_list"/>
+                                    <input type="hidden" name="tag_id" />
+                                    <input type="hidden" name="manager_id" />
+                                    <input type="hidden" name="status" />
+                                    <input type="hidden" name="comment" />
+                                    <input type="hidden" name="attitude_level" />
                                     <input type="hidden" name="_csrf" value="<?= Yii::$app->request->getCsrfToken()?>" />
                                     <input type="submit" id="export_csv" class="btn btn-info disabled" value="Экспортировать в CSV файл"/>
                                 </form>
