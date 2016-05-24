@@ -96,12 +96,6 @@ $(function () {
         dataTable.columns(4).search(tag_name).draw();
     });
 
-    $(document).on('click', '#action-table .contact-phones', function(e) {
-        var phone = $(this).text();
-        $('.search-input-text.data-column-phones').val(phone);
-        dataTable.columns(3).search(phone).draw();
-    });
-
     $(document).on('click', '#action-table .contact-comment', function(e) {
         var comment = $(this).text();
         $('.search-input-text.data-column-comment').val(comment);

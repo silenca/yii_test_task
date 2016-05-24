@@ -230,7 +230,7 @@ class TagsController extends BaseController {
             unset($post['_csrf']);
             unset($post['id']);
             $tag->attributes = $post;
-            if ($tag->edit(['user_ids' => $post['tag_users'], 'contact_ids' => $post['tag_contacts']])) {
+            if ($tag->edit(['user_ids' => $post['tag_users'], 'contact_ids' => explode(',', $post['tag_contacts'])])) {
                 $this->json(['id' => $tag->id], 200);
             } else {
                 $this->json(false, 415, $tag->getErrors());

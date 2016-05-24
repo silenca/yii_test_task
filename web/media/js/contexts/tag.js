@@ -493,7 +493,7 @@ function prepareData($form) {
     }
     data.tag_users = tagUsersSelect.val();
 
-    data.tag_contacts = $('#contacts_list').val().split(',');
+    data.tag_contacts = $('#contacts_list').val();
     data.as_task = $('#tag_as_task').is(':checked') ? 1 : 0;
     data._csrf = _csrf;
     return data;
