@@ -87,9 +87,8 @@ $(function () {
     $(document).on('click', '#action-table .contact-phone', function(e) {
         var contact_id = $(this).data('id'),
             phone = $(this).data('phone');
-        initCallNow(phone, function() {
-            openContactForm(contact_id);
-        });
+        openContactForm(contact_id);
+        initCallNow(phone);
 
     });
 
