@@ -269,7 +269,7 @@ class TagsController extends BaseController {
 
     public function actionExportCsv()
     {
-        $request_data = Yii::$app->request->get();
+        $request_data = Yii::$app->request->post();
 
         if (!empty($request_data['contact_ids'])) {
             $contact_ids = explode(',', $request_data['contact_ids']);

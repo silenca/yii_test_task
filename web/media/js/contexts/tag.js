@@ -341,13 +341,14 @@ $(function () {
         e.preventDefault();
     });
 
-    $exportCsv.on('click', function(e) {
-        e.preventDefault();
-        tableFilters['tag_id'] = tagSelect.val();
-        tableFilters['contact_ids'] = $contactsList.val();
-        var filters = $.param(tableFilters);
-        window.location.href = $(this).data('href') + '?' + filters;
-    });
+    // $exportCsv.on('click', function(e) {
+    //     e.preventDefault();
+    //     tableFilters['tag_id'] = tagSelect.val();
+    //     tableFilters['contact_ids'] = $contactsList.val();
+    //     $.post();
+    //     var filters = $.param(tableFilters);
+    //     window.location.href = $(this).data('href') + '?' + filters;
+    // });
 
     $updateContactsTable.on('click', function() {
         tagContactsdataTable.draw();

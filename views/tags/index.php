@@ -20,7 +20,6 @@ $this->params['active'] = 'tags';
             <div class="panel-heading">
                 <div class="row well">
                     <form id="tag_form" role="form">
-                        <input type="hidden" name="contacts_list" id="contacts_list"/>
                         <div class="form-group col-md-4">
                             <div class="col-md-8 m-b-10" style="padding: 0">
                                 <!-- Using data-init-plugin='select2' automatically initializes a basic Select2 -->
@@ -31,19 +30,24 @@ $this->params['active'] = 'tags';
                                     <div class="input-group m-b-5">
                                         <label class="input-group-addon info" for="tag_name"><i
                                                 class="pg pg-plus_circle"></i></label>
-                                        <input type="text" class="form-control tag-name m-b-5" name="name" id="tag_name" disabled="disabled">
+                                        <input type="text" class="form-control tag-name m-b-5" name="name" id="tag_name"
+                                               disabled="disabled">
                                         <input type="hidden" name="id" id="tag_id" disabled="disabled"/>
                                     </div>
                                     <div class="input-group">
-                                        <label class="input-group-addon info" for="tag_start_date" style="display: none"><i
-                                                class="pg pg-calender" ></i></label>
+                                        <label class="input-group-addon info" for="tag_start_date"
+                                               style="display: none"><i
+                                                class="pg pg-calender"></i></label>
                                         <input type="text" class="form-control datepicker"
                                                placeholder="Дата" name="start_date"
-                                               id="tag_start_date" style="width: 60%; display: none" disabled="disabled">
+                                               id="tag_start_date" style="width: 60%; display: none"
+                                               disabled="disabled">
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 m-b-10"><button class="btn btn-info" id="tag_toggle">Создать тег</button></div>
+                            <div class="col-md-4 m-b-10">
+                                <button class="btn btn-info" id="tag_toggle">Создать тег</button>
+                            </div>
                             <div class="col-md-8" style="padding: 0">
                                 <select class="full-width" name="tag_users" id="tag_users_select">
                                 </select>
@@ -59,36 +63,49 @@ $this->params['active'] = 'tags';
                             <div class="col-md-6">
                                 <label class="" for="tag_description">Описание:</label>
                                 <textarea name="description" id="tag_description" rows="6" cols="10"
-                                      placeholder="Описание тега"
-                                      class="form-control"></textarea>
+                                          placeholder="Описание тега"
+                                          class="form-control"></textarea>
                             </div>
                             <div class="col-md-6">
                                 <label class="" for="tag_script">Скрипт:</label>
                                 <textarea name="script" id="tag_script" rows="6" cols="10"
-                                      placeholder="Скрипт тега"
-                                      class="form-control"></textarea>
+                                          placeholder="Скрипт тега"
+                                          class="form-control"></textarea>
                             </div>
-                            <div class="col-md-6 m-t-10 add-contacts">
-                                <label class="">Добавить контакты:</label>
-                                <div class="input-group">
-                                    <button class="btn btn-info disabled" id="add_contact_table">Таблица контактов</button>
-                                </div>
-                                <br />
-                                <div class="input-group">
-                                    <button class="btn btn-info disabled" id="add_contact_csv">Импорт из CSV</button>
-                                </div>
-                            </div>
-                            <div class="col-md-6 m-t-35 export-contacts">
-                                <div class="input-group">
-                                    <button class="btn btn-info disabled" id="export_csv" data-href="/tags/export-csv">Экспортировать в CSV файл</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group col-md-2 pull-right">
-                            <button type="button" class="btn btn-complete pull-right disabled" id="tag_submit">Применить</button>
+
                         </div>
                         <div class="clearfix"></div>
                     </form>
+                    <div class="col-md-8 col-md-offset-4">
+                        <div class="col-md-6 m-t-10 add-contacts">
+                            <label class="">Добавить контакты:</label>
+                            <div class="input-group">
+                                <button class="btn btn-info disabled" id="add_contact_table">Таблица контактов
+                                </button>
+                            </div>
+                            <br/>
+                            <div class="input-group">
+                                <button class="btn btn-info disabled" id="add_contact_csv">Импорт из CSV</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 m-t-35 export-contacts">
+                            <div class="input-group">
+                                <form action="/tags/export-csv" method="POST">
+                                    <input type="hidden" name="contact_ids" id="contacts_list"/>
+                                    <input type="hidden" name="_csrf" value="<?= Yii::$app->request->getCsrfToken()?>" />
+                                    <input type="submit" id="export_csv" class="btn btn-info disabled" value="Экспортировать в CSV файл"/>
+                                </form>
+<!--                                <button class="btn btn-info disabled" id="export_csv" data-href="/tags/export-csv">-->
+<!--                                    Экспортировать в CSV файл-->
+<!--                                </button>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-2 pull-right">
+                        <button type="button" class="btn btn-complete pull-right disabled" id="tag_submit">
+                            Применить
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="panel-body">
@@ -116,33 +133,43 @@ $this->params['active'] = 'tags';
                         <td></td>
                         <td>
                             <?php if (!empty($managers)): ?>
-                                <select data-column="4" data-column_name="manager_id" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                <select data-column="4" data-column_name="manager_id"
+                                        class="cs-select cs-skin-slide search-input-select"
+                                        data-init-plugin="cs-select">
                                     <option value="0">Все</option>
                                     <?php foreach ($managers as $manager): ?>
-                                        <option value="<?php echo $manager->id ?>"><?php echo $manager->firstname ?></option>
+                                        <option
+                                            value="<?php echo $manager->id ?>"><?php echo $manager->firstname ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             <?php endif; ?>
                         </td>
                         <td>
                             <?php if (!empty($call_statuses)): ?>
-                            <select data-column="5" data-column_name="status" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
-                                <option value="0">Все</option>
-                                <?php foreach ($call_statuses as $call_status): ?>
-                                    <option value="<?php echo $call_status['name'] ?>"><?php echo $call_status['label'] ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                                <select data-column="5" data-column_name="status"
+                                        class="cs-select cs-skin-slide search-input-select"
+                                        data-init-plugin="cs-select">
+                                    <option value="0">Все</option>
+                                    <?php foreach ($call_statuses as $call_status): ?>
+                                        <option
+                                            value="<?php echo $call_status['name'] ?>"><?php echo $call_status['label'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             <?php endif; ?>
                         </td>
-                        <td><input type="text" data-column="6" data-column_name="comment" class="form-control search-input-text"></td>
+                        <td><input type="text" data-column="6" data-column_name="comment"
+                                   class="form-control search-input-text"></td>
                         <td>
                             <?php if (!empty($attitude_levels)): ?>
-                            <select data-column="7" data-column_name="attitude_level" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
-                                <option value="0">Все</option>
-                                <?php foreach ($attitude_levels as $attitude_level): ?>
-                                    <option value="<?php echo $attitude_level['name'] ?>"><?php echo $attitude_level['label'] ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                                <select data-column="7" data-column_name="attitude_level"
+                                        class="cs-select cs-skin-slide search-input-select"
+                                        data-init-plugin="cs-select">
+                                    <option value="0">Все</option>
+                                    <?php foreach ($attitude_levels as $attitude_level): ?>
+                                        <option
+                                            value="<?php echo $attitude_level['name'] ?>"><?php echo $attitude_level['label'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -150,8 +177,8 @@ $this->params['active'] = 'tags';
                     <tbody>
                     </tbody>
                 </table>
-                <br />
-                <input type="button" id="update_contacts_table" class="btn btn-info" value="Обновить список контактов" />
+                <br/>
+                <input type="button" id="update_contacts_table" class="btn btn-info" value="Обновить список контактов"/>
             </div>
         </div>
         <!-- END PANEL -->
@@ -159,7 +186,8 @@ $this->params['active'] = 'tags';
 </div>
 
 <!-- Modal -->
-<div class="modal fade slide-up disable-scroll in" id="modalAddContactToTag" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
+<div class="modal fade slide-up disable-scroll in" id="modalAddContactToTag" tabindex="-1" role="dialog"
+     aria-labelledby="modalSlideUpLabel" aria-hidden="false">
     <div class="modal-dialog">
         <div class="modal-content-wrapper">
             <div class="modal-content">
@@ -186,7 +214,8 @@ $this->params['active'] = 'tags';
                             <?php foreach ($filter_contact_cols as $col_key => $col_val): ?>
                                 <? if (!in_array($col_key, $hide_contact_columns)): ?>
                                     <?php if ($col_val['have_search']): ?>
-                                        <td><input type="text" data-column="<?php echo($col_key); ?>" class="form-control search-input-text"></td>
+                                        <td><input type="text" data-column="<?php echo($col_key); ?>"
+                                                   class="form-control search-input-text"></td>
                                     <?php else: ?>
                                         <td></td>
                                     <?php endif; ?>
@@ -207,7 +236,8 @@ $this->params['active'] = 'tags';
 <!-- /.modal-dialog -->
 
 <!-- Modal: Import from CSV -->
-<div class="modal fade slide-up disable-scroll" id="modalImportCsv" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
+<div class="modal fade slide-up disable-scroll" id="modalImportCsv" tabindex="-1" role="dialog"
+     aria-labelledby="modalSlideUpLabel" aria-hidden="false">
     <div class="modal-dialog ">
         <div class="modal-content-wrapper">
             <div class="modal-content">
@@ -226,7 +256,8 @@ $this->params['active'] = 'tags';
                             <div id="file-name"></div>
                         </div>
                         <div class="panel-body">
-                            <form action="import/csv" id="import_csv_form" method="POST" enctype="application/x-www-form-urlencoded">
+                            <form action="import/csv" id="import_csv_form" method="POST"
+                                  enctype="application/x-www-form-urlencoded">
                                 <input type="file" name="csv_file" id="csv-file" style="display: none" accept=".csv"/>
                                 <input type="submit" class="btn btn-complete btn-cons" value="Начать импорт"/>
                                 <div class="result">
