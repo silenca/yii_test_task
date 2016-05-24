@@ -224,13 +224,14 @@ function resetActionForm(form) {
     }
 }
 
-function initCallNow(phone) {
+function initCallNow(phone, callback) {
     $('.contact-actions .cs-options li[data-value="call"]').click();
     $('#action_send_now_phone').click();
     $.post('asterisk/send-incoming-call', {phone: phone, _csrf: _csrf}, function (response) {
         var result = $.parseJSON(response);
         if (result.status === 200) {
             $('#form_action_call .call_order_token').val(result.data.call_order_token);
+            callback ? callback() : null;
         } else {
             console.log('incoming call not done');
         }

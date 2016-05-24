@@ -89,9 +89,8 @@ class AsteriskController extends BaseController {
     {
         $phone = Yii::$app->request->post('phone');
         $call_order_script = Yii::$app->params['call_order_script'];
-        require_once $call_order_script;
-
-        if (function_exists('call_order')) {
+        if (file_exists($call_order_script)) {
+            require_once $call_order_script;
             $user_id = Yii::$app->user->identity->id;
             $user_int_id = Yii::$app->user->identity->int_id;
             $call_order_token = time().$user_id;
@@ -104,7 +103,7 @@ class AsteriskController extends BaseController {
                 $this->json([], 415);
             }
         }
-
+        $this->json([], 500);
     }
 
     public function actionCallstart() {

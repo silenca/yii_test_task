@@ -85,11 +85,11 @@ class ActionTableWidget extends Widget
 
             switch ($this->user_role) {
                 case 'operator':
-                    $phone_wrapper = '<a class="contact_open_disable contact-phones '.$phone_class.'" data-phone="{value_1}" href="javascript:void(0)">{value_2}</a>';
+                    $phone_wrapper = '<a class="contact_open_disable contact-phones '.$phone_class.'" data-phone="{value_1}" data-id="'.$action['contact_id'].'" href="javascript:void(0)">{value_2}</a>';
                     $data[$i][] = Filter::dataImplode([$action_contact->getPhoneValues(), 'Телефон №'], ', ', $phone_wrapper, true, true);
                     break;
                 default:
-                    $phone_wrapper = '<a class="contact_open_disable contact-phones '.$phone_class.'" data-phone="{value}" href="javascript:void(0)">{value}</a>';
+                    $phone_wrapper = '<a class="contact_open_disable contact-phones '.$phone_class.'" data-phone="{value}" data-id="'.$action['contact_id'].'" href="javascript:void(0)">{value}</a>';
                     $data[$i][] = Filter::dataImplode($action_contact->getPhoneValues(), ', ', $phone_wrapper, true);
             }
 
