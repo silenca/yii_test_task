@@ -419,7 +419,7 @@ class ContactsController extends BaseController
             if ($contact_comment->add($contact_id, $comment_text)) {
                 $contact_history = new ContactHistory();
                 $comment_text = "комментарий - " . $comment_text;
-                $contact_history->add($contact_id, $comment_text, '', 'comment', $contact_comment->datetime);
+                $contact_history->add($contact_id, $comment_text, 'comment', $contact_comment->datetime);
                 $response_date = [
                     'text' => $comment_text,
                     'datetime' => date("d-m-Y G:i:s", strtotime($contact_comment->datetime))
