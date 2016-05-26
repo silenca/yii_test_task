@@ -25,7 +25,7 @@ $(function () {
             },
             "columnDefs": [
                 {
-                    "targets": [0, 1, 2, 3, 4, 5, 6],
+                    "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8],
                     //"data": null,
                     "orderable": false,
                     //"defaultContent": '<div class="col-md-offset-3 remove"><i class="fa fa-remove"></i></div>'

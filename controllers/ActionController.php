@@ -95,7 +95,7 @@ class ActionController extends BaseController {
         $filter_phone = $request_data['columns'][3]['search']['value'];
         $filter_tag_name = $request_data['columns'][4]['search']['value'];
         $filter_comment = $request_data['columns'][6]['search']['value'];
-        $filter_manager_id = $request_data['columns'][7]['search']['value'];
+        $filter_manager_id = $request_data['columns'][8]['search']['value'];
         if (!empty($filter_action_type_id)) {
             $query->andWhere([ActionType::tableName().'.id' => $filter_action_type_id]);
         }
