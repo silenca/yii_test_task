@@ -312,7 +312,7 @@ class TagsController extends BaseController {
                     'delimiter' => ';'
                 ]
             ]);
-            $columns = ['int_id', 'surname', 'Phones', 'operator', 'status', 'comment', 'attitude'];
+            $columns = ['int_id', 'surname', 'Phones', 'operator', 'status', 'comment', 'attitude', 'city', 'street', 'house', 'flat'];
             $csv_export->addRow($columns);
             foreach ($data as $item) {
                 $csv_export->addRow($item);

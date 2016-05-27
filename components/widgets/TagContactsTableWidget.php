@@ -46,6 +46,8 @@ class TagContactsTableWidget extends Widget {
                     }
             }
 
+            
+
             if ($tag_contact->is_called) {
                 $manager = $contact_phones[0]->callManagers[0]->manager;
                 if ($manager) {
@@ -72,6 +74,13 @@ class TagContactsTableWidget extends Widget {
                 $data[$i][] = '';
                 $data[$i][] = '';
                 $data[$i][] = '';
+            }
+
+            if ($this->export) {
+                $data[$i][] = $tag_contact->city;
+                $data[$i][] = $tag_contact->street;
+                $data[$i][] = $tag_contact->house;
+                $data[$i][] = $tag_contact->flat;
             }
 
 
