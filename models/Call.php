@@ -30,7 +30,7 @@ class Call extends \yii\db\ActiveRecord {
      * @inheritdoc
      */
     public static function tableName() {
-        return 'call';
+        return '{{%call}}';
     }
 
     /**
@@ -244,10 +244,9 @@ class Call extends \yii\db\ActiveRecord {
         }
     }
 
-    public static function getCallAttitudeLabel(Call $call)
+    public static function getCallAttitudeLabel($attitude)
     {
         $res = '';
-        $attitude = $call->attitude_level;
         $mediana = 3;
         if ($attitude === $mediana) {
             $res = '+-';
@@ -263,12 +262,12 @@ class Call extends \yii\db\ActiveRecord {
         return $res;
     }
 
-    public static function getCallStatusLabel(Call $call)
+    public static function getCallStatusLabel($type, $status)
     {
         $res = '';
-        switch ($call->status) {
+        switch ($status) {
             case "answered":
-                switch ($call->type) {
+                switch ($type) {
                     case "incoming":
                         $res = "Исходящий";
                         break;
@@ -278,7 +277,7 @@ class Call extends \yii\db\ActiveRecord {
                 }
                 break;
             case "missed":
-                switch ($call->type) {
+                switch ($type) {
                     case "incoming":
                         $res = "Исходящий";
                         break;
@@ -288,7 +287,7 @@ class Call extends \yii\db\ActiveRecord {
                 }
                 break;
             case "failure":
-                switch ($call->type) {
+                switch ($type) {
                     case "incoming":
                         $res = "Исходящий - сбой";
                         break;
@@ -321,5 +320,7 @@ class Call extends \yii\db\ActiveRecord {
         return $this->hasMany(CallManager::className(), ['call_id' => 'id']);
     }
 
-
+    public function getManager() {
+        return $this->hasMany(User::className(), ['id' => 'manager_id'])->viaTable('call_manager', ['call_id' => 'id']);
+    }
 }

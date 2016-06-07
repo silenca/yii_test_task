@@ -77,6 +77,11 @@ class ContactsController extends BaseController
                         'actions' => ['delete'],
                         'allow' => true,
                         'roles' => ['admin'],
+                    ],
+                    [
+                        'actions' => ['remove-tag'],
+                        'allow' => true,
+                        'roles' => ['admin', 'manager'],
                     ]
                 ],
             ],
@@ -231,7 +236,7 @@ class ContactsController extends BaseController
                 $contact->attributes = $contact_form->attributes;
                 $contact->remove_tags = true;
 
-                if ($contact->edit(['tags' => $contact_form->tags])) {
+                if ($contact->edit([])) {
                     $this->json(['id' => $contact->id], 200);
                 } else {
                     $this->json(false, 415, $contact->getErrors());
@@ -521,4 +526,14 @@ class ContactsController extends BaseController
         }
     }
 
+    public function actionRemoveTag() {
+        $contact_id = Yii::$app->request->post('id');
+        $tag_id = Yii::$app->request->post('tag_id');
+        //$tag = Tag::getById($tag_id);
+        if ($tag_id && $contact_id) {
+            ContactTag::deleteAll(['contact_id' => $contact_id, 'tag_id' => $tag_id]);
+            $this->json([],200);
+        }
+        $this->json([],415, 'Tag not found');
+    }
 }

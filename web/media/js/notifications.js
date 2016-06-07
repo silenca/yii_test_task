@@ -1,20 +1,20 @@
 $(function () {
-    var socket = io.connect(notify_host);
-    //var socket = io.connect('http://127.0.0.1:8001');
-    socket.emit('join', {notify_id: notify_id});
-
-    socket.on('call_incoming', function (data) {
-        var $message_content = $('<div></div>');
-        $message_content.append("<div class='alert-header'>Входящий вызов</div>");
-        if (data.contact_name) {
-            $message_content.append("<div class='alert-link'><a href=/contacts#contact=" + data.id + ">" + data.contact_name + "</a></div>");
-            $message_content.append("<div class='alert-details'><span>Номер: </span><span>" + data.phone + "</span></div>");
-        } else {
-            $message_content.append("<div class='alert-link'><a href=/contacts#number=" + data.phone + ">" + data.phone + "</a></div>");
-        }
-
-        showNotification('body', $message_content.html(), 'bottom-right', 'info', 'circle',30000);
-    });
+    // var socket = io.connect(notify_host);
+    // //var socket = io.connect('http://127.0.0.1:8001');
+    // socket.emit('join', {notify_id: notify_id});
+    //
+    // socket.on('call_incoming', function (data) {
+    //     var $message_content = $('<div></div>');
+    //     $message_content.append("<div class='alert-header'>Входящий вызов</div>");
+    //     if (data.contact_name) {
+    //         $message_content.append("<div class='alert-link'><a href=/contacts#contact=" + data.id + ">" + data.contact_name + "</a></div>");
+    //         $message_content.append("<div class='alert-details'><span>Номер: </span><span>" + data.phone + "</span></div>");
+    //     } else {
+    //         $message_content.append("<div class='alert-link'><a href=/contacts#number=" + data.phone + ">" + data.phone + "</a></div>");
+    //     }
+    //
+    //     showNotification('body', $message_content.html(), 'bottom-right', 'info', 'circle',30000);
+    // });
     
     // socket.on('new_contract', function (data) {
     //     var $message_content = $('<div></div>');

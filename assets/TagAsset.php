@@ -10,7 +10,8 @@ class TagAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [];
     public $js = [
-        'media/js/contexts/tag.js',
+        //'media/js/contexts/tag.js',
+        'media/js/contexts/new_tag.js',
         'media/js/contact_form.js',
         'media/js/contexts/import.js',
     ];

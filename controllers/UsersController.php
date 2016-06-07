@@ -37,7 +37,7 @@ class UsersController extends BaseController
                     [
                         'actions' => ['delete'],
                         'allow' => true,
-                        'roles' => ['supervisor', 'admin'],
+                        'roles' => ['admin'],
                     ]
                 ],
             ],

@@ -42,6 +42,9 @@ return [
     'delete_user' => [
         'type' => 2,
     ],
+    'edit_tag' => [
+        'type' => 2,
+    ],
     'manager' => [
         'type' => 1,
         'ruleName' => 'userRole',
@@ -53,6 +56,7 @@ return [
             'tags',
             'updateContact',
             'listen_call',
+            'edit_tag',
         ],
     ],
     'operator' => [
@@ -83,6 +87,7 @@ return [
             'users',
             'updateUser',
             'delete_user',
+            'edit_tag',
         ],
     ],
 ];

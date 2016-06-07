@@ -1,0 +1,13 @@
+{
+  "apps": [{
+    "exec_mode": "fork_mode",
+    "script": "./server.js",
+    "name": "sapp",
+    "node_args": [ "--harmony" ],
+    "env": {
+      "NODE_ENV": "development"
+    },
+    "error_file": "logs/dev_err.log",
+    "out_file": "logs/dev_out.log"
+  }]
+}

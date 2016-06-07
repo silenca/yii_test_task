@@ -26,7 +26,7 @@ $this->params['active'] = 'tags';
                                 <select class="full-width tag-name" name="name" id="tag_search_select">
                                     <option></option>
                                 </select>
-                                <div class="tag-add" style="display: none;">
+                                <div id="tag-add-field" style="display: none;">
                                     <div class="input-group m-b-5">
                                         <label class="input-group-addon info" for="tag_name"><i
                                                 class="pg pg-plus_circle"></i></label>
@@ -45,15 +45,21 @@ $this->params['active'] = 'tags';
                                     </div>
                                 </div>
                             </div>
+                            <? if (Yii::$app->user->can('edit_tag')): ?>
                             <div class="col-md-4 m-b-10">
-                                <button class="btn btn-info" id="tag_toggle">Создать тег</button>
+                                <div id="tag-controls" style="display: none;">
+                                    <a class="ok" href="#"><i class="fa-2x fa fa-check"></i></a>
+                                    <a class="remove" href="#"><i class="fa-2x fa fa-remove"></i></a>
+                                </div>
+                                <button class="btn btn-info" id="tag_create">Создать тег</button>
                             </div>
+                            <? endif; ?>
                             <div class="col-md-8" style="padding: 0">
-                                <select class="full-width" name="tag_users" id="tag_users_select">
+                                <select class="full-width" name="tag_users" id="tag_users_select" disabled="disabled">
                                 </select>
                             </div>
                             <div class="col-md-6 checkbox check-success text-left p-l-5">
-                                <input type="checkbox" name="as_task" class="" id="tag_as_task">
+                                <input type="checkbox" name="as_task" class="" id="tag_as_task" disabled="disabled">
                                 <label for="tag_as_task">Обозначить как Обзвон</label>
                             </div>
                             <div class="clearfix"></div>
@@ -62,13 +68,13 @@ $this->params['active'] = 'tags';
                         <div class="form-group col-md-8">
                             <div class="col-md-6">
                                 <label class="" for="tag_description">Описание:</label>
-                                <textarea name="description" id="tag_description" rows="6" cols="10"
+                                <textarea readonly name="description" id="tag_description" rows="6" cols="10"
                                           placeholder="Описание тега"
                                           class="form-control"></textarea>
                             </div>
                             <div class="col-md-6">
                                 <label class="" for="tag_script">Скрипт:</label>
-                                <textarea name="script" id="tag_script" rows="6" cols="10"
+                                <textarea readonly name="script" id="tag_script" rows="6" cols="10"
                                           placeholder="Скрипт тега"
                                           class="form-control"></textarea>
                             </div>
@@ -76,6 +82,7 @@ $this->params['active'] = 'tags';
                         </div>
                         <div class="clearfix"></div>
                     </form>
+                    <? if (Yii::$app->user->can('edit_tag')): ?>
                     <div class="col-md-8 col-md-offset-4">
                         <div class="col-md-6 m-t-10 add-contacts">
                             <label class="">Добавить контакты:</label>
@@ -106,11 +113,7 @@ $this->params['active'] = 'tags';
                             </div>
                         </div>
                     </div>
-                    <div class="form-group col-md-2 pull-right">
-                        <button type="button" class="btn btn-complete pull-right disabled" id="tag_submit">
-                            Применить
-                        </button>
-                    </div>
+                    <? endif; ?>
                 </div>
             </div>
             <div class="panel-body">
@@ -135,7 +138,9 @@ $this->params['active'] = 'tags';
                     <tr>
                         <td></td>
                         <td></td>
+                        <?php if (Yii::$app->user->identity->getUserRole() !== 'operator'): ?>
                         <td></td>
+                        <?php endif; ?>
                         <td>
                             <?php if (!empty($managers)): ?>
                                 <select data-column="4" data-column_name="manager_id"
@@ -182,8 +187,7 @@ $this->params['active'] = 'tags';
                     <tbody>
                     </tbody>
                 </table>
-                <br/>
-                <input type="button" id="update_contacts_table" class="btn btn-info" value="Обновить список контактов"/>
+                <input type="button" id="update_contacts_table" class="btn btn-info disabled" value="Обновить список контактов"/>
             </div>
         </div>
         <!-- END PANEL -->
@@ -206,11 +210,7 @@ $this->params['active'] = 'tags';
                         <thead>
                         <tr>
                             <?php foreach ($table_contact_cols as $col_key => $col_val): ?>
-                                <?php if ($col_key == 'Связать'): ?>
-                                    <th></th>
-                                <?php else: ?>
-                                    <th><?php echo($col_val['label']); ?></th>
-                                <?php endif; ?>
+                                <th><?php echo($col_val['label']); ?></th>
                             <?php endforeach; ?>
                         </tr>
                         </thead>

@@ -45,7 +45,7 @@ class CallTableWidget extends Widget {
             }
             $data[$i][] = date('d-m-Y', strtotime($call['date_time']));
             $data[$i][] = date('H-i-s', strtotime($call['date_time']));
-            $data[$i][] = Call::getCallStatusLabel($call);
+            $data[$i][] = Call::getCallStatusLabel($call->type, $call->status);
             $managers = [];
             foreach ($call_managers as $call_manager) {
                 $managers[] = $call_manager->manager->firstname;

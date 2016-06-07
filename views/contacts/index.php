@@ -2,11 +2,12 @@
 
 use app\assets\TableAsset;
 use app\assets\ContactAsset;
-use app\assets\SulutionFormAsset;
+use app\assets\GoogleApiAsset;
 
 
 TableAsset::register($this);
 ContactAsset::register($this);
+GoogleApiAsset::register($this);
 if (Yii::$app->user->can('contracts')) {
     SulutionFormAsset::register($this);
 }

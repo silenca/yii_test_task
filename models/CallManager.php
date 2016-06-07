@@ -21,7 +21,7 @@ class CallManager extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'call_manager';
+        return '{{%call_manager}}';
     }
 
     /**

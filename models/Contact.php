@@ -3,8 +3,8 @@
 namespace app\models;
 
 use Yii;
-use app\models\ContactTag;
 use app\components\UtilHelper;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -65,7 +65,7 @@ class Contact extends \yii\db\ActiveRecord {
      * @inheritdoc
      */
     public static function tableName() {
-        return 'contact';
+        return '{{%contact}}';
     }
 
     public function getManager() {
@@ -153,8 +153,6 @@ class Contact extends \yii\db\ActiveRecord {
         }
         return $result;
     }
-
-
 
     public static function getFIOCols() {
         return [
@@ -340,7 +338,7 @@ class Contact extends \yii\db\ActiveRecord {
             Contact::removeContInPool($id);
 
             // Удаление тегов связанных с контактом
-            $contact->unlink('tags', $contact->tags[0]);
+            //$contact->unlink('tags', $contact->tags[0]);
 
             $contact->is_deleted = 1;
             $contact->save();
@@ -382,9 +380,11 @@ class Contact extends \yii\db\ActiveRecord {
         return $this->hasMany(ContactComment::className(), ['contact_id' => 'id']);
     }
 
-    public function getPhones() {
+    public function getCalls() {
         return $this->hasMany(Call::className(), ['contact_id' => 'id']);
     }
+
+
 
     public function getTags() {
         return $this->hasMany(Tag::className(), ['id' => 'tag_id'])->viaTable('contact_tag', ['contact_id' => 'id']);
@@ -409,167 +409,137 @@ class Contact extends \yii\db\ActiveRecord {
         }
     }
 
-    public static function getTagContacts($filters, $user_role, $user_id = null)
-    {
-        // Отображать контакты из временной таблицы
-        if ($user_role == 'operator') {
-            $filters['extra']['operator_id'] = $user_id;
-            $queue_ids = Contact::getContactsInPool(['contact_id'], $user_id, true, 'contact_id');
-            $filters['extra']['queue_ids'] = $queue_ids;
-        }
-
-        $res_data = [
-            'called_contacts' => [],
-            'contacts' => [],
-            'total_count' => 0,
-            'total_filtering_count' => 0,
-            "count_all" => 0,
-            "count_called" => 0
+    public static function getByTag($tag_id, $user_role, $filters, $for_export) {
+        $query = new Query();
+        $select = [
+            '`contact`.*',
+            '`user`.`firstname` as `operator_name`',
+            '`call`.`status` as `call_status`',
+            '`call`.`type` as `call_type`',
+            '`call`.`comment` as `call_comment`',
+            '`call`.`attitude_level` as `call_attitude_level`'
         ];
-
-        $query = Contact::find()->with([
-            'phones' => function($query) use ($filters) {
-                $query->where(['=', Call::tableName().'.tag_id', $filters['extra']['tag_id']]);
-            },
-        ])->joinWith(['phones', 'phones.callManagers', 'actions.comment'])->orderBy(Contact::tableName().'.id')->distinct();
-
-        $main_where = [];
-        foreach ($filters['main'] as $main_key => $main_val) {
-            $main_where[Contact::tableName().'.'.$main_key] = $main_val;
+        $query
+            ->join('LEFT JOIN', '`call`', '`contact`.`id` = `call`.`contact_id` AND `call`.`id` in (SELECT MAX(`call`.`id`) FROM `call` WHERE `contact`.`id` = `call`.`contact_id` AND `call`.`tag_id`='.$tag_id.')')
+            //->join('LEFT JOIN', '(SELECT * FROM `call` WHERE `call`.`tag_id`='.$tag_id.' GROUP BY `id` ORDER BY `id` DESC) as `call`', '`contact`.`id` = `call`.`contact_id`')
+            ->join('LEFT JOIN', 'call_manager', '`call`.`id` = `call_manager`.`call_id`')
+            ->join('LEFT JOIN', '`user`', '`user`.`id` = `call_manager`.`manager_id`')
+            ->join('LEFT JOIN', '`contact_tag`', '`contact`.`id` = `contact_tag`.`contact_id`')
+            //LEFT JOIN `contact_history` ON `contact_history`.`contact_id` = `contact`.`id`
+            //->join('LEFT JOIN', '`tag`', '`tag`.`id` = `contact_tag`.`tag_id`')
+            ->where(['`contact_tag`.`tag_id`' => $tag_id])
+            ->andWhere(['`contact`.is_deleted' => 0])
+            ->from('`contact`')
+            //->groupBy('`contact`.`id`')
+            ->orderBy(['`call`.id' => SORT_DESC]);
+            //->distinct();
+        if ($for_export) {
+            $select = array_merge($select, [
+                '`contact_history`.`text` as `history_text`',
+                '`contact_history`.`datetime` as `history_datetime`',
+            ]);
+            $query->join('LEFT JOIN', '`contact_history`', '`contact`.`id` = `contact_history`.`contact_id`');
         }
-        $query->where($main_where);
+        $query->select($select);
 
-        $extra_where = [];
-        foreach ($filters['extra'] as $extra_name => $extra_val) {
-            switch ($extra_name) {
+        //$dump = $query->createCommand()->rawSql;
+
+        foreach ($filters as $name => $value) {
+            switch ($name) {
                 case 'manager_id':
-                    $extra_where[CallManager::tableName().'.'.$extra_name] = $extra_val;
+                    if ($user_role != User::ROLE_OPERATOR) {
+                        $query->andWhere(['`call_manager`.`manager_id`' => $value]);
+                    }
                     break;
                 case 'status':
-                    $extra_val = explode('|', $extra_val);
-                    $statuses = explode('_', $extra_val[0]);
-                    $types = explode('_', $extra_val[1]);
-                    if (count($statuses) > 0) {
-                        $extra_where[Call::tableName().'.'.$extra_name] = $statuses;
-                    }
-                    if (count($types) > 0) {
-                        $extra_where[Call::tableName().'.type'] = $types;
-                    }
+                    $query->andWhere(['`call`.`status`' => $value]);
                     break;
-//                case 'comment':
-//                    $extra_where[Call::tableName().'.'.$extra_name] = $extra_val;
-//                    break;
+                case 'comment':
+                    $query->andWhere("`call`.`comment` LIKE '%$value%'");
+                    break;
                 case 'attitude_level':
-                    $extra_where[Call::tableName().'.'.$extra_name] = $extra_val;
+                    $query->andWhere(['`call`.`attitude_level`' => $value]);
                     break;
             }
         }
 
-        if (!empty($filters['extra']['queue_ids']) && count($filters['extra']['queue_ids']) > 0) {
-            $query->andWhere(['not in', Contact::tableName().'.id', $filters['extra']['queue_ids']]);
-        }
+        if ($user_role == User::ROLE_OPERATOR) {
+            $notCalledContactQuery = clone $query;
+            $query->andWhere(['`call_manager`.`manager_id`' => Yii::$app->user->identity->id]);
+            $notCalledContactQuery->andWhere(['is','`call`.`status`', null]);
+            $contactsIdInPool = Contact::getContactsIdInPool($tag_id,  Yii::$app->user->identity->id);
+            $notCalledContactQuery->andWhere(['NOT IN', '`contact`.`id`', $contactsIdInPool]);
+            $notCalledContactQuery->limit(1);
+            //$dump = $notCalledContactQuery->createCommand()->rawSql;
+            $notCalledContact = $notCalledContactQuery->all();
+            if (count($notCalledContact)) {
+                Contact::addContInPool($notCalledContact[0]['id'],Yii::$app->user->identity->id, $tag_id, null);
+                //file_put_contents('/var/log/pool.log', 'Pool :'.$notCalledContact[0]['id'] . ' : ' . Yii::$app->user->identity->id .' : ' . $tag_id . PHP_EOL, FILE_APPEND);
+            }
 
-        $query_called = clone $query;
+            //$dump = $query->createCommand()->rawSql;
+            $contacts = $query->all();
+            $contacts = array_merge($contacts, $notCalledContact);
 
-//        $dump = $query_called->createCommand()->rawSql;
-
-        $query_called->andWhere(['=', Call::tableName().'.tag_id', $filters['extra']['tag_id']]);
-
-        $res_data['count_called'] = $query_called->count();
-        $res_data['count_all'] = $res_data['count_called'];
-//        if ($user_role != 'operator') {
-//            $res_data['count_called'] = $query_called->count();
-//        }
-
-        $query_called_ids = clone $query_called;
-        $called_contacts_ids = $query_called_ids->all();
-        $called_ids = [];
-        foreach ($called_contacts_ids as &$called) {
-            $called_ids[] = $called->id;
-        }
-        $query->andWhere(['not in', Contact::tableName().'.id', $called_ids]);
-
-        if (!empty($filters['extra']['operator_id'])) {
-            $query_called->andWhere([CallManager::tableName().'.manager_id' => $filters['extra']['operator_id']]);
-        }
-
-//        if ($user_role == 'operator') {
-//            $res_data['count_called'] = $query_called->count();
-//        }
-
-        $res_data['total_count'] = $query_called->count();
-
-        if (!empty($filters['extra']['comment'])) {
-            $query_called->andWhere(['like', Call::tableName().'.comment', $filters['extra']['comment']]);
-        }
-
-        $query_called->andWhere($extra_where);
-
-        $res_data['total_filtering_count'] = $query_called->count();
-
-        $called_contacts = $query_called->all();
-        $contacts = $query->all();
-
-        array_walk($called_contacts, function(&$contact) {
-            $contact->is_called = true;
-        });
-
-        $res_data['count_all'] += count($contacts);
-
-        if ($user_role == 'operator') {
-            $contacts = array_slice($contacts, 0, 1);
-            Contact::addContInPool($contacts[0]['id'], $user_id, $filters['extra']['tag_id']);
-        }
-
-        $res_data['called_contacts'] = $called_contacts;
-
-        if (!$filters['filtering']) {
-            $res_data['contacts'] = $contacts;
-            $res_data['total_filtering_count'] += count($contacts);
         } else {
-            $res_data['contacts'] = [];
+            $contacts = $query->all();
         }
 
-        $res_data['total_count'] += count($contacts);
-//        $res_data['count_all'] = $res_data['total_count'];
-
-        return $res_data;
+        return $contacts;
     }
 
-    public static function getContactsInPool($select = [], $manager_id = null, $as_array = false, $array_val = '', $rawSql = false)
-    {
-        $query = TempContactsPool::find()->select($select)->joinWith('contact');
-        if ($manager_id) {
-            $query->andWhere(['!=', TempContactsPool::tableName().'.manager_id', $manager_id]);
-        }
-        if ($rawSql) {
-            return $query->createCommand()->rawSql;
-        }
-        if ($as_array) {
-            $query->asArray();
-            if ($array_val != '') {
-                $contacts = $query->all();
-                $res = [];
-                foreach ($contacts as $contact) {
-                    $res[] = $contact[$array_val];
-                }
-                return $res;
+    public static function getCountByTag($tag_id) {
+        $query = new Query();
+        $query
+            ->select(['COUNT(DISTINCT `contact`.`id`) as `count`', '`call`.`status` as `status`'])
+            //->join('LEFT JOIN', '`call`', '`contact`.`id` = `call`.`contact_id` AND `call`.`tag_id`='.$tag_id)
+            ->join('LEFT JOIN', '(SELECT * FROM `call` WHERE `call`.`tag_id`='.$tag_id.' GROUP BY `call`.`contact_id` ORDER BY `id` DESC) as `call`', '`contact`.`id` = `call`.`contact_id`')
+            //->join('LEFT JOIN', 'call_manager', '`call`.`id` = `call_manager`.`call_id`')
+            //->join('LEFT JOIN', '`user`', '`user`.`id` = `call_manager`.`manager_id`')
+            ->join('LEFT JOIN', '`contact_tag`', '`contact`.`id` = `contact_tag`.`contact_id`')
+            //->join('LEFT JOIN', '`tag`', '`tag`.`id` = `contact_tag`.`tag_id`')
+            ->where(['`contact_tag`.`tag_id`' => $tag_id])
+            ->andWhere(['`contact`.is_deleted' => 0])
+            ->from('`contact`')
+            ->groupBy('`call`.`status`')
+            ->orderBy(['`call`.id' => SORT_DESC]);
+        //$dump = $query->createCommand()->rawSql;
+        $counts = $query->all();
+        $all_count = 0;
+        $called_count = 0;
+        foreach ($counts as $count) {
+            if ($count['status'] != null) {
+                $called_count+= $count['count'];
             }
+            $all_count += $count['count'];
         }
-        $dump = $query->createCommand()->rawSql;
-        return $query->all();
+        return [
+            'all' => $all_count,
+            'called' => $called_count
+        ];
+    }
+    public static function getContactsIdInPool($tag_id, $operator_id) {
+        $query = new Query();
+        $query->select('contact_id')->from('temp_contacts_pool')
+            ->where(['tag_id' => $tag_id])
+            ->andWhere(['<>', 'manager_id', $operator_id]);
+        $contacts = $query->all();
+        $contactsIds = [];
+        foreach ($contacts as $contact) {
+            $contactsIds[] = $contact['contact_id'];
+        }
+        return $contactsIds;
     }
 
-    public static function addContInPool($contact_id, $manager_id, $tag_id)
-    {
-        if (!is_null($contact_id)) {
-            if (!TempContactsPool::find()->where(['contact_id' => $contact_id, 'tag_id' => $tag_id])->exists()) {
-                $cont_pool = new TempContactsPool(['contact_id' => $contact_id, 'manager_id' => $manager_id, 'tag_id' => $tag_id]);
-                return $cont_pool->save();
-            }
-        }
 
-        return false;
+    public static function addContInPool($contact_id, $manager_id, $tag_id, $order_token)
+    {
+        $cont_pool = TempContactsPool::findOne(['contact_id' => $contact_id, 'manager_id' => $manager_id, 'tag_id' => $tag_id]);
+        if ($cont_pool) {
+            $cont_pool->delete();
+        }
+        $cont_pool = new TempContactsPool(['contact_id' => $contact_id, 'manager_id' => $manager_id, 'tag_id' => $tag_id, 'order_token' => $order_token]);
+        return $cont_pool->save();
     }
 
     public static function removeContInPool($contact_id)
@@ -580,13 +550,4 @@ class Contact extends \yii\db\ActiveRecord {
         }
         return false;
     }
-
-//    public static function addContactCalled($contact_id, $call_id, $manager_id, $tag_id)
-//    {
-//        if (!ContactCalled::find()->where(['contact_id' => $contact_id])->exists()) {
-//            $cont_called = new ContactCalled(['contact_id' => $contact_id, 'call_id' => $call_id, 'manager_id' => $manager_id, 'tag_id' => $tag_id]);
-//            return $cont_called->save();
-//        }
-//        return false;
-//    }
 }

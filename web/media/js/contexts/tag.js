@@ -358,8 +358,7 @@ $(function () {
     //     var filters = $.param(tableFilters);
     //     window.location.href = $(this).data('href') + '?' + filters;
     // });
-    
-    $
+
 
     $updateContactsTable.on('click', function() {
         tagContactsdataTable.draw();

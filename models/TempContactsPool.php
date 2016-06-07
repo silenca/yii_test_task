@@ -40,6 +40,14 @@ class TempContactsPool extends \yii\db\ActiveRecord
         return $this->hasOne(Tag::className(), ['id' => 'tag_id']);
     }
 
+    public static function updateOrderToken($contact_id, $operator_id, $tag_id, $call_order_token) {
+        self::updateAll(['order_token' => $call_order_token], [
+            'contact_id' => $contact_id,
+            'manager_id' => $operator_id,
+            'tag_id' => $tag_id,
+        ]);
+    }
+
 //    public static function isExists($contact_id)
 //    {
 //        if (self::find()->where(['contact_id' => $contact_id])->exists()) {

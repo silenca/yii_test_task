@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use Yii;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\models\Contact;
@@ -89,16 +90,38 @@ class AsteriskController extends BaseController {
     {
         $phone = Yii::$app->request->post('phone');
         $call_order_script = Yii::$app->params['call_order_script'];
+        $contact_id = Yii::$app->request->post('contact_id');
+        $query = new Query();
+        $query->from('`call`')->join('LEFT JOIN', '`call_manager`', '`call_manager`.`call_id` = `call`.`id`')
+            ->where(['`call`.`status`' => 'new', '`call_manager`.`manager_id`' => Yii::$app->user->identity->id, '`call`.`contact_id`' => $contact_id]);
+        $call = $query->one();
+//        $cont_pool = TempContactsPool::find()
+//            ->where(['contact_id' => $contact_id, 'manager_id' => $user_id, 'tag_id' => $tag_id])
+//            ->andWhere(['is not','order_token', null])->one();
+        if ($call) {
+            $this->json([], 423);
+        }
         if (file_exists($call_order_script)) {
             require_once $call_order_script;
-            $user_id = Yii::$app->user->identity->id;
             $user_int_id = Yii::$app->user->identity->int_id;
+            $tag_id = Yii::$app->request->post('tag_id');
+            $user_id = Yii::$app->user->identity->id;
             $call_order_token = time().$user_id;
             $options = array("external" => $phone, "internal" => $user_int_id, "call_order_token" => $call_order_token);
-            $res = call_order($options);
 
+
+            //file_put_contents('/var/log/pool.log', 'SendIncomingCall : ' . $contact_id .' : ' . $tag_id . ':'. Yii::$app->user->identity->role . PHP_EOL, FILE_APPEND);
+
+            $res = call_order($options);
             if ($res[0] == true) {
-                $this->json(['call_order_token' => $call_order_token], 200);
+                if ($contact_id && $tag_id) {
+                    Contact::addContInPool($contact_id, $user_id, $tag_id, $call_order_token);
+                }
+                $this->json(['call_order_token' => $call_order_token,
+                    'contact_id' => $contact_id,
+                    'user_id' => $user_id,
+                    'tag_id' => $tag_id
+                ], 200);
             } else {
                 $this->json([], 415);
             }
@@ -179,12 +202,12 @@ class AsteriskController extends BaseController {
                     }
 
                     if (isset($call->contact_id)) {
-                        if ($cont_pool = TempContactsPool::findOne(['contact_id' => $call->contact_id])) {
+                        if ($cont_pool = TempContactsPool::findOne(['order_token' => $call->call_order_token])) {
                             $call->tag_id = $cont_pool->tag_id;
                             $cont_pool->delete();
                         }
                     }
-
+                    //file_put_contents('/var/log/pool.log', 'callEnd : ' . $call->call_order_token .' : ' . $call->tag_id . PHP_EOL, FILE_APPEND);
                     if ($call->callEnd($date_time, $total_time, $answered_time, $record_file, $status, $managers)) {
                         $this->json([], 200);
                     }

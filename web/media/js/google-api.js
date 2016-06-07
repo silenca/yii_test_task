@@ -3,7 +3,7 @@ $(function() {
 });
 
 var googleApiCred = {
-    "clientId": "1017269912417-ifu4npqvjaf1m2l6fsoh2sun5grn9mkc.apps.googleusercontent.com",
+    "clientId": "348817211275-8ghi8ekn8fir56ve5kah7s3bd62un3qo.apps.googleusercontent.com",
     "apiKey": "",
     "scopes": "https://www.googleapis.com/auth/calendar"
 };
@@ -90,14 +90,6 @@ function createGEventData(type, date) {
         }
     };
     switch (type) {
-        case "visit_on_date":
-            event.summary = "Визит клиента";
-            event.description = "Визит клиента";
-            break;
-        case "object_show":
-            event.summary = "Показ обьекта";
-            event.description = "Показ обьекта";
-            break;
         case "action_call":
             event.summary = "Звонок клиенту";
             event.description = "Звонок клиенту";
@@ -107,8 +99,8 @@ function createGEventData(type, date) {
             event.description = "Емейл клиенту";
             break;
         default :
-            event.summary = "Какое-то действие";
-            event.description = "Какое-то действие";
+            event.summary = "Действие";
+            event.description = "Действие";
     }
 
     return event;

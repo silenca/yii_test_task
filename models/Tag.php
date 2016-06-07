@@ -85,7 +85,7 @@ class Tag extends \yii\db\ActiveRecord {
     public static function getContactsForTagTableView() {
         return [
 //            'contacts' => ['label' => 'Добавить', 'have_search' => false, 'orderable' => false],
-            'id' => ['label' => 'ID', 'have_search' => false, 'orderable' => true],
+            'id' => ['label' => 'ID', 'have_search' => true, 'orderable' => true],
             'int_id' => ['label' => '№', 'have_search' => false, 'orderable' => false],
             'fio' => ['label' => 'ФИО', 'have_search' => true, 'db_cols' => ['surname', 'name', 'middle_name']],
             'phones' => ['label' => 'Телефоны', 'have_search' => true, 'orderable' => false, 'db_cols' => ['first_phone','second_phone','third_phone','fourth_phone']],
@@ -97,7 +97,7 @@ class Tag extends \yii\db\ActiveRecord {
         ];
     }
 
-    public function edit($related) {
+    public function edit() {
         $transaction = Yii::$app->db->beginTransaction();
         $is_new = $this->isNewRecord;
         $user_id = Yii::$app->user->identity->getId();
@@ -109,10 +109,11 @@ class Tag extends \yii\db\ActiveRecord {
             }
             $this->save();
             if ($user_role == 'manager') {
-                $related['user_ids'][] = $user_id;
+                //$related['user_ids'][] = $user_id;
+                $this->setRelation('users', [$user_id]);
             }
-            $this->setRelation('users', $related['user_ids']);
-            $this->setRelation('contacts', $related['contact_ids']);
+            //$this->setRelation('users', $related['user_ids']);
+            //$this->setRelation('contacts', $related['contact_ids']);
 
             if ($this->hasErrors()) {
                 $transaction->rollback();

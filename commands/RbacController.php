@@ -33,6 +33,7 @@ class RbacController extends Controller {
         $users = $authManager->createPermission('users');
         $updateUser = $authManager->createPermission('updateUser');
         $delete_user = $authManager->createPermission('delete_user');
+        $edit_tag =  $authManager->createPermission('edit_tag');
 
         $authManager->add($contacts);
         $authManager->add($actions);
@@ -48,6 +49,7 @@ class RbacController extends Controller {
         $authManager->add($users);
         $authManager->add($updateUser);
         $authManager->add($delete_user);
+        $authManager->add($edit_tag);
 
         $user_role_rule = new UserRoleRule();
         $authManager->add($user_role_rule);
@@ -69,7 +71,8 @@ class RbacController extends Controller {
         $authManager->addChild($manager, $tags);
         $authManager->addChild($manager, $updateContact);
         $authManager->addChild($manager, $listen_call);
-        
+        $authManager->addChild($manager, $edit_tag);
+
 //        $authManager->addChild($operator, $contacts);
         $authManager->addChild($operator, $actions);
         $authManager->addChild($operator, $calls);
@@ -93,6 +96,7 @@ class RbacController extends Controller {
         $authManager->addChild($admin, $users);
         $authManager->addChild($admin, $updateUser);
         $authManager->addChild($admin, $delete_user);
+        $authManager->addChild($admin, $edit_tag);
 
     }
 

@@ -7,6 +7,7 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\components\CSVReader;
 use app\models\Contact;
+use app\models\ContactHistory;
 use app\models\forms\ImportContactForm;
 
 class ImportController extends BaseController
@@ -46,7 +47,7 @@ class ImportController extends BaseController
             ]
         ]);
         $new_contacts = $csv_reader->readFile();
-        if (count($new_contacts[0]) !== 13) {
+        if (count($new_contacts[0]) < 14) {
             return $this->json(null, 415, [
                 'Не корректное кол-во колонок'
             ]);
@@ -85,9 +86,19 @@ class ImportController extends BaseController
                     $contact->attributes = $import_contact_form->attributes;
 
                     if ($contact->edit(['tags' => $import_contact_form->tags])) {
+
+                        if (isset($contact_data[13])) {
+                            $comment = iconv(mb_detect_encoding($contact_data[13], mb_detect_order(), true), "UTF-8", $contact_data[13]);
+                            $contact_history = new ContactHistory();
+                            $contact_history->add($contact->id, 'Комментарий при импорте: ' . $comment, 'imported_comment');
+                            $contact_history->save();
+                        }
                         $imported++;
                         $contact_ids[] = $contact->id;
                     } else {
+                        if (isset($contact_data[13])) {
+                            $attributes['comment'] = trim(preg_replace('/\s+/', ' ', $contact_data[13]));
+                        }
                         $this->writeReport($report_file_name, $attributes, $contact);
                         $error = true;
                     }
@@ -95,6 +106,9 @@ class ImportController extends BaseController
                     $this->json(false, 500);
                 }
             } else {
+                if (isset($contact_data[13])) {
+                    $attributes['comment'] = trim(preg_replace('/\s+/', ' ', $contact_data[13]));
+                }
                 $this->writeReport($report_file_name, $attributes, $import_contact_form);
 
                 if ($import_contact_form->conflict_id !== null) {
@@ -106,23 +120,14 @@ class ImportController extends BaseController
                             $updated++;
                         }
                         $cur_contact->edit(['tags' => $import_contact_form->tags]);
+                        if (isset($contact_data[13])) {
+                            $comment = iconv(mb_detect_encoding($contact_data[13], mb_detect_order(), true), "UTF-8", $contact_data[13]);
+                            $contact_history = new ContactHistory();
+                            $contact_history->add($cur_contact->id, 'Комментарий при импорте: ' . $comment, 'imported_comment');
+                            $contact_history->save();
+                        }
                     }
                 }
-
-//                $phones = [$import_contact_form->first_phone, $import_contact_form->second_phone];
-//                if ($phones !== null) {
-//                    for ($j = 0;$j < count($phones);$j++) {
-//                        $cur_contact = Contact::getContactByPhone($phones[$j]);
-//                        if ($cur_contact !== null) {
-//                            $exists_tags = $cur_contact->tags;
-//                            if (count($exists_tags) < count($import_contact_form->tags)) {
-//                                $updated++;
-//                            }
-//                            $cur_contact->edit(['tags' => $import_contact_form->tags]);
-//                        }
-//                    }
-//                }
-
                 $error = true;
             }
         }
