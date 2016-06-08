@@ -92,15 +92,30 @@ class AsteriskController extends BaseController {
         $user_id = Yii::$app->user->identity->id;
         $call_order_script = Yii::$app->params['call_order_script'];
         $contact_id = Yii::$app->request->post('contact_id');
+
+        /**
+        SELECT `t`.`manager_id` FROM `call`
+        LEFT JOIN `temp_contacts_pool` as `t` ON  `t`.`order_token` = `call`.`call_order_token`
+        WHERE (`call`.`status`='new')  AND `t`.`order_token` is not null
+         */
+
+
+
         $query = new Query();
-        $query->from('`call`')->join('LEFT JOIN', '`temp_contacts_pool`', '`temp_contacts_pool`.`order_token` = `call`.`call_order_token`')
-            ->where(['`call`.`status`' => 'new', '`call`.`phone_number`' => $phone])
-            ->andWhere(['`temp_contacts_pool`.`manager_id`' => $user_id]);
-        $call = $query->one();
+        $query->select('`temp_contacts_pool`.`manager_id`')->from('`call`')
+            ->join('LEFT JOIN', '`temp_contacts_pool`', '`temp_contacts_pool`.`order_token` = `call`.`call_order_token`')
+            ->where(['`call`.`status`' => 'new'])
+            ->andWhere(['is not','`temp_contacts_pool`.`order_token`', null]);
+        $calls = $query->all();
+        $canCall = true;
+        foreach ($calls as $call) {
+            if ($call['manager_id'] == $user_id)
+                $canCall = false;
+        }
 //        $cont_pool = TempContactsPool::find()
 //            ->where(['contact_id' => $contact_id, 'manager_id' => $user_id, 'tag_id' => $tag_id])
 //            ->andWhere(['is not','order_token', null])->one();
-        if ($call) {
+        if (!$canCall) {
             $this->json([], 423);
         }
         if (file_exists($call_order_script)) {
