@@ -92,8 +92,8 @@ class AsteriskController extends BaseController {
         $call_order_script = Yii::$app->params['call_order_script'];
         $contact_id = Yii::$app->request->post('contact_id');
         $query = new Query();
-        $query->from('`call`')->join('LEFT JOIN', '`call_manager`', '`call_manager`.`call_id` = `call`.`id`')
-            ->where(['`call`.`status`' => 'new', '`call_manager`.`manager_id`' => Yii::$app->user->identity->id, '`call`.`contact_id`' => $contact_id]);
+        $query->from('`call`')//->join('LEFT JOIN', '`call_manager`', '`call_manager`.`call_id` = `call`.`id`')
+            ->where(['`call`.`status`' => 'new', '`call`.`phone_number`' => $phone]);
         $call = $query->one();
 //        $cont_pool = TempContactsPool::find()
 //            ->where(['contact_id' => $contact_id, 'manager_id' => $user_id, 'tag_id' => $tag_id])
