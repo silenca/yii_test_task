@@ -89,11 +89,13 @@ class AsteriskController extends BaseController {
     public function actionSendIncomingCall()
     {
         $phone = Yii::$app->request->post('phone');
+        $user_id = Yii::$app->user->identity->id;
         $call_order_script = Yii::$app->params['call_order_script'];
         $contact_id = Yii::$app->request->post('contact_id');
         $query = new Query();
-        $query->from('`call`')//->join('LEFT JOIN', '`call_manager`', '`call_manager`.`call_id` = `call`.`id`')
-            ->where(['`call`.`status`' => 'new', '`call`.`phone_number`' => $phone]);
+        $query->from('`call`')->join('LEFT JOIN', '`temp_contacts_pool`', '`temp_contacts_pool`.`order_token` = `call`.`call_order_token`')
+            ->where(['`call`.`status`' => 'new', '`call`.`phone_number`' => $phone])
+            ->andWhere(['`temp_contacts_pool`.`manager_id`' => $user_id]);
         $call = $query->one();
 //        $cont_pool = TempContactsPool::find()
 //            ->where(['contact_id' => $contact_id, 'manager_id' => $user_id, 'tag_id' => $tag_id])
@@ -105,7 +107,7 @@ class AsteriskController extends BaseController {
             require_once $call_order_script;
             $user_int_id = Yii::$app->user->identity->int_id;
             $tag_id = Yii::$app->request->post('tag_id');
-            $user_id = Yii::$app->user->identity->id;
+
             $call_order_token = time().$user_id;
             $options = array("external" => $phone, "internal" => $user_int_id, "call_order_token" => $call_order_token);
 
