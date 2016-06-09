@@ -131,9 +131,9 @@ class AsteriskController extends BaseController {
 
             $res = call_order($options);
             if ($res[0] == true) {
-                if ($contact_id && $tag_id) {
-                    Contact::addContInPool($contact_id, $user_id, $tag_id, $call_order_token);
-                }
+//                if ($contact_id && $tag_id) {
+//                    Contact::addContInPool($contact_id, $user_id, $tag_id, $call_order_token);
+//                }
                 $this->json(['call_order_token' => $call_order_token,
                     'contact_id' => $contact_id,
                     'user_id' => $user_id,
