@@ -127,7 +127,7 @@ class Call extends \yii\db\ActiveRecord {
         return $select;
     }
 
-    public function incoming($unique_id, $contact_id, $phone_number, $call_order_token) {
+    public function incoming($unique_id, $contact_id, $phone_number, $call_order_token, $tag_id) {
         $this->unique_id = $unique_id;
         $this->date_time = date('Y-m-d H:i:s');
         $this->type = Call::CALL_INCOMING;

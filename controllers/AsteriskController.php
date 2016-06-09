@@ -124,7 +124,7 @@ class AsteriskController extends BaseController {
             $tag_id = Yii::$app->request->post('tag_id');
 
             $call_order_token = time().$user_id;
-            $options = array("external" => $phone, "internal" => $user_int_id, "call_order_token" => $call_order_token);
+            $options = array("external" => $phone, "internal" => $user_int_id, "call_order_token" => $call_order_token, 'tag_id' => $tag_id);
 
 
             //file_put_contents('/var/log/pool.log', 'SendIncomingCall : ' . $contact_id .' : ' . $tag_id . ':'. Yii::$app->user->identity->role . PHP_EOL, FILE_APPEND);
@@ -172,7 +172,7 @@ class AsteriskController extends BaseController {
                 $call->outgoing($call_uniqueid, $contact_id, $callerid);
             } else if (strlen($callerid) == self::INT_ID_LENGTH && strlen($answered) == self::INT_ID_LENGTH) {
                 //Внутренний звонок
-                $call->incoming($call_uniqueid, $contact_id, $callerid, $answered);
+                $call->incoming($call_uniqueid, $contact_id, $answered, null, null);
             } else {
                 //Исходящий
                 $contact = Contact::getContactByPhone($answered);
@@ -180,8 +180,9 @@ class AsteriskController extends BaseController {
                 if ($contact) {
                     $contact_id = $contact->id;
                 }
-                $call_order_token = (isset($post['call_order_token']) && $post['call_order_token'] !== 'unknown') ? $post['call_order_token'] : null;
-                $call->incoming($call_uniqueid, $contact_id, $answered, $call_order_token);
+                $call_order_token = (isset($post['call_order_token']) && $post['call_order_token'] !== $call_uniqueid) ? $post['call_order_token'] : null;
+                $tag_id = (isset($post['tag_id']) && $post['tag_id'] !== 'NONE') ? $post['tag_id'] : null;
+                $call->incoming($call_uniqueid, $contact_id, $answered, $call_order_token, $tag_id);
             }
             $this->json([], 200);
         } else {
@@ -220,7 +221,7 @@ class AsteriskController extends BaseController {
 
                     if (isset($call->contact_id)) {
                         if ($cont_pool = TempContactsPool::findOne(['order_token' => $call->call_order_token])) {
-                            $call->tag_id = $cont_pool->tag_id;
+                            //$call->tag_id = $cont_pool->tag_id;
                             $cont_pool->delete();
                         }
                     }
