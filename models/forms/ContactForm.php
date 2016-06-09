@@ -246,10 +246,10 @@ class ContactForm extends Model
         $emails = self::dataConvert($this->$attribute, 'emails');
         foreach ($emails as $email_key => $email_val) {
             $this->checkEmail($email_val, $attribute);
-            $fields = Contact::getEmailCols();
-            $this->isUnique($email_val, $attribute, $fields, function($attr, $value, $contact_id) {
-                $this->addCustomError($attr, 'Email - ' . $value . ' уже существует в базе. ID = '. $contact_id);
-            });
+//            $fields = Contact::getEmailCols();
+//            $this->isUnique($email_val, $attribute, $fields, function($attr, $value, $contact_id) {
+//                $this->addCustomError($attr, 'Email - ' . $value . ' уже существует в базе. ID = '. $contact_id);
+//            });
             $this->$email_key = $email_val;
         }
     }
