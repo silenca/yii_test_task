@@ -254,7 +254,7 @@ $(function () {
         $(this).find('input[name="tag_id"]').val($('#tag_search_select').val());
         $(this).find('input[name="manager_id"]').val(tagTableFilters.manager_id !== '0'?tagTableFilters.manager_id: null);
         $(this).find('input[name="status"]').val(tagTableFilters.status !== '0'?tagTableFilters.status: null);
-        $(this).find('input[name="comment"]').val(tagTableFilters.comment.length?tableFilters.comment: null);
+        $(this).find('input[name="comment"]').val(tagTableFilters.comment.length?tagTableFilters.comment: null);
         $(this).find('input[name="attitude_level"]').val(tagTableFilters.attitude_level !== '0'?tagTableFilters.attitude_level: null);
         return true;
     });
