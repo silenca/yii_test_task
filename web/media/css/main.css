@@ -133,3 +133,19 @@
 .select2-search input {
     background: none !important;
 }
+.reports-table tbody tr:last-child {
+    font-weight: 700;
+}
+table.reports-table tr td {
+    vertical-align: middle;
+}
+.reports-table .tags_block {
+    width: 500px;
+}
+
+.reports-table .tags_block .label.tag {
+    margin: 3px;
+    cursor: pointer;
+    display: block;
+    float: left;
+}

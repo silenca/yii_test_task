@@ -242,4 +242,10 @@ class AsteriskController extends BaseController {
         }
     }
 
+    public function actionTest() {
+        $call = Call::getByUniquelId('1464945097.69');
+        $manager = User::find()->where(['id' => 3])->one();
+        $call->sendToCRM($manager);
+    }
+
 }

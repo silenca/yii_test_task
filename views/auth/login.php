@@ -40,14 +40,14 @@ $this->title = 'Login';
                     
                 </div>
                 <!-- START Form Control-->
-                <div class="row">
-                    <div class="col-md-6 no-padding">
-                        <div class="checkbox ">
-                            <input type="checkbox" value="1" id="checkbox1" name="LoginForm[rememberMe]">
-                            <label for="checkbox1">Keep Me Signed in</label>
-                        </div>
-                    </div>
-                </div>
+<!--                <div class="row">-->
+<!--                    <div class="col-md-6 no-padding">-->
+<!--                        <div class="checkbox ">-->
+<!--                            <input type="checkbox" value="1" id="checkbox1" name="LoginForm[rememberMe]">-->
+<!--                            <label for="checkbox1">Keep Me Signed in</label>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
                 <!-- END Form Control-->
                 <button class="btn btn-primary btn-cons m-t-10" type="submit">Sign in</button>
             </form>

@@ -23,6 +23,7 @@ $config = [
         ],
         'session' => [
             'class' => 'yii\web\DbSession',
+            'timeout' => 3600,
             //'db' => 'mydb',
             //'sessionTable' => 'my_session',
         ],
@@ -31,7 +32,7 @@ $config = [
         ],
         'user' => [
             'identityClass' => 'app\models\User',
-            'enableAutoLogin' => true,
+            'enableAutoLogin' => false,
             'loginUrl' => ['login'],  
         ],
         'errorHandler' => [
@@ -62,6 +63,8 @@ $config = [
                 'login' => 'auth/login',
                 'logout' => 'auth/logout',
                 //'<action>' => 'index/<action>',
+
+                'api/contact' => 'api/contact/add',
                 
                 '<controller:\w+>'=>'<controller>/index',
                 '<controller:\w+>/<id:\d+>' => '<controller>/view',

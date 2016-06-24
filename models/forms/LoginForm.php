@@ -55,7 +55,8 @@ class LoginForm extends Model {
      */
     public function login() {
         if ($this->validate()) {
-            if (Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0)) {
+            //if (Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0)) {
+            if (Yii::$app->user->login($this->getUser(), 3600)) { //1 hour
                 $this->_user->notification_key = Yii::$app->security->generateRandomString(32);
                 $this->_user->save();
                 return true;

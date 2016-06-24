@@ -3,6 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\base\Exception;
+use yii\helpers\BaseUrl;
+use app\models\FailExportCall;
 
 /**
  * This is the model class for table "call".
@@ -135,6 +138,7 @@ class Call extends \yii\db\ActiveRecord {
         $this->contact_id = $contact_id;
         $this->status = Call::CALL_STATUS_NEW;
         $this->call_order_token = $call_order_token;
+        $this->tag_id = $tag_id;
         return $this->save();
     }
 
@@ -168,50 +172,69 @@ class Call extends \yii\db\ActiveRecord {
         } else {
             $this->status = Call::CALL_STATUS_FAILURE;
         }
-        $this->setManagersForCall($managers_id, $status);
-
-        return $this->save();
+        $managers = $this->setManagersForCall($managers_id, $status);
+        if ($this->save()) {
+            if ($this->attitude_level !== null) {
+                $this->sendToCRM($managers[0]);
+            }
+            return true;
+        }
+        return false;
     }
 
-    public static function sendToCRM($call_order_token, $manager_id) {
+    public function sendToCRM($manager) {
 
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch,CURLOPT_HTTPHEADER,array('X-Amz-Meta-Crm-Api-Token: 6e5b4d74875ea09f3f888601c7825211'));
 
-        $url = "http://localhost/post.php";
 
-        $call = Call::find()->where(['call_order_token' => $call_order_token])->one();
-        
-        $calls['PhoneNumber'] = $call->phone_number;
-        $calls['Type'] = $call->type;
-        $calls['DateTime'] = $call->date_time;
-        $calls['Status'] = $call->status;
-        $calls['TotalTime'] = $call->total_time;
-        $calls['Comment'] = $call->comment;
-        $calls['Emotion'] = Call::getAttitubeLevelLabel($call->attitude_level);
-
-        $manager = User::find('int_id')->where(['id' => $manager_id])->one();
+        $crm_host = Yii::$app->params['crm_host'];
+        $url = $crm_host."/api/v1/callcenter/calls";
+        $calls['PhoneNumber'] = $this->phone_number;
+        $calls['Type'] = $this->type;
+        $calls['DateTime'] = strtotime($this->date_time);
+        $calls['Status'] = $this->status;
+        $calls['TotalTime'] = $this->total_time;
+        $calls['Comment'] = $this->comment;
+        $calls['Emotion'] = Call::getAttitubeLevelLabel($this->attitude_level);
         $calls['InternalNo'] = $manager->int_id;
-        $calls['AudioLink'] = $call->record;
+        $calls['AudioLink'] = Yii::$app->params['call_crm_host'].$this->record;
 
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, array('calls' => json_encode($calls)));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $calls);
+        //curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($calls));
+        //curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($calls));
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        $server_output = curl_exec ($ch);
+        $response = curl_exec ($ch);
+        //TODO temp
+        $response_log_data = $response;
+        if ($response == false) {
+            $response_log_data = curl_error($ch);
+        }
+        $request_data = urldecode(http_build_query($calls));
+        $log_data = date("j-m-Y G:i:s", time()). "\r\n" . "Request: " .$request_data . "\r\n\r\n";
+        file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', $log_data, FILE_APPEND);
+        file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', "Response: ". $response_log_data."\r\n", FILE_APPEND);
+        file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', "=============================================\r\n\r\n", FILE_APPEND);
 
-//        $log_data = date("Y-m-d H:i:s"). "\n";
-//        $log_data .= "\n$url\n";
-//        $log_data .= "data=".$data.'&token='.$token;
-//        $log_data .= "\nResponse: \n" . $server_output;
-//        $log_data .= "\n\n===============\n\n";
-//        file_put_contents(Yii::getAlias('@webroot').'/json.txt', $log_data, FILE_APPEND);
-
+        try {
+            $response = (array)json_decode($response);
+            if ($response['Status'] == 0) {
+                FailExportCall::add($this->id);
+                return false;
+            }
+        } catch(Exception $e) {
+            FailExportCall::add($this->id);
+            return false;
+        }
         curl_close ($ch);
+        return true;
     }
 
 
@@ -242,6 +265,7 @@ class Call extends \yii\db\ActiveRecord {
                 }
             }
         }
+        return $managers;
     }
 
     public static function getCallAttitudeLabel($attitude)

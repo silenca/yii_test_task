@@ -14,7 +14,17 @@ use yii\base\Widget;
 
 class ReportsWidget extends Widget
 {
-    public $reports;
+    public $users;
+    public $incomings;
+    public $outgoings;
+    public $userCallTags;
+    public $serveds;
+
+    private $totalIncomingsSuccess = 0;
+    private $totalIncomingsAll = 0;
+    private $totalOutgoingsSuccess = 0;
+    private $totalOutgoingsAll = 0;
+    private $totalServeds = 0;
 
     public function init() {
         parent::init();
@@ -22,51 +32,44 @@ class ReportsWidget extends Widget
 
     public function run() {
         $data = [];
-        foreach ($this->reports as $report) {
-
-            if (!array_key_exists($report['id'], $data)) {
-                $data[$report['id']]['id'] = $report['id'];
-                $data[$report['id']]['name'] = $report['name'];
-                $data[$report['id']]['incoming'] = 0;
-                $data[$report['id']]['outgoing'] = 0;
-                $data[$report['id']]['lead'] = 0;
-            }
-            $column_name = $report['selector'];
-            $data[$report['id']][$column_name] = $report['count'];
-        }
-
-        // Вывести количество успешных звонков
-        foreach ($data as &$item) {
-            // Исходящих
-            if (isset($item['answered_incoming'])) {
-                $item['incoming'] = $item['answered_incoming'] . ' / ' . $item['incoming'];
+        foreach ($this->users as $i => $user) {
+            $data[$i][] = $user['firstname'];
+            if (isset($this->incomings[$user['id']])) {
+                $data[$i][] = $this->incomings[$user['id']]['success'] ."/".$this->incomings[$user['id']]['all'];
+                $this->totalIncomingsSuccess += $this->incomings[$user['id']]['success'];
+                $this->totalIncomingsAll += $this->incomings[$user['id']]['all'];
             } else {
-                $item['incoming'] = 0 . ' / ' . $item['incoming'];
+                $data[$i][] = "0/0";
             }
 
-            // Входящих
-            if (isset($item['answered_outgoing'])) {
-                $item['outgoing'] = $item['answered_outgoing'] . ' / ' . $item['outgoing'];
+            if (isset($this->outgoings[$user['id']])) {
+                $data[$i][] = $this->outgoings[$user['id']]['success'] ."/".$this->outgoings[$user['id']]['all'];
+                $this->totalOutgoingsSuccess += $this->outgoings[$user['id']]['success'];
+                $this->totalOutgoingsAll += $this->outgoings[$user['id']]['all'];
             } else {
-                $item['outgoing'] = 0 . ' / ' . $item['outgoing'];
+                $data[$i][] = "0/0";
             }
-        }
 
-        $dataObjects = Array();
-        $i = 0;
-        foreach ($data as $dataItem) {
-            foreach ($dataItem as $j => $dataItemItem) {
-                switch ($j) {
-                    case "id":
-                        break;
-                    default:
-                        $dataObjects[$i][] = $dataItemItem;
-                        break;
-                }
+            if (isset($this->userCallTags[$user['id']])) {
+                $data[$i][] = $this->userCallTags[$user['id']];
+            } else {
+                $data[$i][] = [];
             }
-            $i++;
+            if (isset($this->serveds[$user['id']])) {
+                $data[$i][] = $this->serveds[$user['id']];
+                $this->totalServeds += $this->serveds[$user['id']];
+            } else {
+                $data[$i][] = 0;
+            }
         }
-        return $dataObjects;
+        $data[] = [
+            "Итого:",
+            $this->totalIncomingsSuccess . "/" . $this->totalIncomingsAll,
+            $this->totalOutgoingsSuccess . "/" . $this->totalOutgoingsAll,
+            [],
+            $this->totalServeds
+        ];
+        return $data;
     }
 
 }

@@ -14,6 +14,8 @@ use app\components\Filter;
 class ImportContactForm extends ContactForm
 {
 
+    public $isApi = false;
+
     public static function getAllCols() {
         return [
             'surname',
@@ -81,19 +83,10 @@ class ImportContactForm extends ContactForm
     {
         $phones = self::dataConvert($this->$attribute, 'phones');
         foreach ($phones as $phone_key => $phone_val) {
-            $this->checkPhone($phone_val, $attribute);
-            $firstNumber = $phone_val[0];
-            if ($firstNumber !== null) {
-                if ($firstNumber == '8') {
-                    $phone_val[0] = '7';
-                } else if ($firstNumber !== '7') {
-                    $this->addError($attribute, 'Ошибка: номер (' . $phone_val . ') не принадлежит номерной ёмкости РФ.');
-                }
+            if (!$this->isApi || ($this->isApi && $phone_key == 'first_phone')) {
+                $this->checkPhone($phone_val, $attribute);
             }
-            $fields = Contact::getPhoneCols();
-            $this->isUnique($phone_val, $attribute, $fields, function($attr, $value, $int_contact_id) {
-                $this->addError($attr, 'Ошибка: телефон (' . $value . ') уже существует в базе. ID контакта: ' . $int_contact_id);
-            });
+
             $this->$phone_key = $phone_val;
         }
     }
@@ -116,7 +109,28 @@ class ImportContactForm extends ContactForm
         if ($phone !== null) {
             if (strlen($phone) != 11) {
                 $this->addError($attribute, 'Ошибка: номер (' . $phone . ') записан в ненадлежащем формате.');
+                return false;
             }
         }
+
+        $firstNumber = $phone[0];
+        if ($firstNumber !== null) {
+            if ($firstNumber == '8') {
+                $phone[0] = '7';
+            } else if ($firstNumber !== '7') {
+                $this->addError($attribute, 'Ошибка: номер (' . $phone . ') не принадлежит номерной ёмкости РФ.');
+                return false;
+            }
+        }
+        $fields = Contact::getPhoneCols();
+        $conflictId = $this->isUnique($phone, $attribute, $fields, function($attr, $value, $int_contact_id) use ($attribute) {
+            //if (!$this->isApi || ($this->isApi && $phone_key == "first_phone")) {
+            $this->addError($attr, 'Ошибка: телефон (' . $value . ') уже существует в базе. ID контакта: ' . $int_contact_id);
+            //}
+        });
+        if ($conflictId !== true) {
+            return false;
+        }
+        return true;
     }
 }

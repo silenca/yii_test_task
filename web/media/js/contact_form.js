@@ -266,6 +266,7 @@ function initRingRound($tagForm) {
     $actionCallForm.find('.action-title').hide();
     $actionCallForm.find('input[name="schedule_date"]').parents('.form-group').hide();
     $actionCallForm.find('#google_cal_show_call').parents('.form-group').hide();
+    $('#modalAddContact .close').hide();
 }
 
 function changeValidationRequired(options, state) {

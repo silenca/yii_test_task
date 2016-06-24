@@ -43,7 +43,12 @@ class UserTableWidget extends Widget {
             $data[$i][] = implode(', ', $tags);
 
             if (Yii::$app->user->can('delete_user')) {
-                $data[$i][] = '<div class="col-md-offset-3 remove"><i class="fa fa-remove"></i></div>';
+                if ($user->is_deleted == 1) {
+                    $data[$i][] = 'Удален';
+                } else {
+                    $data[$i][] = '<div class="col-md-offset-3 remove"><i class="fa fa-remove"></i></div>';
+                }
+
             } else {
                 $data[$i][] = '';
             }

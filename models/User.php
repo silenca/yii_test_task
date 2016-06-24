@@ -27,6 +27,7 @@ class User extends ActiveRecord implements IdentityInterface {
         'patronymic',
         'email',
         'role',
+        'is_deleted',
     ];
 
     /**
@@ -48,6 +49,7 @@ class User extends ActiveRecord implements IdentityInterface {
             [['notification_key'], 'string', 'max' => 32],
             [['email'], 'email'],
             [['email'], 'unique'],
+            [['is_deleted'], 'safe']
         ];
     }
 
@@ -250,8 +252,8 @@ class User extends ActiveRecord implements IdentityInterface {
     public static function deleteById($id) {
         $user = self::find()->where(['id' => $id])->one();
         if ($user) {
-            $user->delete();
-            return true;
+            $user->is_deleted = 1;
+            return $user->save();
         }
         return false;
     }

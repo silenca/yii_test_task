@@ -26,21 +26,22 @@ $this->params['active'] = 'reports';
                         <input id="daterange" type="text" name="daterange" placeholder="За период" class="form-control"/>
                     </div>
                 </div>
-                <table class="table table-hover" id="reports-table">
+                <table class="table table-hover reports-table" id="reports-table">
                     <thead>
                         <tr>
                             <td>
                                 <?php if (isset($managers)): ?>
                                     <select data-column="0"  class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
-                                        <option value="0">Все операторы</option>
+                                        <option value="0">Все пользователи</option>
                                         <?php foreach ($managers as $manager): ?>
                                             <option value="<?php echo $manager->id ?>"><?php echo $manager->firstname ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 <?php else: ?>
-                                    Менеджер
+                                    Пользователь
                                 <?php endif; ?>
                             </td>
+                            <td></td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -48,9 +49,10 @@ $this->params['active'] = 'reports';
                     </thead>
                     <thead>
                         <tr>
-                            <th>Менеджер</th>
+                            <th>Пользователь</th>
                             <th>Исходящие звонки</th>
                             <th>Входящие звонки</th>
+                            <th>Теги</th>
                             <th>Контакты</th>
                         </tr>
                     </thead>
