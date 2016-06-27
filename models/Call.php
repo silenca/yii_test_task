@@ -143,6 +143,9 @@ class Call extends \yii\db\ActiveRecord {
     }
 
     public function outgoing($unique_id, $contact_id, $phone_number) {
+        if (substr($phone_number, 0, 1) == '+') {
+            $phone_number = substr($phone_number, 1);
+        }
         $this->unique_id = $unique_id;
         $this->date_time = date('Y-m-d H:i:s');
         $this->type = Call::CALL_OUTGOING;
