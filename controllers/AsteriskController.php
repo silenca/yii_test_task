@@ -224,7 +224,7 @@ class AsteriskController extends BaseController {
 
                     if (isset($call->contact_id)) {
                         if ($cont_pool = TempContactsPool::findOne(['order_token' => $call->call_order_token])) {
-                            $call->tag_id = $cont_pool->tag_id;
+                            //$call->tag_id = $cont_pool->tag_id;
                             $cont_pool->delete();
                         }
                     }
