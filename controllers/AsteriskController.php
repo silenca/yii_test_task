@@ -161,6 +161,9 @@ class AsteriskController extends BaseController {
             $call = new Call();
             if (strlen($callerid) !== self::INT_ID_LENGTH && strlen($answered) !== self::INT_ID_LENGTH) {
                 //Входящий звонок
+                if (substr($callerid, 0, 1) == '+') {
+                    $callerid = substr($callerid, 1);
+                }
                 $contact = Contact::getContactByPhone($callerid);
                 $request_params['phone'] = $callerid;
                 if ($contact) {
