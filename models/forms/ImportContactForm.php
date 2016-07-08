@@ -63,7 +63,7 @@ class ImportContactForm extends ContactForm
             }
             return $value;
         }, 'skipOnEmpty' => true];
-        array_splice( $rules, 1, 0, [$new_rule] );
+        array_splice( $rules, 2, 0, [$new_rule] );
         return $rules;
     }
 
