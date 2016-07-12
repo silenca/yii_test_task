@@ -26,7 +26,7 @@ class TagContactsTableWidget extends Widget {
             }
             if ($this->export && ($index = array_search($tag_contact['id'], $ids)) !== false) {
                 $text = trim(preg_replace('/\s+/', ' ', $tag_contact['history_text']));
-                $data[$index][count($data[$index]) - 1] .= "<p>".$tag_contact['history_datetime']." - ".$text."</p>";
+                $data[$index][count($data[$index]) - 1] .= "<p>".$text."</p>";
             } else {
                 $ids[] = $tag_contact['id'];
                 $data[$i][] = $tag_contact['int_id'];

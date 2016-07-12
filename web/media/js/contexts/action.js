@@ -88,7 +88,7 @@ $(function () {
         var contact_id = $(this).data('id'),
             phone = $(this).data('phone');
         openContactForm(contact_id);
-        initCallNow(phone);
+        initCallNow(phone, null, contact_id);
 
     });
 

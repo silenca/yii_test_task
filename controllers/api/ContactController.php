@@ -64,7 +64,8 @@ class ContactController extends BaseController
                 $import_contact_form->house = isset($post_contact['house']) ? $post_contact['house'] : null;
                 $import_contact_form->flat = isset($post_contact['flat']) ? $post_contact['flat'] : null;
                 $import_contact_form->tags_str = isset($post_contact['tag']) ? $post_contact['tag'] : null;
-                if ($import_contact_form->validate()) {
+                $validateResult = $import_contact_form->validate();
+                if ($validateResult) {
                     $contact = new Contact();
                     $contact->attributes = $import_contact_form->attributes;
                     if ($import_contact_form->checkPhone($import_contact_form->second_phone, 'second_phone')) {
@@ -105,7 +106,19 @@ class ContactController extends BaseController
                     if (count($errors) == 0 && $import_contact_form->conflict_id !== null) {
                         $cur_contact = Contact::findOne($import_contact_form->conflict_id);
                         if ($cur_contact !== null) {
-                            $cur_contact->attributes = $import_contact_form->attributes;
+                            $cur_contact->name = $import_contact_form->name;
+                            $cur_contact->surname = $import_contact_form->surname;
+                            $cur_contact->middle_name = $import_contact_form->middle_name;
+                            $cur_contact->country = $import_contact_form->country;
+                            $cur_contact->region = $import_contact_form->region;
+                            $cur_contact->area = $import_contact_form->area;
+                            $cur_contact->city  = $import_contact_form->city;
+                            $cur_contact->street = $import_contact_form->street;
+                            $cur_contact->house = $import_contact_form->house;
+                            $cur_contact->flat = $import_contact_form->flat;
+                            $cur_contact->first_email = $import_contact_form->first_email;
+                            $cur_contact->second_email = $import_contact_form->second_email;
+                            //$cur_contact->attributes = $import_contact_form->attributes;
                             if ($import_contact_form->checkPhone($import_contact_form->second_phone, 'second_phone')) {
                                 $cur_contact->second_phone = $import_contact_form->second_phone;
                             }

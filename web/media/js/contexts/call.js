@@ -95,7 +95,7 @@ $(function () {
             openContactForm(contactId);
         } else {
             openNewContactFormWithPhone(phone);
-            initCallNow(phone);
+            initCallNow(phone, contactId);
         }
     });
 

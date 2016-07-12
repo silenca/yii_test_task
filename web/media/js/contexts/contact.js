@@ -271,7 +271,7 @@ $(function () {
             var contactId = $(this).parents('tr').data('id'),
                 phone = $(this).text();
             openContactForm(contactId);
-            initCallNow(phone);
+            initCallNow(phone, null, contactId);
         });
 
         $(document).on('click', '#contacts-table .contact-tags', function(e) {

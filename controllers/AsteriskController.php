@@ -106,6 +106,11 @@ class AsteriskController extends BaseController {
             ->join('LEFT JOIN', '`temp_contacts_pool`', '`temp_contacts_pool`.`order_token` = `call`.`call_order_token`')
             ->where(['`call`.`status`' => 'new'])
             ->andWhere(['is not','`temp_contacts_pool`.`order_token`', null]);
+        /*
+         SELECT `temp_contacts_pool`.`manager_id`, `call`.* FROM `call`
+         LEFT JOIN `temp_contacts_pool` on `temp_contacts_pool`.`order_token` = `call`.`call_order_token`
+         WHERE `status` = 'new' and `temp_contacts_pool`.`order_token` is not null
+         */
         $calls = $query->all();
         $canCall = true;
         foreach ($calls as $call) {

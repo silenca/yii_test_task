@@ -463,7 +463,7 @@ class Contact extends \yii\db\ActiveRecord
                 '`contact_history`.`text` as `history_text`',
                 '`contact_history`.`datetime` as `history_datetime`',
             ]);
-            $query->join('LEFT JOIN', '`contact_history`', '`contact`.`id` = `contact_history`.`contact_id`');
+            $query->join('LEFT JOIN', '`contact_history`', '`contact`.`id` = `contact_history`.`contact_id` AND (`contact_history`.`type` = "imported_comment" OR `contact_history`.`type` = "comment")');
         }
         $query->select($select);
 
@@ -639,12 +639,17 @@ class Contact extends \yii\db\ActiveRecord
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $response = curl_exec($ch);
-        curl_close($ch);
+
         //TODO temp
+        $response_log_data = $response;
+        if ($response == false) {
+            $response_log_data = curl_error($ch);
+        }
+        curl_close($ch);
         $request_data = urldecode(http_build_query($contact));
         $log_data = date("j-m-Y G:i:s", time()) . "\r\n" . "Request: " . $request_data . "\r\n\r\n";
         file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_contact.log', $log_data, FILE_APPEND);
-        file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_contact.log', "Response: " . print_r($response, true) . "\r\n", FILE_APPEND);
+        file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_contact.log', "Response: " . $response_log_data . "\r\n", FILE_APPEND);
         file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_contact.log', "=============================================\r\n\r\n", FILE_APPEND);
 
         try {

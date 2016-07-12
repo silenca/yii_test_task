@@ -190,7 +190,6 @@ class Call extends \yii\db\ActiveRecord {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch,CURLOPT_HTTPHEADER,array('X-Amz-Meta-Crm-Api-Token: 6e5b4d74875ea09f3f888601c7825211'));
 
-
         $crm_host = Yii::$app->params['crm_host'];
         $url = $crm_host."/api/v1/callcenter/calls";
         $calls['PhoneNumber'] = $this->phone_number;
@@ -212,11 +211,13 @@ class Call extends \yii\db\ActiveRecord {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $response = curl_exec ($ch);
+
         //TODO temp
         $response_log_data = $response;
         if ($response == false) {
             $response_log_data = curl_error($ch);
         }
+        curl_close ($ch);
         $request_data = urldecode(http_build_query($calls));
         $log_data = date("j-m-Y G:i:s", time()). "\r\n" . "Request: " .$request_data . "\r\n\r\n";
         file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', $log_data, FILE_APPEND);
@@ -233,7 +234,7 @@ class Call extends \yii\db\ActiveRecord {
             FailExportCall::add($this->id);
             return false;
         }
-        curl_close ($ch);
+
         return true;
     }
 

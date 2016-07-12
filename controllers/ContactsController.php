@@ -243,7 +243,7 @@ class ContactsController extends BaseController
                     $this->json(false, 415, $contact->getErrors());
                 }
             } catch (\Exception $ex) {
-                $this->json(false, 500);
+                $this->json(false, 500, $ex->getMessage());
             }
         } else {
             $errors = $contact_form->getErrors();
