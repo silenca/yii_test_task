@@ -1,3 +1,4 @@
+var currentPage = "import";
 $(function () {
     $('#choose-file').on('click', function () {
         $('#csv-file').trigger('click');

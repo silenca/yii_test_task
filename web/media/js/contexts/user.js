@@ -1,3 +1,4 @@
+var currentPage = "user";
 var dataTable,
     dropDownOpened = false;
 

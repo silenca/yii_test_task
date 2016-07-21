@@ -1,4 +1,6 @@
+var currentPage = "action";
 var dataTable;
+
 $(function () {
     var initTable = function () {
         var table = $('#action-table');

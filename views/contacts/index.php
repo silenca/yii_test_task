@@ -1,8 +1,8 @@
 <?php
 
-use app\assets\TableAsset;
 use app\assets\ContactAsset;
 use app\assets\GoogleApiAsset;
+use app\assets\TableAsset;
 
 
 TableAsset::register($this);
@@ -33,29 +33,37 @@ $this->params['active'] = 'contact';
                     <div id="column_filter_modal" class="column_filter_modal" style="display: none">
                         <?php foreach ($filter_cols as $col_key => $col_val): ?>
                             <div class="checkbox check-success">
-                                <input type="checkbox" <?= !in_array($col_key, $hide_columns) ? 'checked' : null ?>
+                                <input type="checkbox" <?= !in_array($col_key, $hide_columns) ? 'checked' : NULL ?>
                                        value="<?php echo($col_key); ?>" id="column_filter_<?php echo($col_key); ?>">
-                                <label for="column_filter_<?php echo($col_key); ?>"><?php echo($col_val['label']); ?></label>
+                                <label
+                                    for="column_filter_<?php echo($col_key); ?>"><?php echo($col_val['label']); ?></label>
                             </div>
                         <?php endforeach; ?>
                         <div class="col-xs-12">
-                            <button class="btn btn-success btn-cons" id="column_filter_apply"><i
-                                    class="fa fa-check"></i> Применить
+                            <button class="btn btn-success btn-cons" id="column_filter_apply">
+                                <i class="fa fa-check"></i>
+                                Применить
                             </button>
                         </div>
                     </div>
                 </div>
                 <div class="pull-right">
                     <div class="col-xs-12">
-                        <button class="btn btn-primary btn-cons pull-right" id="open-new-contact-from"><i
-                                class="fa fa-plus"></i> Добавить контакт
+                        <button class="btn btn-primary btn-cons pull-right" id="open-new-contact-from">
+                            <i class="fa fa-plus"></i>
+                            Добавить контакт
+                        </button>
+                        <button class="btn btn-primary btn-cons pull-right" id="delete_all_filtered_contacts"
+                                style="display: none;">
+                            <i class="fa fa-trash"></i>
+                            Удалить найденные контакты (<span>0</span> шт.)
                         </button>
                     </div>
-<!--                    <div class="col-xs-6">-->
-<!--                        <button class="btn btn-primary btn-cons pull-right" id="add_tag_to_all"><i-->
-<!--                                class="fa fa-plus"></i> Добавить тег всем-->
-<!--                        </button>-->
-<!--                    </div>-->
+                    <!--                    <div class="col-xs-6">-->
+                    <!--                        <button class="btn btn-primary btn-cons pull-right" id="add_tag_to_all"><i-->
+                    <!--                                class="fa fa-plus"></i> Добавить тег всем-->
+                    <!--                        </button>-->
+                    <!--                    </div>-->
                 </div>
                 <div class="clearfix"></div>
             </div>
@@ -77,7 +85,8 @@ $this->params['active'] = 'contact';
                         <?php foreach ($filter_cols as $col_key => $col_val): ?>
                             <? if (!in_array($col_key, $hide_columns)): ?>
                                 <?php if ($col_val['have_search']): ?>
-                                    <td><input type="text" data-column="<?php echo($col_key); ?>" class="form-control search-input-text"></td>
+                                    <td><input type="text" data-column="<?php echo($col_key); ?>"
+                                               class="form-control search-input-text"></td>
                                 <?php else: ?>
                                     <td></td>
                                 <?php endif; ?>
@@ -106,7 +115,7 @@ $this->params['active'] = 'contact';
             class="loader m-l-30"
             src="media/img/progress/progress-circle-primary.svg" alt="Progress"
             style="display: none; width: 30px; height: 30px">
-<!--        <ul class="result list-group m-t-5"></ul>-->
+        <!--        <ul class="result list-group m-t-5"></ul>-->
         <table class="result table table-hover m-t-5">
             <tbody>
             </tbody>

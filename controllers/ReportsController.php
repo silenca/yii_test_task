@@ -64,6 +64,7 @@ class ReportsController extends BaseController
         if ($request_data['columns'][3]['search']['value']) {
             $tags_id = explode(',', $request_data['columns'][3]['search']['value']);
         }
+        $show_archive_tags = Yii::$app->user->identity->getSetting('use_archive_tags');
 
 
         //$result_data = ['id', 'incoming', 'outgoing', 'tags', 'served'];
@@ -73,6 +74,7 @@ class ReportsController extends BaseController
         select `user`.`id`,`user`.`firstname`, count(*) as `count`, `call`.`status` from `call`
         left join `call_manager` on `call_manager`.`call_id` = `call`.`id`
         left join `user` on `user`.`id` = `call_manager`.`manager_id`
+        left join `tag` on `call`.`tag_id` = `tag`.`id`
         where `call`.`type` = 'incoming' and `user`.`id` is not null and `call`.`status` <> 'new'
         group by `user`.`id`, `call`.`status`
          */
@@ -81,6 +83,7 @@ class ReportsController extends BaseController
             ->from('`call`')
             ->join("LEFT JOIN", '`call_manager`','`call_manager`.`call_id` = `call`.`id`')
             ->join("LEFT JOIN", '`user`','`user`.`id` = `call_manager`.`manager_id`')
+            ->join("LEFT JOIN", '`tag`','`call`.`tag_id` = `tag`.`id`')
             ->where(['`call`.`type`' => 'incoming'])
             ->andWhere(['is not', '`user`.`id`', null])
             ->andWhere(['<>', '`call`.`status`', 'new'])
@@ -97,6 +100,9 @@ class ReportsController extends BaseController
         if ($tags_id) {
             $incomingQuery->andWhere(['in', '`call`.`tag_id`', $tags_id]);
         }
+        if (!$show_archive_tags) {
+            $incomingQuery->andWhere('(`tag`.`is_deleted` = 0 or `call`.`tag_id` is null)');
+        }
         $incomings = $incomingQuery->all();
         $incomingData = [];
         foreach ($incomings as $incoming) {
@@ -110,6 +116,7 @@ class ReportsController extends BaseController
         select `user`.`id`, `user`.`firstname`, count(*) as `count`, `call`.`status` from `call`
         left join `call_manager` on `call_manager`.`call_id` = `call`.`id`
         left join `user` on `user`.`id` = `call_manager`.`manager_id`
+        left join `tag` on `call`.`tag_id` = `tag`.`id`
         where `call`.`type` = 'outgoing' and `user`.`id` is not null and `call`.`status` <> 'new'
         group by `user`.`id`, `call`.`status`
          */
@@ -119,6 +126,7 @@ class ReportsController extends BaseController
             ->from('`call`')
             ->join("LEFT JOIN", '`call_manager`','`call_manager`.`call_id` = `call`.`id`')
             ->join("LEFT JOIN", '`user`','`user`.`id` = `call_manager`.`manager_id`')
+            ->join("LEFT JOIN", '`tag`','`call`.`tag_id` = `tag`.`id`')
             ->where(['`call`.`type`' => 'outgoing'])
             ->andWhere(['is not', '`user`.`id`', null])
             ->andWhere(['<>', '`call`.`status`', 'new'])
@@ -135,6 +143,9 @@ class ReportsController extends BaseController
         if ($tags_id) {
             $outgoingQuery->andWhere(['in', '`call`.`tag_id`', $tags_id]);
         }
+        if (!$show_archive_tags) {
+            $outgoingQuery->andWhere('(`tag`.`is_deleted` = 0 or `call`.`tag_id` is null)');
+        }
         $outgoings = $outgoingQuery->all();
         $outgoingData = [];
         foreach ($outgoings as $outgoing) {
@@ -149,6 +160,7 @@ class ReportsController extends BaseController
          select `user`.`id`, `user`.`firstname`, count(distinct `call`.`contact_id`) as `count` from `call`
         left join `call_manager` on `call_manager`.`call_id` = `call`.`id`
         left join `user` on `user`.`id` = `call_manager`.`manager_id`
+        left join `tag` on `call`.`tag_id` = `tag`.`id`
         where `user`.`id` is not null
         group by `user`.`id`
          */
@@ -158,6 +170,7 @@ class ReportsController extends BaseController
             ->from('`call`')
             ->join("LEFT JOIN", '`call_manager`','`call_manager`.`call_id` = `call`.`id`')
             ->join("LEFT JOIN", '`user`','`user`.`id` = `call_manager`.`manager_id`')
+            ->join("LEFT JOIN", '`tag`','`call`.`tag_id` = `tag`.`id`')
             ->where(['is not', '`user`.`id`', null])
             ->andWhere(['<>', '`call`.`status`', 'new'])
             ->groupBy(['`user`.`id`']);
@@ -173,6 +186,9 @@ class ReportsController extends BaseController
         if ($tags_id) {
             $servedQuery->andWhere(['in', '`call`.`tag_id`', $tags_id]);
         }
+        if (!$show_archive_tags) {
+            $servedQuery->andWhere('(`tag`.`is_deleted` = 0 or `call`.`tag_id` is null)');
+        }
         $serveds = $servedQuery->all();
         $servedsData = [];
         foreach ($serveds as $served) {
@@ -180,7 +196,7 @@ class ReportsController extends BaseController
         }
         /*
          Получаем все теги для пользователя, по которым он делал звонки
-         select  distinct `tag`.`id` as `tag_id`, `tag`.`name`, `user`.`id` as `user_id`, `user`.`firstname` from `call`
+         select  distinct `tag`.`id` as `tag_id`, `tag`.`name`, `tag`.`is_deleted`, `user`.`id` as `user_id`, `user`.`firstname` from `call`
         left join `call_manager` on `call_manager`.`call_id` = `call`.`id`
         left join `user` on `user`.`id` = `call_manager`.`manager_id`
         left join `tag` on `tag`.`id` = `call`.`tag_id`
@@ -188,7 +204,7 @@ class ReportsController extends BaseController
         group by `user`.`id`, `call`.`tag_id`
          */
         $userCallTagsQuery = new Query();
-        $userCallTagsQuery->select('distinct `tag`.`id` as `tag_id`, `tag`.`name`, `user`.`id` as `user_id`, `user`.`firstname`')
+        $userCallTagsQuery->select('distinct `tag`.`id` as `tag_id`, `tag`.`name`, `tag`.`is_deleted`, `user`.`id` as `user_id`, `user`.`firstname`')
             ->from('`call`')
             ->join("LEFT JOIN", '`call_manager`','`call_manager`.`call_id` = `call`.`id`')
             ->join("LEFT JOIN", '`user`','`user`.`id` = `call_manager`.`manager_id`')
@@ -206,13 +222,17 @@ class ReportsController extends BaseController
         if ($date_end) {
             $userCallTagsQuery->andWhere(['<=','`call`.`date_time`', $date_end]);
         }
+        if (!$show_archive_tags) {
+            $userCallTagsQuery->andWhere(['`tag`.`is_deleted`' => 0]);
+        }
 
         $userCallTags = $userCallTagsQuery->all();
         $userCallTagsData = [];
         foreach ($userCallTags as $i => $userCallTag) {
             $userCallTagsData[$userCallTag['user_id']][] = [
                 'tag_id' => $userCallTag['tag_id'],
-                'name' => $userCallTag['name']
+                'name' => $userCallTag['name'],
+                'is_deleted' => $userCallTag['is_deleted']
             ];
         }
 
@@ -236,73 +256,5 @@ class ReportsController extends BaseController
         );
         echo json_encode($json_data, true);
         die;
-        /*
-        //three-row select from call
-        $selectQuery1 =  '`u`.`id` AS `id`, `u`.`firstname` AS `name`,`c`.`type` AS `selector`, COUNT(*) AS `count`';
-        $query1 = new Query();
-        $query1->select($selectQuery1)
-            ->from(Call::tableName() . ' as `c`')
-            ->where('`c`.`status` <> \'new\' AND (`u`.`role` = 1 OR `u`.`role` = 5)')
-            ->join("LEFT OUTER JOIN", CallManager::tableName().' `cm`','`cm`.`call_id` = `c`.`id`')
-            ->join("LEFT OUTER JOIN", User::tableName().' `u`','`cm`.`manager_id` = `u`.`id`')
-            ->groupBy('`c`.`type`, `u`.`id`');
-        $dump = $query1->prepare(Yii::$app->db->queryBuilder)->createCommand()->rawSql;
-
-        //three-row select from  contact
-        $selectQuery2 = '`csh`.`manager_id` as `id`, `u`.`firstname` AS `name`,`csh`.`status` as `selector`, COUNT(*) as `count`';
-        $query2 = new Query();
-        $query2->select($selectQuery2)
-            ->from(ContactStatusHistory::tableName() . ' as csh')
-            ->join("LEFT JOIN", '(SELECT `role`,`id`,`firstname` from `user`) AS `u`','`u`.`id` = `csh`.`manager_id`')
-            ->join('LEFT JOIN', Contact::tableName() . ' `c`', '`c`.`id` = `csh`.`contact_id`')
-            ->where('(`u`.`role` = 1 OR `u`.`role` = 5) AND `c`.is_deleted = 0')
-            ->groupBy('`id`,`selector`');
-        $dump = $query2->prepare(Yii::$app->db->queryBuilder)->createCommand()->rawSql;
-
-        // Получить количество успешных входящих
-        $selectQuery3 =  '`u`.`id` AS `id`, `u`.`firstname` AS `name`, CONCAT_WS("_", `c`.`status`, `c`.`type`) AS `selector`, COUNT(*) AS `count`';
-        $query3 = new Query();
-        $query3->select($selectQuery3)
-            ->from(Call::tableName() . ' as `c`')
-            ->where('`c`.`status` = \'answered\' AND `c`.`type` = \'incoming\' AND (`u`.`role` = 1 OR `u`.`role` = 5)')
-            ->join("LEFT OUTER JOIN", CallManager::tableName().' `cm`','`cm`.`call_id` = `c`.`id`')
-            ->join("LEFT OUTER JOIN", User::tableName().' `u`','`cm`.`manager_id` = `u`.`id`')
-            ->groupBy('`c`.`type`, `u`.`id`');
-        $dump = $query3->prepare(Yii::$app->db->queryBuilder)->createCommand()->rawSql;
-
-
-        //filtering on datatable request
-        if (!empty($request_data['columns'][0]['search']['value'])) {
-            $query1->andWhere(['`u`.`id`' => $request_data['columns'][0]['search']['value']]);
-            $query2->where(['`u`.`id`' => $request_data['columns'][0]['search']['value']]);
-            $query3->where(['`u`.`id`' => $request_data['columns'][0]['search']['value']]);
-        }
-        if (!empty($request_data['columns'][1]['search']['value']) and (!empty($request_data['columns'][2]['search']['value']))) {
-            $query1->andWhere(['between', '`c`.`date_time`', $request_data['columns'][1]['search']['value'], $request_data['columns'][2]['search']['value']]);
-            $query2->andWhere(['between', '`csh`.`date_time`', $request_data['columns'][1]['search']['value'], $request_data['columns'][2]['search']['value']]);
-            $query3->andWhere(['between', '`c`.`date_time`', $request_data['columns'][1]['search']['value'], $request_data['columns'][2]['search']['value']]);
-        } else {
-            $query1->andWhere(['between', '`c`.`date_time`', date('Y-m-01'), date('Y-m-t')]);
-            $query2->andWhere(['between', '`csh`.`date_time`', date('Y-m-01'), date('Y-m-t')]);
-            $query3->andWhere(['between', '`c`.`date_time`', date('Y-m-01'), date('Y-m-t')]);
-        }
-        //union all the queries
-        $query1
-            ->union($query2)
-            ->union($query3);
-        //$dump = $query1->prepare(Yii::$app->db->queryBuilder)->createCommand()->rawSql;
-        $reportSummary = $query1->all();
-        $report_widget = new ReportsWidget();
-        $report_widget->reports = $reportSummary;
-        $data = $report_widget->run();
-        $json_data = array(
-            "draw" => intval($request_data['draw']),
-            "recordsTotal" => intval(0),
-            "recordsFiltered" => intval(0),
-            "data" => $data   // total data array
-        );
-        echo json_encode($json_data);
-        die;
-        */
     }
 }

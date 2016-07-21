@@ -1,15 +1,26 @@
+var currentPage = "contact";
 var dataTable,
     dropDownOpened = false;
 
 $(function () {
 
-    var show_columns = columns.filter(function(item) {
+    var show_columns = columns.filter(function (item) {
         return hide_columns.indexOf(item) === -1;
     });
 
 
     var initTable = function () {
         var table = $('#contacts-table');
+        var $searchBoxes = $('input.search-input-text, select.search-input-select');
+        var $deleteAllContactsBtn = $('#delete_all_filtered_contacts');
+
+        function getSearchStrLenDef($dataColumn) {
+            var $strLenDef = 2;
+            if ($dataColumn == 'city' || $dataColumn == 'street' || $dataColumn == 'house' || $dataColumn == 'flat') {
+                $strLenDef = 0;
+            }
+            return $strLenDef;
+        }
 
         var settings = {
             "sDom": "<'table-responsive't><'row'<p i>>",
@@ -35,45 +46,93 @@ $(function () {
                 {"visible": false, "targets": [show_columns.indexOf('id')]},
                 {"orderable": false, "targets": []}
             ],
-             'fnDrawCallback': function(data) {
-                 // var contactIds = data.json.contact_ids;
-                 // $('#add_tag_to_all').attr('data-contacts', contactIds);
-             },
+            'fnDrawCallback': function (data) {
+                // Show hide delete filtered contacts
+                var $showDelContactsBtn = false;
+                $.each($searchBoxes, function (index, val) {
+                    if (!$showDelContactsBtn && $(this).val().length > getSearchStrLenDef($(this).attr('data-column'))) {
+                        $showDelContactsBtn = true;
+                    }
+                });
+
+                //
+                // if ($showDelContactsBtn && data._iRecordsDisplay > 0) {
+                //     if ($deleteAllContactsBtn.is(':hidden')) {
+                //         $deleteAllContactsBtn.fadeIn(200);
+                //     }
+                //     $({numberValue: $deleteAllContactsBtn.find('span').text()}).animate({numberValue: dataTable.settings()[0].fnRecordsDisplay()}, {
+                //         duration: 500,
+                //         easing: 'linear',
+                //         step: function () {
+                //             $deleteAllContactsBtn.find('span').text(Math.ceil(this.numberValue));
+                //         },
+                //         complete: function () {
+                //             $deleteAllContactsBtn.find('span').text(this.numberValue);
+                //         }
+                //     });
+                // } else if ($deleteAllContactsBtn.is(':visible')) {
+                //     $deleteAllContactsBtn.fadeOut(150, function () {
+                //         $deleteAllContactsBtn.find('span').text(0);
+                //     });
+                // }
+            },
             "createdRow": function (row, data, index) {
                 $(row).attr('data-id', data[show_columns.indexOf('id')]);
                 $(row).addClass('open-link');
             }
         };
-        $.each(show_columns, function(col_index, col_val) {
-            settings.columnDefs.push({ "name": col_val, "targets": col_index });
+
+        $.each(show_columns, function (col_index, col_val) {
+            settings.columnDefs.push({"name": col_val, "targets": col_index});
         });
 
-        $.each(columns, function(col_index, col_val) {
+        $.each(columns, function (col_index, col_val) {
             if (!columns_full[col_val]['orderable']) {
                 settings.columnDefs[1].targets.push(col_index);
             }
         });
 
-        $.each(hide_columns, function(i ,val) {
+        $.each(hide_columns, function (i, val) {
             var index = columns.indexOf(val);
             settings.columnDefs[0].targets.push(index);
         });
+
         dataTable = table.DataTable(settings);
 
-        var $searchBoxes = $('input.search-input-text, select.search-input-select');
+        $deleteAllContactsBtn.on('click', function () {
+            if (confirm("Вы действительно желаете удалить все найденные контакты (" + dataTable.settings()[0].fnRecordsDisplay() + " шт.)?")) {
+                var $res = {};
+                $.each($searchBoxes, function (index, val) {
+                    var n = $(this).attr('data-column');
+                    var v = $(this).val();
+                    if (v.length > getSearchStrLenDef(n)) {
+                        $res[n] = v;
+                    }
+                });
+                $res["_csrf"] = _csrf;
 
-        $('.search-input-text').on('keyup', function () {   // for text boxes
+                $.post(
+                    '/contacts/delete-filtered',
+                    $res,
+                    function (response) {
+                        var result = $.parseJSON(response);
+                        if (result.status === 200) {
+                            dataTable.draw();
+                        }
+                    }
+                );
+            }
+        });
+
+        $('.search-input-text').on('keyup', function () { // for text boxes
             delay(function () {
                 $.each($searchBoxes, function (index, val) {
                     var n = $(this).attr('data-column');
                     var v = $(this).val();
-                    var strLenDef = 2;
-                    if (n == 'city' || n == 'street' || n == 'house' || n == 'flat') {
-                        strLenDef = 0;
+                    if (!(v.length > getSearchStrLenDef(n) || v.length == 0)) {
+                        v = '';
                     }
-                    if (v.length > strLenDef || v.length == 0) {
-                        dataTable.columns(n+':name').search(v);
-                    }
+                    dataTable.columns(n + ':name').search(v);
                 });
                 dataTable.draw();
             }, 2000);
@@ -83,14 +142,14 @@ $(function () {
             $.each($searchBoxes, function (index, val) {
                 var n = $(this).attr('data-column');
                 var v = $(this).val();
-                dataTable.columns(n+':name').search(v);
+                dataTable.columns(n + ':name').search(v);
             });
             dataTable.draw();
         });
     };
 
 
-    //evenets on contact page
+    //events on contact page
     if ($('#contacts-table').length) {
         var $contact_table = $('#contacts-table');
 
@@ -116,7 +175,7 @@ $(function () {
             $('#column_filter_modal input:checkbox:not(:checked)').each(function () {
                 hide_columns.push($(this).val());
             })
-            $.get('/contacts/hide-columns', {hide_columns: hide_columns}, function() {
+            $.get('/contacts/hide-columns', {hide_columns: hide_columns}, function () {
                 location.reload();
             });
             //dataTable.columnDefs.
@@ -197,7 +256,7 @@ $(function () {
             }
         });
 
-        $(document).on('keyup', '.link_with-dropdown input.search', function(event) {
+        $(document).on('keyup', '.link_with-dropdown input.search', function (event) {
             var $this = $(this),
                 $form = $this.parents('form'),
                 search_term = $(this).val(),
@@ -211,15 +270,15 @@ $(function () {
                     $.post('contacts/search', {search_term: search_term, id: id, _csrf: _csrf}, function (response) {
                         var result = $.parseJSON(response);
                         if (result.status === 200) {
-                            $.each(result.data, function(i, el) {
+                            $.each(result.data, function (i, el) {
                                 result_items += '<tr data-id="' + el.id + '">' +
-                                                    '<td>' + el.int_id + '</td>' +
-                                                    '<td>' + el.phones + '</td>' +
-                                                    '<td>' + (el.city?el.city:'') + '</td>' +
-                                                    '<td>' + (el.street?el.street:'') + '</td>' +
-                                                    '<td>' + (el.house?el.house:'') + '</td>' +
-                                                    '<td>' + (el.flat?el.flat:'') + '</td>' +
-                                                '</tr>';
+                                    '<td>' + el.int_id + '</td>' +
+                                    '<td>' + el.phones + '</td>' +
+                                    '<td>' + (el.city ? el.city : '') + '</td>' +
+                                    '<td>' + (el.street ? el.street : '') + '</td>' +
+                                    '<td>' + (el.house ? el.house : '') + '</td>' +
+                                    '<td>' + (el.flat ? el.flat : '') + '</td>' +
+                                    '</tr>';
                             });
 
                             $form.find('.result').html(result_items);
@@ -231,14 +290,14 @@ $(function () {
             }
         });
 
-        $(document).on('click', '.link_with-dropdown .result tr', function() {
+        $(document).on('click', '.link_with-dropdown .result tr', function () {
             if (!$(this).hasClass('selected')) {
                 $('.link_with-dropdown .result tr').removeClass('selected');
             }
             $(this).toggleClass('selected');
         });
 
-        $(document).on('click', '.link_with-dropdown .link_btn', function(e) {
+        $(document).on('click', '.link_with-dropdown .link_btn', function (e) {
             e.preventDefault();
             var $dropdown = $(this).parents('.dropdown'),
                 linkedContactId = $(this).parents('tr').data('id'),
@@ -249,7 +308,11 @@ $(function () {
                 $dropdown.find('.result').empty();
                 $dropdown.find('.link_btn').removeClass('inline').hide();
                 $dropdown.find('.loader').addClass('inline');
-                $.post('contacts/link-with', {linked_contact_id: linkedContactId, link_to_contact_id: linkToContactId, _csrf: _csrf}, function (response) {
+                $.post('contacts/link-with', {
+                    linked_contact_id: linkedContactId,
+                    link_to_contact_id: linkToContactId,
+                    _csrf: _csrf
+                }, function (response) {
                     var result = $.parseJSON(response);
                     if (result.status === 200) {
                         showNotification('.content', 'Слияние прошло успешно', 'top', 'success', 'bar', 5000);
@@ -259,7 +322,7 @@ $(function () {
                         $dropdown.find('.link_btn').addClass('inline').show();
                         $dropdown.find('.search').attr('disabled', false);
                         $.each(result.errors, function (name, error) {
-                            $dropdown.find('.result').html('<div class="error">'+ error +'</div><br>');
+                            $dropdown.find('.result').html('<div class="error">' + error + '</div><br>');
                         });
                     }
                 });
@@ -267,27 +330,27 @@ $(function () {
 
         });
 
-        $(document).on('click', '#contacts-table .contact-phone', function(e) {
+        $(document).on('click', '#contacts-table .contact-phone', function (e) {
             var contactId = $(this).parents('tr').data('id'),
                 phone = $(this).text();
             openContactForm(contactId);
             initCallNow(phone, null, contactId);
         });
 
-        $(document).on('click', '#contacts-table .contact-tags', function(e) {
+        $(document).on('click', '#contacts-table .contact-tags', function (e) {
             var tag_name = $(this).text();
             $('.search-input-text[data-column="tags"]').val(tag_name);
             dataTable.columns('tags:name').search(tag_name).draw();
         });
     }
 
-    $('#add_tag_to_all').on('click', function(e) {
+    $('#add_tag_to_all').on('click', function (e) {
         // window.location.href = '/tags?contact_tags=' + $('.search-input-text[data-column="tags"]').val();
 
         var url = '/tags';
         var form = $('<form action="' + url + '" method="post">' +
             '<input type="text" name="contact_ids" value="' + $('#add_tag_to_all').attr('data-contacts') + '" />' +
-            '<input type="text" name="_csrf" value="'+ $('meta[name="csrf-token"]').attr('content')+ '" />' +
+            '<input type="text" name="_csrf" value="' + $('meta[name="csrf-token"]').attr('content') + '" />' +
             '</form>');
         $('body').append(form);
         form.submit();

@@ -2,11 +2,10 @@
 
 namespace app\models;
 
-use Yii;
 use app\components\UtilHelper;
-use yii\db\Query;
+use Yii;
 use yii\base\Exception;
-use yii\helpers\ArrayHelper;
+use yii\db\Query;
 
 /**
  * This is the model class for table "contact".
@@ -57,7 +56,7 @@ class Contact extends \yii\db\ActiveRecord
         'status',
         'manager_id',
         'is_deleted',
-        'remove_tags'
+        'remove_tags',
     ];
 
     public $is_called;
@@ -132,7 +131,7 @@ class Contact extends \yii\db\ActiveRecord
             'city',
             'street',
             'house',
-            'flat'
+            'flat',
         ];
     }
 
@@ -155,7 +154,7 @@ class Contact extends \yii\db\ActiveRecord
             'street' => ['label' => 'Улица', 'have_search' => true, 'orderable' => true],
             'house' => ['label' => 'Дом', 'have_search' => true, 'orderable' => true],
             'flat' => ['label' => 'Квартира', 'have_search' => true, 'orderable' => true],
-            'delete_button' => ['label' => 'Удалить', 'have_search' => false, 'orderable' => false]
+            'delete_button' => ['label' => 'Удалить', 'have_search' => false, 'orderable' => false],
         ];
         if (!Yii::$app->user->can('delete_contact')) {
             unset($result['delete_button']);
@@ -168,7 +167,7 @@ class Contact extends \yii\db\ActiveRecord
         return [
             'surname',
             'name',
-            'middle_name'
+            'middle_name',
         ];
     }
 
@@ -187,7 +186,7 @@ class Contact extends \yii\db\ActiveRecord
             'first_phone',
             'second_phone',
             'third_phone',
-            'fourth_phone'
+            'fourth_phone',
         ];
     }
 
@@ -197,7 +196,7 @@ class Contact extends \yii\db\ActiveRecord
             'first_phone' => $this->first_phone,
             'second_phone' => $this->second_phone,
             'third_phone' => $this->third_phone,
-            'fourth_phone' => $this->fourth_phone
+            'fourth_phone' => $this->fourth_phone,
         ];
     }
 
@@ -222,7 +221,7 @@ class Contact extends \yii\db\ActiveRecord
     {
         return [
             'first_email' => $this->first_email,
-            'second_email' => $this->second_email
+            'second_email' => $this->second_email,
         ];
     }
 
@@ -242,7 +241,7 @@ class Contact extends \yii\db\ActiveRecord
             'city',
             'street',
             'house',
-            'flat'
+            'flat',
         ];
     }
 
@@ -277,12 +276,12 @@ class Contact extends \yii\db\ActiveRecord
 
         $i = 0;
         foreach ($self_phones['empty'] as $phone_key => $phone_val) {
-            $this->$phone_key = isset($contact_phones['exists'][$i]) ? $contact_phones['exists'][$i] : null;
+            $this->$phone_key = isset($contact_phones['exists'][$i]) ? $contact_phones['exists'][$i] : NULL;
             $i++;
         }
         $i = 0;
         foreach ($self_emails['empty'] as $email_key => $email_val) {
-            $this->$email_key = isset($contact_emails['exists'][$i]) ? $contact_emails['exists'][$i] : null;
+            $this->$email_key = isset($contact_emails['exists'][$i]) ? $contact_emails['exists'][$i] : NULL;
             $i++;
         }
 
@@ -317,7 +316,7 @@ class Contact extends \yii\db\ActiveRecord
     public function setNull($cols)
     {
         foreach ($cols as $col) {
-            $this->$col = null;
+            $this->$col = NULL;
         }
     }
 
@@ -334,7 +333,7 @@ class Contact extends \yii\db\ActiveRecord
         if ($manager && $manager->role == User::ROLE_MANAGER) {
             return $manager->id;
         }
-        return null;
+        return NULL;
     }
 
     public static function getManagerById($id)
@@ -351,21 +350,32 @@ class Contact extends \yii\db\ActiveRecord
         return self::find()->where(['id' => $id])->one();
     }
 
+    /**
+     * @param int|array $id
+     * @return bool
+     */
     public static function deleteById($id)
     {
-        $contact = self::find()->with('tags')->where(['id' => $id])->one();
-        if ($contact) {
-            // Удаление временных записей связанных с контаком
-            Contact::removeContInPool($id);
-
-            // Удаление тегов связанных с контактом
-            //$contact->unlink('tags', $contact->tags[0]);
-
-            $contact->is_deleted = 1;
-            $contact->save();
-            return true;
+        if (empty($id)) {
+            return false;
         }
-        return false;
+        foreach ((is_array($id) ? $id : [$id]) as $contactId) {
+            $contact = self::find()->with('tags')->where(['id' => $contactId])->one();
+            if ($contact) {
+                // Delete temporary records
+                Contact::removeContInPool($contactId);
+
+                // Delete tags
+//                $contact->unlink('tags', $contact->tags[0]);
+
+                $contact->is_deleted = 1;
+                $contact->save();
+
+                continue;
+            }
+            return false;
+        }
+        return true;
     }
 
     public function edit($related)
@@ -410,7 +420,18 @@ class Contact extends \yii\db\ActiveRecord
 
     public function getTags()
     {
-        return $this->hasMany(Tag::className(), ['id' => 'tag_id'])->viaTable('contact_tag', ['contact_id' => 'id']);
+        $use_archived_tags = false;
+        if (Yii::$app->user->identity) {
+            $use_archived_tags = Yii::$app->user->identity->getSetting('use_archive_tags');
+        }
+
+        if ($use_archived_tags) {
+            return $this->hasMany(Tag::className(), ['id' => 'tag_id'])
+                ->viaTable('contact_tag', ['contact_id' => 'id']);
+        }
+        return $this->hasMany(Tag::className(), ['id' => 'tag_id'])
+            ->andOnCondition(['`tag`.`is_deleted`' => 0])
+            ->viaTable('contact_tag', ['contact_id' => 'id']);
     }
 
 //    public function setTags($new_tags) {
@@ -442,7 +463,7 @@ class Contact extends \yii\db\ActiveRecord
             '`call`.`status` as `call_status`',
             '`call`.`type` as `call_type`',
             '`call`.`comment` as `call_comment`',
-            '`call`.`attitude_level` as `call_attitude_level`'
+            '`call`.`attitude_level` as `call_attitude_level`',
         ];
         $query
             ->join('LEFT JOIN', '`call`', '`contact`.`id` = `call`.`contact_id` AND `call`.`id` in (SELECT MAX(`call`.`id`) FROM `call` WHERE `contact`.`id` = `call`.`contact_id` AND `call`.`tag_id`=' . $tag_id . ')')
@@ -491,14 +512,14 @@ class Contact extends \yii\db\ActiveRecord
         if ($user_role == User::ROLE_OPERATOR) {
             $notCalledContactQuery = clone $query;
             $query->andWhere(['`call_manager`.`manager_id`' => Yii::$app->user->identity->id]);
-            $notCalledContactQuery->andWhere(['is', '`call`.`status`', null]);
+            $notCalledContactQuery->andWhere(['is', '`call`.`status`', NULL]);
             $contactsIdInPool = Contact::getContactsIdInPool($tag_id, Yii::$app->user->identity->id);
             $notCalledContactQuery->andWhere(['NOT IN', '`contact`.`id`', $contactsIdInPool]);
             $notCalledContactQuery->limit(1);
             //$dump = $notCalledContactQuery->createCommand()->rawSql;
             $notCalledContact = $notCalledContactQuery->all();
             if (count($notCalledContact)) {
-                Contact::addContInPool($notCalledContact[0]['id'], Yii::$app->user->identity->id, $tag_id, null);
+                Contact::addContInPool($notCalledContact[0]['id'], Yii::$app->user->identity->id, $tag_id, NULL);
                 //file_put_contents('/var/log/pool.log', 'Pool :'.$notCalledContact[0]['id'] . ' : ' . Yii::$app->user->identity->id .' : ' . $tag_id . PHP_EOL, FILE_APPEND);
             }
 
@@ -529,19 +550,19 @@ class Contact extends \yii\db\ActiveRecord
             ->from('`contact`')
             ->groupBy('`call`.`status`')
             ->orderBy(['`call`.id' => SORT_DESC]);
-        //$dump = $query->createCommand()->rawSql;
+        $dump = $query->createCommand()->rawSql;
         $counts = $query->all();
         $all_count = 0;
         $called_count = 0;
         foreach ($counts as $count) {
-            if ($count['status'] != null) {
+            if ($count['status'] != NULL) {
                 $called_count += $count['count'];
             }
             $all_count += $count['count'];
         }
         return [
             'all' => $all_count,
-            'called' => $called_count
+            'called' => $called_count,
         ];
     }
 
@@ -585,7 +606,7 @@ class Contact extends \yii\db\ActiveRecord
 
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('X-Amz-Meta-Crm-Api-Token: 6e5b4d74875ea09f3f888601c7825211'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-Amz-Meta-Crm-Api-Token: 6e5b4d74875ea09f3f888601c7825211']);
 
 
         $crm_host = Yii::$app->params['crm_host'];
@@ -624,7 +645,7 @@ class Contact extends \yii\db\ActiveRecord
         $history = ContactHistory::getByContactId($this->id);
         $contact['Comment'] = "";
         foreach ($history as $history_item) {
-            $contact['Comment'] .= $history_item['datetime'].' '.$history_item['text'].PHP_EOL;
+            $contact['Comment'] .= $history_item['datetime'] . ' ' . $history_item['text'] . PHP_EOL;
         }
 //        $history = array_map(function($history_item) {
 //            return ['datetime' => $history_item['datetime'], 'text' => $history_item['text']];

@@ -35,6 +35,8 @@ class RbacController extends Controller {
         $delete_user = $authManager->createPermission('delete_user');
         $edit_tag =  $authManager->createPermission('edit_tag');
 
+        $use_archived_tags = $authManager->createPermission('use_archived_tags');
+
         $authManager->add($contacts);
         $authManager->add($actions);
         $authManager->add($reports);
@@ -50,6 +52,7 @@ class RbacController extends Controller {
         $authManager->add($updateUser);
         $authManager->add($delete_user);
         $authManager->add($edit_tag);
+        $authManager->add($use_archived_tags);
 
         $user_role_rule = new UserRoleRule();
         $authManager->add($user_role_rule);
@@ -97,6 +100,7 @@ class RbacController extends Controller {
         $authManager->addChild($admin, $updateUser);
         $authManager->addChild($admin, $delete_user);
         $authManager->addChild($admin, $edit_tag);
+        $authManager->addChild($admin, $use_archived_tags);
 
     }
 

@@ -18,7 +18,7 @@ class UserTag extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%user_tag}}';
+        return 'user_tag';
     }
 
     /**

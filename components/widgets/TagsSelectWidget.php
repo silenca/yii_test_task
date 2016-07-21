@@ -2,9 +2,9 @@
 
 namespace app\components\widgets;
 
-use yii\base\Widget;
-use Yii;
 use app\models\User;
+use Yii;
+use yii\base\Widget;
 
 class TagsSelectWidget extends Widget
 {
@@ -21,6 +21,7 @@ class TagsSelectWidget extends Widget
             $data[$i]['as_task'] = $tag->as_task;
             $data[$i]['start_date'] = $tag->start_date;
             $data[$i]['end_date'] = $tag->end_date;
+            $data[$i]['is_deleted'] = $tag->is_deleted;
             foreach ($tag->users as $user) {
                 switch (Yii::$app->user->identity->role) {
                     case User::ROLE_ADMIN:

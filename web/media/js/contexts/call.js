@@ -1,3 +1,4 @@
+var currentPage = "call";
 var dataTable;
 $(function () {
     var columns_count = $('#call-table thead th').length;

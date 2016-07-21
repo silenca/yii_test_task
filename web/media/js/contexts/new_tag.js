@@ -1,3 +1,4 @@
+var currentPage = "tag";
 var tagContactsdataTable;
 var tagTableFilters = {};
 var contactTableFilters = {};
@@ -176,7 +177,7 @@ var initContactsModalTable = function (tag_id) {
 
     $.each(hide_columns, function (i, val) {
         var index = columns.indexOf(val);
-        if (index >=0) {
+        if (index >= 0) {
             settings.columnDefs[0].targets.push(index);
         }
     });
@@ -250,12 +251,12 @@ $(function () {
         }
     });
 
-    $('form#exportCsv').on('submit', function(e) {
+    $('form#exportCsv').on('submit', function (e) {
         $(this).find('input[name="tag_id"]').val($('#tag_search_select').val());
-        $(this).find('input[name="manager_id"]').val(tagTableFilters.manager_id !== '0'?tagTableFilters.manager_id: null);
-        $(this).find('input[name="status"]').val(tagTableFilters.status !== '0'?tagTableFilters.status: null);
-        $(this).find('input[name="comment"]').val(tagTableFilters.comment.length?tagTableFilters.comment: null);
-        $(this).find('input[name="attitude_level"]').val(tagTableFilters.attitude_level !== '0'?tagTableFilters.attitude_level: null);
+        $(this).find('input[name="manager_id"]').val(tagTableFilters.manager_id !== '0' ? tagTableFilters.manager_id : null);
+        $(this).find('input[name="status"]').val(tagTableFilters.status !== '0' ? tagTableFilters.status : null);
+        $(this).find('input[name="comment"]').val(tagTableFilters.comment.length ? tagTableFilters.comment : null);
+        $(this).find('input[name="attitude_level"]').val(tagTableFilters.attitude_level !== '0' ? tagTableFilters.attitude_level : null);
         return true;
     });
 
@@ -269,7 +270,7 @@ $(function () {
         }
     });
 
-    $('#tag_description, #tag_script, #tag_as_task').on('change', function() {
+    $('#tag_description, #tag_script, #tag_as_task').on('change', function () {
         if ($('#tag_search_select').val()) {
             var value = $(this).val();
             var attribute = $(this).attr('name');
@@ -314,6 +315,22 @@ $(function () {
         //$this.text('Поиск тегов');
         $(this).hide();
         $('#tag-controls').show();
+    });
+
+    $('#tag_delete').on('click', function (e) {
+        e.preventDefault();
+        if (confirm("Удалить тэг?")) {
+            var tag_id = $('#tag_search_select').val();
+            deleteTag(tag_id);
+        }
+    });
+
+    $('#tag_restore').on('click', function (e) {
+        e.preventDefault();
+        if (confirm("Восстановить тэг?")) {
+            var tag_id = $('#tag_search_select').val();
+            restoreTag(tag_id);
+        }
     });
 
     $('#tag-controls .ok').on('click', function () {
@@ -372,7 +389,7 @@ $(function () {
 
     var canCall = true;
 
-    $(document).on('click', '#tag_contacts_table .contact-phone', function(e) {
+    $(document).on('click', '#tag_contacts_table .contact-phone', function (e) {
         if (!canCall) {
             return false;
         }
@@ -383,12 +400,12 @@ $(function () {
         openContactForm(contactId);
         initCallNow(phone, tag_id, contactId);
         initRingRound($('#tag_form'));
-        setTimeout(function() {
+        setTimeout(function () {
             canCall = true;
-        },10000)
+        }, 10000)
     });
 
-    $(document).on('click', '#contacts-table .contact-tags', function(e) {
+    $(document).on('click', '#contacts-table .contact-tags', function (e) {
         var tag_name = $(this).text();
         $('.search-input-text[data-column="tags"]').val(tag_name);
         contactsModaldataTable.columns('tags:name').search(tag_name).draw();
@@ -400,6 +417,13 @@ function buildDataByTag(data) {
     $('#tag_users_select').val(data.users).trigger("change");
     $('#tag_description').val(data.description);
     $('#tag_script').val(data.script);
+    if (data.is_deleted == 1) {
+        $('#tag_delete').hide();
+        $('#tag_restore').show();
+    } else {
+        $('#tag_delete').show();
+        $('#tag_restore').hide();
+    }
     getContactsForTag(data.id);
 }
 
@@ -437,4 +461,30 @@ function updateUsersForTag(tag_id, users) {
 function updateTag(tag_id, data) {
     var data = $.extend(data, {_csrf: _csrf, id: tag_id});
     $.post('/tags/edit', data);
+}
+
+function deleteTag(tag_id) {
+    var data = {
+        id: tag_id,
+        _csrf: _csrf
+    };
+    $.post('/tags/delete', data, function(response) {
+        if (response.status == 200) {
+            $('#tag_restore').show();
+            $('#tag_delete').hide();
+        }
+    }, 'json');
+}
+
+function restoreTag(tag_id) {
+    var data = {
+        id: tag_id,
+        _csrf: _csrf
+    };
+    $.post('/tags/restore', data, function(response) {
+        if (response.status == 200) {
+            $('#tag_restore').hide();
+            $('#tag_delete').show();
+        }
+    }, 'json');
 }

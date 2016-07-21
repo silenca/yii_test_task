@@ -3,33 +3,28 @@
 namespace app\controllers;
 
 use app\components\CSVExport;
-use app\models\ContactTag;
+use app\components\widgets\ContactTagTableWidget;
+use app\components\widgets\TagContactsTableWidget;
+use app\components\widgets\TagsSelectWidget;
+use app\models\Call;
+use app\models\Contact;
+use app\models\Tag;
+use app\models\User;
+use app\models\UserTag;
 use Yii;
 use yii\db\Query;
-use yii\db\Command;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use app\models\Tag;
-use app\models\UserTag;
-use app\models\User;
-use app\models\Contact;
-use app\models\Call;
 
 //use app\models\ContactCalled;
 //use app\models\TempContactsPool;
-use app\components\widgets\TagContactsTableWidget;
-use app\components\widgets\TagsSelectWidget;
-use app\components\widgets\ContactTagTableWidget;
 
-class TagsController extends BaseController
-{
-    public function behaviors()
-    {
-        return ['access' => ['class' => AccessControl::className(), 'rules' => [['actions' => ['index', 'gettags', 'getdata', 'getusers', 'get-contacts-another-tag', 'edit', 'delete', 'export-csv', 'update-users', 'add-contacts-by-filter'], 'allow' => true, 'roles' => ['admin', 'manager'],], ['actions' => ['index', 'gettags', 'getdata', 'getusers'], 'allow' => true, 'roles' => ['operator']]]], 'verbs' => ['class' => VerbFilter::className(), 'actions' => ['delete' => ['post'], 'edit' => ['post']]]];
+class TagsController extends BaseController {
+    public function behaviors() {
+        return ['access' => ['class' => AccessControl::className(), 'rules' => [['actions' => ['index', 'gettags', 'getdata', 'getusers', 'get-contacts-another-tag', 'edit', 'delete', 'restore', 'export-csv', 'update-users', 'add-contacts-by-filter'], 'allow' => true, 'roles' => ['admin', 'manager'],], ['actions' => ['index', 'gettags', 'getdata', 'getusers'], 'allow' => true, 'roles' => ['operator']]]], 'verbs' => ['class' => VerbFilter::className(), 'actions' => ['delete' => ['post'], 'edit' => ['post'], 'restore' => ['post']]]];
     }
 
-    public function actionIndex()
-    {
+    public function actionIndex() {
         $session = Yii::$app->session;
         $hide_contact_columns = $session->get('contact_hide_columns');
         if (!$hide_contact_columns) {
@@ -59,7 +54,7 @@ class TagsController extends BaseController
         } else if (Yii::$app->user->identity->role == User::ROLE_MANAGER) {
             $managers = User::find()->where(['role' => [User::ROLE_MANAGER, User::ROLE_OPERATOR]])->all();
         } else {
-            $managers = null;
+            $managers = NULL;
         }
         $data['managers'] = $managers;
         $data['call_statuses'] = $call_statuses;
@@ -68,12 +63,11 @@ class TagsController extends BaseController
         return $this->render('index', $data);
     }
 
-    public function actionEdit()
-    {
+    public function actionEdit() {
         $post = Yii::$app->request->post();
 
         try {
-            $tag = null;
+            $tag = NULL;
             if (isset($post['id']) && !empty($post['id'])) {
                 $tag = Tag::getById($post['id']);
             } else {
@@ -93,15 +87,14 @@ class TagsController extends BaseController
         }
     }
 
-    public function actionGettags()
-    {
+    public function actionGettags() {
         $request_data = Yii::$app->request->get();
         $term = $request_data['term'];
         $query = Tag::find();
         $user_id = Yii::$app->user->identity->getId();
-        //        $user_oper = Yii::$app->user->can('operator');
         $user_role = Yii::$app->user->identity->getUserRole();
         if ($user_role == 'manager' || $user_role == 'operator') {
+            $query->andWhere(['tag.is_deleted' => 0]);
             $query->joinWith('users')->andWhere(['=', 'user.id', $user_id]);
             if ($user_role == 'operator') {
                 $query->andWhere(['=', 'tag.as_task', 1]);
@@ -109,21 +102,17 @@ class TagsController extends BaseController
         }
         $query->andWhere(['like', 'tag.name', $term]);
 
-        //$dump = $query->createCommand()->rawSql;
-        $tags = $query->all();
         $tags_widget = new TagsSelectWidget();
-        $tags_widget->tags = $tags;
-        $data = $tags_widget->run();
+        $tags_widget->tags = $query->all();
 
-        if (count($tags) > 0) {
-            $this->json(['items' => $data], 200);
+        if (count($tags_widget->tags) > 0) {
+            $this->json(['items' => $tags_widget->run()], 200);
         } else {
             $this->json(['items' => []], 404);
         }
     }
 
-    public function actionGetusers()
-    {
+    public function actionGetusers() {
         $query = new Query();
         $query->select(['`id`', '`firstname` as `text`']);
         $query->from(User::tableName());
@@ -147,8 +136,7 @@ class TagsController extends BaseController
     }
 
     // Получение списка контактов для вывода в модальном окне.
-    public function actionGetContactsAnotherTag()
-    {
+    public function actionGetContactsAnotherTag() {
         $request_data = Yii::$app->request->get();
         $tag_id = $request_data['tag_id'];
         if (!is_int((int)$tag_id) || (int)$tag_id <= 0) {
@@ -194,8 +182,8 @@ class TagsController extends BaseController
                     }
                     $query->andWhere($db_cols_where);
                 } elseif ($requestColumn['name'] == 'tags') {
-                    $contactsByTagNameQuery = (new Query())->select('`contact_id`')->from('`contact_tag`')->where(['IN','`contact_tag`.`tag_id`',
-                        (new Query())->select('`id`')->from('`tag`')->where(['LIKE','`name`', $requestColumn['search']['value']])
+                    $contactsByTagNameQuery = (new Query())->select('`contact_id`')->from('`contact_tag`')->where(['IN', '`contact_tag`.`tag_id`',
+                        (new Query())->select('`id`')->from('`tag`')->where(['LIKE', '`name`', $requestColumn['search']['value']]),
                     ]);
                     $query->andWhere(['IN', '`contact`.`id`', $contactsByTagNameQuery]);
                 } else {
@@ -224,14 +212,13 @@ class TagsController extends BaseController
         $contact_widget->contacts_tags = $contactTags;
         $data = $contact_widget->run();
 
-        $json_data = array("draw" => intval($request_data['draw']), "recordsTotal" => intval($total_count), "recordsFiltered" => intval($total_filtering_count), "data" => $data   // total data array
-        );
+        $json_data = ["draw" => intval($request_data['draw']), "recordsTotal" => intval($total_count), "recordsFiltered" => intval($total_filtering_count), "data" => $data   // total data array
+        ];
         echo json_encode($json_data);
         die;
     }
 
-    public function actionExportCsv()
-    {
+    public function actionExportCsv() {
         $request_data = Yii::$app->request->post();
         $tag_id = $request_data['tag_id'];
         if ($tag_id && !empty($tag_id)) {
@@ -269,8 +256,7 @@ class TagsController extends BaseController
         $this->redirect('/tags');
     }
 
-    public function actionGetdata()
-    {
+    public function actionGetdata() {
         $request_data = Yii::$app->request->post();
         $tag_id = $request_data['columns'][1]['search']['value']; //Tag
         if ($tag_id && !empty($tag_id)) {
@@ -299,20 +285,19 @@ class TagsController extends BaseController
             $tag_contacts_widget->tag_contacts = $contacts;
             $tag_contacts_widget->user_role = $user_role;
             $data = $tag_contacts_widget->run();
-            $json_data = array("draw" => intval($request_data['draw']), "recordsTotal" => count($data), "recordsFiltered" => 7, "data" => $data,   // total data array
-                "contact_count" => ["count_all" => $counts['all'], "count_called" => $counts['called'],]);
+            $json_data = ["draw" => intval($request_data['draw']), "recordsTotal" => count($data), "recordsFiltered" => 7, "data" => $data,   // total data array
+                "contact_count" => ["count_all" => $counts['all'], "count_called" => $counts['called'],]];
             echo json_encode($json_data);
             die;
         } else {
-            $json_data = array("draw" => intval($request_data['draw']), "recordsTotal" => 0, "recordsFiltered" => 0, "data" => [],   // total data array
-                "contact_count" => ["count_all" => 0, "count_called" => 0]);
+            $json_data = ["draw" => intval($request_data['draw']), "recordsTotal" => 0, "recordsFiltered" => 0, "data" => [],   // total data array
+                "contact_count" => ["count_all" => 0, "count_called" => 0]];
             echo json_encode($json_data);
             die;
         }
     }
 
-    public function actionUpdateUsers()
-    {
+    public function actionUpdateUsers() {
         $request_data = Yii::$app->request->post();
         $tag_id = $request_data['tag_id'];
         $users = $request_data['users'];
@@ -323,20 +308,21 @@ class TagsController extends BaseController
         }
         $userRole = Yii::$app->user->identity->role;
         if ($userRole == User::ROLE_ADMIN) {
-            $where = User::tableName() . ".`role` = " . User::ROLE_OPERATOR . " AND " . User::tableName() . ".`role` = " . User::ROLE_MANAGER;
+            $where = "(`" . User::tableName() . "`.`role` = " . User::ROLE_OPERATOR . " OR `" . User::tableName() . "`.`role` = " . User::ROLE_MANAGER . ")";
         } else if ($userRole == User::ROLE_MANAGER) {
-            $where = User::tableName() . ".`role` = " . User::ROLE_OPERATOR;
+            $where = "`" . User::tableName() . "`.`role` = " . User::ROLE_OPERATOR;
         }
-        $where .= " AND " . UserTag::tableName() . ".`tag_id` = " . $tag_id;
+
+        $where .= " AND `" . UserTag::tableName() . "`.`tag_id` = " . $tag_id;
         //$where[] = ['tag_id' => $tag_id];
-        $deleteQuery = "DELETE " . UserTag::tableName() . " FROM " . UserTag::tableName() . " LEFT JOIN " . User::tableName() . " ON " . UserTag::tableName() . ".`user_id` = " . User::tableName() . ".`id` WHERE " . $where;
+        $deleteQuery = "DELETE " . UserTag::tableName() . " FROM `" . UserTag::tableName() . "` LEFT JOIN `" . User::tableName() . "` ON `" . UserTag::tableName() . "`.`user_id` = `" . User::tableName() . "`.`id` WHERE " . $where;
+
         Yii::$app->db->createCommand($deleteQuery)->execute();
         $tag->setUsers($users);
         $this->json([], 200);
     }
 
-    public function actionAddContactsByFilter()
-    {
+    public function actionAddContactsByFilter() {
         $request_data = Yii::$app->request->post();
         $filters = $request_data['filters'];
 
@@ -369,15 +355,15 @@ class TagsController extends BaseController
                     $query->andWhere($db_cols_where);
                     $filtered = true;
                 } elseif ($filterName == 'tags') {
-                    $contactsByTagNameQuery = (new Query())->select('`contact_id`')->from('`contact_tag`')->where(['IN','`contact_tag`.`tag_id`',
-                        (new Query())->select('`id`')->from('`tag`')->where(['LIKE','`name`', $filterValue])
+                    $contactsByTagNameQuery = (new Query())->select('`contact_id`')->from('`contact_tag`')->where(['IN', '`contact_tag`.`tag_id`',
+                        (new Query())->select('`id`')->from('`tag`')->where(['LIKE', '`name`', $filterValue]),
                     ]);
                     $query->andWhere(['IN', '`contact`.`id`', $contactsByTagNameQuery]);
                     $filtered = true;
                 } elseif ($filterName = 'id') {
                     $query->andWhere(['IN', 'contact.' . $filterName, $filterValue]);
                     $filtered = true;
-                }else {
+                } else {
                     $query->andWhere(['like', 'contact.' . $filterName, $filterValue]);
                     $filtered = true;
                 }
@@ -401,11 +387,22 @@ class TagsController extends BaseController
 
     }
 
-    //    public function actionDelete() {
-    //        $tag_id = Yii::$app->request->post('id');
-    //        $tag = Tag::getById($tag_id);
-    //        if ($tag->delete()) {
-    //            $this->json(false, 200);
-    //        }
-    //    }
+    public function actionDelete() {
+        $tag_id = Yii::$app->request->post('id');
+        $tag = Tag::getById($tag_id);
+        if ($tag->archive()) {
+            $this->json(false, 200);
+        }
+        $this->json(false, 500);
+    }
+
+    public function actionRestore() {
+        $tag_id = Yii::$app->request->post('id');
+        $tag = Tag::getById($tag_id);
+        if ($tag->restore()) {
+            $this->json(false, 200);
+        }
+        $this->json(false, 500);
+    }
+
 }

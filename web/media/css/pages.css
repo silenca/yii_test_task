@@ -2212,10 +2212,7 @@ hr.dotted {
     font-weight: 600;
     color: #626262 !important;
 }
-.label-success {
-    background-color: #10cfbd;
-    color: #fff !important;
-}
+
 .label-warning {
     background-color: #f8d053;
     color: #fff !important;
@@ -2223,6 +2220,10 @@ hr.dotted {
 .label-important,
 .label-danger {
     background-color: #f55753;
+    color: #fff !important;
+}
+.label-success {
+    background-color: #10cfbd;
     color: #fff !important;
 }
 .label-info {

@@ -1,3 +1,4 @@
+var currentPage = "reports";
 var dataTable;
 // var incoming = 0;
 // var outgoing = 0;
@@ -52,7 +53,11 @@ $(function () {
                     "createdCell": function (td, cellData, rowData, row, col) {
                         var tags = '';
                         cellData.forEach(function (val) {
-                            tags += '<div class="tag label" data-id="' + val['tag_id'] + '">' + val['name'] + '</div>';
+                            var tagClass = 'tag label';
+                            if (val['is_deleted'] == 1) {
+                                tagClass += ' label-danger';
+                            }
+                            tags += '<div class="' + tagClass + '" data-id="' + val['tag_id'] + '">' + val['name'] + '</div>';
                         });
                         $(td).html("<div class='tags_block clearfix'>" + tags + "</div>");
                     }
@@ -66,8 +71,8 @@ $(function () {
                 // leads += parseInt(data[3]);
             },
             "drawCallback": function () {
-                tag_filters.forEach(function(val) {
-                    $('.tag[data-id='+val+']').addClass('label-success');
+                tag_filters.forEach(function (val) {
+                    $('.tag[data-id=' + val + ']').addClass('label-success');
                 });
 
             }

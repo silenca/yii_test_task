@@ -45,6 +45,9 @@ return [
     'edit_tag' => [
         'type' => 2,
     ],
+    'use_archived_tags' => [
+        'type' => 2,
+    ],
     'manager' => [
         'type' => 1,
         'ruleName' => 'userRole',
@@ -88,6 +91,7 @@ return [
             'updateUser',
             'delete_user',
             'edit_tag',
+            'use_archived_tags',
         ],
     ],
 ];

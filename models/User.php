@@ -15,7 +15,7 @@ class User extends ActiveRecord implements IdentityInterface {
     const ROLE_OPERATOR = 1;
 
     public static function tableName() {
-        return '{{%user}}';
+        return 'user';
     }
 
     public $remove_tags;
@@ -28,6 +28,7 @@ class User extends ActiveRecord implements IdentityInterface {
         'email',
         'role',
         'is_deleted',
+        'settings',
     ];
 
     /**
@@ -49,7 +50,7 @@ class User extends ActiveRecord implements IdentityInterface {
             [['notification_key'], 'string', 'max' => 32],
             [['email'], 'email'],
             [['email'], 'unique'],
-            [['is_deleted'], 'safe']
+            [['is_deleted', 'settings'], 'safe']
         ];
     }
 
@@ -219,7 +220,19 @@ class User extends ActiveRecord implements IdentityInterface {
     }
 
     public function getTags() {
-        return $this->hasMany(Tag::className(), ['id' => 'tag_id'])->viaTable('user_tag', ['user_id' => 'id']);
+        $use_archived_tags = false;
+        if (Yii::$app->user->identity) {
+            $use_archived_tags = Yii::$app->user->identity->getSetting('use_archive_tags');
+        }
+
+        if ($use_archived_tags) {
+            return $this->hasMany(Tag::className(), ['id' => 'tag_id'])
+                ->viaTable('user_tag', ['user_id' => 'id']);
+        }
+        return $this->hasMany(Tag::className(), ['id' => 'tag_id'])
+            ->andOnCondition(['`tag`.`is_deleted`' => 0])
+            ->viaTable('user_tag', ['user_id' => 'id']);
+
     }
 
     public static function getColsForTableView() {
@@ -272,6 +285,22 @@ class User extends ActiveRecord implements IdentityInterface {
                 $this->link('tags', $new_tag);
             }
         }
+    }
+
+    public function getSettings() {
+        return unserialize($this->settings);
+    }
+
+    public function getSetting($name) {
+        $settings = unserialize($this->settings);
+        return $settings[$name];
+    }
+
+    public function setSetting($name, $value) {
+        $settings = $this->getSettings();
+        $settings[$name] = $value;
+        $this->settings = serialize($settings);
+        return $this->save();
     }
 
 }

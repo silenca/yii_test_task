@@ -151,6 +151,23 @@ function triggerChoise_CsSelect(el, val) {
     if ($('#form-login').length) {
         $('#form-login').validate();
     }
+
+    if ($('.js-switch').length) {
+        var elem = document.querySelector('.js-switch');
+        var init = new Switchery(elem, {
+            size: 'small',
+            color: 'rgb(16, 207, 189)',
+        });
+    }
+
+
+    $('#use_deleted_tags').on('change', function() {
+        if ($(this).is(':checked')) {
+            useArchiveTags(true);
+        } else {
+            useArchiveTags(false);
+        }
+    })
 })(window.jQuery);
 
 function ping() {
@@ -164,3 +181,29 @@ var delay = (function(){
         timer = setTimeout(callback, ms);
     };
 })();
+
+function useArchiveTags(use) {
+    var data = {
+        use : +use,
+        _csrf: _csrf
+    };
+    $.post('/settings/use-archive-tags', data, function(response) {
+        if (response.status == 200) {
+            dataTable.draw();
+            // var page = "";
+            // if (~location.pathname.indexOf('/', 1)) {
+            //     page = location.pathname.substring(1, location.pathname.indexOf('/', 1));
+            // } else {
+            //     page = location.pathname.substring(1);
+            // }
+            // switch(page) {
+            //     case "contact":
+            //     case "action":
+            //     case "call":
+            //     case "reports":
+            //     case "dataTable":
+            //         dataTable.draw();
+            // }
+        }
+    }, 'json');
+}

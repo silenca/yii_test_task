@@ -23,7 +23,8 @@
         "yiisoft/yii2-codeception": "*",
         "yiisoft/yii2-debug": "*",
         "yiisoft/yii2-gii": "*",
-        "yiisoft/yii2-faker": "*"
+        "yiisoft/yii2-faker": "*",
+        "iiifx-production/yii2-autocomplete-helper": "*"
     },
     "config": {
         "process-timeout": 1800
@@ -31,7 +32,8 @@
     "scripts": {
         "post-create-project-cmd": [
             "yii\\composer\\Installer::postCreateProject"
-        ]
+        ],
+        "autocomplete": "autocomplete"
     },
     "extra": {
         "yii\\composer\\Installer::postCreateProject": {

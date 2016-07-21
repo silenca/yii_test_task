@@ -189,6 +189,18 @@ if (!Yii::$app->user->isGuest) {
                                 </a>
                             </li>
                         <?php endif; ?>
+                        <?php if (Yii::$app->user->can('use_archived_tags')): ?>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-12 p-l-30">
+                                        <div class="col-md-9 text-white">Использовать удаленные теги</div>
+                                        <div class="col-md-3">
+                                            <input type="checkbox" class="js-switch" id="use_deleted_tags" <?= $this->params['use_archive_tags'] == 1 ? 'checked' : null ?> />
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                     <div class="clearfix"></div>
                 </div>
