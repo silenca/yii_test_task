@@ -228,7 +228,7 @@ class ContactsController extends BaseController
                 $contact->remove_tags = true;
 
                 if ($contact->edit([])) {
-                    $contact->sendToCRM();
+                    //$contact->sendToCRM();
                     $this->json(['id' => $contact->id], 200);
                 } else {
                     $this->json(false, 415, $contact->getErrors());

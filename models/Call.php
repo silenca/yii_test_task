@@ -175,7 +175,7 @@ class Call extends \yii\db\ActiveRecord {
         $managers = $this->setManagersForCall($managers_id, $status);
         if ($this->save()) {
             if ($this->attitude_level !== null) {
-                $this->sendToCRM($managers[0]);
+                //$this->sendToCRM($managers[0]);
             }
             return true;
         }
