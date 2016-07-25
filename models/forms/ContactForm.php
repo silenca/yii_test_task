@@ -95,7 +95,7 @@ class ContactForm extends Model
             [['country'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
             [['region', 'area'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
             [['city'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)\d]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
-            [['street'], 'match', 'pattern' => "/^[-\s\d\p{Cyrillic}:_,.\(\)\\\\\/]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
+            //[['street'], 'match', 'pattern' => "/^[-\s\d\p{Cyrillic}:_,.\(\)\\\\\/]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
             [['house', 'flat'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d\/]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
 
             [['tags_str'], 'tagsArray'],
