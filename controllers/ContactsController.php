@@ -228,7 +228,7 @@ class ContactsController extends BaseController
                 $contact->remove_tags = true;
 
                 if ($contact->edit([])) {
-                    //$contact->sendToCRM();
+                    $contact->sendToCRM();
                     $this->json(['id' => $contact->id], 200);
                 } else {
                     $this->json(false, 415, $contact->getErrors());
@@ -488,7 +488,7 @@ class ContactsController extends BaseController
                 'system_date' => date('d-m-Y G:i:s', strtotime($contact_ring_round->system_date)),
                 'history' => $history_text,
             ];
-//            Call::sendToCRM($call_order_token, Yii::$app->user->identity->getId());
+            Call::sendToCRM($call_order_token, Yii::$app->user->identity->getId());
             $this->json($response_date, 200);
         }
         $this->json(false, 500);
