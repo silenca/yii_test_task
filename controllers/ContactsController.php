@@ -489,7 +489,8 @@ class ContactsController extends BaseController
                 'system_date' => date('d-m-Y G:i:s', strtotime($contact_ring_round->system_date)),
                 'history' => $history_text,
             ];
-            //Call::sendToCRM($call_order_token, Yii::$app->user->identity->getId());
+            $call = Call::findOne(['call_order_token' => $call_order_token]);
+            $call->sendToCRM(Yii::$app->user->identity);
             $this->json($response_date, 200);
         }
         $this->json(false, 500);
