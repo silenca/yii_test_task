@@ -15,6 +15,7 @@ use app\models\ContactTag;
 use app\models\forms\CommentForm;
 use app\models\forms\ContactForm;
 use app\models\User;
+use app\models\Call;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
