@@ -203,6 +203,9 @@ class AsteriskController extends BaseController {
         try {
             $json = file_get_contents('php://input');
             $post = json_decode($json, true);
+            if ($post['answered'] === false) {
+                $post['answered'] = '';
+            }
             $call_form->scenario = CallForm::SCENARIO_CALLEND;
             $call_form->load($post);
             if ($call_form->validate()) {

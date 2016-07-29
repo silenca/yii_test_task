@@ -31,7 +31,7 @@ class CallForm extends Model {
             
             
             [['uniqueid'], 'string', 'length' => [6, 30]],
-            [['uniqueid', 'datetime', 'status','answered'], 'required', 'on' => self::SCENARIO_CALLEND],
+            [['uniqueid', 'datetime', 'status'], 'required', 'on' => self::SCENARIO_CALLEND],
             [['callerid', 'answered'], 'string', 'on' => self::SCENARIO_CALLEND],
             [['totaltime', 'answeredtime'], 'integer', 'on' => self::SCENARIO_CALLEND],
             //[['callerid'], 'checkNumbers', 'on' => self::SCENARIO_CALLEND],
