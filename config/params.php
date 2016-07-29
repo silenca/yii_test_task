@@ -8,6 +8,6 @@ return [
     'host_notify_incoming' => 'http://127.0.0.1:8002/incoming',
     'call_order_script' => '/var/www/call.openrussia.org/call_order.php',
 
-    'crm_host' => 'http://80.169.158.194:8086',
+    'crm_host' => 'http://127.0.0.1:8086',
     'call_crm_host' => 'http://sip3.openrussia.org/',
 ];

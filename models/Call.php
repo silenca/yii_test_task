@@ -42,7 +42,7 @@ class Call extends \yii\db\ActiveRecord {
     public function rules() {
         return [
             [['date_time', 'type', 'unique_id'], 'required'],
-            [['date_time', 'attitude_level', 'call_order_token', 'tag_id'], 'safe'],
+            [['date_time', 'attitude_level', 'call_order_token', 'tag_id', 'sended_crm'], 'safe'],
             [['type', 'status', 'unique_id', 'call_order_token'], 'string'],
             [['contact_id', 'phone_number', 'total_time', 'answered_time', 'attitude_level', 'tag_id'], 'integer'],
             [['record'], 'string', 'max' => 255],
@@ -116,6 +116,9 @@ class Call extends \yii\db\ActiveRecord {
                 break;
             case '5':
                 $label = '2';
+                break;
+            default:
+                $label = '';
                 break;
         }
         return $label;
@@ -225,10 +228,15 @@ class Call extends \yii\db\ActiveRecord {
         file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', "=============================================\r\n\r\n", FILE_APPEND);
 
         try {
-            $response = (array)json_decode($response);
-            if ($response['Status'] == 0) {
+            if (!is_array($response)) {
+                $response = (array)json_decode($response);
+            }
+            if (!isset($response['Status']) || $response['Status'] == 0) {
                 FailExportCall::add($this->id);
                 return false;
+            } else {
+                $this->sended_crm = 1;
+                $this->save();
             }
         } catch(Exception $e) {
             FailExportCall::add($this->id);

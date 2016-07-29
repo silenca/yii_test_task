@@ -94,6 +94,7 @@ class Contact extends \yii\db\ActiveRecord
             [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'country', 'region', 'area', 'city', 'street', 'house', 'flat', 'status'], 'string', 'max' => 255],
             [['name', 'surname', 'middle_name'], 'string', 'max' => 150],
             [['first_email', 'second_email'], 'string', 'max' => 255],
+            [['sended_crm'], 'safe'],
         ];
     }
 
@@ -681,6 +682,9 @@ class Contact extends \yii\db\ActiveRecord
             if (!isset($response['Status']) || $response['Status'] == 0) {
                 FailExportContacts::add($this->id);
                 return false;
+            } else {
+                $this->sended_crm = 1;
+                $this->save();
             }
         } catch (Exception $e) {
             FailExportContacts::add($this->id);

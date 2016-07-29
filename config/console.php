@@ -2,7 +2,12 @@
 
 Yii::setAlias('@tests', dirname(__DIR__) . '/tests');
 
-$params = require(__DIR__ . '/params.php');
+if (file_exists(__DIR__ . '/params-local.php')) {
+    $params = require(__DIR__ . '/params-local.php');
+} else {
+    $params = require(__DIR__ . '/params.php');
+}
+
 $db = require(__DIR__ . '/db.php');
 
 $config = [
