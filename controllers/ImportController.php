@@ -86,7 +86,7 @@ class ImportController extends BaseController
                     $contact->attributes = $import_contact_form->attributes;
 
                     if ($contact->edit(['tags' => $import_contact_form->tags])) {
-                        $contact->sendToCRM();
+                        //$contact->sendToCRM();
                         if (isset($contact_data[13])) {
                             $comment = iconv(mb_detect_encoding($contact_data[13], mb_detect_order(), true), "UTF-8", $contact_data[13]);
                             $contact_history = new ContactHistory();
@@ -120,7 +120,7 @@ class ImportController extends BaseController
                             $updated++;
                         }
                         $cur_contact->edit(['tags' => $import_contact_form->tags]);
-                        $cur_contact->sendToCRM();
+                        //$cur_contact->sendToCRM();
                         if (isset($contact_data[13])) {
                             $comment = iconv(mb_detect_encoding($contact_data[13], mb_detect_order(), true), "UTF-8", $contact_data[13]);
                             $contact_history = new ContactHistory();

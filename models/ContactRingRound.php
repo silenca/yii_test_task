@@ -85,7 +85,7 @@ class ContactRingRound extends \yii\db\ActiveRecord {
                     $call->comment = $action_comment_text;
                     $call->save();
                     if ($call->status != 'new') {
-                        //$call->sendToCRM(Yii::$app->user->identity);
+                        $call->sendToCRM(Yii::$app->user->identity);
                     }
                 }
             }
