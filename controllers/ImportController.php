@@ -68,6 +68,9 @@ class ImportController extends BaseController
 
         $updated = 0;
         $contact_ids = [];
+        if (count($new_contacts) > 1500) {
+            $this->json([], 413);
+        }
         for ($i = 1; $i <= count($new_contacts); $i++) {
             $contact_data = $new_contacts[$i];
             $import_contact_form_cols = ImportContactForm::getAllCols();

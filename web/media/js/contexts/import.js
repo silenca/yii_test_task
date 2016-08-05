@@ -45,23 +45,28 @@ function importContacts($form, data, callback) {
                 })
             }
             if (result.status !== 500) {
-                $form.find('.result').append("<div>Импортировано " + result.data.imported + " из " + result.data.count + "</div>");
-                if (result.data.updated) {
-                    $form.find('.result').append("<div>Обновлено теги " + result.data.updated + " контактов</div>");
+                if (result.status == 413) {
+                    $form.find('.result').append("<div> Максимальное количество контактов = 1500. </div>");
+                } else {
+                    $form.find('.result').append("<div>Импортировано " + result.data.imported + " из " + result.data.count + "</div>");
+                    if (result.data.updated) {
+                        $form.find('.result').append("<div>Обновлено теги " + result.data.updated + " контактов</div>");
+                    }
+                    if (result.status != 200) {
+                        $form.find('.result').append("<a href='" + result.data.report_file + "' target='_blank'>Отчет об ошибках</a>");
+                    }
+                    if ($('#tag_contacts_table').length) {
+                        var tag_id = $('#tag_search_select').val();
+                        $.post('/tags/add-contacts-by-filter', {
+                            _csrf: _csrf,
+                            tag_id: tag_id,
+                            filters: { id: result.data.contact_ids }
+                        }, function (response) {
+                            getContactsForTag(tag_id);
+                        }, 'json');
+                    }
                 }
-                if (result.status != 200) {
-                    $form.find('.result').append("<a href='" + result.data.report_file + "' target='_blank'>Отчет об ошибках</a>");
-                }
-                if ($('#tag_contacts_table').length) {
-                    var tag_id = $('#tag_search_select').val();
-                    $.post('/tags/add-contacts-by-filter', {
-                        _csrf: _csrf,
-                        tag_id: tag_id,
-                        filters: {id: result.data.contact_ids}
-                    }, function (response) {
-                        getContactsForTag(tag_id);
-                    }, 'json');
-                }
+
                 callback ? callback(result.status) : null;
             }
 
