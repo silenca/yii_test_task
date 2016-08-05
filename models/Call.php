@@ -141,7 +141,7 @@ class Call extends \yii\db\ActiveRecord {
         $this->contact_id = $contact_id;
         $this->status = Call::CALL_STATUS_NEW;
         $this->call_order_token = $call_order_token;
-        $this->tag_id = $tag_id;
+        //$this->tag_id = $tag_id;
         return $this->save();
     }
 
@@ -163,7 +163,7 @@ class Call extends \yii\db\ActiveRecord {
      *  $status NO ANSWER | FAILED | BUSY | ANSWERED | UNKNOWN | CONGESTION
      */
 
-    public function callEnd($date_time, $total_time, $answered_time, $record_file, $status, $managers_id) {
+    public function callEnd($date_time, $total_time, $answered_time, $record_file, $status, $managers_id, $tag_id) {
         $this->date_time = date('Y-m-d H:i:s', strtotime($date_time));
         if ($status == 'ANSWERED') {
             $this->total_time = $total_time;
@@ -175,6 +175,7 @@ class Call extends \yii\db\ActiveRecord {
         } else {
             $this->status = Call::CALL_STATUS_FAILURE;
         }
+        $this->tag_id = $tag_id;
         $managers = $this->setManagersForCall($managers_id, $status);
         if ($this->save()) {
             if ($this->attitude_level !== null) {

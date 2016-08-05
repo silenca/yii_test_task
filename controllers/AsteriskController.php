@@ -237,7 +237,8 @@ class AsteriskController extends BaseController {
                         }
                     }
                     //file_put_contents('/var/log/pool.log', 'callEnd : ' . $call->call_order_token .' : ' . $call->tag_id . PHP_EOL, FILE_APPEND);
-                    if ($call->callEnd($date_time, $total_time, $answered_time, $record_file, $status, $managers)) {
+                    $tag_id = (isset($post['tag_id']) && $post['tag_id'] !== 'NONE') ? $post['tag_id'] : null;
+                    if ($call->callEnd($date_time, $total_time, $answered_time, $record_file, $status, $managers, $tag_id)) {
                         $this->json([], 200);
                     }
 
