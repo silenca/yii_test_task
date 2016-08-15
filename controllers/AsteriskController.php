@@ -106,6 +106,11 @@ class AsteriskController extends BaseController {
             ->join('LEFT JOIN', '`temp_contacts_pool`', '`temp_contacts_pool`.`order_token` = `call`.`call_order_token`')
             ->where(['`call`.`status`' => 'new'])
             ->andWhere(['is not','`temp_contacts_pool`.`order_token`', null]);
+
+
+
+
+
         /*
          SELECT `temp_contacts_pool`.`manager_id`, `call`.* FROM `call`
          LEFT JOIN `temp_contacts_pool` on `temp_contacts_pool`.`order_token` = `call`.`call_order_token`
@@ -117,9 +122,6 @@ class AsteriskController extends BaseController {
             if ($call['manager_id'] == $user_id)
                 $canCall = false;
         }
-//        $cont_pool = TempContactsPool::find()
-//            ->where(['contact_id' => $contact_id, 'manager_id' => $user_id, 'tag_id' => $tag_id])
-//            ->andWhere(['is not','order_token', null])->one();
         if (!$canCall) {
             $this->json([], 423);
         }
@@ -135,6 +137,12 @@ class AsteriskController extends BaseController {
             //file_put_contents('/var/log/pool.log', 'SendIncomingCall : ' . $contact_id .' : ' . $tag_id . ':'. Yii::$app->user->identity->role . PHP_EOL, FILE_APPEND);
 
             $res = call_order($options);
+
+            //TODO Temp
+            $logMessage = 'Исходящий звоноу.Номер телефона: ' .$phone .', оператор: '.$user_id.', token: '.$call_order_token.', тег: '. $tag_id;
+            $logMessage .= "\r\n===============================================================". "\r\n\r\n";
+            file_put_contents(Yii::getAlias('@runtime_log_folder') . '/call.log', $logMessage, FILE_APPEND);
+
             if ($res[0] == true) {
                 if ($contact_id && $tag_id) {
                     Contact::addContInPool($contact_id, $user_id, $tag_id, $call_order_token);
