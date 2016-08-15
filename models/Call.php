@@ -313,7 +313,7 @@ class Call extends \yii\db\ActiveRecord {
             case "missed":
                 switch ($type) {
                     case "incoming":
-                        $res = "Исходящий";
+                        $res = "Исходящий - пропущенный";
                         break;
                     case "outgoing":
                         $res = "Пропущенный";
