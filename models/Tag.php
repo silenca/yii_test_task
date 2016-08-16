@@ -94,9 +94,9 @@ class Tag extends ActiveRecord
             'phones' => ['label' => 'Телефоны', 'have_search' => true, 'orderable' => false, 'db_cols' => ['first_phone', 'second_phone', 'third_phone', 'fourth_phone']],
             'emails' => ['label' => 'Email', 'have_search' => true, 'orderable' => false, 'db_cols' => ['first_email', 'second_email']],
             'tags' => ['label' => 'Теги', 'have_search' => true, 'orderable' => false],
-            'country' => ['label' => 'Страна', 'have_search' => true, 'orderable' => true],
-            'region' => ['label' => 'Регион', 'have_search' => true, 'orderable' => true],
-            'city' => ['label' => 'Город', 'have_search' => true, 'orderable' => true],
+            'country' => ['label' => 'Страна', 'have_search' => true, 'orderable' => true, 'db_cols' => ['country']],
+            'region' => ['label' => 'Регион', 'have_search' => true, 'orderable' => true, 'db_cols' => ['region']],
+            'city' => ['label' => 'Город', 'have_search' => true, 'orderable' => true, 'db_cols' => ['city']],
         ];
     }
 

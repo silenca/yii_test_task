@@ -324,6 +324,7 @@ class TagsController extends BaseController {
 
     public function actionAddContactsByFilter() {
         $request_data = Yii::$app->request->post();
+        $tag_id = $request_data['tag_id'];
         $filters = $request_data['filters'];
 
         $query = new Query();
