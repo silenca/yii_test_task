@@ -108,9 +108,6 @@ class AsteriskController extends BaseController {
             ->andWhere(['is not','`temp_contacts_pool`.`order_token`', null]);
 
 
-
-
-
         /*
          SELECT `temp_contacts_pool`.`manager_id`, `call`.* FROM `call`
          LEFT JOIN `temp_contacts_pool` on `temp_contacts_pool`.`order_token` = `call`.`call_order_token`
@@ -139,7 +136,7 @@ class AsteriskController extends BaseController {
             $res = call_order($options);
 
             //TODO Temp
-            $logMessage = 'Исходящий звоноу.Номер телефона: ' .$phone .', оператор: '.$user_id.', token: '.$call_order_token.', тег: '. $tag_id;
+            $logMessage = date('d-m-Y G:i:s') .' Исходящий звоноу.Номер телефона: ' .$phone .', оператор: '.$user_id.', token: '.$call_order_token.', тег: '. $tag_id;
             $logMessage .= "\r\n===============================================================". "\r\n\r\n";
             file_put_contents(Yii::getAlias('@runtime_log_folder') . '/call.log', $logMessage, FILE_APPEND);
 
