@@ -93,13 +93,6 @@ class AsteriskController extends BaseController {
         $call_order_script = Yii::$app->params['call_order_script'];
         $contact_id = Yii::$app->request->post('contact_id');
 
-        /**
-        SELECT `t`.`manager_id` FROM `call`
-        LEFT JOIN `temp_contacts_pool` as `t` ON  `t`.`order_token` = `call`.`call_order_token`
-        WHERE (`call`.`status`='new')  AND `t`.`order_token` is not null
-         */
-
-
 
         $query = new Query();
         $query->select('`temp_contacts_pool`.`manager_id`')->from('`call`')
@@ -108,11 +101,12 @@ class AsteriskController extends BaseController {
             ->andWhere(['is not','`temp_contacts_pool`.`order_token`', null]);
 
 
-        /*
+        /**
          SELECT `temp_contacts_pool`.`manager_id`, `call`.* FROM `call`
          LEFT JOIN `temp_contacts_pool` on `temp_contacts_pool`.`order_token` = `call`.`call_order_token`
          WHERE `status` = 'new' and `temp_contacts_pool`.`order_token` is not null
          */
+        
         $calls = $query->all();
         $canCall = true;
         foreach ($calls as $call) {

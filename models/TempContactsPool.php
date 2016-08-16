@@ -47,6 +47,7 @@ class TempContactsPool extends \yii\db\ActiveRecord
             'tag_id' => $tag_id,
         ]);
     }
+    
 
 //    public static function isExists($contact_id)
 //    {

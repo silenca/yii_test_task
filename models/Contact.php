@@ -584,10 +584,11 @@ class Contact extends \yii\db\ActiveRecord
 
     public static function addContInPool($contact_id, $manager_id, $tag_id, $order_token)
     {
-        $cont_pool = TempContactsPool::findOne(['contact_id' => $contact_id, 'manager_id' => $manager_id, 'tag_id' => $tag_id]);
-        if ($cont_pool) {
+        $cont_pools = TempContactsPool::find(['manager_id' => $manager_id])->all();
+        foreach ($cont_pools as $cont_pool) {
             $cont_pool->delete();
         }
+
         $cont_pool = new TempContactsPool(['contact_id' => $contact_id, 'manager_id' => $manager_id, 'tag_id' => $tag_id, 'order_token' => $order_token]);
         return $cont_pool->save();
     }
