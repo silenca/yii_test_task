@@ -141,6 +141,9 @@ class Call extends \yii\db\ActiveRecord {
         $this->contact_id = $contact_id;
         $this->status = Call::CALL_STATUS_NEW;
         $this->call_order_token = $call_order_token;
+        if (!$contact_id) {
+            $this->sended_crm = 1;
+        }
         //$this->tag_id = $tag_id;
         return $this->save();
     }
@@ -152,6 +155,9 @@ class Call extends \yii\db\ActiveRecord {
         $this->phone_number = $phone_number;
         $this->contact_id = $contact_id;
         $this->status = Call::CALL_STATUS_NEW;
+        if (!$contact_id) {
+            $this->sended_crm = 1;
+        }
         return $this->save();
     }
 
@@ -177,6 +183,7 @@ class Call extends \yii\db\ActiveRecord {
         }
         $this->tag_id = $tag_id;
         $managers = $this->setManagersForCall($managers_id, $status);
+        TempContactsPool::clearForManagers($managers);
         if ($this->save()) {
             if ($this->attitude_level !== null) {
                 $this->sendToCRM($managers[0]);

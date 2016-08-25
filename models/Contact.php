@@ -457,6 +457,7 @@ class Contact extends \yii\db\ActiveRecord
 
     public static function getByTag($tag_id, $user_role, $filters, $for_export)
     {
+        TempContactsPool::clearForManagers([Yii::$app->user->identity]);
         $query = new Query();
         $select = [
             '`contact`.*',

@@ -47,6 +47,18 @@ class TempContactsPool extends \yii\db\ActiveRecord
             'tag_id' => $tag_id,
         ]);
     }
+
+    public static function clearForManagers($managers) {
+        $managers_id = [];
+        foreach ($managers as $manager) {
+            $managers_id[] = $manager->id;
+        }
+
+        $temps = self::find()->where(['in', 'manager_id', $managers_id])->all();
+        foreach ($temps as $temp) {
+            $temp->delete();
+        }
+    }
     
 
 //    public static function isExists($contact_id)

@@ -187,8 +187,16 @@ class AsteriskController extends BaseController {
                 if ($contact) {
                     $contact_id = $contact->id;
                 }
-                $call_order_token = (isset($post['call_order_token']) && $post['call_order_token'] !== $call_uniqueid) ? $post['call_order_token'] : null;
-                $tag_id = (isset($post['tag_id']) && $post['tag_id'] !== 'NONE') ? $post['tag_id'] : null;
+                $call_order_token = null;
+                if (isset($post['call_order_token']) && $post['call_order_token'] !== $call_uniqueid && $post['call_order_token'] !== 'None' && $post['call_order_token'] !== 'NONE') {
+                    $call_order_token = $post['call_order_token'];
+                }
+                //$call_order_token = (isset($post['call_order_token']) && $post['call_order_token'] !== $call_uniqueid) ? $post['call_order_token'] : null;
+
+                $tag_id = null;
+                if (isset($post['tag_id']) && $post['tag_id'] !== 'NONE' && $post['tag_id'] !== 'None') {
+                    $tag_id = $post['tag_id'];
+                }
                 $call->incoming($call_uniqueid, $contact_id, $answered, $call_order_token, $tag_id);
             }
             $this->json([], 200);
@@ -229,14 +237,18 @@ class AsteriskController extends BaseController {
                         $record_file = $post['record_file'];
                     }
 
-                    if (isset($call->contact_id)) {
-                        if ($cont_pool = TempContactsPool::findOne(['order_token' => $call->call_order_token])) {
-                            //$call->tag_id = $cont_pool->tag_id;
-                            $cont_pool->delete();
-                        }
-                    }
+//                    if (isset($call->contact_id)) {
+//
+//                        if ($cont_pool = TempContactsPool::findOne(['order_token' => $call->call_order_token])) {
+//                            //$call->tag_id = $cont_pool->tag_id;
+//                            $cont_pool->delete();
+//                        }
+//                    }
                     //file_put_contents('/var/log/pool.log', 'callEnd : ' . $call->call_order_token .' : ' . $call->tag_id . PHP_EOL, FILE_APPEND);
-                    $tag_id = (isset($post['tag_id']) && $post['tag_id'] !== 'NONE') ? $post['tag_id'] : null;
+                    $tag_id = null;
+                    if (isset($post['tag_id']) && $post['tag_id'] !== 'NONE' && $post['tag_id'] !== 'None') {
+                        $tag_id = $post['tag_id'];
+                    }
                     if ($call->callEnd($date_time, $total_time, $answered_time, $record_file, $status, $managers, $tag_id)) {
                         $this->json([], 200);
                     }
