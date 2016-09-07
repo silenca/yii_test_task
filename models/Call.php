@@ -231,9 +231,9 @@ class Call extends \yii\db\ActiveRecord {
         curl_close ($ch);
         $request_data = urldecode(http_build_query($calls));
         $log_data = date("j-m-Y G:i:s", time()). "\r\n" . "Request: " .$request_data . "\r\n\r\n";
-
-        file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', debug_backtrace()[0]['class']. "\r\n", FILE_APPEND);
-        file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', debug_backtrace()[1]['class']. "\r\n", FILE_APPEND);
+        $aa =  debug_backtrace()[0];
+        file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', debug_backtrace()[0]['class'].":".debug_backtrace()[0]['function']. "\r\n", FILE_APPEND);
+        file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', debug_backtrace()[1]['class'].":".debug_backtrace()[1]['function']. "\r\n", FILE_APPEND);
         file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', $log_data, FILE_APPEND);
         file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', "Response: ". $response_log_data."\r\n", FILE_APPEND);
         file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', "=============================================\r\n\r\n", FILE_APPEND);
