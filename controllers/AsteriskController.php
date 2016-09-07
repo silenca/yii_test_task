@@ -121,7 +121,7 @@ class AsteriskController extends BaseController {
             $user_int_id = Yii::$app->user->identity->int_id;
             $tag_id = Yii::$app->request->post('tag_id');
 
-            $call_order_token = time().$user_id;
+            $call_order_token = time().rand(0,100000).$user_id;
             $options = array("external" => $phone, "internal" => $user_int_id, "call_order_token" => $call_order_token, 'tag_id' => $tag_id);
 
 
