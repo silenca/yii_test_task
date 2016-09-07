@@ -193,7 +193,7 @@ class Call extends \yii\db\ActiveRecord {
         return false;
     }
 
-    public function sendToCRM($manager) {
+    public function sendToCRM($manager, $token = false) {
 
         $ch = curl_init();
 
@@ -231,7 +231,9 @@ class Call extends \yii\db\ActiveRecord {
         curl_close ($ch);
         $request_data = urldecode(http_build_query($calls));
         $log_data = date("j-m-Y G:i:s", time()). "\r\n" . "Request: " .$request_data . "\r\n\r\n";
-        $aa =  debug_backtrace()[0];
+        if ($token) {
+            file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', "TOKEN: " .$token. "\r\n", FILE_APPEND);
+        }
         file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', debug_backtrace()[0]['class'].":".debug_backtrace()[0]['function']. "\r\n", FILE_APPEND);
         file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', debug_backtrace()[1]['class'].":".debug_backtrace()[1]['function']. "\r\n", FILE_APPEND);
         file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_call.log', $log_data, FILE_APPEND);

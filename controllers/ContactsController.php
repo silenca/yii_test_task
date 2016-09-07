@@ -490,7 +490,7 @@ class ContactsController extends BaseController
                 'history' => $history_text,
             ];
             $call = Call::find(['call_order_token' => $call_order_token])->one();
-            $call->sendToCRM(Yii::$app->user->identity);
+            $call->sendToCRM(Yii::$app->user->identity, $call_order_token);
             $this->json($response_date, 200);
         }
         $this->json(false, 500);
