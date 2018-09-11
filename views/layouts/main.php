@@ -36,13 +36,13 @@ if (!Yii::$app->user->isGuest) {
         <meta content="" name="author" />
         <?= Html::csrfMetaTags() ?>
         <title><?= Html::encode($this->title) ?></title>
-        <? if(!Yii::$app->user->isGuest): ?>
+        <?php if(!Yii::$app->user->isGuest): ?>
         <script type="text/javascript">
             var notify_id = "<?= Yii::$app->user->identity->notification_key; ?>";
             var notify_host = "<?= Yii::$app->params['host_notify'] ?>";
             var _csrf = "<?= Yii::$app->request->getCsrfToken() ?>";
         </script>
-        <? endif; ?>
+        <?php endif; ?>
         <?php $this->head() ?>
         <script type="text/javascript">
             window.onload = function ()
@@ -82,15 +82,7 @@ if (!Yii::$app->user->isGuest) {
                                 </a>
                             </li>
                         <?php endif; ?>
-<!--                        --><?php //if (Yii::$app->user->can('objects')): ?>
-<!--                            <li>-->
-<!--                                <a href="/object" class="detailed">-->
-<!--                                    <span class="title">Объекты</span>-->
-<!--                                    <span class="details"></span>-->
-<!--                                    <span class="icon-thumbnail --><?//= $this->params['active'] == 'object' ? 'bg-success' : null ?><!--" title="Объекты"><i class="pg-home"></i></span>-->
-<!--                                </a>-->
-<!--                            </li>-->
-<!--                        --><?php //endif; ?>
+
                         <?php if (Yii::$app->user->can('action')): ?>
                             <li>
                                 <a href="/action" class="detailed">
@@ -125,43 +117,7 @@ if (!Yii::$app->user->isGuest) {
                                 </a>
                             </li>
                         <?php endif; ?>
-<!--                        --><?php //if (Yii::$app->user->can('receivables')): ?>
-<!--                            <li>-->
-<!--                                <a href="/receivable" class="detailed">-->
-<!--                                    <span class="title">Дебиторские задолженности</span>-->
-<!--                                    <span class="details"></span>-->
-<!--                                    <span class="icon-thumbnail --><?//= $this->params['active'] == 'receivable' ? 'bg-success' : null ?><!--" title="Дебиторские задолженности"><i class="pg-calender"></i></span>-->
-<!--                                </a>-->
-<!--                            </li>-->
-<!--                        --><?php //endif; ?>
-<!--                        --><?php //if (Yii::$app->user->can('notifications')): ?>
-<!--                            <li>-->
-<!--                                <a href="/managernotify" class="detailed">-->
-<!--                                    <span class="title">Уведомления</span>-->
-<!--                                    <span class="details">--><?//= $this->params['notify_count']; ?><!-- --><?php //echo UtilHelper::pluralForm($this->params['notify_count'], 'новый уведомлений', 'новых уведомления', 'новых уведомлений') ?><!--</span>-->
-<!--                                    <span class="icon-thumbnail --><?//= $this->params['active'] == 'notification' ? 'bg-success' : null ?><!--"  title="Уведомления">-->
-<!--                                        <i class="pg-comment"></i>-->
-<!--                                        --><?php //if ($this->params['notify_count'] > 0): ?>
-<!--                                            <span class="badge badge-danger">--><?php //echo $this->params['notify_count'] ?><!--</span>-->
-<!--                                        --><?php //endif; ?><!--                                        -->
-<!--                                    </span>-->
-<!--                                </a>-->
-<!--                            </li>-->
-<!--                        --><?php //endif; ?>
-<!--                        --><?php //if (Yii::$app->user->can('contracts')): ?>
-<!--                            <li>-->
-<!--                                <a href="/contracts" class="detailed">-->
-<!--                                    <span class="title">Договоры</span>-->
-<!--                                    <span class="details">0 новых уведомлений</span>-->
-<!--                                    <span class="icon-thumbnail --><?//= $this->params['active'] == 'contracts' ? 'bg-success' : null ?><!--" title="Договоры">-->
-<!--                                        <i class="pg-comment"></i>-->
-<!--                                        --><?php //if ($this->params['new_contract_count'] > 0): ?>
-<!--                                            <span class="js-contract_count badge badge-danger">--><?php //echo $this->params['new_contract_count'] ?><!--</span>-->
-<!--                                        --><?php //endif; ?>
-<!--                                    </span>-->
-<!--                                </a>-->
-<!--                            </li>-->
-<!--                        --><?php //endif; ?>
+
                         <?php if (Yii::$app->user->can('tags')): ?>
                             <li>
                                 <a href="/tags" class="detailed">
@@ -189,6 +145,15 @@ if (!Yii::$app->user->isGuest) {
                                 </a>
                             </li>
                         <?php endif; ?>
+                        <?php if(Yii::$app->user->can('sip_channel')):?>
+                            <li>
+                                <a href="/sip-channel" class="detailed">
+                                    <span class="title">SIP</span>
+                                    <span class="details"></span>
+                                    <span class="icon-thumbnail <?= $this->params['active'] == 'sip-channel' ? 'bg-success' : null ?>" title="SIP"><i class="fa fa-phone"></i></span>
+                                </a>
+                            </li>
+                        <?php endif;?>
                         <?php if (Yii::$app->user->can('use_archived_tags')): ?>
                             <li>
                                 <div class="row">

@@ -45,7 +45,7 @@ $this->params['active'] = 'tags';
                                     </div>
                                 </div>
                             </div>
-                            <? if (Yii::$app->user->can('edit_tag')): ?>
+                            <?php if (Yii::$app->user->can('edit_tag')): ?>
                                 <div class="col-md-4 m-b-10" style="padding-right: 0">
                                     <div id="tag-controls" class="" style="display: none;">
                                         <a class="ok" href="#"><i class="fa-2x fa fa-check"></i></a>
@@ -66,7 +66,7 @@ $this->params['active'] = 'tags';
                                         </button>
                                     </div>
                                 </div>
-                            <? endif; ?>
+                            <?php endif; ?>
                             <div class="row">
                                 <div class="col-md-8" style="padding: 0">
                                     <select class="full-width" name="tag_users" id="tag_users_select" disabled="disabled">
@@ -99,7 +99,7 @@ $this->params['active'] = 'tags';
                         </div>
                         <div class="clearfix"></div>
                     </form>
-                    <? if (Yii::$app->user->can('edit_tag')): ?>
+                    <?php if (Yii::$app->user->can('edit_tag')): ?>
                         <div class="col-md-7 col-md-offset-5">
                             <div class="col-md-6 m-t-10 add-contacts">
                                 <label class="">Добавить контакты:</label>
@@ -132,7 +132,7 @@ $this->params['active'] = 'tags';
                                 </div>
                             </div>
                         </div>
-                    <? endif; ?>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="panel-body">

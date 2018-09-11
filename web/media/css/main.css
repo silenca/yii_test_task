@@ -1,4 +1,4 @@
-#modalAddContact, #modalAddUser {
+#modalAddContact, #modalAddUser, #modalAddSipChannel {
     left: auto;
     overflow: visible;
 }
@@ -9,6 +9,10 @@
 
 #modalAddContactToTag .modal-content {
     width: 1000px;
+}
+
+#modalAddSipChannel .sip-channel-data {
+    width: 500px;
 }
 
 @media (min-width: 992px) {
