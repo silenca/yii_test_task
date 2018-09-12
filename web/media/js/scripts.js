@@ -153,11 +153,19 @@ function triggerChoise_CsSelect(el, val) {
     }
 
     if ($('.js-switch').length) {
-        var elem = document.querySelector('.js-switch');
-        var init = new Switchery(elem, {
-            size: 'small',
-            color: 'rgb(16, 207, 189)',
+        var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+
+        elems.forEach(function(html) {
+            var init = new Switchery(html, {
+                size: 'small',
+                color: 'rgb(16, 207, 189)',
+            });
         });
+        // var elem = document.querySelector('.js-switch');
+        // var init = new Switchery(elem, {
+        //     size: 'small',
+        //     color: 'rgb(16, 207, 189)',
+        // });
     }
 
 

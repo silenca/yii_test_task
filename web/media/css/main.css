@@ -1,4 +1,4 @@
-#modalAddContact, #modalAddUser, #modalAddSipChannel {
+#modalAddContact, #modalAddUser, #modalAddSipChannel, #modalAddAttractionChannel {
     left: auto;
     overflow: visible;
 }
@@ -12,6 +12,10 @@
 }
 
 #modalAddSipChannel .sip-channel-data {
+    width: 500px;
+}
+
+#modalAddAttractionChannel .attraction-channel-data {
     width: 500px;
 }
 

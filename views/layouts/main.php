@@ -148,9 +148,18 @@ if (!Yii::$app->user->isGuest) {
                         <?php if(Yii::$app->user->can('sip_channel')):?>
                             <li>
                                 <a href="/sip-channel" class="detailed">
-                                    <span class="title">SIP</span>
+                                    <span class="title">SIP Каналы</span>
                                     <span class="details"></span>
-                                    <span class="icon-thumbnail <?= $this->params['active'] == 'sip-channel' ? 'bg-success' : null ?>" title="SIP"><i class="fa fa-phone"></i></span>
+                                    <span class="icon-thumbnail <?= $this->params['active'] == 'sip-channel' ? 'bg-success' : null ?>" title="SIP Каналы"><i class="fa fa-phone"></i></span>
+                                </a>
+                            </li>
+                        <?php endif;?>
+                        <?php if(Yii::$app->user->can('attraction_channel')):?>
+                            <li>
+                                <a href="/attraction-channel" class="detailed">
+                                    <span class="title">Каналы привлечения</span>
+                                    <span class="details"></span>
+                                    <span class="icon-thumbnail <?= $this->params['active'] == 'attraction-channel' ? 'bg-success' : null ?>" title="Каналы привлечения"><i class="fa fa-list-ul"></i></span>
                                 </a>
                             </li>
                         <?php endif;?>

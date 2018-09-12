@@ -52,6 +52,7 @@ body {
 }
 body.fixed-header .header {
     position: fixed;
+    padding-left: 70px;
     left: 0;
     top: 0;
 }
@@ -169,6 +170,7 @@ input[type=number]::-webkit-outer-spin-button {
     height: 60px;
     width: 100%;
     vertical-align: middle;
+    padding-left: 30px;
     display: table-cell;
 }
 .header .header-inner .toggle-sidebar {
@@ -180,7 +182,7 @@ input[type=number]::-webkit-outer-spin-button {
 .header .brand {
     vertical-align: middle;
     width: 280px;
-    text-align: center;
+    /*text-align: center;*/
 }
 .header .bubble {
     border-radius: 100%;
