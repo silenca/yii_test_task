@@ -14,17 +14,25 @@ function openNewSipChannelForm() {
     bindLiveChange($sip_channel_form);
 }
 
+function openSipChannelForm(id) {
+    buildSipChannelForm(id, $sip_channel_form, function () {
+        bindLiveChange($sip_channel_data_form);
+    });
+    $sip_channel_form.modal({backdrop: false});
+}
+
 function bindLiveChange($form) {
     $.each($('input[type=text],input[type=email]', $form), function (i, input) {
         var name = $(input).attr('name');
         if (name) {
-            bind_inputs[name] = $(input).attr('data-value') + '';
+            bind_inputs[name] = $(input).val()+'' ;
         }
     });
     bind_inputs['id'] = $('#sip-channel-id').val();
 }
 
 function clearSipChannel($form) {
+    $form.find('.sip-channel-title').text('Новый SIP Канал');
     $form.find('#sip_channel_phone_number').val('');
     $form.find('#sip_channel_host').val('');
     $form.find('#sip_channel_port').val('');
@@ -48,6 +56,26 @@ function addError($form, name, errors) {
     });
 }
 
+function buildSipChannelForm(id, $form, callback) {
+    hideNotifications($form);
+
+    $form.find('#sip-channel-id').val(id);
+    $.getJSON('/sip-channel/view', {id: id}, function (response) {
+        if (response.status === 200) {
+            var data = response.data;
+            $form.find('.sip-channel-title').text('SIP Канал №' + data.id);
+            $form.find('#sip_channel_phone_number').val(data.phone_number);
+            $form.find('#sip_channel_host').val(data.host);
+            $form.find('#sip_channel_port').val(data.port);
+
+            $form.find('#sip_channel_login').val(data.login);
+            $form.find('#sip_channel_password').val(data.password);
+
+            callback();
+        }
+    });
+}
+
 function editSipChannel($form, name, value) {
     var data = {};
     $.each(bind_inputs, function (key, value) {
@@ -55,6 +83,7 @@ function editSipChannel($form, name, value) {
             data[key] = value;
     });
     data['_csrf'] = _csrf;
+    console.log(bind_inputs);
     if (bind_inputs['phone_number'] && bind_inputs['host'] && bind_inputs['port'] && bind_inputs['login'] && bind_inputs['password']) {
         $.post('/sip-channel/edit', data, function (response) {
             $form.find('label.error').remove();

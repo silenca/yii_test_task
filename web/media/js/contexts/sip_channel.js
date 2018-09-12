@@ -58,27 +58,6 @@ $(function () {
                         $showDelContactsBtn = true;
                     }
                 });
-
-                //
-                // if ($showDelContactsBtn && data._iRecordsDisplay > 0) {
-                //     if ($deleteAllContactsBtn.is(':hidden')) {
-                //         $deleteAllContactsBtn.fadeIn(200);
-                //     }
-                //     $({numberValue: $deleteAllContactsBtn.find('span').text()}).animate({numberValue: dataTable.settings()[0].fnRecordsDisplay()}, {
-                //         duration: 500,
-                //         easing: 'linear',
-                //         step: function () {
-                //             $deleteAllContactsBtn.find('span').text(Math.ceil(this.numberValue));
-                //         },
-                //         complete: function () {
-                //             $deleteAllContactsBtn.find('span').text(this.numberValue);
-                //         }
-                //     });
-                // } else if ($deleteAllContactsBtn.is(':visible')) {
-                //     $deleteAllContactsBtn.fadeOut(150, function () {
-                //         $deleteAllContactsBtn.find('span').text(0);
-                //     });
-                // }
             },
             "createdRow": function (row, data, index) {
                 $(row).attr('data-id', data[show_columns.indexOf('id')]);
@@ -103,32 +82,8 @@ $(function () {
 
         dataTable = table.DataTable(settings);
 
-        $deleteAllContactsBtn.on('click', function () {
-            if (confirm("Вы действительно желаете удалить все найденные контакты (" + dataTable.settings()[0].fnRecordsDisplay() + " шт.)?")) {
-                var $res = {};
-                $.each($searchBoxes, function (index, val) {
-                    var n = $(this).attr('data-column');
-                    var v = $(this).val();
-                    if (v.length > getSearchStrLenDef(n)) {
-                        $res[n] = v;
-                    }
-                });
-                $res["_csrf"] = _csrf;
-
-                $.post(
-                    '/contacts/delete-filtered',
-                    $res,
-                    function (response) {
-                        var result = $.parseJSON(response);
-                        if (result.status === 200) {
-                            dataTable.draw();
-                        }
-                    }
-                );
-            }
-        });
-
         $('.search-input-text').on('keyup', function () { // for text boxes
+            console.log('search');
             delay(function () {
                 $.each($searchBoxes, function (index, val) {
                     var n = $(this).attr('data-column');
@@ -154,9 +109,68 @@ $(function () {
 
     if ($('#sip-channel-table').length) {
         initTable();
+
+        $('#column_filter').on('click', function (e) {
+            e.stopPropagation();
+            var modal = $('#column_filter_modal');
+            if (modal.is(':visible')) {
+                modal.hide();
+            } else {
+                modal.show();
+            }
+        });
+
+        $(document).on('click', function (e) {
+            var modal = $('#column_filter_modal');
+            if (!modal.find($(e.target)).length && !modal.is($(e.target))) {
+                modal.hide();
+            }
+        });
+
+        $('#column_filter_apply').on('click', function () {
+            var modal = $('#column_filter_modal');
+            modal.hide();
+            var hide_columns = [];
+            modal.find('input:checkbox:not(:checked)').each(function () {
+                hide_columns.push($(this).val());
+            });
+            $.get('/sip-channel/hide-columns', {hide_columns: hide_columns}, function () {
+                location.reload();
+            });
+            //dataTable.columnDefs.
+        });
+
+        var $sip_channel_table = $('#sip-channel-table');
+
+        $sip_channel_table.on('click', 'tr', function (e) {
+            if (!$(this).parent('thead').length && !$(this).find('.dataTables_empty').length && !hasTarget($(e.target), '.user_open_disable') && !dropDownOpened) {
+                var id = $(this).data('id');
+                openSipChannelForm(id);
+            }
+        });
+
+        $sip_channel_table.on('click', '.remove', function (e) {
+            e.stopPropagation();
+            if (confirm('Вы действительно хотите удалить ?')) {
+                var $tr = $(this).closest('tr');
+                var id = $tr.data('id');
+                $.post('/sip-channel/delete', {id: id, _csrf: _csrf}, function (response) {
+                    var result = $.parseJSON(response);
+                    if (result.status === 200) {
+                        //initTable();
+                        dataTable.row($tr).remove().draw(false);
+                        //$tr.empty().remove();
+                    }
+                });
+            }
+        });
     }
 
     $('#open-new-sip-channel-from').on('click', function (e) {
         openNewSipChannelForm();
     });
 });
+
+function hasTarget($target, elem) {
+    return $target.is(elem) || $target.parents(elem).length == 1;
+}

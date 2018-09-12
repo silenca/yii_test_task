@@ -23,8 +23,7 @@
                             <div class="sip-channel-data col-md-12">
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
-                                        <div class="panel-title contact-title">Новый SIP канал</div>
-                                        <div class="text-warning contact-deleted">канал удален</div>
+                                        <div class="panel-title sip-channel-title">Новый SIP канал</div>
                                     </div>
                                 </div>
                                 <div class="panel-body">
