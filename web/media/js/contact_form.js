@@ -310,8 +310,8 @@ function clearContactForm($form) {
     $form.find('input').val('');
     $form.find('#contact_manager_name').text('');
     $form.find('.contact-manager-name-cont').hide();
-    console.log('hello');
     $form.find('#attraction_channel option.select-placeholder').prop('selected',true);
+    $form.find('#attraction_channel').data('value','');
     hideNotifications($form);
 }
 
@@ -390,10 +390,15 @@ function fillContactData(data, $form) {
                 break;
             case 'attraction_channel_id':
                 var input = $form.find('#attraction_channel option[value="'+value+'"]');
-                if(input.length)
+                if(input.length){
                     input.prop('selected',true);
-                else
+                    $form.find('#attraction_channel').data('value',value);
+                }
+                else{
+                    $form.find('#attraction_channel').data('value','') ;
                     $form.find('#attraction_channel option.select-placeholder').prop('selected',true);
+                }
+
                 break;
             // case 'manager_tags':
             //     managerTags = value;
@@ -479,7 +484,7 @@ function changeActionsForm(action) {
 }
 
 function bindLiveChange($form) {
-    $.each($('input[type=text],input[type=email]', $form), function (i, input) {
+    $.each($('input[type=text],input[type=email],select', $form), function (i, input) {
         var name = $(input).attr('name');
         if (name) {
             bind_inputs[name] = $(input).attr('data-value') + '';
