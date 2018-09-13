@@ -111,11 +111,25 @@ use app\models\User;
                                                 <input type="text" id="contact_flat" name="flat"
                                                        placeholder="Номер квартиры" class="form-control">
                                             </div>
-
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="attraction_channel"><i
+                                                            class="fa fa-fw fa-list-alt"></i></label>
+                                                <select id="attraction_channel" name="attraction_channel_id" class="form-control">
+                                                    <option class="select-placeholder" value="" disabled selected>Канал привлечения</option>
+                                                    <?php
+                                                    $channels = \app\models\AttractionChannel::find()->all();
+                                                    foreach ($channels as  $channel) {
+                                                        echo '<option value="'.$channel->id.'">'.$channel->name.'</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
                                             <hr>
                                             <div class="form-group text-left">
                                                 <input id="contact_tags" name="tags_str" class="contact-tags" type="text" />
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>

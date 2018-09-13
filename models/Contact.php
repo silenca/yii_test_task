@@ -31,6 +31,9 @@ use yii\db\Query;
  * @property string $status
  * @property integer $manager_id
  * @property integer $is_deleted
+ * @property integer $attraction_channel_id
+ *
+ * @property AttractionChannel $attractionChannel
  */
 class Contact extends \yii\db\ActiveRecord
 {
@@ -57,6 +60,7 @@ class Contact extends \yii\db\ActiveRecord
         'manager_id',
         'is_deleted',
         'remove_tags',
+        'attraction_channel_id'
     ];
 
     public $is_called;
@@ -90,11 +94,13 @@ class Contact extends \yii\db\ActiveRecord
     {
         return [
             [['int_id'], 'required'],
-            [['int_id', 'manager_id'], 'integer'],
+            [['int_id', 'manager_id','attraction_channel_id'], 'integer'],
             [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'country', 'region', 'area', 'city', 'street', 'house', 'flat', 'status'], 'string', 'max' => 255],
             [['name', 'surname', 'middle_name'], 'string', 'max' => 150],
             [['first_email', 'second_email'], 'string', 'max' => 255],
             [['sended_crm'], 'safe'],
+            [['attraction_channel_id'], 'exist', 'skipOnError' => true, 'targetClass' => AttractionChannel::className(), 'targetAttribute' => ['attraction_channel_id' => 'id']],
+
         ];
     }
 
@@ -155,6 +161,7 @@ class Contact extends \yii\db\ActiveRecord
             'street' => ['label' => 'Улица', 'have_search' => true, 'orderable' => true],
             'house' => ['label' => 'Дом', 'have_search' => true, 'orderable' => true],
             'flat' => ['label' => 'Квартира', 'have_search' => true, 'orderable' => true],
+            'attraction_channel_id' => ['label' => 'Канал привлечения', 'have_search' => false, 'orderable' => false],
             'delete_button' => ['label' => 'Удалить', 'have_search' => false, 'orderable' => false],
         ];
         if (!Yii::$app->user->can('delete_contact')) {
@@ -605,6 +612,14 @@ class Contact extends \yii\db\ActiveRecord
             return $cont_pool->delete();
         }
         return false;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAttractionChannel()
+    {
+        return $this->hasOne(AttractionChannel::className(), ['id' => 'attraction_channel_id']);
     }
 
     public function sendToCRM()

@@ -2,12 +2,16 @@
 
 namespace app\components\widgets;
 
+use app\models\Contact;
 use yii\base\Widget;
 use Yii;
 use app\components\Filter;
 
 class ContactTableWidget extends Widget {
 
+    /**
+     * @var $contacts Contact[]
+     */
     public $contacts;
     public $user_id;
     public $user_role;
@@ -54,6 +58,7 @@ class ContactTableWidget extends Widget {
             $data[$i][] = $contact->street;
             $data[$i][] = $contact->house;
             $data[$i][] = $contact->flat;
+            $data[$i][] = (isset($contact->attraction_channel_id)?$contact->attractionChannel->name:'');
 
             if (Yii::$app->user->can('delete_contact')) {
                 $data[$i][] = '<div class="col-md-offset-3 remove"><i class="fa fa-remove"></i></div>';

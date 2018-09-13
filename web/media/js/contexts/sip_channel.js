@@ -20,9 +20,6 @@ $(function () {
 
         function getSearchStrLenDef($dataColumn) {
             var $strLenDef = 2;
-            if ($dataColumn == 'city' || $dataColumn == 'street' || $dataColumn == 'house' || $dataColumn == 'flat') {
-                $strLenDef = 0;
-            }
             return $strLenDef;
         }
 

@@ -39,7 +39,7 @@ class AttractionChannelForm extends Model
             [['is_active'],'default','value'=>0],
             ['type','in','range'=>\array_keys(AttractionChannel::TYPE_LABELS), 'message' => 'Неправильное значение типа'],
             [['sip_channel_id'], 'exist', 'skipOnError' => true, 'targetClass' => SipChannel::className(), 'targetAttribute' => ['sip_channel_id' => 'id'],'message' => 'Неправильное значение SIP-канала'],
-            ['integration_type','in','range'=>AttractionChannel::INTEGRATIONS]
+            ['integration_type','in','range'=>AttractionChannel::INTEGRATIONS, 'message' => 'Неправильное значение типа']
         ];
     }
 }

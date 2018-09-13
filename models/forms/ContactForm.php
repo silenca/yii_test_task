@@ -40,6 +40,7 @@ class ContactForm extends Model
     var $street;
     var $house;
     var $flat;
+    var $attraction_channel_id;
 
     var $edited_id;
     var $conflict_id;
@@ -57,7 +58,8 @@ class ContactForm extends Model
             'city',
             'street',
             'house',
-            'flat'
+            'flat',
+            'attraction_channel_id'
         ];
     }
 
@@ -103,7 +105,7 @@ class ContactForm extends Model
             [[
                 'first_phone', 'second_phone', 'third_phone', 'fourth_phone',
                 'first_email', 'second_email',
-                'middle_name', 'region', 'area', 'city', 'street', 'house', 'flat'
+                'middle_name', 'region', 'area', 'city', 'street', 'house', 'flat','attraction_channel_id'
             ], 'default'],
         ];
     }
@@ -136,7 +138,8 @@ class ContactForm extends Model
             'middle_name' => 'Отчество',
             'phones' => 'Номер телефона',
             'emails' => 'Email',
-            'street' => 'Улица'
+            'street' => 'Улица',
+            'attraction_channel_id' => 'Канал привлечения'
         ];
     }
 
