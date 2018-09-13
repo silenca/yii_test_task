@@ -83,7 +83,6 @@ function editSipChannel($form, name, value) {
             data[key] = value;
     });
     data['_csrf'] = _csrf;
-    console.log(bind_inputs);
     if (bind_inputs['phone_number'] && bind_inputs['host'] && bind_inputs['port'] && bind_inputs['login'] && bind_inputs['password']) {
         $.post('/sip-channel/edit', data, function (response) {
             $form.find('label.error').remove();

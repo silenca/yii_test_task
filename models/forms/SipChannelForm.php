@@ -23,7 +23,8 @@ class SipChannelForm extends Model
     {
         return [
             [['phone_number','host','port','login','password'], 'required', 'message' => 'Необходимо заполнить {attribute}'],
-            [['phone_number'],'match', 'pattern' => "/^\d*$/", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы']
+            [['phone_number'],'match', 'pattern' => "/^\+?\d*$/", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
+            [['port'],'match', 'pattern' => "/^\d*$/", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
         ];
     }
 

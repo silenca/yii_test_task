@@ -45,6 +45,20 @@ $(function () {
                     //alert('error data');
                 }
             },
+            "columns":[
+                { data: 0 },
+                { data: 1 },
+                {
+                    data:"is_active",
+                    render:function (data, type, row) {
+                        if(data)
+                            return 'Да';
+                        return 'Нет';
+                    }
+                },
+                { data: 2 },
+                { data: 3 }
+            ],
             "columnDefs": [
                 {"visible": false, "targets": [show_columns.indexOf('id')]},
                 {"orderable": false, "targets": []}
@@ -82,7 +96,6 @@ $(function () {
         dataTable = table.DataTable(settings);
 
         $('.search-input-text').on('keyup', function () { // for text boxes
-            console.log('search');
             delay(function () {
                 $.each($searchBoxes, function (index, val) {
                     var n = $(this).attr('data-column');

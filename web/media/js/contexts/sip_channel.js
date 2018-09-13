@@ -83,7 +83,6 @@ $(function () {
         dataTable = table.DataTable(settings);
 
         $('.search-input-text').on('keyup', function () { // for text boxes
-            console.log('search');
             delay(function () {
                 $.each($searchBoxes, function (index, val) {
                     var n = $(this).attr('data-column');

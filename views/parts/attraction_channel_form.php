@@ -38,7 +38,7 @@
                                         <label class="input-group-addon primary" for="attraction_channel_active"><i
                                                     class="fa fa-fw fa-check"></i></label>
                                         <span style="padding: 10px">Активен</span>
-                                        <input type="checkbox" id="attraction_channel_active" class="js-switch form-control" name="active"/>
+                                        <input type="checkbox" id="attraction_channel_active" class="js-switch form-control" name="is_active"/>
                                     </div>
                                     <br>
                                     <div class="input-group">
@@ -54,34 +54,38 @@
                                             ?>
                                         </select>
                                     </div>
-                                    <br>
-                                    <div class="input-group">
-                                        <label class="input-group-addon primary" for="attraction_channel_sip_channel_id"><i
-                                                    class="fa fa-fw fa-phone"></i></label>
-                                        <select id="attraction_channel_sip_channel_id" name="sip_channel_id"
-                                                 class="form-control">
-                                            <option class="select-placeholder" value="" disabled selected>SIP Канал</option>
-                                            <?php
-                                            $channels = \app\models\SipChannel::find()->select('id,phone_number')->asArray()->all();
-                                            foreach ($channels as $channel) {
-                                                echo '<option value="'.$channel['id'].'">'.$channel['phone_number'].'</option>';
-                                            }
-                                            ?>
-                                        </select>
+                                    <div id="sip_channel_group" style="display: none">
+                                        <br>
+                                        <div class="input-group" >
+                                            <label class="input-group-addon primary" for="attraction_channel_sip_channel_id"><i
+                                                        class="fa fa-fw fa-phone"></i></label>
+                                            <select id="attraction_channel_sip_channel_id" name="sip_channel_id"
+                                                    class="form-control">
+                                                <option class="select-placeholder" value="" disabled selected>SIP Канал</option>
+                                                <?php
+                                                $channels = \app\models\SipChannel::find()->select('id,phone_number')->asArray()->all();
+                                                foreach ($channels as $channel) {
+                                                    echo '<option value="'.$channel['id'].'">'.$channel['phone_number'].'</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
                                     </div>
-                                    <br>
-                                    <div class="input-group">
-                                        <label class="input-group-addon primary" for="attraction_channel_integration_type"><i
-                                                    class="fa fa-fw fa-list-alt"></i></label>
-                                        <select id="attraction_channel_integration_type" name="type" class="form-control">
-                                            <option class="select-placeholder" value="" disabled selected>Интеграция</option>
-                                            <?php
-                                            $types = \app\models\AttractionChannel::INTEGRATIONS;
-                                            foreach ($types as $type) {
-                                                echo '<option value="'.$type.'">'.$type.'</option>';
-                                            }
-                                            ?>
-                                        </select>
+                                    <div id="integration_type_group" style="display: none">
+                                        <br>
+                                        <div class="input-group">
+                                            <label class="input-group-addon primary" for="attraction_channel_integration_type"><i
+                                                        class="fa fa-fw fa-list-alt"></i></label>
+                                            <select id="attraction_channel_integration_type" name="integration_type" class="form-control">
+                                                <option class="select-placeholder" value="" disabled selected>Интеграция</option>
+                                                <?php
+                                                $types = \app\models\AttractionChannel::INTEGRATIONS;
+                                                foreach ($types as $type) {
+                                                    echo '<option value="'.$type.'">'.$type.'</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

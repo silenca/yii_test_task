@@ -21,22 +21,51 @@ function openAttractionChannelForm(id) {
 }
 
 function bindLiveChange($form) {
-    $.each($('input[type=text],input[type=email]', $form), function (i, input) {
+    $.each($('input[type=text],input[type=email],input[type=checkbox],select', $form), function (i, input) {
         var name = $(input).attr('name');
         if (name) {
-            bind_inputs[name] = $(input).val()+'' ;
+            if($(input).attr('type')=='checkbox') {
+                if($(input).prop('checked')) {
+                    bind_inputs[name] = '1';
+                } else {
+                    bind_inputs[name] = '0';
+                }
+            } else {
+                if($(input).val() == null)
+                    bind_inputs[name] = 'undefined' ;
+                else
+                    bind_inputs[name] = $(input).val()+'' ;
+
+            }
+
         }
     });
     bind_inputs['id'] = $('#attraction-channel-id').val();
 }
 
 function clearAttractionChannel($form) {
-    $form.find('.attraction-channel-title').text('Новый SIP Канал');
-    $form.find('#attraction_channel_phone_number').val('');
-    $form.find('#attraction_channel_host').val('');
-    $form.find('#attraction_channel_port').val('');
-    $form.find('#attraction_channel_login').val('');
-    $form.find('#attraction_channel_password').val('');
+    $form.find('.attraction-channel-title').text('Новый Канал Привлечения');
+    // var active = $form.find('#attraction_channel_active');
+    if(switchers['attraction_channel_active'] != undefined) {
+        setSwitchery(switchers['attraction_channel_active'], false);
+    }
+    $form.find('#attraction_channel_name').val('');
+
+    $form.find('#attraction_channel_type option.select-placeholder').prop('selected',true);
+    $form.find('#attraction_channel_sip_channel_id option.select-placeholder').prop('selected',true);
+    $form.find('#attraction_channel_integration_type option.select-placeholder').prop('selected',true);
+
+    $form.find('#sip_channel_group').hide();
+    $form.find('#integration_type_group').hide();
+    $form.find('#attraction_channel_type').off('change').on('change',function () {
+        $form.find('#sip_channel_group').hide();
+        $form.find('#integration_type_group').hide();
+        switch ($(this).val()) {
+            case '1': $form.find('#sip_channel_group').show();break;
+            case '2': $form.find('#integration_type_group').show();break;
+        }
+    });
+
     hideNotifications($form);
 }
 
@@ -62,13 +91,37 @@ function buildAttractionChannelForm(id, $form, callback) {
     $.getJSON('/attraction-channel/view', {id: id}, function (response) {
         if (response.status === 200) {
             var data = response.data;
-            $form.find('.attraction-channel-title').text('SIP Канал №' + data.id);
-            $form.find('#attraction_channel_phone_number').val(data.phone_number);
-            $form.find('#attraction_channel_host').val(data.host);
-            $form.find('#attraction_channel_port').val(data.port);
-
-            $form.find('#attraction_channel_login').val(data.login);
-            $form.find('#attraction_channel_password').val(data.password);
+            $form.find('.attraction-channel-title').text('Канал привлечения №' + data.id);
+            if(switchers['attraction_channel_active'] != undefined) {
+                if(data.is_active == "1")
+                    setSwitchery(switchers['attraction_channel_active'], true);
+                else
+                    setSwitchery(switchers['attraction_channel_active'], false);
+            }
+            $form.find('#attraction_channel_name').val(data.name);
+            if(data.type) {
+                $form.find('#attraction_channel_type option[value="'+data.type+'"]').prop('selected',true);
+            }
+            if(data.sip_channel_id) {
+                $form.find('#attraction_channel_sip_channel_id option[value="'+data.sip_channel_id+'"]').prop('selected',true);
+            }
+            if(data.integration_type) {
+                $form.find('#attraction_channel_integration_type option[value="'+data.integration_type+'"]').prop('selected',true);
+            }
+            $form.find('#sip_channel_group').hide();
+            $form.find('#integration_type_group').hide();
+            switch ($form.find('#attraction_channel_type').val()) {
+                case '1': $form.find('#sip_channel_group').show();break;
+                case '2': $form.find('#integration_type_group').show();break;
+            }
+            $form.find('#attraction_channel_type').off('change').on('change',function () {
+                $form.find('#sip_channel_group').hide();
+                $form.find('#integration_type_group').hide();
+                switch ($(this).val()) {
+                    case '1': $form.find('#sip_channel_group').show();break;
+                    case '2': $form.find('#integration_type_group').show();break;
+                }
+            });
 
             callback();
         }
@@ -82,8 +135,9 @@ function editAttractionChannel($form, name, value) {
             data[key] = value;
     });
     data['_csrf'] = _csrf;
-    console.log(bind_inputs);
-    if (bind_inputs['phone_number'] && bind_inputs['host'] && bind_inputs['port'] && bind_inputs['login'] && bind_inputs['password']) {
+    if (bind_inputs['name'] && bind_inputs['type']
+        && (bind_inputs['type']=='0' || (bind_inputs['type']=='1' && bind_inputs['sip_channel_id']!="undefined")
+        || (bind_inputs['type']=='2' && bind_inputs['integration_type']!="undefined"))) {
         $.post('/attraction-channel/edit', data, function (response) {
             $form.find('label.error').remove();
             $form.find('.error').removeClass('error');
@@ -124,7 +178,16 @@ $(function() {
     $attraction_channel_form = $('#modalAddAttractionChannel');
     $attraction_channel_data_form = $attraction_channel_form.find('.attraction-channel-data');
 
-    $('input[type=text], input[type=email]', $attraction_channel_data_form).on('blur', function () {
+    $('.switchery', $attraction_channel_data_form).on('click', function () {
+        var input = $(this).parent().find('input[type=checkbox]');
+        if(input.prop('checked')) {
+            input.data('value', '1');
+        } else {
+            input.data('value', '0');
+        }
+        checkChanges(input.attr('name'), input.data('value'), $attraction_channel_form);
+    });
+    $('input[type=text], input[type=email],select', $attraction_channel_data_form).on('blur', function () {
         $(this).data('value', $(this).val());
         checkChanges($(this).attr('name'), $(this).data('value'), $attraction_channel_form);
     });
