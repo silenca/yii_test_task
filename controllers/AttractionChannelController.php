@@ -117,6 +117,8 @@ class AttractionChannelController extends BaseController
         if(isset($post['id']) && !empty($post['id'])) {
             $attraction_channel_form->edited_id = (int)$post['id'];
         }
+        if(isset($post['is_active']))
+            $post['is_active'] = (int)$post['is_active'];
 
         $attraction_channel_form->attributes = $post;
         if($attraction_channel_form->validate()) {

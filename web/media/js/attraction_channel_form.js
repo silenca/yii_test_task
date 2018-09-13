@@ -7,6 +7,8 @@ var $attraction_channel_form;
 var $attraction_channel_data_form;
 var bind_inputs = {};
 
+var sendTimer;
+
 function openNewAttractionChannelForm() {
     clearAttractionChannel($attraction_channel_form);
     $attraction_channel_form.modal({});
@@ -46,11 +48,14 @@ function bindLiveChange($form) {
 function clearAttractionChannel($form) {
     $form.find('.attraction-channel-title').text('Новый Канал Привлечения');
     // var active = $form.find('#attraction_channel_active');
+    $form.find('#attraction_channel_active').off('change',checkboxEvent);
     if(switchers['attraction_channel_active'] != undefined) {
         setSwitchery(switchers['attraction_channel_active'], false);
     }
+    $form.find('#attraction_channel_active').on('change',checkboxEvent);
     $form.find('#attraction_channel_name').val('');
-
+    $form.find('#attraction-channel-id').val('');
+    bind_inputs['id'] = "undefined";
     $form.find('#attraction_channel_type option.select-placeholder').prop('selected',true);
     $form.find('#attraction_channel_sip_channel_id option.select-placeholder').prop('selected',true);
     $form.find('#attraction_channel_integration_type option.select-placeholder').prop('selected',true);
@@ -93,10 +98,12 @@ function buildAttractionChannelForm(id, $form, callback) {
             var data = response.data;
             $form.find('.attraction-channel-title').text('Канал привлечения №' + data.id);
             if(switchers['attraction_channel_active'] != undefined) {
+                $form.find('#attraction_channel_active').off('change',checkboxEvent);
                 if(data.is_active == "1")
                     setSwitchery(switchers['attraction_channel_active'], true);
                 else
                     setSwitchery(switchers['attraction_channel_active'], false);
+                $form.find('#attraction_channel_active').on('change',checkboxEvent);
             }
             $form.find('#attraction_channel_name').val(data.name);
             if(data.type) {
@@ -139,6 +146,7 @@ function editAttractionChannel($form, name, value) {
         && (bind_inputs['type']=='0' || (bind_inputs['type']=='1' && bind_inputs['sip_channel_id']!="undefined")
         || (bind_inputs['type']=='2' && bind_inputs['integration_type']!="undefined"))) {
         $.post('/attraction-channel/edit', data, function (response) {
+            clearTimeout(sendTimer);
             $form.find('label.error').remove();
             $form.find('.error').removeClass('error');
             var result = $.parseJSON(response);
@@ -172,23 +180,30 @@ function editAttractionChannel($form, name, value) {
     }
 
 }
-
+function checkboxEvent() {
+    $attraction_channel_form = $('#modalAddAttractionChannel');
+    $attraction_channel_data_form = $attraction_channel_form.find('.attraction-channel-data');
+    var input = $(this);
+    if (input.prop('checked')) {
+        input.data('value', '1');
+    } else {
+        input.data('value', '0');
+    }
+    if(sendTimer != undefined){
+        clearTimeout(sendTimer);
+    }
+    sendTimer = setTimeout( checkChanges,500,input.attr('name'),input.data('value'),$attraction_channel_form);
+}
 
 $(function() {
     $attraction_channel_form = $('#modalAddAttractionChannel');
     $attraction_channel_data_form = $attraction_channel_form.find('.attraction-channel-data');
 
-    $('.switchery', $attraction_channel_data_form).on('click', function () {
-        var input = $(this).parent().find('input[type=checkbox]');
-        if(input.prop('checked')) {
-            input.data('value', '1');
-        } else {
-            input.data('value', '0');
-        }
-        checkChanges(input.attr('name'), input.data('value'), $attraction_channel_form);
-    });
-    $('input[type=text], input[type=email],select', $attraction_channel_data_form).on('blur', function () {
+    $('input[type=text], input[type=email], input[type=checkbox],select', $attraction_channel_data_form).on('blur', function () {
         $(this).data('value', $(this).val());
-        checkChanges($(this).attr('name'), $(this).data('value'), $attraction_channel_form);
+        if(sendTimer != undefined){
+            clearTimeout(sendTimer);
+        }
+        sendTimer = setTimeout( checkChanges,500,$(this).attr('name'), $(this).data('value'), $attraction_channel_form);
     });
 });
