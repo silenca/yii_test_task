@@ -89,7 +89,7 @@ $this->params['active'] = 'contact';
                                         <td><select data-column="<?php echo($col_key); ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
                                                 <option class="select-placeholder" value="" selected>Канал привлечения</option>
                                                 <?php
-                                                $channels = \app\models\AttractionChannel::find()->where(['is_active'=>1])->all();
+                                                $channels = \app\models\AttractionChannel::find()->all();
                                                 foreach ($channels as  $channel) {
                                                     echo '<option value="'.$channel->id.'">'.$channel->name.'</option>';
                                                 }
