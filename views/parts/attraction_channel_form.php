@@ -8,7 +8,7 @@
 <div class="modal fade slide-right modal-md"
      id="modalAddAttractionChannel" tabindex="-1" role="dialog" aria-hidden="true">
     <input type="hidden" id="attraction-channel-id" value=""/>
-    <div class="modal-dialog drop-shadow modal-lg">
+    <div class="modal-dialog drop-shadow modal-md">
         <div class="modal-content-wrapper">
             <div class="list-view-wrapper modal-content">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i
@@ -18,7 +18,7 @@
                     <div class="row-xs-height">
                         <div class="modal-body attraction-channel-modal col-middle text-center">
                             <div class="row">
-                                <div class="attraction-channel-data col-md-12">
+                                <div class="attraction-channel-data col-md-6">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <div class="panel-title attraction-channel-title">Новый канал привлечения</div>

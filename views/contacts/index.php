@@ -83,14 +83,24 @@ $this->params['active'] = 'contact';
                     <thead>
                     <tr>
                         <?php foreach ($filter_cols as $col_key => $col_val): ?>
-                            <? if (!in_array($col_key, $hide_columns)): ?>
+                            <?php if (!in_array($col_key, $hide_columns)): ?>
                                 <?php if ($col_val['have_search']): ?>
-                                    <td><input type="text" data-column="<?php echo($col_key); ?>"
-                                               class="form-control search-input-text"></td>
+                                    <?php if ($col_key == 'attraction_channel_id'):?>
+                                        <td><select data-column="<?php echo($col_key); ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                                <option class="select-placeholder" value="" selected>Канал привлечения</option>
+                                                <?php
+                                                $channels = \app\models\AttractionChannel::find()->where(['is_active'=>1])->all();
+                                                foreach ($channels as  $channel) {
+                                                    echo '<option value="'.$channel->id.'">'.$channel->name.'</option>';
+                                                }
+                                                ?></select></td>
+                                    <?php else: ?>
+                                        <td><input type="text" data-column="<?php echo($col_key); ?>" class="form-control search-input-text"></td>
+                                    <?php endif;?>
                                 <?php else: ?>
                                     <td></td>
                                 <?php endif; ?>
-                            <? endif ?>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </tr>
                     </thead>

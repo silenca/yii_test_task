@@ -113,12 +113,14 @@ use app\models\User;
                                             </div>
                                             <br>
                                             <div class="input-group">
+                                                <?php $disabled = (Yii::$app->user->can('attraction_channel')?false:true);?>
                                                 <label class="input-group-addon primary" for="attraction_channel"><i
                                                             class="fa fa-fw fa-list-alt"></i></label>
-                                                <select id="attraction_channel" name="attraction_channel_id" class="form-control">
+                                                <select id="attraction_channel" name="attraction_channel_id" class="form-control"
+                                                 <?=$disabled?'disabled':''?>>
                                                     <option class="select-placeholder" value="" disabled selected>Канал привлечения</option>
                                                     <?php
-                                                    $channels = \app\models\AttractionChannel::find()->all();
+                                                    $channels = \app\models\AttractionChannel::find()->where(['is_active'=>1])->all();
                                                     foreach ($channels as  $channel) {
                                                         echo '<option value="'.$channel->id.'">'.$channel->name.'</option>';
                                                     }

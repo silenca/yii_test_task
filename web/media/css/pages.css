@@ -13162,7 +13162,7 @@ input::-webkit-inner-spin-button {
     text-align: center;
 }
 
-.modal .modal-body.contact-modal {
+.modal .modal-body.contact-modal,.modal-body.sip-channel-modal,.modal-body.attraction-channel-modal {
     padding-top: 20px;
 }
 .report-visual {

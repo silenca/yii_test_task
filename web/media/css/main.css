@@ -11,14 +11,6 @@
     width: 1000px;
 }
 
-#modalAddSipChannel .sip-channel-data {
-    width: 500px;
-}
-
-#modalAddAttractionChannel .attraction-channel-data {
-    width: 500px;
-}
-
 @media (min-width: 992px) {
     #modalAddContact.modal-lg, #modalAddUser.modal-lg {
         width: 1200px;

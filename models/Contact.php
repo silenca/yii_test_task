@@ -161,7 +161,7 @@ class Contact extends \yii\db\ActiveRecord
             'street' => ['label' => 'Улица', 'have_search' => true, 'orderable' => true],
             'house' => ['label' => 'Дом', 'have_search' => true, 'orderable' => true],
             'flat' => ['label' => 'Квартира', 'have_search' => true, 'orderable' => true],
-            'attraction_channel_id' => ['label' => 'Канал привлечения', 'have_search' => false, 'orderable' => false],
+            'attraction_channel_id' => ['label' => 'Канал привлечения', 'have_search' => true, 'orderable' => false],
             'delete_button' => ['label' => 'Удалить', 'have_search' => false, 'orderable' => false],
         ];
         if (!Yii::$app->user->can('delete_contact')) {
