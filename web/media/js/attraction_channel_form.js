@@ -57,7 +57,9 @@ function clearAttractionChannel($form) {
     $form.find('#attraction-channel-id').val('');
     bind_inputs['id'] = "undefined";
     $form.find('#attraction_channel_type option.select-placeholder').prop('selected',true);
-    $form.find('#attraction_channel_sip_channel_id option.select-placeholder').prop('selected',true);
+    updateSipChannelsList($form);
+    // $form.find('#attraction_channel_sip_channel_id option.select-placeholder').prop('selected',true);
+
     $form.find('#attraction_channel_integration_type option.select-placeholder').prop('selected',true);
 
     $form.find('#sip_channel_group').hide();
@@ -89,6 +91,18 @@ function addError($form, name, errors) {
     });
 }
 
+
+function updateSipChannelsList($form,selected) {
+    var select = $form.find('#attraction_channel_sip_channel_id');
+    $.getJSON('/attraction-channel/get-free-sip-channels',{},function (response) {
+        var list = response.data;
+        select.empty();//.append('<option class="select-placeholder" value="" disabled selected>SIP Канал</option>');
+        for(K in list) {
+            select.append('<option value="'+list[K].id+'">'+list[K].phone_number+'</option>');
+        }
+    });
+}
+
 function buildAttractionChannelForm(id, $form, callback) {
     hideNotifications($form);
 
@@ -109,7 +123,7 @@ function buildAttractionChannelForm(id, $form, callback) {
             if(data.type) {
                 $form.find('#attraction_channel_type option[value="'+data.type+'"]').prop('selected',true);
             }
-            if(data.sip_channel_id) {
+            if(data.sipChannels) {
                 $form.find('#attraction_channel_sip_channel_id option[value="'+data.sip_channel_id+'"]').prop('selected',true);
             }
             if(data.integration_type) {
@@ -198,6 +212,11 @@ function checkboxEvent() {
 $(function() {
     $attraction_channel_form = $('#modalAddAttractionChannel');
     $attraction_channel_data_form = $attraction_channel_form.find('.attraction-channel-data');
+    $attraction_channel_form.find('#attraction_channel_sip_channel_id').select2({
+        placeholder: "SIP Канал",
+        allowClear: true,
+        width: '100%'
+    });
 
     $('input[type=text], input[type=email], input[type=checkbox],select', $attraction_channel_data_form).on('blur', function () {
         $(this).data('value', $(this).val());

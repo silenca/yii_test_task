@@ -11,8 +11,11 @@ use Yii;
  * @property string $phone_number
  * @property string $host
  * @property integer $port
+ * @property integer $attraction_channel_id
  * @property string $login
  * @property string $password
+ *
+ * @property AttractionChannel $attractionChannel
  */
 class SipChannel extends \yii\db\ActiveRecord
 {
@@ -31,7 +34,7 @@ class SipChannel extends \yii\db\ActiveRecord
     {
         return [
             [['phone_number', 'host', 'port', 'login', 'password'], 'required'],
-            [['port'], 'integer'],
+            [['port','attraction_channel_id'], 'integer'],
             [['phone_number'], 'string', 'max' => 20],
             [['host', 'login', 'password'], 'string', 'max' => 255],
         ];
@@ -81,5 +84,13 @@ class SipChannel extends \yii\db\ActiveRecord
             return $channel->delete();
         }
         return false;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAttractionChannel()
+    {
+        return $this->hasOne(AttractionChannel::className(), ['id' => 'attraction_channel_id']);
     }
 }

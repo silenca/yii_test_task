@@ -32,17 +32,17 @@ class ContactsController extends BaseController
                 'rules' => [
                     [
                         'actions' => [
-                            'index',
+//                            'index',
                             'view',
                             'history',
                             'addcomment',
-                            'getdata',
+//                            'getdata',
                             'edit',
-                            'hide-columns',
+//                            'hide-columns',
                             'get-contact-by-phone',
                             'get-contact-by-phone',
-                            'search',
-                            'link-with',
+//                            'search',
+//                            'link-with',
                             'objectschedulecall',
                             'objectscheduleemail',
                             'ring-round',
@@ -74,7 +74,14 @@ class ContactsController extends BaseController
                         'roles' => ['admin'],
                     ],
                     [
-                        'actions' => ['remove-tag'],
+                        'actions' => [
+                            'remove-tag',
+                            'index',
+                            'getdata',
+                            'hide-columns',
+                            'search',
+                            'link-with',
+                        ],
                         'allow' => true,
                         'roles' => ['admin', 'manager'],
                     ],

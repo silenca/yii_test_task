@@ -11,10 +11,8 @@ use Yii;
  * @property string $name
  * @property integer $is_active
  * @property integer $type
- * @property integer $sip_channel_id
  * @property string $integration_type
  *
- * @property SipChannel $sipChannel
  */
 class AttractionChannel extends \yii\db\ActiveRecord
 {
@@ -51,7 +49,7 @@ class AttractionChannel extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['is_active', 'type', 'sip_channel_id'], 'integer'],
+            [['is_active', 'type'], 'integer'],
             [['name', 'integration_type'], 'string', 'max' => 255],
             [['sip_channel_id'], 'exist', 'skipOnError' => true, 'targetClass' => SipChannel::className(), 'targetAttribute' => ['sip_channel_id' => 'id']],
         ];
@@ -67,7 +65,6 @@ class AttractionChannel extends \yii\db\ActiveRecord
             'name' => 'Name',
             'is_active' => 'Is Active',
             'type' => 'Type',
-            'sip_channel_id' => 'Sip Channel ID',
             'integration_type' => 'Integration Type',
         ];
     }
@@ -75,9 +72,9 @@ class AttractionChannel extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getSipChannel()
+    public function getSipChannels()
     {
-        return $this->hasOne(SipChannel::className(), ['id' => 'sip_channel_id']);
+        return $this->hasMany(SipChannel::className(), ['attraction_channel_id' => 'id']);
     }
 
     public static function getColsForTableView()

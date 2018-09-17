@@ -11,6 +11,7 @@ namespace app\controllers;
 use app\components\widgets\AttractionChannelTableWidget;
 use app\models\AttractionChannel;
 use app\models\forms\AttractionChannelForm;
+use app\models\SipChannel;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Response;
@@ -29,7 +30,8 @@ class AttractionChannelController extends BaseController
                             'edit',
                             'view',
                             'hide-columns',
-                            'delete'
+                            'delete',
+                            'get-free-sip-channels'
                         ],
                         'allow' => true,
                         'roles' => ['admin'],
@@ -147,11 +149,16 @@ class AttractionChannelController extends BaseController
 
     public function actionView(){
         $attraction_channel_id = Yii::$app->request->get('id');
-        $attraction_channel = AttractionChannel::find()->where(['id' => (int)$attraction_channel_id]);
+        $attraction_channel = AttractionChannel::find()->with('sipChannels')->where(['id' => (int)$attraction_channel_id]);
         $attraction_channel_arr = $attraction_channel->asArray()->one();
         $attraction_channel_data = $attraction_channel_arr;
 
         $this->json($attraction_channel_data, 200);
+    }
+
+    public function actionGetFreeSipChannels() {
+        $channels = SipChannel::find()->where(['is','attraction_channel_id',NULL])->asArray()->all();
+        $this->json($channels,200);
     }
 
     public function actionHideColumns()

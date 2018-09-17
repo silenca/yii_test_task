@@ -57,13 +57,13 @@
                                                     <label class="input-group-addon primary" for="attraction_channel_sip_channel_id"><i
                                                                 class="fa fa-fw fa-phone"></i></label>
                                                     <select id="attraction_channel_sip_channel_id" name="sip_channel_id"
-                                                            class="form-control">
-                                                        <option class="select-placeholder" value="" disabled selected>SIP Канал</option>
+                                                            class="form-control" multiple>
+<!--                                                        <option class="select-placeholder" value="" disabled selected>SIP Канал</option>-->
                                                         <?php
-                                                        $channels = \app\models\SipChannel::find()->select('id,phone_number')->asArray()->all();
-                                                        foreach ($channels as $channel) {
-                                                            echo '<option value="'.$channel['id'].'">'.$channel['phone_number'].'</option>';
-                                                        }
+//                                                        $channels = \app\models\SipChannel::find()->select('id,phone_number')->asArray()->all();
+//                                                        foreach ($channels as $channel) {
+//                                                            echo '<option value="'.$channel['id'].'">'.$channel['phone_number'].'</option>';
+//                                                        }
                                                         ?>
                                                     </select>
                                                 </div>

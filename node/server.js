@@ -28,6 +28,7 @@ handleDisconnect(connection);
 var clients = [];
 io.sockets.on('connection', function (socket) {
     clients.push(socket);
+    console.log(`New connection: ${socket.id}`);
     socket.on('disconnect', function () {
         var index = clients.indexOf(socket);
         if (index != -1) {
@@ -82,6 +83,7 @@ app.post('/incoming', function (req, res) {
         'id': req.body.id
     };
     io.to('operator').emit('call_incoming', data);
+    console.log("Incoming call: "+req.body.phone);
     res.send('Сообщение отправлено всем операторам');
 });
 

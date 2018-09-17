@@ -6158,9 +6158,26 @@ fieldset[disabled] .form-control {
     left: -23px;
     top: -2px;
 }
+/* Select2 customize */
 .input-group-addon:last-child input {
     border-left: 0px;
 }
+.input-group > .select2 span.selection > span > ul{
+    display: block;
+    margin-bottom: 3px;
+}
+.input-group > .select2 span.selection > span > ul > li.select2-search.select2-search--inline > input{
+    margin-top: 0;
+}
+.input-group > .select2 span.selection > span > ul > span.select2-selection__clear{
+    margin-top: 8px;
+}
+.input-group > .select2 span.selection > span.select2-selection{
+    border-left: none;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
 /* Plugins
 --------------------------------------------------
 Datepicker
@@ -13196,3 +13213,4 @@ input::-webkit-inner-spin-button {
 #object-table tr:hover .object-btn {
     display: inline-block !important;
 }
+
