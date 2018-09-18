@@ -79,10 +79,15 @@ app.post('/incoming', function (req, res) {
     var data = {
         'contact_name': req.body.contact_name,
         'phone': req.body.phone,
+        'call_id':req.body.call_id,
         // 'language': req.body.language,
         'id': req.body.id
     };
+    if(req.body.attraction_channel_id != undefined)
+        data.attraction_channel_id = req.body.attraction_channel_id;
     io.to('operator').emit('call_incoming', data);
+    io.to('manager').emit('call_incoming', data);
+    io.to('admin').emit('call_incoming', data);
     console.log("Incoming call: "+req.body.phone);
     res.send('Сообщение отправлено всем операторам');
 });

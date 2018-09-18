@@ -4,9 +4,12 @@ var dataTable,
 
 $(function () {
 
-    var show_columns = columns.filter(function (item) {
-        return hide_columns.indexOf(item) === -1;
-    });
+    if($('#contacts-table').length) {
+        var show_columns = columns.filter(function (item) {
+            return hide_columns.indexOf(item) === -1;
+        });
+    }
+
 
 
     var initTable = function () {

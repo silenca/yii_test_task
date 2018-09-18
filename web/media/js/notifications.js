@@ -8,14 +8,31 @@ $(function () {
         console.log(data);
         var $message_content = $('<div></div>');
         $message_content.append("<div class='alert-header'>Входящий вызов</div>");
-        if (data.contact_name) {
-            $message_content.append("<div class='alert-link'><a href=/contacts#contact=" + data.id + ">" + data.contact_name + "</a></div>");
-            $message_content.append("<div class='alert-details'><span>Номер: </span><span>" + data.phone + "</span></div>");
+        if (data.id) {
+            $message_content.append("<div class='alert-link'><span>" + data.contact_name + "</span></div>");
+            $message_content.append("<div class='alert-details'><span>Номер: </span><a href='javascript:void(0)' data-contact-id='" +
+                data.id +
+                "' class='notification-open-contact'>"
+                + data.phone + "</a></div>");
         } else {
-            $message_content.append("<div class='alert-link'><a href=/contacts#number=" + data.phone + ">" + data.phone + "</a></div>");
+            $message_content.append("<div class='alert-link'><a href='javascript:void(0)' class='notification-open-new-contact' data-attraction-channel-id='" +
+                (data.attraction_channel_id!=undefined?data.attraction_channel_id:'') +
+                "'>" + data.phone + "</a></div>");
         }
 
-        showNotification('body', $message_content.html(), 'bottom-right', 'info', 'circle',30000);
+        showNotification('body', $message_content.html(), 'bottom-right', 'info', 'circle',0);
+
+        $('.notification-open-contact').off('click').on('click', function (e) {
+            var contactId = $(this).data('contact-id'),
+                phone = $(this).text();
+            openContactForm(contactId);
+            initCallNow(phone, null, contactId);
+        });
+
+        $('.notification-open-new-contact').off('click').on('click', function (e) {
+            console.log('new_contact');
+            openNewContactForm($(this).text(),$(this).data('attraction-channel-id'));
+        });
     });
     
     // socket.on('new_contract', function (data) {

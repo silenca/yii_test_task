@@ -133,7 +133,7 @@ $this->params['active'] = 'contact';
     </form>
 </div>
 
-<?php echo $this->render('/parts/contact_form'); ?>
+<?php //echo $this->render('/parts/contact_form'); ?>
 
 <script type="text/javascript">
     var hide_columns = <?= json_encode($hide_columns); ?>;

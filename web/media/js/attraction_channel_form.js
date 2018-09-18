@@ -223,6 +223,7 @@ function checkboxEvent() {
 }
 
 function sipSelectEvent() {
+    console.log('select-change');
     $(this).data('value', $(this).val());
     if(sendTimer != undefined){
         clearTimeout(sendTimer);

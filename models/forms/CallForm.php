@@ -2,6 +2,7 @@
 
 namespace app\models\forms;
 
+use app\models\SipChannel;
 use Yii;
 use yii\base\Model;
 
@@ -21,6 +22,7 @@ class CallForm extends Model {
     var $totaltime;
     var $answeredtime;
     var $status;
+    var $sip_channel;
     var $record_file;
 
     public function rules() {
@@ -28,7 +30,7 @@ class CallForm extends Model {
             [['callerid', 'answered', 'uniqueid'], 'required', 'on' => self::SCENARIO_CALLSTART],
             //[['callerid', 'answered'], 'string', 'length' => [3, 10], 'on' => self::SCENARIO_CALLSTART],
             [['callerid', 'answered'], 'integer', 'on' => self::SCENARIO_CALLSTART],
-            
+            ['sip_channel','checkSipChannel', 'on' => self::SCENARIO_CALLSTART],
             
             [['uniqueid'], 'string', 'length' => [6, 30]],
             [['uniqueid', 'datetime', 'status'], 'required', 'on' => self::SCENARIO_CALLEND],
@@ -36,6 +38,13 @@ class CallForm extends Model {
             [['totaltime', 'answeredtime'], 'integer', 'on' => self::SCENARIO_CALLEND],
             //[['callerid'], 'checkNumbers', 'on' => self::SCENARIO_CALLEND],
         ];
+    }
+
+    public function checkSipChannel($attribute, $params)
+    {
+        $channel = SipChannel::find()->where(['id'=>(int)$this->$attribute])->one();
+        if($channel == null)
+            $this->addError($attribute,'SIP-канал не найден');
     }
 
     public function attributeLabels() {

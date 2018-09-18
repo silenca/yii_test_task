@@ -2,6 +2,7 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
+use app\assets\ContactAsset;
 use yii\helpers\Html;
 //use yii\bootstrap\Nav;
 //use yii\bootstrap\NavBar;
@@ -16,6 +17,10 @@ AppAsset::register($this);
 if (!Yii::$app->user->isGuest) {
     NotificationAsset::register($this);
     GoogleApiAsset::register($this);
+    ContactAsset::register($this);
+}
+else {
+
 }
 ?>
 <?php $this->beginPage() ?>
@@ -232,6 +237,7 @@ if (!Yii::$app->user->isGuest) {
                 </div>
                 <div class="page-content-wrapper">
                     <?= $content ?>
+                    <?php echo $this->render('/parts/contact_form'); ?>
                 </div>
             </div>
         <?php else: ?>

@@ -18,6 +18,8 @@ use app\models\FailExportCall;
  * @property string $record
  * @property string $unical_id
  * @property string $manager_int_id
+ * @property integer $sip_channel_id
+ * @property integer $accepted
  */
 class Call extends \yii\db\ActiveRecord {
 
@@ -44,7 +46,7 @@ class Call extends \yii\db\ActiveRecord {
             [['date_time', 'type', 'unique_id'], 'required'],
             [['date_time', 'attitude_level', 'call_order_token', 'tag_id', 'sended_crm'], 'safe'],
             [['type', 'status', 'unique_id', 'call_order_token'], 'string'],
-            [['contact_id', 'phone_number', 'total_time', 'answered_time', 'attitude_level', 'tag_id'], 'integer'],
+            [['contact_id', 'phone_number', 'total_time', 'answered_time', 'attitude_level', 'tag_id','sip_channel_id','accepted'], 'integer'],
             [['record'], 'string', 'max' => 255],
         ];
     }
@@ -148,13 +150,14 @@ class Call extends \yii\db\ActiveRecord {
         return $this->save();
     }
 
-    public function outgoing($unique_id, $contact_id, $phone_number) {
+    public function outgoing($unique_id, $contact_id, $phone_number,$sip_channel) {
         $this->unique_id = $unique_id;
         $this->date_time = date('Y-m-d H:i:s');
         $this->type = Call::CALL_OUTGOING;
         $this->phone_number = $phone_number;
         $this->contact_id = $contact_id;
         $this->status = Call::CALL_STATUS_NEW;
+        $this->sip_channel_id = $sip_channel;
         if (!$contact_id) {
             $this->sended_crm = 1;
         }
