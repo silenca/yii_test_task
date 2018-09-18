@@ -95,11 +95,23 @@ function addError($form, name, errors) {
 function updateSipChannelsList($form,selected) {
     var select = $form.find('#attraction_channel_sip_channel_id');
     $.getJSON('/attraction-channel/get-free-sip-channels',{},function (response) {
+        select.off('change',sipSelectEvent);
         var list = response.data;
         select.empty();//.append('<option class="select-placeholder" value="" disabled selected>SIP Канал</option>');
         for(K in list) {
             select.append('<option value="'+list[K].id+'">'+list[K].phone_number+'</option>');
         }
+        if(selected != undefined) {
+            var values = [];
+            for(K in selected) {
+                select.append('<option value="'+selected[K].id+'">'+selected[K].phone_number+'</option>');
+                values.push(selected[K].id);
+            }
+            select.val(values);
+
+        }
+        select.trigger('change');
+        select.on('change',sipSelectEvent);
     });
 }
 
@@ -124,7 +136,8 @@ function buildAttractionChannelForm(id, $form, callback) {
                 $form.find('#attraction_channel_type option[value="'+data.type+'"]').prop('selected',true);
             }
             if(data.sipChannels) {
-                $form.find('#attraction_channel_sip_channel_id option[value="'+data.sip_channel_id+'"]').prop('selected',true);
+                updateSipChannelsList($form,data.sipChannels);
+                // $form.find('#attraction_channel_sip_channel_id option[value="'+data.sip_channel_id+'"]').prop('selected',true);
             }
             if(data.integration_type) {
                 $form.find('#attraction_channel_integration_type option[value="'+data.integration_type+'"]').prop('selected',true);
@@ -209,16 +222,24 @@ function checkboxEvent() {
     sendTimer = setTimeout( checkChanges,500,input.attr('name'),input.data('value'),$attraction_channel_form);
 }
 
+function sipSelectEvent() {
+    $(this).data('value', $(this).val());
+    if(sendTimer != undefined){
+        clearTimeout(sendTimer);
+    }
+    sendTimer = setTimeout( checkChanges,500,$(this).attr('name'), $(this).data('value'), $attraction_channel_form);
+}
+
 $(function() {
     $attraction_channel_form = $('#modalAddAttractionChannel');
     $attraction_channel_data_form = $attraction_channel_form.find('.attraction-channel-data');
     $attraction_channel_form.find('#attraction_channel_sip_channel_id').select2({
         placeholder: "SIP Канал",
         allowClear: true,
-        width: '100%'
+        width: '290px'
     });
 
-    $('input[type=text], input[type=email], input[type=checkbox],select', $attraction_channel_data_form).on('blur', function () {
+    $('input[type=text], input[type=email]', $attraction_channel_data_form).on('change', function () {
         $(this).data('value', $(this).val());
         if(sendTimer != undefined){
             clearTimeout(sendTimer);

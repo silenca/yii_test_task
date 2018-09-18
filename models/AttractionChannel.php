@@ -51,7 +51,6 @@ class AttractionChannel extends \yii\db\ActiveRecord
         return [
             [['is_active', 'type'], 'integer'],
             [['name', 'integration_type'], 'string', 'max' => 255],
-            [['sip_channel_id'], 'exist', 'skipOnError' => true, 'targetClass' => SipChannel::className(), 'targetAttribute' => ['sip_channel_id' => 'id']],
         ];
     }
 

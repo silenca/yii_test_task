@@ -133,8 +133,25 @@ class AttractionChannelController extends BaseController
                 }
                 unset($post['_csrf']);
                 unset($post['id']);
-                $attraction_channel->attributes = $attraction_channel_form->attributes;
+                $attraction_channel->attributes = $attraction_channel_form->getChannelAtributes();
+
                 if($attraction_channel->save()) {
+                    /**
+                     * @var $old SipChannel[]
+                     * @var $new SipChannel[]
+                     */
+                    $old = SipChannel::find()->where(['attraction_channel_id'=>$attraction_channel->id])->indexBy('id')->all();
+                    $new = SipChannel::find()->where(['in','id',$attraction_channel_form->sip_channel_id])->all();
+                    foreach ($new as $n) {
+                        $n->attraction_channel_id = $attraction_channel->id;
+                        $n->save();
+                        if(isset($old[$n->id]))
+                            unset($old[$n->id]);
+                    }
+                    foreach ($old as $o) {
+                        $o->attraction_channel_id = null;
+                        $o->save();
+                    }
                     $this->json(['id' => $attraction_channel->id], 200);
                 } else {
                     $this->json(false, 415,$attraction_channel->getErrors());
