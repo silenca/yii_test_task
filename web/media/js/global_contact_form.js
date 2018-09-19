@@ -1,4 +1,4 @@
-var bind_inputs = {};
+var contact_bind_inputs = {};
 var $contact_form;
 var $contact_data_form;
 var managerTags = [];
@@ -104,7 +104,7 @@ $(function() {
 
     $('input[type=text], input[type=email],select', $contact_data_form).on('blur', function () {
         $(this).data('value', $(this).val());
-        checkChanges($(this).attr('name'), $(this).data('value'), $contact_form);
+        checkChangesContact($(this).attr('name'), $(this).data('value'), $contact_form);
     });
 
     $('#contact_tags', $contact_data_form).on('beforeItemRemove', function (event) {
@@ -284,7 +284,7 @@ function openContactForm(id) {
     $contact_form.find('label.error').remove();
     $contact_form.find('.error').removeClass('error');
     buildContactForm(id, $contact_form, function () {
-        bindLiveChange($contact_data_form);
+        bindLiveChangeContact($contact_data_form);
     });
     $contact_form.modal({backdrop: false});
 }
@@ -294,17 +294,19 @@ function openNewContactForm(phone,attraction_channel) {
     $contact_form.modal({});
     if(phone != undefined) {
         $contact_form.find('#contact_phones').val(phone);
+        $contact_form.find('#contact_phones').attr('data-value',phone).trigger('blur');
     }
     if(attraction_channel != undefined) {
         $contact_form.find('#attraction_channel option[value='+attraction_channel+']').prop('selected',true);
+        $contact_form.find('#attraction_channel').attr('data-value',attraction_channel);
     }
-    bindLiveChange($contact_data_form);
+    bindLiveChangeContact($contact_data_form);
 }
 
 function openNewContactFormWithPhone(phone) {
     clearContactForm($contact_form);
     $contact_form.modal({});
-    bindLiveChange($contact_data_form);
+    bindLiveChangeContact($contact_data_form);
     $contact_data_form.find('#contact_phones').val(phone);
 }
 
@@ -420,29 +422,29 @@ function fillContactData(data, $form) {
 }
 
 
-function checkChanges(name, value, $form) {
-    if (bind_inputs[name] !== value) {
-        bind_inputs[name] = value;
+function checkChangesContact(name, value, $form) {
+    if (contact_bind_inputs[name] !== value) {
+        contact_bind_inputs[name] = value;
         editContact($form, name, value);
     }
 }
 
 function editContact($form, name, value) {
     var data = {};
-    $.each(bind_inputs, function (key, value) {
+    $.each(contact_bind_inputs, function (key, value) {
         if (value != "undefined")
             data[key] = value;
     });
     data['_csrf'] = _csrf;
-    if (bind_inputs['phones']) {
+    if (contact_bind_inputs['phones']) {
         $.post('/contacts/edit', data, function (response) {
             $form.find('label.error').remove();
             $form.find('.error').removeClass('error');
             var result = $.parseJSON(response);
             if (result.status == 200) {
-                bind_inputs['id'] = result.data.id;
+                contact_bind_inputs['id'] = result.data.id;
                 if (name && value) {
-                    bind_inputs[name] = value;
+                    contact_bind_inputs[name] = value;
                 }
                 $form.find('#contact-id').val(result.data.id);
                 if (typeof dataTable !== 'undefined') { dataTable.draw(false); }
@@ -489,14 +491,14 @@ function changeActionsForm(action) {
     }
 }
 
-function bindLiveChange($form) {
+function bindLiveChangeContact($form) {
     $.each($('input[type=text],input[type=email],select', $form), function (i, input) {
         var name = $(input).attr('name');
         if (name) {
-            bind_inputs[name] = $(input).attr('data-value') + '';
+            contact_bind_inputs[name] = $(input).attr('data-value') + '';
         }
     });
-    bind_inputs['id'] = $('#contact-id').val();
+    contact_bind_inputs['id'] = $('#contact-id').val();
 }
 
 

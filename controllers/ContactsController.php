@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\components\Filter;
+use app\components\Notification;
 use app\components\widgets\ContactTableWidget;
 use app\models\Contact;
 use app\models\ContactComment;
@@ -46,6 +47,7 @@ class ContactsController extends BaseController
                             'objectschedulecall',
                             'objectscheduleemail',
                             'ring-round',
+                            'accept-call'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -565,5 +567,20 @@ class ContactsController extends BaseController
             $this->json([], 200);
         }
         $this->json([], 415, 'Tag not found');
+    }
+
+    public function actionAcceptCall() {
+        $call_id = Yii::$app->request->post('call_id',null);
+        if($call_id == null)
+            $this->json([],400,'Call id required');
+        /**
+         * @var $call Call
+         */
+        $call = Call::find()->where(['id'=>(int)$call_id])->one();
+        if($call == null)
+            $this->json([],404,'Call not found');
+        $call->accepted = 1;
+        $call->save();
+        Notification::closeCall(['call_id'=>$call->id]);
     }
 }

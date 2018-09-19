@@ -52,6 +52,7 @@ io.sockets.on('connection', function (socket) {
                             socket.join('admin');
                             break;
                     }
+
                 }
                 else {
                     console.log('Error while performing Query.', err);
@@ -75,6 +76,12 @@ app.get('/toadmin', function (req, res) {
     res.send('Сообщение отправлено всем админам');
 });
 
+app.post('/close-call', function (req, res) {
+    io.to('operator').emit('close_call', {call_id:req.body.call_id});
+    io.to('manager').emit('close_call', {call_id:req.body.call_id});
+    // io.to('admin').emit('close_call', {call_id:req.body.call_id});
+});
+
 app.post('/incoming', function (req, res) {
     var data = {
         'contact_name': req.body.contact_name,
@@ -87,7 +94,7 @@ app.post('/incoming', function (req, res) {
         data.attraction_channel_id = req.body.attraction_channel_id;
     io.to('operator').emit('call_incoming', data);
     io.to('manager').emit('call_incoming', data);
-    io.to('admin').emit('call_incoming', data);
+    // io.to('admin').emit('call_incoming', data);
     console.log("Incoming call: "+req.body.phone);
     res.send('Сообщение отправлено всем операторам');
 });
