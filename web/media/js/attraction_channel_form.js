@@ -205,8 +205,10 @@ function checkboxEvent() {
     $attraction_channel_data_form = $attraction_channel_form.find('.attraction-channel-data');
     var input = $(this);
     if (input.prop('checked')) {
+        bind_inputs[$(this).attr('name')] = "1";
         input.data('value', '1');
     } else {
+        bind_inputs[$(this).attr('name')] = "0";
         input.data('value', '0');
     }
     if(sendTimer != undefined){
@@ -217,6 +219,7 @@ function checkboxEvent() {
 
 function sipSelectEvent() {
     $(this).data('value', $(this).val());
+    bind_inputs[$(this).attr('name')] = $(this).val();
     if(sendTimer != undefined){
         clearTimeout(sendTimer);
     }
