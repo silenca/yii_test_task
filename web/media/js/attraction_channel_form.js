@@ -64,14 +64,6 @@ function clearAttractionChannel($form) {
 
     $form.find('#sip_channel_group').hide();
     $form.find('#integration_type_group').hide();
-    $form.find('#attraction_channel_type').off('change').on('change',function () {
-        $form.find('#sip_channel_group').hide();
-        $form.find('#integration_type_group').hide();
-        switch ($(this).val()) {
-            case '1': $form.find('#sip_channel_group').show();break;
-            case '2': $form.find('#integration_type_group').show();break;
-        }
-    });
 
     hideNotifications($form);
 }
@@ -223,7 +215,6 @@ function checkboxEvent() {
 }
 
 function sipSelectEvent() {
-    console.log('select-change');
     $(this).data('value', $(this).val());
     if(sendTimer != undefined){
         clearTimeout(sendTimer);
@@ -231,7 +222,7 @@ function sipSelectEvent() {
     sendTimer = setTimeout( checkChanges,500,$(this).attr('name'), $(this).data('value'), $attraction_channel_form);
 }
 
-$(function() {
+$(document).ready(function() {
     $attraction_channel_form = $('#modalAddAttractionChannel');
     $attraction_channel_data_form = $attraction_channel_form.find('.attraction-channel-data');
     $attraction_channel_form.find('#attraction_channel_sip_channel_id').select2({
@@ -239,8 +230,21 @@ $(function() {
         allowClear: true,
         width: '290px'
     });
+    $attraction_channel_data_form.find('#attraction_channel_type').on('change',function () {
+        $attraction_channel_data_form.find('#sip_channel_group').hide();
+        $attraction_channel_data_form.find('#integration_type_group').hide();
+        switch ($(this).val()) {
+            case '1': $attraction_channel_data_form.find('#sip_channel_group').show();break;
+            case '2': $attraction_channel_data_form.find('#integration_type_group').show();break;
+        }
+    });
 
-    $('input[type=text], input[type=email]', $attraction_channel_data_form).on('change', function () {
+    $attraction_channel_data_form.find('input[type=text], input[type=email], #attraction_channel_type, #attraction_channel_integration_type')
+        .on('change', function () {
+
+        if (bind_inputs[$(this).attr('name')] !== $(this).val()) {
+            bind_inputs[$(this).attr('name')] = $(this).val();
+        }
         $(this).data('value', $(this).val());
         if(sendTimer != undefined){
             clearTimeout(sendTimer);
