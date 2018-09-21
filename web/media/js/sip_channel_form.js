@@ -32,8 +32,11 @@ function bindLiveChange($form) {
 }
 
 function clearSipChannel($form) {
+    // bind_inputs = [];
     $form.find('.sip-channel-title').text('Новый SIP Канал');
     $form.find('#sip_channel_phone_number').val('');
+    $('#sip-channel-id').val('');
+    bind_inputs['id'] = "undefined";
     $form.find('#sip_channel_host').val('');
     $form.find('#sip_channel_port').val('');
     $form.find('#sip_channel_login').val('');
@@ -78,6 +81,7 @@ function buildSipChannelForm(id, $form, callback) {
 
 function editSipChannel($form, name, value) {
     var data = {};
+    console.log('edit');
     $.each(bind_inputs, function (key, value) {
         if (value != "undefined")
             data[key] = value;
@@ -126,6 +130,7 @@ $(function() {
 
     $('input[type=text], input[type=email]', $sip_channel_data_form).on('blur', function () {
         $(this).data('value', $(this).val());
+        console.log('change');
         checkChanges($(this).attr('name'), $(this).data('value'), $sip_channel_form);
     });
 });
