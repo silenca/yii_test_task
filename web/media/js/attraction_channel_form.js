@@ -69,10 +69,11 @@ function clearAttractionChannel($form) {
 }
 
 function checkChanges(name, value, $form) {
-    if (bind_inputs[name] !== value) {
-        bind_inputs[name] = value;
-        editAttractionChannel($form, name, value);
-    }
+    // if (bind_inputs[name] !== value) {
+    //     bind_inputs[name] = value;
+    //     editAttractionChannel($form, name, value);
+    // }
+    editAttractionChannel($form, name, value);
 }
 
 function addError($form, name, errors) {
@@ -161,7 +162,7 @@ function editAttractionChannel($form, name, value) {
             data[key] = value;
     });
     data['_csrf'] = _csrf;
-    if (bind_inputs['name'] && bind_inputs['type']
+    if (bind_inputs['name'] && bind_inputs['type']!="undefined"
         && (bind_inputs['type']=='0' || (bind_inputs['type']=='1' && bind_inputs['sip_channel_id']!="undefined")
         || (bind_inputs['type']=='2' && bind_inputs['integration_type']!="undefined"))) {
         $.post('/attraction-channel/edit', data, function (response) {
@@ -241,14 +242,14 @@ $(document).ready(function() {
 
     $attraction_channel_data_form.find('input[type=text], input[type=email], #attraction_channel_type, #attraction_channel_integration_type')
         .on('change', function () {
-
         if (bind_inputs[$(this).attr('name')] !== $(this).val()) {
             bind_inputs[$(this).attr('name')] = $(this).val();
+            $(this).data('value', $(this).val());
+            if(sendTimer != undefined){
+                clearTimeout(sendTimer);
+            }
+            sendTimer = setTimeout( checkChanges,500,$(this).attr('name'), $(this).data('value'), $attraction_channel_form);
         }
-        $(this).data('value', $(this).val());
-        if(sendTimer != undefined){
-            clearTimeout(sendTimer);
-        }
-        sendTimer = setTimeout( checkChanges,500,$(this).attr('name'), $(this).data('value'), $attraction_channel_form);
+
     });
 });
