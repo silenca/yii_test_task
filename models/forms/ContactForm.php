@@ -159,9 +159,9 @@ class ContactForm extends Model
         $res_data = [];
         $data = array_map('trim', explode(',', $data));
         if ($type == 'phones') {
-            $data = array_map(function($el) {
-                return preg_replace("/[^a-zA-Z0-9]/i","", $el);
-            }, $data);
+//            $data = array_map(function($el) {
+//                return preg_replace("/[^a-zA-Z0-9]/i","", $el);
+//            }, $data);
             $data_cols = Contact::getPhoneCols();
         } else {
             $data_cols = Contact::getEmailCols();
@@ -215,13 +215,15 @@ class ContactForm extends Model
     public function checkPhone($phone, $attribute)
     {
         if ($phone !== null) {
-            if (!preg_match('/^\d*$/', $phone)) {
-                $this->addCustomError($attribute, 'Телефон не должен содержать буквенные символы');
-            } elseif (strlen($phone) == 10) {
-                $this->addCustomError($attribute, 'Код страны не введен. Код России: 7');
-            } elseif (strlen($phone) < 10 || strlen($phone) > 15) {
-                $this->addCustomError($attribute, 'Телефон заполнен некорректно');
+//            if (!preg_match('/^\d*$/', $phone)) {
+//                $this->addCustomError($attribute, 'Телефон не должен содержать буквенные символы');
+//            } else
+            if (!preg_match('/^\+\d{11,}$/', $phone)) {
+                $this->addCustomError($attribute, 'Номер телефона должен иметь формат +ХХХХХХХХХХХХ');
             }
+//            elseif (strlen($phone) <= 10 || strlen($phone) > 15) {
+//                $this->addCustomError($attribute, 'Телефон заполнен некорректно');
+//            }
 //            elseif (!preg_match('/^(8|7|\+7)/', $phone)) {
 //                if ($this->getFirstError($attribute) == null) {
 //                    $this->addError($attribute, 'Код страны введен не верно');
