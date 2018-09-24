@@ -81,8 +81,8 @@ class AttractionChannel extends \yii\db\ActiveRecord
         $result = [
             'id' => ['label' => 'ID', 'have_search' => false, 'orderable' => true],
             'name' => ['label' => 'Наименование', 'have_search' => true, 'orderable' => true],
-            'is_active' => ['label' => 'Активен', 'have_search' => false, 'orderable' => false],
-            'type' => ['label' => 'Тип', 'have_search' => false, 'orderable' => false],
+            'is_active' => ['label' => 'Активен', 'have_search' => false, 'orderable' => true],
+            'type' => ['label' => 'Тип', 'have_search' => false, 'orderable' => true],
 //            'sip_channel' => ['label' => 'Логин', 'have_search' => true, 'orderable' => true],
 //            'password' => ['label' => 'Пароль', 'have_search' => false, 'orderable' => false],
             'delete_button' => ['label' => 'Удалить', 'have_search' => false]

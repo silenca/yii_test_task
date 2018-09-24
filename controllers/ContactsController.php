@@ -115,6 +115,7 @@ class ContactsController extends BaseController
         }
         $table_cols = Contact::getColsForTableView();
         $filter_cols = Contact::getColsForTableView();
+//        $filter_cols['phones']['value'] = "+99900099998";
         unset($filter_cols['id']);
         return $this->render('index', ['hide_columns' => $hide_columns, 'table_cols' => $table_cols, 'filter_cols' => $filter_cols]);
     }
