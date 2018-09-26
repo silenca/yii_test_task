@@ -45,7 +45,7 @@ $this->params['active'] = 'users';
                     </div>
                 </div>
                 <div class="pull-right">
-                    <div class="col-xs-12">
+                    <div class="col-xs-12 no-padding">
                         <button class="btn btn-primary btn-cons pull-right" id="open-new-user-form"><i
                                 class="fa fa-plus"></i> Добавить пользователя
                         </button>
@@ -113,4 +113,8 @@ $this->params['active'] = 'users';
 <script type="text/javascript">
     var hide_columns = <?= json_encode($hide_columns); ?>;
     var columns = <?= json_encode(array_keys($table_cols)); ?>;
+    document.addEventListener("DOMContentLoaded", ready);
+    function ready() {
+      document.body.appendChild(document.getElementById('modalAddUser'));
+    }
 </script>

@@ -1,11 +1,11 @@
 <?php
 use app\models\User;
 ?>
-<div class="modal fade slide-right modal-lg"
+<div class="modal fade slide-right modal-lg modal-sm modal-xs col-3"
     id="modalAddContact" tabindex="-1" role="dialog" aria-hidden="true">
     <input type="hidden" id="contact-id" value=""/>
     <div
-        class="modal-dialog drop-shadow modal-lg">
+        class="modal-dialog drop-shadow modal-lg modal-sm modal-xs col-3">
         <div class="modal-content-wrapper">
             <div class="list-view-wrapper modal-content">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i
@@ -19,7 +19,7 @@ use app\models\User;
                                         id="contact_manager_name"></span></span>
                             </div>
                             <div class="row">
-                                <div
+                                <div class="col-md-4 col-sm-12"
                                     class="contact-data col-md-4">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
@@ -135,7 +135,7 @@ use app\models\User;
                                         </div>
                                     </div>
                                 </div>
-                                <div
+                                <div class="col-md-4 col-sm-12"
                                     class="contact-history col-md-4">
                                     <div class="panel panel-transparent ">
                                         <!-- Nav tabs -->
@@ -202,7 +202,7 @@ use app\models\User;
                                         </div>
                                     </div>
                                 </div>
-                                <div class="contact-actions col-md-4">
+                                <div class="contact-actions col-md-4 col-sm-12">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <div class="panel-title block">

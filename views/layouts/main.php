@@ -187,14 +187,35 @@ else {
             </nav>
             <div class="page-container">
                 <div class="header ">
+                    <div class="sidebar-switch-header js-switch-sidebar">
+                        <i class="fa fa-lg fa-fw fa-bars"></i>
+                    </div>
                     <!-- START MOBILE CONTROLS -->
                     <!-- RIGHT SIDE -->
                     <div class="pull-right full-height visible-sm visible-xs">
                         <!-- START ACTION BAR -->
                         <div class="sm-action-bar">
-                            <a href="#" class="btn-link" data-toggle="quickview" data-toggle-element="#quickview">
-                                <span class="icon-set menu-hambuger-plus"></span>
-                            </a>
+                            <div class="dropdown pull-right">
+                                <button class="profile-dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="thumbnail-wrapper d32 circular inline m-t-5">
+                                        <img src="<?= Yii::getAlias('@web') ?>/media/img/avatar.jpg" alt="" data-src="<?= Yii::getAlias('@web') ?>/media/img/avatar.jpg" data-src-retina="<?= Yii::getAlias('@web') ?>/media/img/avatar_small2x.jpg" width="32" height="32">
+                                    </span>
+                                </button>
+                                <ul class="dropdown-menu profile-dropdown" role="menu">
+                                    <li><a href="#"><i class="pg-settings_small"></i> Settings</a>
+                                    </li>
+                                    <li><a href="#"><i class="pg-outdent"></i> Feedback</a>
+                                    </li>
+                                    <li><a href="#"><i class="pg-signals"></i> Help</a>
+                                    </li>
+                                    <li class="bg-master-lighter">
+                                        <a href="/logout" class="clearfix" id="logout">
+                                            <span class="pull-left">Logout</span>
+                                            <span class="pull-right"><i class="pg-power"></i></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                             </div>
                         </div>
                         <!-- END ACTION BAR -->
                     </div>
@@ -237,12 +258,13 @@ else {
                 </div>
                 <div class="page-content-wrapper">
                     <?= $content ?>
-                    <?php echo $this->render('/parts/contact_form'); ?>
                 </div>
             </div>
         <?php else: ?>
             <?= $content ?>
         <?php endif; ?>
+
+        <?php echo $this->render('/parts/contact_form'); ?>
 
         <?php if (!Yii::$app->user->isGuest): ?>
             <script type="text/javascript">

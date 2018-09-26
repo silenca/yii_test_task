@@ -5,10 +5,10 @@
  * @author Valentin Stepanenko catomik13@gmail.com
  */
 ?>
-<div class="modal fade slide-right modal-md"
+<div class="modal fade slide-right modal-md modal-sm modal-xs"
      id="modalAddAttractionChannel" tabindex="-1" role="dialog" aria-hidden="true">
     <input type="hidden" id="attraction-channel-id" value=""/>
-    <div class="modal-dialog drop-shadow modal-md">
+    <div class="modal-dialog drop-shadow modal-md modal-sm modal-xs">
         <div class="modal-content-wrapper">
             <div class="list-view-wrapper modal-content">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i

@@ -56,30 +56,31 @@ $this->params['active'] = 'sip-channel';
 <!--                        </button>-->
                     </div>
                 </div>
-                <div class="panel-body">
-                    <table class="table table-hover" id="sip-channel-table">
-                        <thead>
-                        <tr>
-                            <?php foreach ($table_cols as $col_key => $col_val): ?>
-                                <th><?php echo($col_val['label']); ?></th>
-                            <?php endforeach; ?>
-                        </tr>
-                        </thead>
-                        <thead>
-                        <tr>
-                            <?php foreach ($filter_cols as $col_key => $col_val): ?>
-                                <?php if (!in_array($col_key, $hide_columns)): ?>
-                                    <?php if ($col_val['have_search']): ?>
-                                        <td><input type="text" data-column="<?php echo($col_key); ?>" class="form-control search-input-text"></td>
-                                    <?php else: ?>
-                                        <td></td>
-                                    <?php endif; ?>
-                                <?php endif ?>
-                            <?php endforeach; ?>
-                        </tr>
-                        </thead>
-                    </table>
-                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <table class="table table-hover" id="sip-channel-table">
+                    <thead>
+                    <tr>
+                        <?php foreach ($table_cols as $col_key => $col_val): ?>
+                            <th><?php echo($col_val['label']); ?></th>
+                        <?php endforeach; ?>
+                    </tr>
+                    </thead>
+                    <thead>
+                    <tr>
+                        <?php foreach ($filter_cols as $col_key => $col_val): ?>
+                            <?php if (!in_array($col_key, $hide_columns)): ?>
+                                <?php if ($col_val['have_search']): ?>
+                                    <td><input type="text" data-column="<?php echo($col_key); ?>" class="form-control search-input-text"></td>
+                                <?php else: ?>
+                                    <td></td>
+                                <?php endif; ?>
+                            <?php endif ?>
+                        <?php endforeach; ?>
+                    </tr>
+                    </thead>
+                </table>
             </div>
         </div>
     </div>
@@ -89,4 +90,8 @@ $this->params['active'] = 'sip-channel';
     var hide_columns = <?= json_encode($hide_columns); ?>;
     var columns = <?= json_encode(array_keys($table_cols)); ?>;
     var columns_full = <?= json_encode($table_cols); ?>;
+    document.addEventListener("DOMContentLoaded", ready);
+    function ready() {
+      document.body.appendChild(document.getElementById('modalAddSipChannel'));
+    }
 </script>

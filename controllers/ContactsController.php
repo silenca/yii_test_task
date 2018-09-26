@@ -109,6 +109,7 @@ class ContactsController extends BaseController
     public function actionIndex()
     {
         $session = Yii::$app->session;
+        $session->set('contact_hide_columns', '');
         $hide_columns = $session->get('contact_hide_columns');
         if (!$hide_columns) {
             $hide_columns = ["surname", "name", "middle_name", "emails", "country", "region", "area", "delete_button"];
@@ -117,7 +118,7 @@ class ContactsController extends BaseController
         $filter_cols = Contact::getColsForTableView();
 //        $filter_cols['phones']['value'] = "+99900099998";
         unset($filter_cols['id']);
-        return $this->render('index', ['hide_columns' => $hide_columns, 'table_cols' => $table_cols, 'filter_cols' => $filter_cols]);
+        return $this->render('index', ['hide_columns' => $hide_columns, 'table_cols' => $table_cols, 'filter_cols' => $filter_cols, 'mobile_hide_columns' => $mobile_hide_columns]);
     }
 
     public function actionGetdata()

@@ -21,7 +21,8 @@ $this->params['active'] = 'tags';
                 <div class="row well">
                     <form id="tag_form" role="form">
                         <div class="form-group col-md-5">
-                            <div class="col-md-8 m-b-10" style="padding: 0">
+                            <div class="row">
+                            <div class="col-md-8 col-sm-8 col-xs-12 m-b-10 nopadding select2-pd-fix">
                                 <!-- Using data-init-plugin='select2' automatically initializes a basic Select2 -->
                                 <select class="full-width tag-name" name="name" id="tag_search_select">
                                     <option></option>
@@ -46,35 +47,36 @@ $this->params['active'] = 'tags';
                                 </div>
                             </div>
                             <?php if (Yii::$app->user->can('edit_tag')): ?>
-                                <div class="col-md-4 m-b-10" style="padding-right: 0">
+                                <div class="col-md-4 col-sm-4 col-xs-12 m-b-10" style="padding-right: 0">
                                     <div id="tag-controls" class="" style="display: none;">
                                         <a class="ok" href="#"><i class="fa-2x fa fa-check"></i></a>
                                         <a class="remove" href="#"><i class="fa-2x fa fa-remove"></i></a>
                                     </div>
-                                    <div class="">
-                                        <button class="btn btn-info" id="tag_create" data-toggle='tooltip'
+                                    <div class="controls">
+                                        <button class="btn btn-info m-r-5" id="tag_create" data-toggle='tooltip'
                                                 title="Создать новый тэг">
                                             <i class="fa fa-plus"></i>
                                         </button>
-                                        <button class="btn btn-info" id="tag_delete" style="display: none;"
+                                        <button class="btn btn-info m-r-5" id="tag_delete" style="display: none;"
                                                 data-toggle='tooltip' title="Удалить тэг">
                                             <i class="fa fa-trash"></i>
                                         </button>
-                                        <button class="btn btn-info" id="tag_restore" style="display: none;"
+                                        <button class="btn btn-info m-r-5" id="tag_restore" style="display: none;"
                                                 data-toggle='tooltip' title="Восстановить тэг">
                                             <i class="fa fa-arrow-up"></i>
                                         </button>
                                     </div>
                                 </div>
                             <?php endif; ?>
+                            </div>
                             <div class="row">
-                                <div class="col-md-8" style="padding: 0">
+                                <div class="col-md-8 nopadding select2-pd-fix">
                                     <select class="full-width" name="tag_users" id="tag_users_select" disabled="disabled">
                                     </select>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-12 checkbox check-success text-left p-l-5">
+                                <div class="col-md-12 checkbox check-success text-left pl-check">
                                     <input type="checkbox" name="as_task" class="" id="tag_as_task" disabled="disabled">
                                     <label for="tag_as_task">Обозначить как Обзвон</label>
                                 </div>
@@ -82,14 +84,14 @@ $this->params['active'] = 'tags';
                             <div class="clearfix"></div>
                         </div>
 
-                        <div class="form-group col-md-7">
-                            <div class="col-md-6">
+                        <div class="form-group row col-md-7">
+                            <div class="col-md-6 col-sm-5 col-xs-12">
                                 <label class="" for="tag_description">Описание:</label>
                                 <textarea readonly name="description" id="tag_description" rows="6" cols="10"
                                           placeholder="Описание тега"
                                           class="form-control"></textarea>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 col-md-offset-0 col-sm-offset-2 col-sm-5 col-xs-12">
                                 <label class="" for="tag_script">Скрипт:</label>
                                 <textarea readonly name="script" id="tag_script" rows="6" cols="10"
                                           placeholder="Скрипт тега"
@@ -100,37 +102,41 @@ $this->params['active'] = 'tags';
                         <div class="clearfix"></div>
                     </form>
                     <?php if (Yii::$app->user->can('edit_tag')): ?>
-                        <div class="col-md-7 col-md-offset-5">
-                            <div class="col-md-6 m-t-10 add-contacts">
-                                <label class="">Добавить контакты:</label>
-                                <div class="input-group">
-                                    <button class="btn btn-info disabled" id="add_contact_table">Таблица контактов
-                                    </button>
-                                </div>
-                                <br/>
-                                <div class="input-group">
-                                    <button class="btn btn-info disabled" id="add_contact_csv">Импорт из CSV</button>
-                                </div>
-                            </div>
-                            <div class="col-md-6 m-t-35 export-contacts">
-                                <div class="input-group">
-                                    <form action="/tags/export-csv" method="POST" id="exportCsv">
-                                        <input type="hidden" name="contact_ids" id="contacts_list"/>
-                                        <input type="hidden" name="tag_id"/>
-                                        <input type="hidden" name="manager_id"/>
-                                        <input type="hidden" name="status"/>
-                                        <input type="hidden" name="comment"/>
-                                        <input type="hidden" name="attitude_level"/>
-                                        <input type="hidden" name="_csrf"
-                                               value="<?= Yii::$app->request->getCsrfToken() ?>"/>
-                                        <input type="submit" id="export_csv" class="btn btn-info disabled"
-                                               value="Экспортировать в CSV файл"/>
-                                    </form>
-                                    <!--                                <button class="btn btn-info disabled" id="export_csv" data-href="/tags/export-csv">-->
-                                    <!--                                    Экспортировать в CSV файл-->
-                                    <!--                                </button>-->
-                                </div>
-                            </div>
+                        <div class="row">
+                          <div class="col-md-7 col-xs-12 col-md-offset-5">
+                              <div class="col-md-6 col-sm-4 m-t-10 add-contacts">
+                                  <label class="">Добавить контакты:</label>
+                                  <div class="input-group w100">
+                                      <button class="btn btn-info w100 disabled" id="add_contact_table">Таблица контактов
+                                      </button>
+                                  </div>
+                              </div>
+                              <div class="col-md-6 col-sm-3 m-t-10 add-contacts">
+                                  <label class="">Импорт контактов:</label>
+                                  <div class="input-group w100">
+                                      <button class="btn btn-info w100 disabled" id="add_contact_csv">Импорт из CSV</button>
+                                  </div>
+                              </div>
+                              <div class="col-md-6 col-sm-5 m-t-35 export-contacts">
+                                  <div class="input-group w100">
+                                      <form action="/tags/export-csv" method="POST" id="exportCsv">
+                                          <input type="hidden" name="contact_ids" id="contacts_list"/>
+                                          <input type="hidden" name="tag_id"/>
+                                          <input type="hidden" name="manager_id"/>
+                                          <input type="hidden" name="status"/>
+                                          <input type="hidden" name="comment"/>
+                                          <input type="hidden" name="attitude_level"/>
+                                          <input type="hidden" name="_csrf"
+                                                value="<?= Yii::$app->request->getCsrfToken() ?>"/>
+                                          <input type="submit" id="export_csv" class="btn btn-info w100 disabled"
+                                                value="Экспортировать в CSV файл"/>
+                                      </form>
+                                      <!--                                <button class="btn btn-info disabled" id="export_csv" data-href="/tags/export-csv">-->
+                                      <!--                                    Экспортировать в CSV файл-->
+                                      <!--                                </button>-->
+                                  </div>
+                              </div>
+                          </div>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -206,7 +212,7 @@ $this->params['active'] = 'tags';
                     <tbody>
                     </tbody>
                 </table>
-                <input type="button" id="update_contacts_table" class="btn btn-info disabled"
+                <input type="button" id="update_contacts_table" class="btn btn-info w100 disabled"
                        value="Обновить список контактов"/>
             </div>
         </div>

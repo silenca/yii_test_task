@@ -307,8 +307,8 @@
                             scaleV = (csOptions.offsetWidth, csPlaceholder.offsetWidth, contentHeight / originalHeight);
                     //this.selEl.style.top = offsetselEl.top + "px";
                     this.selEl.style.top = ((csPlaceholder.offsetHeight * scaleV / 2) + offsetselEl.top - csPlaceholder.offsetHeight) + "px";
-                    
-                    
+
+
                     backdrop.style.transform = backdrop.style.webkitTransform = backdrop.style.MozTransform = backdrop.style.msTransform = backdrop.style.OTransform = "scale3d(1, " + scaleV + ", 1)", mask || (mask = document.createElement("div"), classie.add(mask, "dropdown-mask"), container.appendChild(mask)), mask.style.display = "block", classie.add(this.selEl, "cs-active");
                     var resizedWidth = csOptionsWidth > csPlaceholderWidth ? csOptionsWidth : csPlaceholderWidth;
                     this.selEl.style.width = resizedWidth + "px", this.selEl.style.height = originalHeight + "px", csOptions.style.width = "100%", setTimeout(function () {

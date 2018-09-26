@@ -12250,11 +12250,9 @@ Main components
         top: 60px;
     }
     .page-sidebar {
-        width: 250px;
-        z-index: auto;
-        left: 0 !important;
-        -webkit-transform: translate3d(0, 0px, 0px) !important;
-        transform: translate3d(0, 0px, 0px) !important;
+        width: 280px;
+        left: -280px;
+        z-index: 1000;
     }
     .page-sidebar .sidebar-menu .menu-items > li ul.sub-menu > li {
         padding: 0px 30px 0 36px;
@@ -12272,10 +12270,6 @@ Main components
     }
     .icon-thumbnail {
         margin-right: 24px;
-    }
-    .page-sidebar {
-        display: none;
-        z-index: auto;
     }
     .page-sidebar.visible {
         display: block;
@@ -13124,6 +13118,24 @@ a.detailed:hover .icon-thumbnail{
     color: #fff;
 }
 
+.sidebar-switch-header{
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  background-color: transparent;
+  color: #788195;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.sidebar-switch-header:hover {
+  color: #21252d;
+}
+
 .cstm-sidebar-switch{
     position: absolute;
     bottom: 60px;
@@ -13214,3 +13226,44 @@ input::-webkit-inner-spin-button {
     display: inline-block !important;
 }
 
+.modal-xs {
+  width: 100vw;
+}
+
+.nopadding{
+  padding: 0;
+}
+
+.select2-pd-fix {
+  padding: 0 15px;
+}
+
+.pl-check {
+  padding-left: 5px;
+}
+
+@media screen and (max-width: 991px){
+  .pl-check {
+    padding-left: 15px;
+  }
+}
+
+@media screen and (max-width: 991px){
+  .controls {
+    margin-left: 5px;
+  }
+}
+
+@media screen and (max-width: 480px){
+  .controls {
+    margin-left: 0;
+    display: flex;
+    justify-content: center;
+  }
+  .input-group--custom {
+    width: 100%;
+  }
+  .w100{
+    width: 100%;
+  }
+}
