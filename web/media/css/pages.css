@@ -12249,6 +12249,12 @@ Main components
     .pace .pace-activity {
         top: 60px;
     }
+    .page-sidebar.open-custom-sidebar{
+      left: 0 !important;
+      top: 0 !important;
+      display: block;
+      position: fixed;
+    }
     .page-sidebar {
         width: 280px;
         left: -280px;
