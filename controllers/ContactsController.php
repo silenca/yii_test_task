@@ -109,13 +109,29 @@ class ContactsController extends BaseController
     public function actionIndex()
     {
         $session = Yii::$app->session;
-        $session->set('contact_hide_columns', '');
         $hide_columns = $session->get('contact_hide_columns');
+        $detect = new \Mobile_Detect();
         if (!$hide_columns) {
-            $hide_columns = ["surname", "name", "middle_name", "emails", "country", "region", "area", "delete_button"];
+            if($detect->isMobile()) {
+                $hide_columns = [ "middle_name", "emails", "country", "region", "area", "delete_button",'int_id','link_with','tags','city','street','house','flat'];
+            } else {
+                $hide_columns = ["surname", "name", "middle_name", "emails", "country", "region", "area", "delete_button"];
+            }
+
         }
         $table_cols = Contact::getColsForTableView();
         $filter_cols = Contact::getColsForTableView();
+
+        $user = User::find()->where(['id'=>Yii::$app->user->identity->getId()])->one();
+        $config = $user->filter_config;
+        if($config != null) {
+            $config = \json_decode($config,true);
+            if(isset($config['contacts'])) {
+                foreach ($config['contacts'] as $k => $v) {
+                    $filter_cols[$k]['value'] = $v;
+                }
+            }
+        }
 //        $filter_cols['phones']['value'] = "+99900099998";
         unset($filter_cols['id']);
         return $this->render('index', ['hide_columns' => $hide_columns, 'table_cols' => $table_cols, 'filter_cols' => $filter_cols, 'mobile_hide_columns' => $mobile_hide_columns]);
@@ -155,6 +171,11 @@ class ContactsController extends BaseController
         $total_count = $query_total->count();
 
         //Filtering
+        $user = User::find()->where(['id'=>Yii::$app->user->identity->getId()])->one();
+        $config = $user->filter_config;
+        $config = \json_decode($config,true);
+        if(!isset($config['contacts']))
+            $config['contacts'] = [];
         foreach ($request_data['columns'] as $column) {
             if (!empty($column['search']['value'])) {
                 if (isset($columns[$column['name']]['db_cols'])) {
@@ -169,7 +190,10 @@ class ContactsController extends BaseController
                     $query->andWhere(['like', $contact_tableName . '.' . $column['name'], $column['search']['value']]);
                 }
             }
+            $config['contacts'][$column['name']] = $column['search']['value'];
         }
+        $user->filter_config = \json_encode($config);
+        $user->save();
 
 
         $total_filtering_count = $query->count();

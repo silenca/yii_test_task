@@ -87,7 +87,11 @@ $this->params['active'] = 'contact';
                                 <?php if ($col_val['have_search']): ?>
                                     <?php if ($col_key == 'attraction_channel_id'):?>
                                         <td><select data-column="<?php echo($col_key); ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                                <?php if(!isset($col_val['value'])):?>
                                                 <option class="select-placeholder" value="" selected>Канал привлечения</option>
+                                                <?php else:?>
+                                                    <option class="select-placeholder" value="">Канал привлечения</option>
+                                                <?php endif;?>
                                                 <?php
                                                 $channels = \app\models\AttractionChannel::find()->all();
                                                 foreach ($channels as  $channel) {
