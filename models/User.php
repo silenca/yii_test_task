@@ -50,7 +50,7 @@ class User extends ActiveRecord implements IdentityInterface {
             [['notification_key'], 'string', 'max' => 32],
             [['email'], 'email'],
             [['email'], 'unique'],
-            [['is_deleted', 'settings','filter_config'], 'safe']
+            [['is_deleted', 'settings','filter_config','cols_config'], 'safe']
         ];
     }
 
