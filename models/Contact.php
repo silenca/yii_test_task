@@ -66,10 +66,8 @@ class Contact extends \yii\db\ActiveRecord
     public $is_called;
     public $remove_tags;
 
-    const PENDING = 0;
-    const APPROVED = 1;
-    const REJECTED = 2;
-    const POSTPONED = 3;
+    const LEAD = 1;
+    const CONTACT = 2;
 
     /**
      * @inheritdoc
@@ -84,10 +82,9 @@ class Contact extends \yii\db\ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'manager_id']);
     }
     public static $statuses = [
-        self::PENDING => 'В ожидании',
-        self::APPROVED => 'Подтвержден',
-        self::REJECTED => 'Отклонен',
-        self::POSTPONED => 'Отключен',
+        self::LEAD => 'Лид',
+        self::CONTACT => 'Контакт',
+
     ];
 
     public function beforeValidate()

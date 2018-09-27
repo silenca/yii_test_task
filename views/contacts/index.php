@@ -15,6 +15,13 @@ if (Yii::$app->user->can('contracts')) {
 $this->title = "Контакты";
 $this->params['active'] = 'contact';
 ?>
+<style>
+    /*.cs-select{*/
+        /*left:45%!important;*/
+        /*width:500px!important;*/
+    /**/
+    /*}*/
+</style>
 <div class="content">
     <div class="container-fluid container-fixed-lg bg-white">
         <ul class="breadcrumb">
@@ -104,21 +111,20 @@ $this->params['active'] = 'contact';
 
                                                 }
                                                 ?></select></td>
-                                    <?php else: ?>
-                                        <td><input type="text" data-column="<?php echo($col_key); ?>" class="form-control search-input-text" <?=(isset($col_val['value']))?'value="'.$col_val['value'].'"':""?>></td>
+
                                     <?php endif;?>
                                     <?php if ($col_key == 'status'):?>
                                         <td><select data-column="<?php echo($col_key); ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
                                                 <?php if(!isset($col_val['value'])):?>
                                                 <option class="select-placeholder" value="" selected>Статус</option>
                                                 <?php else:?>
-                                                    <option class="select-placeholder" value="">Статус</option>
+                                                    <option class="select-placeholder"  selected value="">Статус</option>
                                                 <?php endif;?>
                                                 <?php
                                                 $statuses = \app\models\Contact::$statuses;
                                                 foreach ($statuses as $key=>$value) {
                                                     if(isset($col_val['value']) && ($col_val['value'] == $key))
-                                                        echo '<option value="'.$key.'" selected>'.$value.'</option>';
+                                                        echo '<option value="'.$key.'" >'.$value.'</option>';
                                                     else
                                                         echo '<option value="'.$key.'">'.$value.'</option>';
 
