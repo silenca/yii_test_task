@@ -116,8 +116,10 @@ $this->params['active'] = 'contact';
                                                 <?php endif;?>
                                                 <?php
                                                 $statuses = \app\models\Contact::$statuses;
-                                                foreach ($statuses as  $key=>$value) {
-
+                                                foreach ($statuses as $key=>$value) {
+                                                    if(isset($col_val['value']) && ($col_val['value'] == $key))
+                                                        echo '<option value="'.$key.'" selected>'.$value.'</option>';
+                                                    else
                                                         echo '<option value="'.$key.'">'.$value.'</option>';
 
                                                 }
