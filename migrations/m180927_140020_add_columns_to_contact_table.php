@@ -13,11 +13,9 @@ class m180927_140020_add_columns_to_contact_table extends Migration
 
     public function down()
     {
-        $this->addColumn('%contact', 'language', $this->string())->defaultValue('РУС');
-        $this->addColumn('%contact', 'is_broadcast', $this->boolean())->defaultValue(0);
-        $this->addColumn('%contact', 'notification_chanel', $this->string())->default('SMS');
-
-        return false;
+        $this->dropColumn('%contact', 'language');
+        $this->dropColumn('%contact', 'is_broadcast');
+        $this->dropColumn('%contact', 'notification_chanel');
     }
 
     /*
