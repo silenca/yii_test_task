@@ -110,25 +110,41 @@ class ContactsController extends BaseController
     {
         $session = Yii::$app->session;
         $hide_columns = $session->get('contact_hide_columns');
+        $user = User::find()->where(['id'=>Yii::$app->user->identity->getId()])->one();
+        $cols = $user->cols_config;
+        if($cols != null) {
+            $cols = \json_decode($cols, true);
+        } else {
+            $cols = [];
+        }
+
         $detect = new \Mobile_Detect();
         if (!$hide_columns) {
-            if($detect->isMobile()) {
-                $hide_columns = [ "middle_name", "emails", "country", "region", "area", "delete_button",'int_id','link_with','tags','city','street','house','flat'];
+            if(isset($cols['contacts'])){
+                $hide_columns = $cols['contacts'];
             } else {
-                $hide_columns = ["surname", "name", "middle_name", "emails", "country", "region", "area", "delete_button"];
+                if($detect->isMobile()) {
+                    $hide_columns = [ "middle_name", "emails", "country", "region", "area", "delete_button",'int_id','link_with','tags','city','street','house','flat'];
+                } else {
+                    $hide_columns = ["surname", "name", "middle_name", "emails", "country", "region", "area", "delete_button"];
+                }
             }
-
         }
+        $cols['contacts'] = $hide_columns;
+        $user->cols_config = \json_encode($cols);
+        $user->save();
+
+
         $table_cols = Contact::getColsForTableView();
         $filter_cols = Contact::getColsForTableView();
 
-        $user = User::find()->where(['id'=>Yii::$app->user->identity->getId()])->one();
+
         $config = $user->filter_config;
         if($config != null) {
             $config = \json_decode($config,true);
             if(isset($config['contacts'])) {
                 foreach ($config['contacts'] as $k => $v) {
-                    if(!empty($k))
+                    if(!empty($k) && !empty($filter_cols[$k]['label']))
                         $filter_cols[$k]['value'] = $v;
                 }
             }

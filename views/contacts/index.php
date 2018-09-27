@@ -32,12 +32,14 @@ $this->params['active'] = 'contact';
                     </div>
                     <div id="column_filter_modal" class="column_filter_modal" style="display: none">
                         <?php foreach ($filter_cols as $col_key => $col_val): ?>
+                            <?php if(!empty($col_val['label'])):?>
                             <div class="checkbox check-success">
                                 <input type="checkbox" <?= !in_array($col_key, $hide_columns) ? 'checked' : NULL ?>
                                        value="<?php echo($col_key); ?>" id="column_filter_<?php echo($col_key); ?>">
                                 <label
                                     for="column_filter_<?php echo($col_key); ?>"><?php echo($col_val['label']); ?></label>
                             </div>
+                            <?php endif;?>
                         <?php endforeach; ?>
                         <div class="col-xs-12">
                             <button class="btn btn-success btn-cons" id="column_filter_apply">
