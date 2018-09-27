@@ -103,7 +103,6 @@ $this->params['active'] = 'contact';
                                                 }
                                                 ?></select></td>
                                     <?php else: ?>
-
                                         <td><input type="text" data-column="<?php echo($col_key); ?>" class="form-control search-input-text" <?=(isset($col_val['value']))?'value="'.$col_val['value'].'"':""?>></td>
                                     <?php endif;?>
                                 <?php else: ?>

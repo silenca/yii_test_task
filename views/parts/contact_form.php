@@ -19,8 +19,7 @@ use app\models\User;
                                         id="contact_manager_name"></span></span>
                             </div>
                             <div class="row">
-                                <div class="col-md-4 col-sm-12"
-                                    class="contact-data col-md-4">
+                                <div class="col-md-4 col-sm-12 contact-data">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <div class="panel-title contact-title">Новый контакт</div>

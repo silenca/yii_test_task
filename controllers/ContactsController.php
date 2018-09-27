@@ -128,7 +128,8 @@ class ContactsController extends BaseController
             $config = \json_decode($config,true);
             if(isset($config['contacts'])) {
                 foreach ($config['contacts'] as $k => $v) {
-                    $filter_cols[$k]['value'] = $v;
+                    if(!empty($k))
+                        $filter_cols[$k]['value'] = $v;
                 }
             }
         }
@@ -190,6 +191,7 @@ class ContactsController extends BaseController
                     $query->andWhere(['like', $contact_tableName . '.' . $column['name'], $column['search']['value']]);
                 }
             }
+            if(!empty($column['name']))
             $config['contacts'][$column['name']] = $column['search']['value'];
         }
         $user->filter_config = \json_encode($config);
