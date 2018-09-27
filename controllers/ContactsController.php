@@ -144,7 +144,7 @@ class ContactsController extends BaseController
             $config = \json_decode($config,true);
             if(isset($config['contacts'])) {
                 foreach ($config['contacts'] as $k => $v) {
-                    if(!empty($k))
+                    if(!empty($k) && !empty($filter_cols[$k]['label']))
                         $filter_cols[$k]['value'] = $v;
                 }
             }
