@@ -73,15 +73,25 @@ return [
             'tags',
         ],
     ],
-    'supervizer' => [
+    'supervisor' => [
         'type' => 1,
         'ruleName' => 'userRole',
         'children' => [
+            'contacts',
             'action',
+//            'notifications',
+            'reports',
             'calls',
-            'notifications',
+            'listen_call',
+            'delete_contact',
             'updateContact',
             'tags',
+            'import',
+//            'users',
+//            'updateUser',
+//            'delete_user',
+            'edit_tag',
+            'use_archived_tags',
         ],
     ],
     'admin' => [

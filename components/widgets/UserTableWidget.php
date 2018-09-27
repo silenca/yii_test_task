@@ -29,6 +29,9 @@ class UserTableWidget extends Widget {
                 case User::ROLE_OPERATOR:
                     $role = 'Оператор';
                     break;
+                case User::ROLE_SUPERVISOR:
+                    $role = 'Супевайзер';
+                    break;
                 default:
                     $role = 'undefined';
             }

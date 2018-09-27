@@ -73,7 +73,7 @@ class ContactsController extends BaseController
                     [
                         'actions' => ['delete', 'delete-filtered'],
                         'allow' => true,
-                        'roles' => ['admin'],
+                        'roles' => ['admin','supervisor'],
                     ],
                     [
                         'actions' => [
@@ -85,7 +85,7 @@ class ContactsController extends BaseController
                             'link-with',
                         ],
                         'allow' => true,
-                        'roles' => ['admin', 'manager'],
+                        'roles' => ['admin', 'manager','supervisor'],
                     ],
                 ],
             ],
@@ -151,7 +151,7 @@ class ContactsController extends BaseController
             $config = \json_decode($config,true);
             if(isset($config['contacts'])) {
                 foreach ($config['contacts'] as $k => $v) {
-                    if(!empty($k) && !empty($filter_cols[$k]['label']))
+                    if(!empty($k) && !empty($filter_cols[$k]['label']) && isset($filter_cols[$k]))
                         $filter_cols[$k]['value'] = $v;
                 }
             }
