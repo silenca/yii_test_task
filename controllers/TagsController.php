@@ -21,7 +21,7 @@ use yii\filters\VerbFilter;
 
 class TagsController extends BaseController {
     public function behaviors() {
-        return ['access' => ['class' => AccessControl::className(), 'rules' => [['actions' => ['index', 'gettags', 'getdata', 'getusers', 'get-contacts-another-tag', 'edit', 'delete', 'restore', 'export-csv', 'update-users', 'add-contacts-by-filter'], 'allow' => true, 'roles' => ['admin', 'manager'],], ['actions' => ['index', 'gettags', 'getdata', 'getusers'], 'allow' => true, 'roles' => ['operator']]]], 'verbs' => ['class' => VerbFilter::className(), 'actions' => ['delete' => ['post'], 'edit' => ['post'], 'restore' => ['post']]]];
+        return ['access' => ['class' => AccessControl::className(), 'rules' => [['actions' => ['index', 'gettags', 'getdata', 'getusers', 'get-contacts-another-tag', 'edit', 'delete', 'restore', 'export-csv', 'update-users', 'add-contacts-by-filter'], 'allow' => true, 'roles' => ['admin', 'manager', 'supervisor'],], ['actions' => ['index', 'gettags', 'getdata', 'getusers'], 'allow' => true, 'roles' => ['operator']]]], 'verbs' => ['class' => VerbFilter::className(), 'actions' => ['delete' => ['post'], 'edit' => ['post'], 'restore' => ['post']]]];
     }
 
     public function actionIndex() {
