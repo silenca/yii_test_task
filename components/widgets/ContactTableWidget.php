@@ -59,6 +59,7 @@ class ContactTableWidget extends Widget {
             $data[$i][] = $contact->house;
             $data[$i][] = $contact->flat;
             $data[$i][] = (isset($contact->attraction_channel_id)?$contact->attractionChannel->name:'');
+            $data[$i][] = (isset($contact->status)?$contact->status->name:'');
 
             if (Yii::$app->user->can('delete_contact')) {
                 $data[$i][] = '<div class="col-md-offset-3 remove"><i class="fa fa-remove"></i></div>';
