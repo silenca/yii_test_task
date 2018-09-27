@@ -21,7 +21,7 @@ class ImportController extends BaseController
                     [
                         'actions' => ['index', 'csv', 'get-status'],
                         'allow' => true,
-                        'roles' => ['admin'],
+                        'roles' => ['admin','supervisor'],
                     ]
                 ],
             ],

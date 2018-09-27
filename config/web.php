@@ -14,7 +14,7 @@ $config = [
     'components' => [
         'authManager' => [
             'class' => 'yii\rbac\PhpManager',
-            'defaultRoles' => ['admin', 'manager', 'operator']
+            'defaultRoles' => ['admin', 'manager', 'operator','supervisor']
         ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation

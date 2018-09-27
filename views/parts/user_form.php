@@ -60,6 +60,7 @@ use app\models\User;
                                                     <option value="15">Администратор</option>
                                                     <option value="5">Менеджер</option>
                                                     <option value="1">Оператор</option>
+                                                    <option value="10">Супевайзер</option>
                                                 </select>
                                             </div>
                                             <br>

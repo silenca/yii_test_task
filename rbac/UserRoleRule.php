@@ -23,6 +23,8 @@ class UserRoleRule extends Rule {
                     return $role == User::ROLE_MANAGER;
                 case "operator":
                     return $role == User::ROLE_OPERATOR;
+                case "supervisor":
+                    return $role == User::ROLE_SUPERVISOR;
             }
         }
         return false;

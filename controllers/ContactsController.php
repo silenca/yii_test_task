@@ -73,7 +73,7 @@ class ContactsController extends BaseController
                     [
                         'actions' => ['delete', 'delete-filtered'],
                         'allow' => true,
-                        'roles' => ['admin'],
+                        'roles' => ['admin','supervisor'],
                     ],
                     [
                         'actions' => [
@@ -85,7 +85,7 @@ class ContactsController extends BaseController
                             'link-with',
                         ],
                         'allow' => true,
-                        'roles' => ['admin', 'manager'],
+                        'roles' => ['admin', 'manager','supervisor'],
                     ],
                 ],
             ],
@@ -110,6 +110,9 @@ class ContactsController extends BaseController
     {
         $session = Yii::$app->session;
         $hide_columns = $session->get('contact_hide_columns');
+        /**
+         * @var $user User
+         */
         $user = User::find()->where(['id'=>Yii::$app->user->identity->getId()])->one();
         $cols = $user->cols_config;
         if($cols != null) {
@@ -138,13 +141,17 @@ class ContactsController extends BaseController
         $table_cols = Contact::getColsForTableView();
         $filter_cols = Contact::getColsForTableView();
 
+        if($user->getUserRole() == 'manager') {
+            unset($table_cols['delete_button']);
+            unset($filter_cols['delete_button']);
+        }
 
         $config = $user->filter_config;
         if($config != null) {
             $config = \json_decode($config,true);
             if(isset($config['contacts'])) {
                 foreach ($config['contacts'] as $k => $v) {
-                    if(!empty($k) && !empty($filter_cols[$k]['label']))
+                    if(!empty($k) && !empty($filter_cols[$k]['label']) && isset($filter_cols[$k]))
                         $filter_cols[$k]['value'] = $v;
                 }
             }
@@ -180,7 +187,7 @@ class ContactsController extends BaseController
             ];
         }
 
-        if ($user_role == 'manager' || $user_role == 'operator') {
+        if ($user_role == 'operator') {
             $query->joinWith('tags.users')->andWhere(['user.id' => $user_id]);
         }
         $query_total = clone $query;
