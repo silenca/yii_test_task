@@ -34,7 +34,7 @@ class AttractionChannelController extends BaseController
                             'get-free-sip-channels'
                         ],
                         'allow' => true,
-                        'roles' => ['admin'],
+                        'roles' => ['admin', 'supervisor'],
                     ],
                 ]
             ]
