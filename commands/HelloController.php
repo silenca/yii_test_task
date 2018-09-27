@@ -7,6 +7,7 @@
 
 namespace app\commands;
 
+use app\models\User;
 use yii\console\Controller;
 
 /**
@@ -26,5 +27,13 @@ class HelloController extends Controller
     public function actionIndex($message = 'hello world')
     {
         echo $message . "\n";
+    }
+
+    public function actionResetFilterConfig(){
+        $users = User::find()->all();
+        foreach ($users as $user) {
+            $user->filter_config = null;
+            $user->save();
+        }
     }
 }
