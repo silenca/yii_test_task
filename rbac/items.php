@@ -61,7 +61,7 @@ return [
             'contacts',
             'action',
             'calls',
-            'notifications',
+//            'notifications',
             'tags',
             'updateContact',
             'listen_call',
@@ -69,6 +69,17 @@ return [
         ],
     ],
     'operator' => [
+        'type' => 1,
+        'ruleName' => 'userRole',
+        'children' => [
+            'action',
+            'calls',
+            'notifications',
+            'updateContact',
+            'tags',
+        ],
+    ],
+    'supervizer' => [
         'type' => 1,
         'ruleName' => 'userRole',
         'children' => [
