@@ -131,7 +131,7 @@ use app\models\User;
                                                 <label class="input-group-addon primary" for="status"><i
                                                             class="fa fa-fw fa-list-alt"></i></label>
                                                 <select id="status" name="status" class="form-control"
-                                                    <option class="select-placeholder" value="" disabled  selected>Статус</option>
+                                                    <option class="select-placeholder" value=""  selected>Статус</option>
                                                     <?php
                                                     $statuses = \app\models\Contact::$statuses;
                                                     foreach ($statuses as  $status) {
