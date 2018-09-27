@@ -126,6 +126,20 @@ use app\models\User;
                                                     ?>
                                                 </select>
                                             </div>
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="status"><i
+                                                            class="fa fa-fw fa-list-alt"></i></label>
+                                                <select id="status" name="status" class="form-control"
+                                                    <option class="select-placeholder" value=""  selected>Статус</option>
+                                                    <?php
+                                                    $statuses = \app\models\Contact::$statuses;
+                                                    foreach ($statuses as  $status) {
+                                                        echo '<option value="'.$status.'">'.$status.'</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
                                             <hr>
                                             <div class="form-group text-left">
                                                 <input id="contact_tags" name="tags_str" class="contact-tags" type="text" />

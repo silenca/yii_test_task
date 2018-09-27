@@ -48,12 +48,6 @@ return [
     'use_archived_tags' => [
         'type' => 2,
     ],
-    'sip_channel' => [
-        'type' => 2,
-    ],
-    'attraction_channel' => [
-        'type' => 2,
-    ],
     'manager' => [
         'type' => 1,
         'ruleName' => 'userRole',
@@ -109,8 +103,6 @@ return [
             'delete_user',
             'edit_tag',
             'use_archived_tags',
-            'sip_channel',
-            'attraction_channel'
         ],
     ],
 ];

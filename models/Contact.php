@@ -66,6 +66,11 @@ class Contact extends \yii\db\ActiveRecord
     public $is_called;
     public $remove_tags;
 
+    const PENDING = 0;
+    const APPROVED = 1;
+    const REJECTED = 2;
+    const POSTPONED = 3;
+
     /**
      * @inheritdoc
      */
@@ -78,6 +83,12 @@ class Contact extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['id' => 'manager_id']);
     }
+    public static $statuses = [
+        self::PENDING => 'В ожидании',
+        self::APPROVED => 'Подтвержден',
+        self::REJECTED => 'Отклонен',
+        self::POSTPONED => 'Отключен',
+    ];
 
     public function beforeValidate()
     {
@@ -162,6 +173,7 @@ class Contact extends \yii\db\ActiveRecord
             'house' => ['label' => 'Дом', 'have_search' => true, 'orderable' => true],
             'flat' => ['label' => 'Квартира', 'have_search' => true, 'orderable' => true],
             'attraction_channel_id' => ['label' => 'Канал привлечения', 'have_search' => true, 'orderable' => false],
+            'status' => ['label' => 'Статус', 'have_search' => true, 'orderable' => true],
             'delete_button' => ['label' => 'Удалить', 'have_search' => false, 'orderable' => false],
         ];
         if (!Yii::$app->user->can('delete_contact')) {
@@ -621,6 +633,8 @@ class Contact extends \yii\db\ActiveRecord
     {
         return $this->hasOne(AttractionChannel::className(), ['id' => 'attraction_channel_id']);
     }
+
+
 
     public function sendToCRM()
     {
