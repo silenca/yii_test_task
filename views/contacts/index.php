@@ -146,10 +146,8 @@ $this->params['active'] = 'contact';
                                                 <?php
                                                 $languages = \app\models\ContactLanguage::find()->all();
                                                 foreach ($languages as $language) {
-                                                    if(isset($col_val['value']) && ($col_val['value'] == $key))
-                                                        echo '<option value="'.$key.'" >'.$value.'</option>';
-                                                    else
-                                                        echo '<option value="'.$language->id.'">'.$language->slug.'</option>';
+
+                                                        echo '<option value="'.$language->id.'">'.$language->name.'</option>';
 
                                                 }
                                                 ?>
