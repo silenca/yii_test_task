@@ -225,7 +225,7 @@ class ContactForm extends Model
 //            if (!preg_match('/^\d*$/', $phone)) {
 //                $this->addCustomError($attribute, 'Телефон не должен содержать буквенные символы');
 //            } else
-            if (!preg_match('/^\d{10,}$/', $phone)) {
+            if (!preg_match('/^\+?\d{10,}$/', $phone)) {
                 $this->addCustomError($attribute, 'Телефон должен содержать только цифры (не менее 10 цифр)');
             }
 //            elseif (strlen($phone) <= 10 || strlen($phone) > 15) {
