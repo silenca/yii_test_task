@@ -32,7 +32,7 @@ class SipChannelController extends BaseController
                             'delete'
                         ],
                         'allow' => true,
-                        'roles' => ['admin', 'supervisor'],
+                        'roles' => ['admin'],
                     ],
                 ]
             ]
