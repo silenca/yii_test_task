@@ -38,9 +38,11 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('join', function (data) {
+        console.log(data.notify_id);
         if (data.notify_id && data.notify_id.length === 32) {
             connection.query('SELECT `user`.`role` from `user` where `notification_key` = "' + data.notify_id + '" LIMIT 1', function (err, rows, fields) {
-                if (!err) {
+                // console.log(rows);
+                if (!err && rows.length>0) {
                     switch (rows[0].role) {
                         case 1:
                             socket.join('operator');
@@ -52,7 +54,6 @@ io.sockets.on('connection', function (socket) {
                             socket.join('admin');
                             break;
                     }
-
                 }
                 else {
                     console.log('Error while performing Query.', err);

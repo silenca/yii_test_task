@@ -122,10 +122,20 @@ class AttractionChannelController extends BaseController
         if(isset($post['is_active']))
             $post['is_active'] = (int)$post['is_active'];
 
+
+
         $attraction_channel_form->attributes = $post;
+        if($attraction_channel_form->type != AttractionChannel::TYPE_SIP_CHANNEL) {
+            $attraction_channel_form->sip_channel_id = [];
+        }
+
+        if($attraction_channel_form->type != AttractionChannel::TYPE_INTEGRATION) {
+            $attraction_channel_form->integration_type = null;
+        }
         if($attraction_channel_form->validate()) {
             try {
                 $attraction_channel = null;
+                $linked_sip_channels = [];
                 if(isset($post['id'])  && !empty($post['id'])) {
                     $attraction_channel = AttractionChannel::find()->where(['id'=>(int)$post['id']])->one();
                 } else {
@@ -134,7 +144,6 @@ class AttractionChannelController extends BaseController
                 unset($post['_csrf']);
                 unset($post['id']);
                 $attraction_channel->attributes = $attraction_channel_form->getChannelAtributes();
-
                 if($attraction_channel->save()) {
                     /**
                      * @var $old SipChannel[]
