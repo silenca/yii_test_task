@@ -130,7 +130,7 @@ use app\models\User;
                                             <div class="input-group">
                                                 <label class="input-group-addon primary" for="status"><i
                                                             class="fa fa-fw fa-list-alt"></i></label>
-                                                <select id="status" name="status" class="form-control"
+                                                <select id="status" name="status" class="form-control">
                                                     <option class="select-placeholder" value=""  selected>Статус</option>
                                                     <?php
                                                     $statuses = \app\models\Contact::$statuses;
@@ -140,6 +140,50 @@ use app\models\User;
                                                     ?>
                                                 </select>
                                             </div>
+                                            <br>
+                                            <hr>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_language_id"><i
+                                                            class="fa fa-fw fa-language"></i></label>
+                                                <select id="contact_language_id" name="language_id" class="form-control">
+                                                    <option class="select-placeholder" disabled selected>Язык</option>
+                                                    <?php
+                                                    $languages = \app\models\ContactLanguage::find()->all();
+                                                    foreach ($languages as  $language) {
+                                                        echo '<option value="'.$language->id.'">'.$language->slug.'</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_is_broadcast"><i
+                                                            class="fa fa-fw fa-rss"></i></label>
+                                                <select id="contact_is_broadcast" name="is_broadcast" class="form-control">
+                                                    <option class="select-placeholder" value="" disabled selected>Рассылка</option>
+                                                    <?php
+                                                    $broadcasts = \app\models\Contact::$broadcast;
+                                                    foreach ($broadcasts as  $k=>$v) {
+                                                        echo '<option value="'.$k.'">'.$v.'</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="notification_service_id"><i
+                                                            class="fa fa-fw fa-tty"></i></label>
+                                                <select id="notification_service_id" name="notification_service_id" class="form-control">
+                                                    <option class="select-placeholder" value="" disabled selected>Способ оповещения</option>
+                                                    <?php
+                                                    $services = \app\models\ContactNotificationService::find()->all();
+                                                    foreach ($services as  $service) {
+                                                        echo '<option value="'.$service->id.'">'.$service->name.'</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <br>
                                             <hr>
                                             <div class="form-group text-left">
                                                 <input id="contact_tags" name="tags_str" class="contact-tags" type="text" />

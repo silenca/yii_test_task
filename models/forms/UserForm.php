@@ -36,6 +36,7 @@ class UserForm extends Model
             'role',
             'email',
             'int_id',
+
         ];
     }
 

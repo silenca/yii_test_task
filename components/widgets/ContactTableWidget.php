@@ -58,8 +58,11 @@ class ContactTableWidget extends Widget {
             $data[$i][] = $contact->street;
             $data[$i][] = $contact->house;
             $data[$i][] = $contact->flat;
+            $data[$i][] = (isset($contact->is_broadcast)? Contact::$broadcast[$contact->is_broadcast] : '');
             $data[$i][] = (isset($contact->attraction_channel_id)?$contact->attractionChannel->name:'');
-            $data[$i][] = (isset($contact->status)?$contact->status->name:'');
+            $data[$i][] = (isset($contact->notification_service_id) ? $contact->notificationService->name : '');
+            $data[$i][] = (isset($contact->language_id) ? $contact->language->slug : '');
+            $data[$i][] = (isset($contact->status)? Contact::$statuses[$contact->status] : '');
 
             if (Yii::$app->user->can('delete_contact')) {
                 $data[$i][] = '<div class="col-md-offset-3 remove"><i class="fa fa-remove"></i></div>';
