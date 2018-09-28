@@ -147,7 +147,7 @@ use app\models\User;
                                                             class="fa fa-fw fa-language"></i></label>
                                                 <select id="contact_language_id" name="language_id" class="form-control">
                                                     <?php
-                                                    echo '<option class="select-placeholder" disabled selected>Язык</option>';
+                                                    echo '<option class="select-placeholder" value="" disabled selected>Язык</option>';
 
                                                     $languages = \app\models\ContactLanguage::find()->all();
                                                     foreach ($languages as  $language) {
