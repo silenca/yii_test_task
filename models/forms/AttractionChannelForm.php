@@ -47,7 +47,8 @@ class AttractionChannelForm extends Model
     public function validateSipChannels($attribute,$params)
     {
         if(!is_array($this->$attribute)) {
-            $this->addError($attribute,"Наверное значение");
+//            $this->addError($attribute,"Наверное значение");
+            $this->$attribute = [$this->$attribute];
         }
         if($this->type == AttractionChannel::TYPE_SIP_CHANNEL && empty($this->$attribute))
             $this->addError($attribute,"Необходимо выбрать канал");
@@ -56,8 +57,11 @@ class AttractionChannelForm extends Model
         $available = \array_column($available,'id');
         $ext = \array_intersect($available,$this->$attribute);
         $rez = \array_diff($ext, $this->$attribute);
-        if(!empty($rez))
-            $this->addError($attribute,"Наверное значение");
+        if(!empty($rez)) {
+            $this->addError($attribute, "Наверное значение");
+            return false;
+        }
+        return true;
     }
 
     public function getChannelAtributes()

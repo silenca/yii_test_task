@@ -87,8 +87,10 @@ function addError($form, name, errors) {
 
 function updateSipChannelsList($form,selected) {
     var select = $form.find('#attraction_channel_sip_channel_id');
+    var type = $form.find('#attraction_channel_type');
     $.getJSON('/attraction-channel/get-free-sip-channels',{},function (response) {
         select.off('change',sipSelectEvent);
+        type.off('change',sipSelectEvent);
         var list = response.data;
         select.empty();//.append('<option class="select-placeholder" value="" disabled selected>SIP Канал</option>');
         for(K in list) {
@@ -105,6 +107,7 @@ function updateSipChannelsList($form,selected) {
         }
         select.trigger('change');
         select.on('change',sipSelectEvent);
+        type.on('change',sipSelectEvent);
     });
 }
 
@@ -214,7 +217,8 @@ function checkboxEvent() {
     if(sendTimer != undefined){
         clearTimeout(sendTimer);
     }
-    sendTimer = setTimeout( checkChanges,500,input.attr('name'),input.data('value'),$attraction_channel_form);
+    checkChanges($(this).attr('name'), $(this).data('value'), $attraction_channel_form);
+    // sendTimer = setTimeout( checkChanges,500,input.attr('name'),input.data('value'),$attraction_channel_form);
 }
 
 function sipSelectEvent() {
@@ -223,7 +227,8 @@ function sipSelectEvent() {
     if(sendTimer != undefined){
         clearTimeout(sendTimer);
     }
-    sendTimer = setTimeout( checkChanges,500,$(this).attr('name'), $(this).data('value'), $attraction_channel_form);
+    checkChanges($(this).attr('name'), $(this).data('value'), $attraction_channel_form);
+    // sendTimer = setTimeout( checkChanges,500,$(this).attr('name'), $(this).data('value'), $attraction_channel_form);
 }
 
 $(document).ready(function() {
@@ -251,7 +256,8 @@ $(document).ready(function() {
             if(sendTimer != undefined){
                 clearTimeout(sendTimer);
             }
-            sendTimer = setTimeout( checkChanges,500,$(this).attr('name'), $(this).data('value'), $attraction_channel_form);
+            checkChanges($(this).attr('name'), $(this).data('value'), $attraction_channel_form);
+            // sendTimer = setTimeout( checkChanges,500,$(this).attr('name'), $(this).data('value'), $attraction_channel_form);
         }
 
     });
