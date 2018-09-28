@@ -40,6 +40,7 @@ class ContactForm extends Model
     var $street;
     var $house;
     var $flat;
+    var $status;
     var $attraction_channel_id;
 
     var $notification_service_id;
@@ -63,6 +64,7 @@ class ContactForm extends Model
             'street',
             'house',
             'flat',
+            'status',
             'attraction_channel_id',
             'is_broadcast',
             'language_id',

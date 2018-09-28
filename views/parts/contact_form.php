@@ -147,7 +147,7 @@ use app\models\User;
                                                             class="fa fa-fw fa-language"></i></label>
                                                 <select id="contact_language_id" name="language_id" class="form-control">
                                                     <?php
-                                                    echo '<option class="select-placeholder" value=""  selected>Язык</option>';
+                                                    echo '<option class="select-placeholder" value="" selected>Язык</option>';
 
                                                     $languages = \app\models\ContactLanguage::find()->all();
                                                     foreach ($languages as  $language) {
@@ -172,10 +172,10 @@ use app\models\User;
                                             </div>
                                             <br>
                                             <div class="input-group">
-                                                <label class="input-group-addon primary" for="notification_service_id"><i
+                                                <label class="input-group-addon primary" for="contact_notification_service_id"><i
                                                             class="fa fa-fw fa-tty"></i></label>
-                                                <select id="notification_service_id" name="notification_service_id" class="form-control">
-                                                    <option class="select-placeholder" value=""  selected>Способ оповещения</option>
+                                                <select id="contact_notification_service_id" name="notification_service_id" class="form-control">
+                                                    <option class="select-placeholder" value="" selected>Способ оповещения</option>
                                                     <?php
                                                     $services = \app\models\ContactNotificationService::find()->all();
                                                     foreach ($services as  $service) {

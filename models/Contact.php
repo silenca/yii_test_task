@@ -116,7 +116,7 @@ class Contact extends \yii\db\ActiveRecord
     {
         return [
             [['int_id'], 'required'],
-            [['int_id', 'manager_id','attraction_channel_id'], 'integer'],
+            [['int_id', 'manager_id','attraction_channel_id', 'notification_service_id', 'language_id'], 'integer'],
             [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'country', 'region', 'area', 'city', 'street', 'house', 'flat', 'status'], 'string', 'max' => 255],
             [['name', 'surname', 'middle_name'], 'string', 'max' => 150],
             [['first_email', 'second_email'], 'string', 'max' => 255],
@@ -166,6 +166,7 @@ class Contact extends \yii\db\ActiveRecord
             'flat',
             'is_broadcast',
             'language_id',
+            'attraction_channel_id',
             'notification_service_id'
         ];
     }
