@@ -106,7 +106,7 @@ $this->params['active'] = 'contact';
                                                 <?php
                                                 $channels = \app\models\AttractionChannel::find()->all();
                                                 foreach ($channels as  $channel) {
-                                                    if(isset($col_val['value']) && ($col_val['value'] == $channel->id))
+                                                    if(isset($col_val['value']) && ($col_val['value'] == $channel->name))
                                                         echo '<option value="'.$channel->id.'" selected>'.$channel->name.'</option>';
                                                     else
                                                         echo '<option value="'.$channel->id.'">'.$channel->name.'</option>';
