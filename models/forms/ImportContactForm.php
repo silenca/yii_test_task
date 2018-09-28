@@ -122,8 +122,8 @@ class ImportContactForm extends ContactForm
 //                return false;
 //            }
 //        }
-        if (!preg_match('/^\+\d{11,}$/', $phone)) {
-            $this->addCustomError($attribute, 'Номер телефона должен иметь формат +ХХХХХХХХХХХХ');
+        if (!preg_match('/^\d{10,}$/', $phone)) {
+            $this->addCustomError($attribute, 'Телефон должен содержать только цифры (не менее 10 цифр)');
             return false;
         }
         $fields = Contact::getPhoneCols();
