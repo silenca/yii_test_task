@@ -112,7 +112,7 @@ use app\models\User;
                                             </div>
                                             <br>
                                             <div class="input-group">
-                                                <?php $disabled = (Yii::$app->user->can('attraction_channel')?false:true);?>
+                                                <?php $disabled = (Yii::$app->user->can('attraction_channel_set')?false:true);?>
                                                 <label class="input-group-addon primary" for="attraction_channel"><i
                                                             class="fa fa-fw fa-list-alt"></i></label>
                                                 <select id="attraction_channel" name="attraction_channel_id" class="form-control"

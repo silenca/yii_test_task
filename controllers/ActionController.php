@@ -84,9 +84,9 @@ class ActionController extends BaseController {
             case 'operator':
                 $query->andWhere([User::tableName().'.id' => $user_id]);
                 break;
-            case 'manager':
-                $query->andWhere([User::tableName().'.role' => [User::ROLE_MANAGER, User::ROLE_OPERATOR]]);
-                break;
+//            case 'manager':
+//                $query->andWhere([User::tableName().'.role' => [User::ROLE_MANAGER, User::ROLE_OPERATOR]]);
+//                break;
         }
         $total_count = $query->count();
 
