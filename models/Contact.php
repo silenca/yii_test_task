@@ -99,7 +99,6 @@ class Contact extends \yii\db\ActiveRecord
     public static $broadcast = [
         self::IS_BROADCAST_TRUE => 'ДА',
         self::IS_BROADCAST_FALSE => 'НЕТ',
-
     ];
 
     public function beforeValidate()
@@ -125,7 +124,7 @@ class Contact extends \yii\db\ActiveRecord
             [['language_id'], 'exist', 'skipOnError' => true, 'targetClass' => ContactLanguage::className(), 'targetAttribute' => ['language_id' => 'id']],
             [['attraction_channel_id'], 'exist', 'skipOnError' => true, 'targetClass' => AttractionChannel::className(), 'targetAttribute' => ['attraction_channel_id' => 'id']],
             [['sended_crm'], 'safe'],
-            [['is_broadcast'], 'boolean'],
+            [['is_broadcast'], 'boolean','trueValue' => 1, 'falseValue' => 0],
 
         ];
     }
