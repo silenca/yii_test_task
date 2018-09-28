@@ -146,8 +146,9 @@ use app\models\User;
                                                 <label class="input-group-addon primary" for="contact_language_id"><i
                                                             class="fa fa-fw fa-language"></i></label>
                                                 <select id="contact_language_id" name="language_id" class="form-control">
-                                                    <option class="select-placeholder" disabled selected>Язык</option>
                                                     <?php
+                                                    echo '<option class="select-placeholder" disabled selected>Язык</option>';
+
                                                     $languages = \app\models\ContactLanguage::find()->all();
                                                     foreach ($languages as  $language) {
                                                         echo '<option value="'.$language->id.'">'.$language->slug.'</option>';
