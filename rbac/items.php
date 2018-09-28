@@ -54,6 +54,9 @@ return [
     'attraction_channel' => [
         'type' => 2,
     ],
+    'attraction_channel_set' => [
+        'type' => 2,
+    ],
     'manager' => [
         'type' => 1,
         'ruleName' => 'userRole',
@@ -66,6 +69,7 @@ return [
             'updateContact',
             'listen_call',
             'edit_tag',
+            'attraction_channel_set',
         ],
     ],
     'operator' => [
@@ -98,6 +102,7 @@ return [
 //            'delete_user',
             'edit_tag',
             'use_archived_tags',
+            'attraction_channel_set',
         ],
     ],
     'admin' => [
@@ -120,7 +125,8 @@ return [
             'edit_tag',
             'use_archived_tags',
             'sip_channel',
-            'attraction_channel'
+            'attraction_channel',
+            'attraction_channel_set'
         ],
     ],
 ];
