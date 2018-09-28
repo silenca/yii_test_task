@@ -120,9 +120,9 @@ class Contact extends \yii\db\ActiveRecord
             [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'country', 'region', 'area', 'city', 'street', 'house', 'flat', 'status'], 'string', 'max' => 255],
             [['name', 'surname', 'middle_name'], 'string', 'max' => 150],
             [['first_email', 'second_email'], 'string', 'max' => 255],
-            [['notification_service_id'], 'exist', 'skipOnError' => true, 'targetClass' => ContactNotificationService::className(), 'targetAttribute' => ['notification_service_id' => 'id']],
-            [['language_id'], 'exist', 'skipOnError' => true, 'targetClass' => ContactLanguage::className(), 'targetAttribute' => ['language_id' => 'id']],
-            [['attraction_channel_id'], 'exist', 'skipOnError' => true, 'targetClass' => AttractionChannel::className(), 'targetAttribute' => ['attraction_channel_id' => 'id']],
+            [['notification_service_id'], 'exist',  'targetClass' => ContactNotificationService::className(), 'targetAttribute' => ['notification_service_id' => 'id']],
+            [['language_id'], 'exist', 'targetClass' => ContactLanguage::className(), 'targetAttribute' => ['language_id' => 'id']],
+            [['attraction_channel_id'], 'exist', 'targetClass' => AttractionChannel::className(), 'targetAttribute' => ['attraction_channel_id' => 'id']],
             [['sended_crm'], 'safe'],
             [['is_broadcast'], 'boolean','trueValue' => 1, 'falseValue' => 0],
 

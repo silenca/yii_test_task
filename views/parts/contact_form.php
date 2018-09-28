@@ -147,7 +147,7 @@ use app\models\User;
                                                             class="fa fa-fw fa-language"></i></label>
                                                 <select id="contact_language_id" name="language_id" class="form-control">
                                                     <?php
-                                                    echo '<option class="select-placeholder" value="" disabled selected>Язык</option>';
+                                                    echo '<option class="select-placeholder" value=""  selected>Язык</option>';
 
                                                     $languages = \app\models\ContactLanguage::find()->all();
                                                     foreach ($languages as  $language) {
@@ -161,7 +161,7 @@ use app\models\User;
                                                 <label class="input-group-addon primary" for="contact_is_broadcast"><i
                                                             class="fa fa-fw fa-rss"></i></label>
                                                 <select id="contact_is_broadcast" name="is_broadcast" class="form-control">
-                                                    <option class="select-placeholder" value="" disabled selected>Рассылка</option>
+                                                    <option class="select-placeholder" value=""  selected>Рассылка</option>
                                                     <?php
                                                     $broadcasts = \app\models\Contact::$broadcast;
                                                     foreach ($broadcasts as  $k=>$v) {
@@ -175,7 +175,7 @@ use app\models\User;
                                                 <label class="input-group-addon primary" for="notification_service_id"><i
                                                             class="fa fa-fw fa-tty"></i></label>
                                                 <select id="notification_service_id" name="notification_service_id" class="form-control">
-                                                    <option class="select-placeholder" value="" disabled selected>Способ оповещения</option>
+                                                    <option class="select-placeholder" value=""  selected>Способ оповещения</option>
                                                     <?php
                                                     $services = \app\models\ContactNotificationService::find()->all();
                                                     foreach ($services as  $service) {
