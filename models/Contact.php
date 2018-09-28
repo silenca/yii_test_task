@@ -99,7 +99,6 @@ class Contact extends \yii\db\ActiveRecord
     public static $broadcast = [
         self::IS_BROADCAST_TRUE => 'ДА',
         self::IS_BROADCAST_FALSE => 'НЕТ',
-
     ];
 
     public function beforeValidate()

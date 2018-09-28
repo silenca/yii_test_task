@@ -175,24 +175,9 @@ $this->params['active'] = 'contact';
                                         </td>
                                     <?php elseif ($col_key == 'is_broadcast'):?>
                                         <td>
-                                            <select data-column="<?php echo($col_key); ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
-                                                <?php if(!isset($col_val['value'])):?>
-                                                    <option class="select-placeholder" value="" selected>Рассылка</option>
-                                                <?php else:?>
-                                                    <option class="select-placeholder"  selected value="">Рассылка</option>
-                                                <?php endif;?>
-                                                <?php
-                                                $statuses = \app\models\Contact::$broadcast;
-                                                foreach ($statuses as $key=>$value) {
-                                                    if(isset($col_val['value']) && ($col_val['value'] == $key))
-                                                        echo '<option value="'.$key.'" >'.$value.'</option>';
-                                                    else
-                                                        echo '<option value="'.$key.'">'.$value.'</option>';
 
-                                                }
-                                                ?>
-                                            </select>
                                         </td>
+
                                     <?php else: ?>
                                         <td>
                                             <input type="text" data-column="<?php echo($col_key); ?>" class="form-control search-input-text" <?=(isset($col_val['value']))?'value="'.$col_val['value'].'"':""?>/>

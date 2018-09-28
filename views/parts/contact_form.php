@@ -165,7 +165,7 @@ use app\models\User;
                                                     <?php
                                                     $broadcasts = \app\models\Contact::$broadcast;
                                                     foreach ($broadcasts as  $k=>$v) {
-                                                        echo '<option value="'.$k.'">'.$v.'</option>';
+                                                        echo '<option value="'.$k.'">'.$v[0].'</option>';
                                                     }
                                                     ?>
                                                 </select>
