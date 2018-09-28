@@ -122,7 +122,7 @@ class ImportContactForm extends ContactForm
 //                return false;
 //            }
 //        }
-        if (!preg_match('/^\d{10,}$/', $phone)) {
+        if (!preg_match('/^\+?\d{10,}$/', $phone)) {
             $this->addCustomError($attribute, 'Телефон должен содержать только цифры (не менее 10 цифр)');
             return false;
         }
