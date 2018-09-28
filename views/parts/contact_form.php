@@ -164,8 +164,8 @@ use app\models\User;
                                                     <option class="select-placeholder" value="" disabled selected>Рассылка</option>
                                                     <?php
                                                     $broadcasts = \app\models\Contact::$broadcast;
-                                                    foreach ($broadcasts as  $broadcast) {
-                                                        echo '<option value="'.$broadcast.'">'.$broadcast.'</option>';
+                                                    foreach ($broadcasts as  $k=>$v) {
+                                                        echo '<option value="'.$k.'">'.$v.'</option>';
                                                     }
                                                     ?>
                                                 </select>
