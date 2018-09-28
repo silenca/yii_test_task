@@ -42,6 +42,10 @@ class ContactForm extends Model
     var $flat;
     var $attraction_channel_id;
 
+    var $notification_service_id;
+    var $language_id;
+    var $is_broadcast;
+
     var $edited_id;
     var $conflict_id;
 
@@ -59,7 +63,10 @@ class ContactForm extends Model
             'street',
             'house',
             'flat',
-            'attraction_channel_id'
+            'attraction_channel_id',
+            'is_broadcast',
+            'language_id',
+            'notification_service_id'
         ];
     }
 
@@ -105,7 +112,7 @@ class ContactForm extends Model
             [[
                 'first_phone', 'second_phone', 'third_phone', 'fourth_phone',
                 'first_email', 'second_email',
-                'middle_name', 'region', 'area', 'city', 'street', 'house', 'flat','attraction_channel_id'
+                'middle_name', 'region', 'area', 'city', 'street', 'house', 'flat','attraction_channel_id', 'is_broadcast','notification_service_id', 'language_id'
             ], 'default'],
         ];
     }

@@ -32,7 +32,11 @@ use yii\db\Query;
  * @property integer $manager_id
  * @property integer $is_deleted
  * @property integer $attraction_channel_id
- *
+ * @property integer $notification_service_id
+ * @property integer $language_id
+ * @property ContactNotificationService $notificationService
+ * @property ContactLanguage $language
+ * @property boolean $is_broadcast
  * @property AttractionChannel $attractionChannel
  */
 class Contact extends \yii\db\ActiveRecord
@@ -60,11 +64,17 @@ class Contact extends \yii\db\ActiveRecord
         'manager_id',
         'is_deleted',
         'remove_tags',
-        'attraction_channel_id'
+        'attraction_channel_id',
+        'notification_service_id',
+        'is_broadcast',
+        'language_id'
     ];
 
     public $is_called;
     public $remove_tags;
+
+    const IS_BROADCAST_TRUE = 1;
+    const IS_BROADCAST_FALSE = 0;
 
     const LEAD = 1;
     const CONTACT = 2;
@@ -84,6 +94,11 @@ class Contact extends \yii\db\ActiveRecord
     public static $statuses = [
         self::LEAD => 'Лид',
         self::CONTACT => 'Контакт',
+
+    ];
+    public static $broadcast = [
+        self::IS_BROADCAST_TRUE => 'ДА',
+        self::IS_BROADCAST_FALSE => 'НЕТ',
 
     ];
 
@@ -106,8 +121,11 @@ class Contact extends \yii\db\ActiveRecord
             [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'country', 'region', 'area', 'city', 'street', 'house', 'flat', 'status'], 'string', 'max' => 255],
             [['name', 'surname', 'middle_name'], 'string', 'max' => 150],
             [['first_email', 'second_email'], 'string', 'max' => 255],
-            [['sended_crm'], 'safe'],
+            [['notification_service_id'], 'exist', 'skipOnError' => true, 'targetClass' => ContactNotificationService::className(), 'targetAttribute' => ['notification_service_id' => 'id']],
+            [['language_id'], 'exist', 'skipOnError' => true, 'targetClass' => ContactLanguage::className(), 'targetAttribute' => ['language_id' => 'id']],
             [['attraction_channel_id'], 'exist', 'skipOnError' => true, 'targetClass' => AttractionChannel::className(), 'targetAttribute' => ['attraction_channel_id' => 'id']],
+            [['sended_crm'], 'safe'],
+            [['is_broadcast'], 'boolean'],
 
         ];
     }
@@ -147,6 +165,9 @@ class Contact extends \yii\db\ActiveRecord
             'street',
             'house',
             'flat',
+            'is_broadcast',
+            'language_id',
+            'notification_service_id'
         ];
     }
 
@@ -169,7 +190,10 @@ class Contact extends \yii\db\ActiveRecord
             'street' => ['label' => 'Улица', 'have_search' => true, 'orderable' => true],
             'house' => ['label' => 'Дом', 'have_search' => true, 'orderable' => true],
             'flat' => ['label' => 'Квартира', 'have_search' => true, 'orderable' => true],
-            'attraction_channel_id' => ['label' => 'Канал привлечения', 'have_search' => true, 'orderable' => false],
+            'is_broadcast' => ['label' => 'Рассылка', 'have_search' => true, 'orderable' => true],
+            'attraction_channel_id' => ['label' => 'Канал привлечения', 'have_search' => true, 'orderable' => true],
+            'notification_service_id' => ['label' => 'Способ оповещения', 'have_search' => true, 'orderable' => true],
+            'language_id' => ['label' => 'Язык', 'have_search' => true, 'orderable' => true],
             'status' => ['label' => 'Статус', 'have_search' => true, 'orderable' => true],
             'delete_button' => ['label' => 'Удалить', 'have_search' => false, 'orderable' => false],
         ];
@@ -265,10 +289,10 @@ class Contact extends \yii\db\ActiveRecord
     public function mergeTogether($contact)
     {
         foreach ($this->attributes as $prop_key => $prop_val) {
-            if (preg_match('/surname|name|middle_name/', $prop_key)) {
+//            if (preg_match('/surname|name|middle_name/', $prop_key)) {
                 if (is_null($prop_val) || $prop_val == '') {
                     $this->$prop_key = $contact->$prop_key;
-                }
+//                }
             }
         }
 
@@ -610,7 +634,7 @@ class Contact extends \yii\db\ActiveRecord
             $cont_pool->delete();
         }
 
-        $cont_pool = new TempContactsPool(['contact_id' => $contact_id, 'manager_id' => $manager_id, 'tag_id' => $tag_id, 'order_token' => $order_token]);
+        $cont_pool = new TempContactsPool(['contact_id' => $contact_id, 'manager_id' => $manager_id, 'tag_id' => $tag_id]);
         return $cont_pool->save();
     }
 
@@ -631,8 +655,26 @@ class Contact extends \yii\db\ActiveRecord
         return $this->hasOne(AttractionChannel::className(), ['id' => 'attraction_channel_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLanguage()
+    {
+        return $this->hasOne(ContactLanguage::className(), ['id' => 'language_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getNotificationService()
+    {
+        return $this->hasOne(ContactNotificationService::className(), ['id' => 'notification_service_id']);
+    }
 
 
+    /**
+     * @return bool
+     */
     public function sendToCRM()
     {
         $ch = curl_init();
@@ -672,8 +714,13 @@ class Contact extends \yii\db\ActiveRecord
             $contact['Address[City]'] = $this->city;
         if (!empty($this->street))
             $contact['Address[Street]'] = $this->street;
-        if (!empty($this->house))
-            $contact['Address[Home]'] = $this->house;
+        if (!empty($this->is_broadcast))
+            $contact['is_broadcast'] = $this->is_broadcast;
+        if (!empty($this->notification_service_id))
+            $contact['notification_service_id'] = $this->notification_service_id;
+        if (!empty($this->language_id))
+            $contact['language_id'] = $this->language_id;
+
 
         $history = ContactHistory::getByContactId($this->id);
         $contact['Comment'] = "";

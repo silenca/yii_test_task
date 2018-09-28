@@ -46,6 +46,7 @@ $this->params['active'] = 'contact';
                                 <label
                                     for="column_filter_<?php echo($col_key); ?>"><?php echo($col_val['label']); ?></label>
                             </div>
+                            <?php else: ?>
                             <?php endif;?>
                         <?php endforeach; ?>
                         <div class="col-xs-12">
@@ -84,7 +85,7 @@ $this->params['active'] = 'contact';
                             <?php if ($col_key == 'Связать'): ?>
                                 <th></th>
                             <?php else: ?>
-                                <th><?php echo($col_val['label']); ?></th>
+                                    <th><?php echo($col_val['label']); ?></th>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     </tr>
@@ -95,9 +96,10 @@ $this->params['active'] = 'contact';
                             <?php if (!in_array($col_key, $hide_columns)): ?>
                                 <?php if ($col_val['have_search']): ?>
                                     <?php if ($col_key == 'attraction_channel_id'):?>
-                                        <td><select data-column="<?php echo($col_key); ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                        <td>
+                                            <select data-column="<?php echo($col_key); ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
                                                 <?php if(!isset($col_val['value'])):?>
-                                                <option class="select-placeholder" value="" selected>Канал привлечения</option>
+                                                    <option class="select-placeholder" value="" selected>Канал привлечения</option>
                                                 <?php else:?>
                                                     <option class="select-placeholder" value="">Канал привлечения</option>
                                                 <?php endif;?>
@@ -110,13 +112,54 @@ $this->params['active'] = 'contact';
                                                         echo '<option value="'.$channel->id.'">'.$channel->name.'</option>';
 
                                                 }
-                                                ?></select></td>
-
-                                    <?php endif;?>
-                                    <?php if ($col_key == 'status'):?>
-                                        <td><select data-column="<?php echo($col_key); ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                                ?>
+                                            </select>
+                                        </td>
+                                    <?php elseif ($col_key == 'notification_service_id'):?>
+                                        <td>
+                                            <select data-column="<?php echo($col_key); ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
                                                 <?php if(!isset($col_val['value'])):?>
-                                                <option class="select-placeholder" value="" selected>Статус</option>
+                                                    <option class="select-placeholder" value="" selected>Способ Оповещения</option>
+                                                <?php else:?>
+                                                    <option class="select-placeholder"  selected value="">Способ Оповещения</option>
+                                                <?php endif;?>
+                                                <?php
+                                                $services = \app\models\ContactNotificationService::find()->all();
+                                                foreach ($services as $service) {
+                                                    if(isset($col_val['value']) && ($col_val['value'] == $key))
+                                                        echo '<option value="'.$service->id.'" >'.$service->name.'</option>';
+                                                    else
+                                                        echo '<option value="'.$service->id.'">'.$service->name.'</option>';
+
+                                                }
+                                                ?>
+                                            </select>
+                                        </td>
+                                    <?php elseif ($col_key == 'language_id'):?>
+                                        <td>
+                                            <select data-column="<?php echo($col_key); ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                                <?php if(!isset($col_val['value'])):?>
+                                                <option class="select-placeholder" value="" selected>Язык</option>
+                                                <?php else:?>
+                                                    <option class="select-placeholder"  selected value="">Язык</option>
+                                                <?php endif;?>
+                                                <?php
+                                                $languages = \app\models\ContactLanguage::find()->all();
+                                                foreach ($languages as $language) {
+                                                    if(isset($col_val['value']) && ($col_val['value'] == $key))
+                                                        echo '<option value="'.$key.'" >'.$value.'</option>';
+                                                    else
+                                                        echo '<option value="'.$language->id.'">'.$language->slug.'</option>';
+
+                                                }
+                                                ?>
+                                            </select>
+                                        </td>
+                                    <?php elseif ($col_key == 'status'):?>
+                                        <td>
+                                            <select data-column="<?php echo($col_key); ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                                <?php if(!isset($col_val['value'])):?>
+                                                    <option class="select-placeholder" value="" selected>Статус</option>
                                                 <?php else:?>
                                                     <option class="select-placeholder"  selected value="">Статус</option>
                                                 <?php endif;?>
@@ -129,12 +172,18 @@ $this->params['active'] = 'contact';
                                                         echo '<option value="'.$key.'">'.$value.'</option>';
 
                                                 }
-                                                ?></select></td>
+                                                ?>
+                                            </select>
+                                        </td>
                                     <?php else: ?>
-                                        <td><input type="text" data-column="<?php echo($col_key); ?>" class="form-control search-input-text" <?=(isset($col_val['value']))?'value="'.$col_val['value'].'"':""?>></td>
-                                    <?php endif;?>
+                                        <td>
+                                            <input type="text" data-column="<?php echo($col_key); ?>" class="form-control search-input-text" <?=(isset($col_val['value']))?'value="'.$col_val['value'].'"':""?>/>
+                                        </td>
+                                     <?php endif;?>
                                 <?php else: ?>
-                                    <td></td>
+                                    <td>
+                                        <input type="text" data-column="<?php echo($col_key); ?>" class="form-control search-input-text" <?=(isset($col_val['value']))?'value="'.$col_val['value'].'"':""?>/>
+                                    </td>
                                 <?php endif; ?>
                             <?php endif; ?>
                         <?php endforeach; ?>
