@@ -114,12 +114,10 @@ use app\models\User;
                                             </div>
                                             <br>
                                             <div class="input-group">
-                                                <?php $disabled = (Yii::$app->user->can('attraction_channel_set')?false:true);?>
                                                 <label class="input-group-addon primary" for="contact_attraction_channel"><i
                                                             class="fa fa-fw fa-list-alt"></i></label>
-                                                <select id="contact_attraction_channel" name="attraction_channel_id" class="form-control"
-                                                 <?=$disabled?'disabled':''?>>
-                                                    <option class="select-placeholder" value="" disabled selected>Канал привлечения</option>
+                                                <select id="contact_attraction_channel" name="attraction_channel_id" class="form-control">
+                                                    <option class="select-placeholder" value="" selected>Канал привлечения</option>
                                                     <?php
                                                     $channels = \app\models\AttractionChannel::find()->where(['is_active'=>1])->all();
                                                     foreach ($channels as  $channel) {
@@ -130,9 +128,9 @@ use app\models\User;
                                             </div>
                                             <br>
                                             <div class="input-group">
-                                                <label class="input-group-addon primary" for="status"><i
+                                                <label class="input-group-addon primary" for="contact_status"><i
                                                             class="fa fa-fw fa-list-alt"></i></label>
-                                                <select id="status" name="status" class="form-control">
+                                                <select id="contact_status" name="status" class="form-control">
                                                     <option class="select-placeholder" value=""  selected>Статус</option>
                                                     <?php
                                                     $statuses = \app\models\Contact::$statuses;

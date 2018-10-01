@@ -292,13 +292,14 @@ function openContactForm(id) {
 function openNewContactForm(phone,attraction_channel) {
     clearContactForm($contact_form);
     $contact_form.modal({});
-    if(phone != undefined) {
+    if(phone !== undefined) {
         $contact_form.find('#contact_phones').val(phone);
         $contact_form.find('#contact_phones').attr('data-value',phone).trigger('blur');
     }
-    if(attraction_channel != undefined) {
-        $contact_form.find('#attraction_channel option[value='+attraction_channel+']').prop('selected',true);
-        $contact_form.find('#attraction_channel').attr('data-value',attraction_channel);
+    console.log(attraction_channel);
+    if(attraction_channel !== undefined) {
+        $contact_form.find('#contact_attraction_channel option[value='+attraction_channel+']').prop('selected',true);
+        $contact_form.find('#contact_attraction_channel').attr('data-value',attraction_channel);
     }
     bindLiveChangeContact($contact_data_form);
 }
@@ -318,8 +319,8 @@ function clearContactForm($form) {
     $form.find('input').val('');
     $form.find('#contact_manager_name').text('');
     $form.find('.contact-manager-name-cont').hide();
-    $form.find('#attraction_channel option.select-placeholder').prop('selected',true);
-    $form.find('#attraction_channel').data('value','');
+    $form.find('#contact_attraction_channel option.select-placeholder').prop('selected',true);
+    $form.find('#contact_attraction_channel').data('value','');
     $form.find('.select-placeholder').prop('selected', true);
     hideNotifications($form);
 }
@@ -398,14 +399,14 @@ function fillContactData(data, $form) {
                 // $tagsInput.tagsinput('add', tags);
                 break;
             case 'attraction_channel_id':
-                var input = $form.find('#attraction_channel option[value="'+value+'"]');
+                var input = $form.find('#contact_attraction_channel option[value="'+value+'"]');
                 if(input.length){
                     input.prop('selected',true);
-                    $form.find('#attraction_channel').data('value',value);
+                    $form.find('#contact_attraction_channel').data('value',value);
                 }
                 else{
-                    $form.find('#attraction_channel').data('value','') ;
-                    $form.find('#attraction_channel option.select-placeholder').prop('selected',true);
+                    $form.find('#contact_attraction_channel').data('value','') ;
+                    $form.find('#contact_attraction_channel option.select-placeholder').prop('selected',true);
                 }
 
                 break;

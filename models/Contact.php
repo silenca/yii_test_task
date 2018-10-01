@@ -121,8 +121,8 @@ class Contact extends \yii\db\ActiveRecord
             [['name', 'surname', 'middle_name'], 'string', 'max' => 150],
             [['first_email', 'second_email'], 'string', 'max' => 255],
             [['notification_service_id'], 'exist',  'targetClass' => ContactNotificationService::className(), 'targetAttribute' => ['notification_service_id' => 'id']],
-            [['language_id'], 'exist', 'targetClass' => ContactLanguage::className(), 'targetAttribute' => ['language_id' => 'id']],
             [['attraction_channel_id'], 'exist', 'targetClass' => AttractionChannel::className(), 'targetAttribute' => ['attraction_channel_id' => 'id']],
+            [['language_id'], 'exist', 'targetClass' => ContactLanguage::className(), 'targetAttribute' => ['language_id' => 'id']],
             [['sended_crm'], 'safe'],
             [['is_broadcast'], 'boolean','trueValue' => 1, 'falseValue' => 0],
 
@@ -718,6 +718,8 @@ class Contact extends \yii\db\ActiveRecord
             $contact['is_broadcast'] = $this->is_broadcast;
         if (!empty($this->notification_service_id))
             $contact['notification_service_id'] = $this->notification_service_id;
+        if (!empty($this->attraction_channel_id))
+            $contact['attraction_channel_id'] = $this->attraction_channel_id;
         if (!empty($this->language_id))
             $contact['language_id'] = $this->language_id;
 
