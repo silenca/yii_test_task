@@ -34,12 +34,6 @@ class ContactForm extends Model
     var $tags;
 
     var $country;
-    var $region;
-    var $area;
-    var $city;
-    var $street;
-    var $house;
-    var $flat;
     var $status;
     var $attraction_channel_id;
 
@@ -58,17 +52,11 @@ class ContactForm extends Model
             'middle_name',
             'emails',
             'country',
-            'region',
-            'area',
-            'city',
-            'street',
-            'house',
-            'flat',
-            'status',
             'attraction_channel_id',
             'is_broadcast',
             'language_id',
-            'notification_service_id'
+            'notification_service_id',
+            'status',
         ];
     }
 
@@ -103,18 +91,13 @@ class ContactForm extends Model
                 'tooShort' => 'Ошибка: поле {attribute} должно содержать не менее {min} символов',
                 'tooLong' => 'Ошибка: поле {attribute} должно содержать не более {max} символов'],
             [['middle_name'], 'match', 'pattern' => "/^[\s\p{Cyrillic}\-()]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
-            [['country'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
-            [['region', 'area'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
-            [['city'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)\d]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
-            //[['street'], 'match', 'pattern' => "/^[-\s\d\p{Cyrillic}:_,.\(\)\\\\\/]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
-            [['house', 'flat'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d\/]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
 
             [['tags_str'], 'tagsArray'],
 
             [[
                 'first_phone', 'second_phone', 'third_phone', 'fourth_phone',
                 'first_email', 'second_email',
-                'middle_name', 'region', 'area', 'city', 'street', 'house', 'flat','attraction_channel_id', 'is_broadcast','notification_service_id', 'language_id'
+                'middle_name', 'attraction_channel_id', 'is_broadcast','notification_service_id', 'language_id'
             ], 'default'],
         ];
     }
@@ -147,7 +130,6 @@ class ContactForm extends Model
             'middle_name' => 'Отчество',
             'phones' => 'Номер телефона',
             'emails' => 'Email',
-            'street' => 'Улица',
             'attraction_channel_id' => 'Канал привлечения'
         ];
     }

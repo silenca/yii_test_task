@@ -72,48 +72,6 @@ use app\models\User;
                                             </div>
                                             <br>
                                             <div class="input-group">
-                                                <label class="input-group-addon primary" for="contact_region"><i
-                                                        class="pg pg-home"></i></label>
-                                                <input type="text" id="contact_region" name="region"
-                                                       placeholder="Регион проживания" class="form-control">
-                                            </div>
-                                            <br>
-                                            <div class="input-group">
-                                                <label class="input-group-addon primary" for="contact_area"><i
-                                                        class="pg pg-home"></i></label>
-                                                <input type="text" id="contact_area" name="area" placeholder="Район"
-                                                       class="form-control">
-                                            </div>
-                                            <br>
-                                            <div class="input-group">
-                                                <label class="input-group-addon primary" for="contact_city"><i
-                                                        class="pg pg-home"></i></label>
-                                                <input type="text" id="contact_city" name="city"
-                                                       placeholder="Город/поселок проживания" class="form-control">
-                                            </div>
-                                            <br>
-                                            <div class="input-group">
-                                                <label class="input-group-addon primary" for="contact_street"><i
-                                                        class="pg pg-home"></i></label>
-                                                <input type="text" id="contact_street" name="street" placeholder="Улица"
-                                                       class="form-control">
-                                            </div>
-                                            <br>
-                                            <div class="input-group">
-                                                <label class="input-group-addon primary" for="contact_house"><i
-                                                        class="pg pg-home"></i></label>
-                                                <input type="text" id="contact_house" name="house"
-                                                       placeholder="Номер дома" class="form-control">
-                                            </div>
-                                            <br>
-                                            <div class="input-group">
-                                                <label class="input-group-addon primary" for="contact_flat"><i
-                                                        class="pg pg-home"></i></label>
-                                                <input type="text" id="contact_flat" name="flat"
-                                                       placeholder="Номер квартиры" class="form-control">
-                                            </div>
-                                            <br>
-                                            <div class="input-group">
                                                 <label class="input-group-addon primary" for="contact_attraction_channel"><i
                                                             class="fa fa-fw fa-list-alt"></i></label>
                                                 <select id="contact_attraction_channel" name="attraction_channel_id" class="form-control">

@@ -27,13 +27,13 @@ class AttractionChannel extends \yii\db\ActiveRecord
         self::TYPE_INTEGRATION => 'Интеграция',
     ];
 
-    const INTEGRATIONS = [
+    const INTEGRATIONS = array(
         'Google',
         'Facebook',
         'Instagram',
         'Web порталы',
         'Свой сайт'
-    ];
+    );
 
     /**
      * @inheritdoc

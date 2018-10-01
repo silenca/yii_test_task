@@ -52,14 +52,8 @@ class ContactTableWidget extends Widget {
             $data[$i][] = Filter::dataImplode($tag_names, ', ', '<a class="contact_open_disable contact-tags" href="javascript:void(0)">{value}</a>', true);
 
             $data[$i][] = $contact->country;
-            $data[$i][] = $contact->region;
-            $data[$i][] = $contact->area;
-            $data[$i][] = $contact->city;
-            $data[$i][] = $contact->street;
-            $data[$i][] = $contact->house;
-            $data[$i][] = $contact->flat;
-            $data[$i][] = (isset($contact->is_broadcast)? Contact::$broadcast[$contact->is_broadcast] : '');
             $data[$i][] = (isset($contact->attraction_channel_id)?$contact->attractionChannel->name:'');
+            $data[$i][] = (isset($contact->is_broadcast)? Contact::$broadcast[$contact->is_broadcast] : '');
             $data[$i][] = (isset($contact->notification_service_id) ? $contact->notificationService->name : '');
             $data[$i][] = $contact->language->slug;
             $data[$i][] = (isset($contact->status)? Contact::$statuses[$contact->status] : '');

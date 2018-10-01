@@ -127,9 +127,9 @@ class ContactsController extends BaseController
                 $hide_columns = $cols['contacts'];
             } else {
                 if($detect->isMobile()) {
-                    $hide_columns = [ "middle_name", "emails", "country", "region", "area", "delete_button",'int_id','link_with','tags','city','street','house','flat'];
+                    $hide_columns = [ "middle_name", "emails", "country",  "delete_button",'int_id','link_with','tags'];
                 } else {
-                    $hide_columns = ["surname", "name", "middle_name", "emails", "country", "region", "area", "delete_button"];
+                    $hide_columns = ["surname", "name", "middle_name", "emails", "country", "delete_button"];
                 }
             }
         }
@@ -324,12 +324,6 @@ class ContactsController extends BaseController
                 $contact->surname = $post['last_name'];
                 $contact->middle_name = $post['middle_name'];
                 $contact->country = $post['country'];
-                $contact->region = $post['region'];
-                $contact->area = $post['area'];
-                $contact->city = $post['city'];
-                $contact->street = $post['street'];
-                $contact->house = $post['house'];
-                $contact->flat = $post['flat'];
                 $contact->int_id = $post['internal_no'];
 
                 if ($contact->save()) {

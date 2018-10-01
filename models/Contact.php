@@ -22,12 +22,6 @@ use yii\db\Query;
  * @property string $first_email
  * @property string $second_email
  * @property string $country
- * @property string $region
- * @property string $area
- * @property string $city
- * @property string $street
- * @property string $house
- * @property string $flat
  * @property string $status
  * @property integer $manager_id
  * @property integer $is_deleted
@@ -54,12 +48,6 @@ class Contact extends \yii\db\ActiveRecord
         'first_email',
         'second_email',
         'country',
-        'region',
-        'area',
-        'city',
-        'street',
-        'house',
-        'flat',
         'status',
         'manager_id',
         'is_deleted',
@@ -117,7 +105,7 @@ class Contact extends \yii\db\ActiveRecord
         return [
             [['int_id'], 'required'],
             [['int_id', 'manager_id','attraction_channel_id', 'notification_service_id', 'language_id'], 'integer'],
-            [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'country', 'region', 'area', 'city', 'street', 'house', 'flat', 'status'], 'string', 'max' => 255],
+            [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'country', 'status'], 'string', 'max' => 255],
             [['name', 'surname', 'middle_name'], 'string', 'max' => 150],
             [['first_email', 'second_email'], 'string', 'max' => 255],
             [['notification_service_id'], 'exist',  'targetClass' => ContactNotificationService::className(), 'targetAttribute' => ['notification_service_id' => 'id']],
@@ -158,12 +146,6 @@ class Contact extends \yii\db\ActiveRecord
             'first_email',
             'second_email',
             'country',
-            'region',
-            'area',
-            'city',
-            'street',
-            'house',
-            'flat',
             'is_broadcast',
             'language_id',
             'attraction_channel_id',
@@ -184,14 +166,8 @@ class Contact extends \yii\db\ActiveRecord
             'emails' => ['label' => 'Email', 'have_search' => true, 'orderable' => false, 'db_cols' => ['first_email', 'second_email']],
             'tags' => ['label' => 'Теги', 'have_search' => true, 'orderable' => false],
             'country' => ['label' => 'Страна', 'have_search' => true, 'orderable' => true],
-            'region' => ['label' => 'Регион', 'have_search' => true, 'orderable' => true],
-            'area' => ['label' => 'Район', 'have_search' => true, 'orderable' => true],
-            'city' => ['label' => 'Город', 'have_search' => true, 'orderable' => true],
-            'street' => ['label' => 'Улица', 'have_search' => true, 'orderable' => true],
-            'house' => ['label' => 'Дом', 'have_search' => true, 'orderable' => true],
-            'flat' => ['label' => 'Квартира', 'have_search' => true, 'orderable' => true],
-            'is_broadcast' => ['label' => 'Рассылка', 'have_search' => true, 'orderable' => true],
             'attraction_channel_id' => ['label' => 'Канал привлечения', 'have_search' => true, 'orderable' => true],
+            'is_broadcast' => ['label' => 'Рассылка', 'have_search' => true, 'orderable' => true],
             'notification_service_id' => ['label' => 'Способ оповещения', 'have_search' => true, 'orderable' => true],
             'language_id' => ['label' => 'Язык', 'have_search' => true, 'orderable' => true],
             'status' => ['label' => 'Статус', 'have_search' => true, 'orderable' => true],
@@ -277,12 +253,6 @@ class Contact extends \yii\db\ActiveRecord
     {
         return [
             'country',
-            'region',
-            'area',
-            'city',
-            'street',
-            'house',
-            'flat',
         ];
     }
 
@@ -706,14 +676,6 @@ class Contact extends \yii\db\ActiveRecord
             $contact['MiddleName'] = $this->middle_name;
         if (!empty($this->country))
             $contact['Address[Country]'] = $this->country;
-        if (!empty($this->region))
-            $contact['Address[Region]'] = $this->region;
-        if (!empty($this->area))
-            $contact['Address[Area]'] = $this->area;
-        if (!empty($this->city))
-            $contact['Address[City]'] = $this->city;
-        if (!empty($this->street))
-            $contact['Address[Street]'] = $this->street;
         if (!empty($this->is_broadcast))
             $contact['is_broadcast'] = $this->is_broadcast;
         if (!empty($this->notification_service_id))
