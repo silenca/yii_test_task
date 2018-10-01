@@ -63,9 +63,7 @@ $config = [
                 'login' => 'auth/login',
                 'logout' => 'auth/logout',
                 //'<action>' => 'index/<action>',
-
                 'api/contact' => 'api/contact/add',
-                
                 '<controller:\w+>'=>'<controller>/index',
                 '<controller:\w+>/<id:\d+>' => '<controller>/view',
                 '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',

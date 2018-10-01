@@ -127,7 +127,7 @@ class ContactsController extends BaseController
                 $hide_columns = $cols['contacts'];
             } else {
                 if($detect->isMobile()) {
-                    $hide_columns = [ "middle_name", "emails", "country",  "delete_button",'int_id','link_with','tags'];
+                    $hide_columns = [ "middle_name", "emails", "country", "city", "delete_button",'int_id','link_with','tags'];
                 } else {
                     $hide_columns = ["surname", "name", "middle_name", "emails", "country", "delete_button"];
                 }
@@ -238,7 +238,6 @@ class ContactsController extends BaseController
         $contact_widget->user_id = $user_id;
         $contact_widget->user_role = $user_role;
         $data = $contact_widget->run();
-
         $json_data = [
             "draw" => intval($request_data['draw']),
             "recordsTotal" => intval($total_count),
@@ -258,12 +257,6 @@ class ContactsController extends BaseController
             $contact_form->edited_id = $post['id'];
         }
         $contact_form->attributes = $post;
-
-//        $call_order = Yii::$app->params['call_order_script'];
-
-//        $contact_form->tags_str = 'полисмен, комбайнер';
-//        $contact_form->tags_str = 'трактарист, бизнесмен, учитель';
-
         if ($contact_form->validate()) {
             try {
                 $contact = NULL;
@@ -324,7 +317,9 @@ class ContactsController extends BaseController
                 $contact->surname = $post['last_name'];
                 $contact->middle_name = $post['middle_name'];
                 $contact->country = $post['country'];
+                $contact->city = $post['city'];
                 $contact->int_id = $post['internal_no'];
+                $contact->status = $post['status'];
 
                 if ($contact->save()) {
                     $contact_history = new ContactHistory();

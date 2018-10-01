@@ -22,6 +22,7 @@ use yii\db\Query;
  * @property string $first_email
  * @property string $second_email
  * @property string $country
+ * @property string $city
  * @property string $status
  * @property integer $manager_id
  * @property integer $is_deleted
@@ -29,9 +30,9 @@ use yii\db\Query;
  * @property integer $notification_service_id
  * @property integer $language_id
  * @property ContactNotificationService $notificationService
+ * @property AttractionChannel $attractionChannel
  * @property ContactLanguage $language
  * @property boolean $is_broadcast
- * @property AttractionChannel $attractionChannel
  */
 class Contact extends \yii\db\ActiveRecord
 {
@@ -48,6 +49,7 @@ class Contact extends \yii\db\ActiveRecord
         'first_email',
         'second_email',
         'country',
+        'city',
         'status',
         'manager_id',
         'is_deleted',
@@ -104,8 +106,8 @@ class Contact extends \yii\db\ActiveRecord
     {
         return [
             [['int_id'], 'required'],
-            [['int_id', 'manager_id','attraction_channel_id', 'notification_service_id', 'language_id'], 'integer'],
-            [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'country', 'status'], 'string', 'max' => 255],
+            [['int_id', 'manager_id', 'notification_service_id', 'language_id', 'attraction_channel_id', 'status'], 'integer'],
+            [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'country', 'city'], 'string', 'max' => 255],
             [['name', 'surname', 'middle_name'], 'string', 'max' => 150],
             [['first_email', 'second_email'], 'string', 'max' => 255],
             [['notification_service_id'], 'exist',  'targetClass' => ContactNotificationService::className(), 'targetAttribute' => ['notification_service_id' => 'id']],
@@ -146,10 +148,12 @@ class Contact extends \yii\db\ActiveRecord
             'first_email',
             'second_email',
             'country',
+            'city',
             'is_broadcast',
             'language_id',
             'attraction_channel_id',
-            'notification_service_id'
+            'notification_service_id',
+            'status'
         ];
     }
 
@@ -166,6 +170,7 @@ class Contact extends \yii\db\ActiveRecord
             'emails' => ['label' => 'Email', 'have_search' => true, 'orderable' => false, 'db_cols' => ['first_email', 'second_email']],
             'tags' => ['label' => 'Теги', 'have_search' => true, 'orderable' => false],
             'country' => ['label' => 'Страна', 'have_search' => true, 'orderable' => true],
+            'city' => ['label' => 'Город проживания', 'have_search' => true, 'orderable' => true],
             'attraction_channel_id' => ['label' => 'Канал привлечения', 'have_search' => true, 'orderable' => true],
             'is_broadcast' => ['label' => 'Рассылка', 'have_search' => true, 'orderable' => true],
             'notification_service_id' => ['label' => 'Способ оповещения', 'have_search' => true, 'orderable' => true],
@@ -253,6 +258,7 @@ class Contact extends \yii\db\ActiveRecord
     {
         return [
             'country',
+            'city'
         ];
     }
 
@@ -269,7 +275,6 @@ class Contact extends \yii\db\ActiveRecord
         $phone_cols = self::getPhoneCols();
         $email_cols = self::getEmailCols();
         $location_cols = self::getLocationCols();
-
         $contact_phones = self::getPropValues($contact, $phone_cols);
         $contact_emails = self::getPropValues($contact, $email_cols);
         $contact_location = self::getPropValues($contact, $location_cols);
@@ -303,7 +308,6 @@ class Contact extends \yii\db\ActiveRecord
                 $this->$col = $contact->$col;
             }
         }
-
         return true;
     }
 
@@ -405,7 +409,6 @@ class Contact extends \yii\db\ActiveRecord
 //                $call->setContactIdByPhone($this->new_phone, $this->id);
             }
             $transaction->commit();
-
             return true;
         } catch (\Exception $ex) {
             $transaction->rollback();
@@ -595,10 +598,6 @@ class Contact extends \yii\db\ActiveRecord
 
     public static function addContInPool($contact_id, $manager_id, $tag_id, $order_token)
     {
-//        $cont_pools = TempContactsPool::find(['manager_id' => $manager_id])->all();
-//        foreach ($cont_pools as $cont_pool) {
-//            $cont_pool->delete();
-//        }
         $cont_pool = TempContactsPool::findOne(['contact_id' => $contact_id, 'manager_id' => $manager_id, 'tag_id' => $tag_id]);
         if ($cont_pool) {
             $cont_pool->delete();
@@ -675,9 +674,13 @@ class Contact extends \yii\db\ActiveRecord
         if (!empty($this->middle_name))
             $contact['MiddleName'] = $this->middle_name;
         if (!empty($this->country))
-            $contact['Address[Country]'] = $this->country;
+            $contact['Country'] = $this->country;
+        if (!empty($this->city))
+            $contact['City'] = $this->city;
         if (!empty($this->is_broadcast))
             $contact['is_broadcast'] = $this->is_broadcast;
+        if (!empty($this->status))
+            $contact['status'] = $this->status;
         if (!empty($this->notification_service_id))
             $contact['notification_service_id'] = $this->notification_service_id;
         if (!empty($this->attraction_channel_id))
@@ -685,22 +688,14 @@ class Contact extends \yii\db\ActiveRecord
         if (!empty($this->language_id))
             $contact['language_id'] = $this->language_id;
 
-
         $history = ContactHistory::getByContactId($this->id);
         $contact['Comment'] = "";
         foreach ($history as $history_item) {
             $contact['Comment'] .= $history_item['datetime'] . ' ' . $history_item['text'] . PHP_EOL;
         }
-//        $history = array_map(function($history_item) {
-//            return ['datetime' => $history_item['datetime'], 'text' => $history_item['text']];
-//        },$history);
-        //$contact['Comment'] = $history;
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $contact);
-        //curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($contact));
-        //curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($contact));
-
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $response = curl_exec($ch);

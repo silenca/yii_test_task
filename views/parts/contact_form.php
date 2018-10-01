@@ -72,9 +72,16 @@ use app\models\User;
                                             </div>
                                             <br>
                                             <div class="input-group">
-                                                <label class="input-group-addon primary" for="contact_attraction_channel"><i
+                                                <label class="input-group-addon primary" for="contact_city"><i
+                                                            class="pg pg-home"></i></label>
+                                                <input type="text" id="contact_city" name="city"
+                                                       placeholder="Город/поселок проживания" class="form-control">
+                                            </div>
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_attraction_channel_id"><i
                                                             class="fa fa-fw fa-list-alt"></i></label>
-                                                <select id="contact_attraction_channel" name="attraction_channel_id" class="form-control">
+                                                <select id="contact_attraction_channel_id" name="attraction_channel_id" class="form-control select2-single">
                                                     <option class="select-placeholder" value="" selected>Канал привлечения</option>
                                                     <?php
                                                     $channels = \app\models\AttractionChannel::find()->where(['is_active'=>1])->all();
@@ -92,8 +99,8 @@ use app\models\User;
                                                     <option class="select-placeholder" value=""  selected>Статус</option>
                                                     <?php
                                                     $statuses = \app\models\Contact::$statuses;
-                                                    foreach ($statuses as  $status) {
-                                                        echo '<option value="'.$status.'">'.$status.'</option>';
+                                                    foreach ($statuses as  $key=>$value) {
+                                                        echo '<option value="'.$key.'">'.$value.'</option>';
                                                     }
                                                     ?>
                                                 </select>

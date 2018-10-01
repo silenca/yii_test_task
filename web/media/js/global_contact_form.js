@@ -39,6 +39,7 @@ var form_action_call_validate = {
                     $contact_form.modal('hide');
                     tagContactsdataTable.columns(0).search($('#contacts_list').val()).draw();
                     contactsModaldataTable.columns().search('').draw();
+                    console.log(result.data.history);
                     $contact_form.find('.history_content').append("<div class='ring_round' id='ring_round_call_id-" + result.data.id + "'>" + result.data.system_date + " - " + result.data.history + "</div>");
                 } else {
                     if ($(form).find('.google-cal-show').is(':checked')) {
@@ -298,8 +299,8 @@ function openNewContactForm(phone,attraction_channel) {
     }
     console.log(attraction_channel);
     if(attraction_channel !== undefined) {
-        $contact_form.find('#contact_attraction_channel option[value='+attraction_channel+']').prop('selected',true);
-        $contact_form.find('#contact_attraction_channel').attr('data-value',attraction_channel);
+        $contact_form.find('#contact_attraction_channel_id option[value='+attraction_channel+']').prop('selected',true);
+        $contact_form.find('#contact_attraction_channel_id').attr('data-value',attraction_channel);
     }
     bindLiveChangeContact($contact_data_form);
 }
@@ -319,8 +320,7 @@ function clearContactForm($form) {
     $form.find('input').val('');
     $form.find('#contact_manager_name').text('');
     $form.find('.contact-manager-name-cont').hide();
-    $form.find('#contact_attraction_channel option.select-placeholder').prop('selected',true);
-    $form.find('#contact_attraction_channel').data('value','');
+    // $form.find('#contact_attraction_channel_id').data('value','');
     $form.find('.select-placeholder').prop('selected', true);
     hideNotifications($form);
 }
@@ -371,50 +371,46 @@ function manageContactFormPermissions(userRole) {
 
 function fillContactData(data, $form) {
     $.each(data, function(key, value) {
+        console.log()
         switch (key) {
             case 'int_id':
                 $form.find('.contact-title').text('Контакт №' + value);
                 break;
             case 'is_deleted':
-                value == 1 ? $('.contact-deleted').show() : $('.contact-deleted').hide();
+                (value == 1) ? $('.contact-deleted').show() : $('.contact-deleted').hide();
                 break;
             case 'manager_name':
                 $('#contact_manager_name').text(value);
                 $('.contact-manager-name-cont').show();
-                break;
+            break;
             case 'tags':
                 var $tagsInput = $('#contact_tags'),
                     tags_str = [];
                 if (data.manager_tags) {
                     managerTags = data.manager_tags;
                 }
-                // var tags = [];
                 $tagsInput.tagsinput('removeAll');
                 $.each(value, function(tag_key, tag_value) {
                     $tagsInput.tagsinput('add', { id: tag_value.id, text: tag_value.name });
                     tags_str.push(tag_value.name);
-                    // tags.push({ id: tag_value.id, text: tag_value.name });
                 });
                 $tagsInput.attr('data-value', tags_str.join(','));
-                // $tagsInput.tagsinput('add', tags);
-                break;
+            break;
             case 'attraction_channel_id':
-                var input = $form.find('#contact_attraction_channel option[value="'+value+'"]');
-                if(input.length){
-                    input.prop('selected',true);
-                    $form.find('#contact_attraction_channel').data('value',value);
-                }
-                else{
-                    $form.find('#contact_attraction_channel').data('value','') ;
-                    $form.find('#contact_attraction_channel option.select-placeholder').prop('selected',true);
+                console.log(key);
+                console.log(value);
+                var input = $('#contact_attraction_channel_id option[value="'+value+'"]');
+                if($(input).length){
+                    $('#contact_attraction_channel_id option[selected]').attr('selected',false);
+                    $(input).attr('selected',true);
+                    $('#contact_attraction_channel_id').attr('data-value',value);
                 }
 
-                break;
-            // case 'manager_tags':
-            //     managerTags = value;
-            //     break;
+
+            break;
             default:
                 if (value) {
+
                     $form.find('#contact_' + key).val(value).attr('data-value', value);
                 } else {
                     $form.find('#contact_' + key).val('').attr('data-value', '');
