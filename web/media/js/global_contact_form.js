@@ -320,6 +320,7 @@ function clearContactForm($form) {
     $form.find('.contact-manager-name-cont').hide();
     $form.find('#attraction_channel option.select-placeholder').prop('selected',true);
     $form.find('#attraction_channel').data('value','');
+    $form.find('.select-placeholder').prop('selected', true);
     hideNotifications($form);
 }
 

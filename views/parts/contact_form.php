@@ -1,6 +1,8 @@
 <?php
 use app\models\User;
 ?>
+<link href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css" rel="stylesheet">
+
 <div class="modal fade slide-right modal-lg modal-sm modal-xs col-3"
     id="modalAddContact" tabindex="-1" role="dialog" aria-hidden="true">
     <input type="hidden" id="contact-id" value=""/>
@@ -113,9 +115,9 @@ use app\models\User;
                                             <br>
                                             <div class="input-group">
                                                 <?php $disabled = (Yii::$app->user->can('attraction_channel_set')?false:true);?>
-                                                <label class="input-group-addon primary" for="attraction_channel"><i
+                                                <label class="input-group-addon primary" for="contact_attraction_channel"><i
                                                             class="fa fa-fw fa-list-alt"></i></label>
-                                                <select id="attraction_channel" name="attraction_channel_id" class="form-control"
+                                                <select id="contact_attraction_channel" name="attraction_channel_id" class="form-control"
                                                  <?=$disabled?'disabled':''?>>
                                                     <option class="select-placeholder" value="" disabled selected>Канал привлечения</option>
                                                     <?php
@@ -145,7 +147,7 @@ use app\models\User;
                                             <div class="input-group">
                                                 <label class="input-group-addon primary" for="contact_language_id"><i
                                                             class="fa fa-fw fa-language"></i></label>
-                                                <select id="contact_language_id" name="language_id" class="form-control">
+                                                <select id="contact_language_id" name="language_id" class="form-control select2-single">
                                                     <?php
                                                     echo '<option class="select-placeholder" value="" selected>Язык</option>';
 
@@ -160,7 +162,7 @@ use app\models\User;
                                             <div class="input-group">
                                                 <label class="input-group-addon primary" for="contact_is_broadcast"><i
                                                             class="fa fa-fw fa-rss"></i></label>
-                                                <select id="contact_is_broadcast" name="is_broadcast" class="form-control">
+                                                <select id="contact_is_broadcast" name="is_broadcast" class="form-control select2-single">
                                                     <option class="select-placeholder" value=""  selected>Рассылка</option>
                                                     <?php
                                                     $broadcasts = \app\models\Contact::$broadcast;
@@ -174,8 +176,7 @@ use app\models\User;
                                             <div class="input-group">
                                                 <label class="input-group-addon primary" for="contact_notification_service_id"><i
                                                             class="fa fa-fw fa-tty"></i></label>
-                                                <select id="contact_notification_service_id" name="notification_service_id" class="form-control">
-                                                    <option class="select-placeholder" value="" selected>Способ оповещения</option>
+                                                <select id="contact_notification_service_id" name="notification_service_id" class="form-control select2-single">
                                                     <?php
                                                     $services = \app\models\ContactNotificationService::find()->all();
                                                     foreach ($services as  $service) {
