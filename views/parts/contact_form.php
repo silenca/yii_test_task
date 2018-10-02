@@ -79,6 +79,13 @@ use app\models\User;
                                             </div>
                                             <br>
                                             <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_birthday"><i
+                                                            class="pg pg-home"></i></label>
+                                                <input type="text" id="contact_birthday" name="birthday"
+                                                       placeholder="Дата рождения" class="form-control">
+                                            </div>
+                                            <br>
+                                            <div class="input-group">
                                                 <label class="input-group-addon primary" for="contact_attraction_channel_id"><i
                                                             class="fa fa-fw fa-list-alt"></i></label>
                                                 <select id="contact_attraction_channel_id" name="attraction_channel_id" class="form-control select2-single">
@@ -140,6 +147,7 @@ use app\models\User;
                                                 <label class="input-group-addon primary" for="contact_notification_service_id"><i
                                                             class="fa fa-fw fa-tty"></i></label>
                                                 <select id="contact_notification_service_id" name="notification_service_id" class="form-control select2-single">
+                                                    <option class="select-placeholder" value=""  selected>Способ оповещения</option>
                                                     <?php
                                                     $services = \app\models\ContactNotificationService::find()->all();
                                                     foreach ($services as  $service) {

@@ -279,8 +279,7 @@ class ContactsController extends BaseController
 //                $contact->setTags($contact_form->tags);
                 $contact->attributes = $contact_form->attributes;
                 $contact->remove_tags = true;
-//                var_dump($contact_form);
-//                var_dump($contact);
+
 
                 if ($contact->edit([])) {
                     $contact->sendToCRM();
@@ -320,6 +319,7 @@ class ContactsController extends BaseController
                 $contact->city = $post['city'];
                 $contact->int_id = $post['internal_no'];
                 $contact->status = $post['status'];
+                $contact->birthday = $post['birthday'];
 
                 if ($contact->save()) {
                     $contact_history = new ContactHistory();

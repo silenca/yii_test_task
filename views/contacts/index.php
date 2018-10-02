@@ -22,6 +22,11 @@ $this->params['active'] = 'contact';
     /**/
     /*}*/
 </style>
+//TODO change inline to assets
+<script src="https://cdn.jsdelivr.net/npm/gijgo@1.9.10/js/gijgo.min.js" type="text/javascript"></script>
+<link href="https://cdn.jsdelivr.net/npm/gijgo@1.9.10/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+
+
 <div class="content">
     <div class="container-fluid container-fixed-lg bg-white">
         <ul class="breadcrumb">

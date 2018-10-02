@@ -38,7 +38,7 @@ class ContactForm extends Model
 
     var $status;
     var $attraction_channel_id;
-
+    var $birthday;
     var $notification_service_id;
     var $language_id;
     var $is_broadcast;
@@ -56,6 +56,7 @@ class ContactForm extends Model
             'country',
             'city',
             'attraction_channel_id',
+            'birthday',
             'is_broadcast',
             'language_id',
             'notification_service_id',
@@ -90,7 +91,7 @@ class ContactForm extends Model
             [['emails'], 'emailArray'],
 
             [['name', 'surname'], 'match', 'pattern' => "/^[\s\p{Cyrillic}\-()]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
-            [['name', 'surname', 'country', 'city', 'middle_name'], 'string', 'length' => [1, 150],
+            [['name', 'surname', 'country', 'city', 'birthday', 'middle_name'], 'string', 'length' => [1, 150],
                 'tooShort' => 'Ошибка: поле {attribute} должно содержать не менее {min} символов',
                 'tooLong' => 'Ошибка: поле {attribute} должно содержать не более {max} символов'],
             [['middle_name'], 'match', 'pattern' => "/^[\s\p{Cyrillic}\-()]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
@@ -100,7 +101,7 @@ class ContactForm extends Model
             [[
                 'first_phone', 'second_phone', 'third_phone', 'fourth_phone',
                 'first_email', 'second_email',
-                'middle_name', 'attraction_channel_id','status', 'is_broadcast','notification_service_id', 'language_id', 'country', 'city'
+                'middle_name', 'attraction_channel_id','status', 'birthday', 'is_broadcast','notification_service_id', 'language_id', 'country', 'city'
             ], 'default'],
         ];
     }

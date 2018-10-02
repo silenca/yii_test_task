@@ -24,6 +24,7 @@ use yii\db\Query;
  * @property string $country
  * @property string $city
  * @property string $status
+ * @property string $birthday
  * @property integer $manager_id
  * @property integer $is_deleted
  * @property integer $attraction_channel_id
@@ -49,6 +50,7 @@ class Contact extends \yii\db\ActiveRecord
         'first_email',
         'second_email',
         'country',
+        'birthday',
         'city',
         'status',
         'manager_id',
@@ -107,7 +109,7 @@ class Contact extends \yii\db\ActiveRecord
         return [
             [['int_id'], 'required'],
             [['int_id', 'manager_id', 'notification_service_id', 'language_id', 'attraction_channel_id', 'status'], 'integer'],
-            [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'country', 'city'], 'string', 'max' => 255],
+            [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'birthday', 'country', 'city'], 'string', 'max' => 255],
             [['name', 'surname', 'middle_name'], 'string', 'max' => 150],
             [['first_email', 'second_email'], 'string', 'max' => 255],
             [['notification_service_id'], 'exist',  'targetClass' => ContactNotificationService::className(), 'targetAttribute' => ['notification_service_id' => 'id']],
@@ -148,6 +150,7 @@ class Contact extends \yii\db\ActiveRecord
             'first_email',
             'second_email',
             'country',
+            'birthday',
             'city',
             'is_broadcast',
             'language_id',
@@ -170,12 +173,13 @@ class Contact extends \yii\db\ActiveRecord
             'emails' => ['label' => 'Email', 'have_search' => true, 'orderable' => false, 'db_cols' => ['first_email', 'second_email']],
             'tags' => ['label' => 'Теги', 'have_search' => true, 'orderable' => false],
             'country' => ['label' => 'Страна', 'have_search' => true, 'orderable' => true],
+            'birthday'=> ['label' => 'Дата рождения', 'have_search' => true, 'orderable' => true],
             'city' => ['label' => 'Город проживания', 'have_search' => true, 'orderable' => true],
             'attraction_channel_id' => ['label' => 'Канал привлечения', 'have_search' => true, 'orderable' => true],
             'is_broadcast' => ['label' => 'Рассылка', 'have_search' => true, 'orderable' => true],
             'notification_service_id' => ['label' => 'Способ оповещения', 'have_search' => true, 'orderable' => true],
-            'language_id' => ['label' => 'Язык', 'have_search' => true, 'orderable' => true],
-            'status' => ['label' => 'Статус', 'have_search' => true, 'orderable' => true],
+            'language_id' => ['label' => 'Язык', 'have_search' => false, 'orderable' => true],
+            'status' => ['label' => 'Статус', 'have_search' => false, 'orderable' => true],
             'delete_button' => ['label' => 'Удалить', 'have_search' => false, 'orderable' => false],
         ];
         if (!Yii::$app->user->can('delete_contact')) {
@@ -679,6 +683,8 @@ class Contact extends \yii\db\ActiveRecord
             $contact['City'] = $this->city;
         if (!empty($this->is_broadcast))
             $contact['is_broadcast'] = $this->is_broadcast;
+        if (!empty($this->birthday))
+            $contact['birthday'] = $this->birthday;
         if (!empty($this->status))
             $contact['status'] = $this->status;
         if (!empty($this->notification_service_id))
