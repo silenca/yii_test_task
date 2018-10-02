@@ -15,13 +15,13 @@ if (Yii::$app->user->can('contracts')) {
 $this->title = "Контакты";
 $this->params['active'] = 'contact';
 ?>
-<style>
-    /*.cs-select{*/
-        /*left:45%!important;*/
-        /*width:500px!important;*/
-    /**/
-    /*}*/
-</style>
+<!--<style>-->
+<!--    .cs-select{-->
+<!--        left:45%!important;-->
+<!--        width:500px!important;-->
+<!---->
+<!--    }-->
+<!--</style>-->
 //TODO change inline to assets
 <script src="https://cdn.jsdelivr.net/npm/gijgo@1.9.10/js/gijgo.min.js" type="text/javascript"></script>
 <link href="https://cdn.jsdelivr.net/npm/gijgo@1.9.10/css/gijgo.min.css" rel="stylesheet" type="text/css" />
@@ -82,127 +82,128 @@ $this->params['active'] = 'contact';
                 </div>
                 <div class="clearfix"></div>
             </div>
-            <div class="panel-body">
-                <table class="table table-hover" id="contacts-table">
-                    <thead>
-                    <tr>
-                        <?php foreach ($table_cols as $col_key => $col_val): ?>
-                            <?php if ($col_key == 'Связать'): ?>
-                                <th></th>
-                            <?php else: ?>
-                                    <th><?php echo($col_val['label']); ?></th>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </tr>
-                    </thead>
-                    <thead>
-                    <tr>
-                        <?php foreach ($filter_cols as $col_key => $col_val): ?>
-                            <?php if (!in_array($col_key, $hide_columns)): ?>
-                                <?php if ($col_val['have_search']): ?>
-                                    <?php if ($col_key == 'attraction_channel_id'):?>
-                                        <td>
-                                            <select data-column="<?php echo($col_key); ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
-                                                <?php if(!isset($col_val['value'])):?>
-                                                    <option class="select-placeholder" value="" selected>Канал привлечения</option>
-                                                <?php else:?>
-                                                    <option class="select-placeholder" value="">Канал привлечения</option>
-                                                <?php endif;?>
-                                                <?php
-                                                $channels = \app\models\AttractionChannel::find()->all();
-                                                foreach ($channels as  $channel) {
-                                                    if(isset($col_val['value']) && ($col_val['value'] == $channel->name))
-                                                        echo '<option value="'.$channel->id.'" selected>'.$channel->name.'</option>';
-                                                    else
-                                                        echo '<option value="'.$channel->id.'">'.$channel->name.'</option>';
 
-                                                }
-                                                ?>
-                                            </select>
-                                        </td>
-                                    <?php elseif ($col_key == 'notification_service_id'):?>
-                                        <td>
-                                            <select data-column="<?php echo($col_key); ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
-                                                <?php if(!isset($col_val['value'])):?>
-                                                    <option class="select-placeholder" value="" selected>Способ Оповещения</option>
-                                                <?php else:?>
-                                                    <option class="select-placeholder"  selected value="">Способ Оповещения</option>
-                                                <?php endif;?>
-                                                <?php
-                                                $services = \app\models\ContactNotificationService::find()->all();
-                                                foreach ($services as $service) {
-                                                    if(isset($col_val['value']) && ($col_val['value'] == $key))
-                                                        echo '<option value="'.$service->id.'" >'.$service->name.'</option>';
-                                                    else
-                                                        echo '<option value="'.$service->id.'">'.$service->name.'</option>';
-
-                                                }
-                                                ?>
-                                            </select>
-                                        </td>
-                                    <?php elseif ($col_key == 'language_id'):?>
-                                        <td>
-                                            <select data-column="<?php echo($col_key); ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
-                                                <?php if(!isset($col_val['value'])):?>
-                                                <option class="select-placeholder" value="" selected>Язык</option>
-                                                <?php else:?>
-                                                    <option class="select-placeholder"  selected value="">Язык</option>
-                                                <?php endif;?>
-                                                <?php
-                                                $languages = \app\models\ContactLanguage::find()->all();
-                                                foreach ($languages as $language) {
-
-                                                        echo '<option value="'.$language->id.'">'.$language->name.'</option>';
-
-                                                }
-                                                ?>
-                                            </select>
-                                        </td>
-                                    <?php elseif ($col_key == 'status'):?>
-                                        <td>
-                                            <select data-column="<?php echo($col_key); ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
-                                                <?php if(!isset($col_val['value'])):?>
-                                                    <option class="select-placeholder" value="" selected>Статус</option>
-                                                <?php else:?>
-                                                    <option class="select-placeholder"  selected value="">Статус</option>
-                                                <?php endif;?>
-                                                <?php
-                                                $statuses = \app\models\Contact::$statuses;
-                                                foreach ($statuses as $key=>$value) {
-                                                    if(isset($col_val['value']) && ($col_val['value'] == $key))
-                                                        echo '<option value="'.$key.'" >'.$value.'</option>';
-                                                    else
-                                                        echo '<option value="'.$key.'">'.$value.'</option>';
-
-                                                }
-                                                ?>
-                                            </select>
-                                        </td>
-                                    <?php elseif ($col_key == 'is_broadcast'):?>
-                                        <td>
-
-                                        </td>
-
-                                    <?php else: ?>
-                                        <td>
-                                            <input type="text" data-column="<?php echo($col_key); ?>" class="form-control search-input-text" <?=(isset($col_val['value']))?'value="'.$col_val['value'].'"':""?>/>
-                                        </td>
-                                     <?php endif;?>
-                                <?php else: ?>
-                                    <td>
-                                        <input type="text" data-column="<?php echo($col_key); ?>" class="form-control search-input-text" <?=(isset($col_val['value']))?'value="'.$col_val['value'].'"':""?>/>
-                                    </td>
-                                <?php endif; ?>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
         </div>
         <!-- END PANEL -->
+        <div class="table-responsive">
+            <table class="table" id="contacts-table">
+                <thead>
+                <tr>
+                    <?php foreach ($table_cols as $col_key => $col_val): ?>
+                        <?php if ($col_key == 'Связать'): ?>
+                            <th></th>
+                        <?php else: ?>
+                            <th><?php echo($col_val['label']); ?></th>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </tr>
+                </thead>
+<!--                <thead>-->
+<!--                <tr>-->
+<!--                    --><?php //foreach ($filter_cols as $col_key => $col_val): ?>
+<!--                        --><?php //if (!in_array($col_key, $hide_columns)): ?>
+<!--                            --><?php //if ($col_val['have_search']): ?>
+<!--                                --><?php //if ($col_key == 'attraction_channel_id'):?>
+<!--                                    <td>-->
+<!--                                        <select data-column="--><?php //echo($col_key); ?><!--" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">-->
+<!--                                            --><?php //if(!isset($col_val['value'])):?>
+<!--                                                <option class="select-placeholder" value="" selected>Канал привлечения</option>-->
+<!--                                            --><?php //else:?>
+<!--                                                <option class="select-placeholder" value="">Канал привлечения</option>-->
+<!--                                            --><?php //endif;?>
+<!--                                            --><?php
+//                                            $channels = \app\models\AttractionChannel::find()->all();
+//                                            foreach ($channels as  $channel) {
+//                                                if(isset($col_val['value']) && ($col_val['value'] == $channel->name))
+//                                                    echo '<option value="'.$channel->id.'" selected>'.$channel->name.'</option>';
+//                                                else
+//                                                    echo '<option value="'.$channel->id.'">'.$channel->name.'</option>';
+//
+//                                            }
+//                                            ?>
+<!--                                        </select>-->
+<!--                                    </td>-->
+<!--                                --><?php //elseif ($col_key == 'notification_service_id'):?>
+<!--                                    <td>-->
+<!--                                        <select data-column="--><?php //echo($col_key); ?><!--" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">-->
+<!--                                            --><?php //if(!isset($col_val['value'])):?>
+<!--                                                <option class="select-placeholder" value="" selected>Способ Оповещения</option>-->
+<!--                                            --><?php //else:?>
+<!--                                                <option class="select-placeholder"  selected value="">Способ Оповещения</option>-->
+<!--                                            --><?php //endif;?>
+<!--                                            --><?php
+//                                            $services = \app\models\ContactNotificationService::find()->all();
+//                                            foreach ($services as $service) {
+//                                                if(isset($col_val['value']) && ($col_val['value'] == $key))
+//                                                    echo '<option value="'.$service->id.'" >'.$service->name.'</option>';
+//                                                else
+//                                                    echo '<option value="'.$service->id.'">'.$service->name.'</option>';
+//
+//                                            }
+//                                            ?>
+<!--                                        </select>-->
+<!--                                    </td>-->
+<!--                                --><?php //elseif ($col_key == 'language_id'):?>
+<!--                                    <td>-->
+<!--                                        <select data-column="--><?php //echo($col_key); ?><!--" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">-->
+<!--                                            --><?php //if(!isset($col_val['value'])):?>
+<!--                                                <option class="select-placeholder" value="" selected>Язык</option>-->
+<!--                                            --><?php //else:?>
+<!--                                                <option class="select-placeholder"  selected value="">Язык</option>-->
+<!--                                            --><?php //endif;?>
+<!--                                            --><?php
+//                                            $languages = \app\models\ContactLanguage::find()->all();
+//                                            foreach ($languages as $language) {
+//
+//                                                echo '<option value="'.$language->id.'">'.$language->name.'</option>';
+//
+//                                            }
+//                                            ?>
+<!--                                        </select>-->
+<!--                                    </td>-->
+<!--                                --><?php //elseif ($col_key == 'status'):?>
+<!--                                    <td>-->
+<!--                                        <select data-column="--><?php //echo($col_key); ?><!--" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">-->
+<!--                                            --><?php //if(!isset($col_val['value'])):?>
+<!--                                                <option class="select-placeholder" value="" selected>Статус</option>-->
+<!--                                            --><?php //else:?>
+<!--                                                <option class="select-placeholder"  selected value="">Статус</option>-->
+<!--                                            --><?php //endif;?>
+<!--                                            --><?php
+//                                            $statuses = \app\models\Contact::$statuses;
+//                                            foreach ($statuses as $key=>$value) {
+//                                                if(isset($col_val['value']) && ($col_val['value'] == $key))
+//                                                    echo '<option value="'.$key.'" >'.$value.'</option>';
+//                                                else
+//                                                    echo '<option value="'.$key.'">'.$value.'</option>';
+//
+//                                            }
+//                                            ?>
+<!--                                        </select>-->
+<!--                                    </td>-->
+<!--                                --><?php //elseif ($col_key == 'is_broadcast'):?>
+<!--                                    <td>-->
+<!---->
+<!--                                    </td>-->
+<!---->
+<!--                                --><?php //else: ?>
+<!--                                    <td>-->
+<!--                                        <input type="text" data-column="--><?php //echo($col_key); ?><!--" class="form-control search-input-text" --><?//=(isset($col_val['value']))?'value="'.$col_val['value'].'"':""?><!--/>-->
+<!--                                    </td>-->
+<!--                                --><?php //endif;?>
+<!--                            --><?php //else: ?>
+<!--                                <td>-->
+<!--                                    <input type="text" data-column="--><?php //echo($col_key); ?><!--" class="form-control search-input-text" --><?//=(isset($col_val['value']))?'value="'.$col_val['value'].'"':""?><!--/>-->
+<!--                                </td>-->
+<!--                            --><?php //endif; ?>
+<!--                        --><?php //endif; ?>
+<!--                    --><?php //endforeach; ?>
+<!--                </tr>-->
+<!--                </thead>-->
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

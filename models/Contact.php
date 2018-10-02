@@ -178,8 +178,8 @@ class Contact extends \yii\db\ActiveRecord
             'attraction_channel_id' => ['label' => 'Канал привлечения', 'have_search' => true, 'orderable' => true],
             'is_broadcast' => ['label' => 'Рассылка', 'have_search' => true, 'orderable' => true],
             'notification_service_id' => ['label' => 'Способ оповещения', 'have_search' => true, 'orderable' => true],
-            'language_id' => ['label' => 'Язык', 'have_search' => false, 'orderable' => true],
-            'status' => ['label' => 'Статус', 'have_search' => false, 'orderable' => true],
+            'language_id' => ['label' => 'Язык', 'have_search' => true, 'orderable' => true],
+            'status' => ['label' => 'Статус', 'have_search' => true, 'orderable' => true],
             'delete_button' => ['label' => 'Удалить', 'have_search' => false, 'orderable' => false],
         ];
         if (!Yii::$app->user->can('delete_contact')) {
