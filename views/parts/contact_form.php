@@ -1,6 +1,8 @@
 <?php
 use app\models\User;
 ?>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
 <link href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css" rel="stylesheet">
 
 <div class="modal fade slide-right modal-lg modal-sm modal-xs col-3"
@@ -78,12 +80,13 @@ use app\models\User;
                                                        placeholder="Город/поселок проживания" class="form-control">
                                             </div>
                                             <br>
-                                            <div class="input-group">
+                                            <div class="input-group datepicker-content">
                                                 <label class="input-group-addon primary" for="contact_birthday"><i
                                                             class="pg pg-home"></i></label>
-                                                <input type="text" id="contact_birthday" name="birthday"
-                                                       placeholder="Дата рождения" class="form-control">
+                                                <input type="text" width="276"  id="contact_birthday" name="birthday"
+                                                       placeholder="Дата рождения" class="form-control ">
                                             </div>
+
                                             <br>
                                             <div class="input-group">
                                                 <label class="input-group-addon primary" for="contact_attraction_channel_id"><i

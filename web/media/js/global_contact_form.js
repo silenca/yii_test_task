@@ -179,7 +179,14 @@ $(function() {
         locale: 'ru'
         //minDate: today
     });
+    // $('#contact_birthday').clear();
 
+    $('#contact_birthday').datetimepicker({
+        locale: 'ru',
+        format: "YYYY-MM-DD",
+        enabledHours: false,
+        //minDate: today
+    });
     $('.google-cal-show').on('change', function() {
         if ($(this).is(':checked')) {
             processGApiAuth();

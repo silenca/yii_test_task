@@ -174,12 +174,13 @@ $(function() {
     var date = new Date();
     var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
+
+
     $('.datepicker').datetimepicker({
         locale: 'ru'
         //minDate: today
     });
-
-    $('.google-cal-show').on('change', function() {
+    ('.google-cal-show').on('change', function() {
         if ($(this).is(':checked')) {
             processGApiAuth();
         }
