@@ -304,7 +304,7 @@ function openNewContactForm(phone,attraction_channel) {
         $contact_form.find('#contact_phones').val(phone);
         $contact_form.find('#contact_phones').attr('data-value',phone).trigger('blur');
     }
-    console.log(attraction_channel);
+    // console.log(attraction_channel);
     if(attraction_channel !== undefined) {
         $contact_form.find('#contact_attraction_channel_id option[value='+attraction_channel+']').prop('selected',true);
         $contact_form.find('#contact_attraction_channel_id').attr('data-value',attraction_channel);
@@ -320,15 +320,16 @@ function openNewContactFormWithPhone(phone) {
 }
 
 function clearContactForm($form) {
-    $form.find('#contact-id').val('');
+    $form.find('#contact-id').val('').attr('data-value','');
     $form.find('.contact-title').text('Новый контакт');
     $form.find('.history_content').empty();
     $form.find('.script_content').empty();
-    $form.find('input').val('');
-    $form.find('#contact_manager_name').text('');
+    $form.find('input').val('').attr('data-value','');
+    $form.find('#contact_manager_name').text('').attr('data-value','');
     $form.find('.contact-manager-name-cont').hide();
     // $form.find('#contact_attraction_channel_id').data('value','');
-    $form.find('.select-placeholder').prop('selected', true);
+    $form.find('.select-placeholder').prop('selected', true).closest('select').attr('data-value','');
+    contact_bind_inputs = {};
     hideNotifications($form);
 }
 
