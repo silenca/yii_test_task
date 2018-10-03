@@ -32,6 +32,8 @@ class BaseController extends Controller
             if (!Yii::$app->user->getIsGuest()) {
                 $user_role = Yii::$app->user->identity->getUserRole();
                 $this->view->params['user_role'] = $user_role;
+                $user_id = Yii::$app->user->identity->getId();
+                $this->view->params['user_id'] = $user_id;
             }
             if (Yii::$app->user->can('use_archived_tags')) {
                 $use_archive_tags = Yii::$app->user->identity->getSetting('use_archive_tags');

@@ -33,6 +33,7 @@ use yii\db\Query;
  * @property ContactNotificationService $notificationService
  * @property AttractionChannel $attractionChannel
  * @property ContactLanguage $language
+ * @property User $manager
  * @property boolean $is_broadcast
  */
 class Contact extends \yii\db\ActiveRecord
@@ -114,6 +115,7 @@ class Contact extends \yii\db\ActiveRecord
             [['first_email', 'second_email'], 'string', 'max' => 255],
             [['notification_service_id'], 'exist',  'targetClass' => ContactNotificationService::className(), 'targetAttribute' => ['notification_service_id' => 'id']],
             [['attraction_channel_id'], 'exist', 'targetClass' => AttractionChannel::className(), 'targetAttribute' => ['attraction_channel_id' => 'id']],
+//            [['manager_id'], 'exist', 'targetClass' => User::className(), 'targetAttribute' => ['manager_id' => 'id']],
             [['language_id'], 'exist', 'targetClass' => ContactLanguage::className(), 'targetAttribute' => ['language_id' => 'id']],
             [['sended_crm'], 'safe'],
             [['is_broadcast'], 'boolean','trueValue' => 1, 'falseValue' => 0],
@@ -156,7 +158,8 @@ class Contact extends \yii\db\ActiveRecord
             'language_id',
             'attraction_channel_id',
             'notification_service_id',
-            'status'
+            'status',
+            'manager_id'
         ];
     }
 
@@ -180,6 +183,7 @@ class Contact extends \yii\db\ActiveRecord
             'notification_service_id' => ['label' => 'Способ оповещения', 'have_search' => true, 'orderable' => true],
             'language_id' => ['label' => 'Язык', 'have_search' => true, 'orderable' => true],
             'status' => ['label' => 'Статус', 'have_search' => true, 'orderable' => true],
+            'manager_id' => ['label' => 'Ответственный', 'have_search' => true, 'orderable' => true],
             'delete_button' => ['label' => 'Удалить', 'have_search' => false, 'orderable' => false],
         ];
         if (!Yii::$app->user->can('delete_contact')) {
@@ -402,7 +406,9 @@ class Contact extends \yii\db\ActiveRecord
         $transaction = Yii::$app->db->beginTransaction();
 //        $call = new Call();
         try {
-            $this->save();
+            if(!$this->save())
+                return false;
+
             if (isset($related['tags'])) {
                 $this->tags = $related['tags'];
             }

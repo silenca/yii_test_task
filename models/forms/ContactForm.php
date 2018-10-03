@@ -45,6 +45,7 @@ class ContactForm extends Model
 
     var $edited_id;
     var $conflict_id;
+    var $manager_id;
 
     public static function getAllCols() {
         return [
@@ -61,6 +62,7 @@ class ContactForm extends Model
             'language_id',
             'notification_service_id',
             'status',
+            'manager_id'
         ];
     }
 
@@ -101,7 +103,7 @@ class ContactForm extends Model
             [[
                 'first_phone', 'second_phone', 'third_phone', 'fourth_phone',
                 'first_email', 'second_email',
-                'middle_name', 'attraction_channel_id','status', 'birthday', 'is_broadcast','notification_service_id', 'language_id', 'country', 'city'
+                'middle_name', 'attraction_channel_id','manager_id','status', 'birthday', 'is_broadcast','notification_service_id', 'language_id', 'country', 'city'
             ], 'default'],
         ];
     }
@@ -134,7 +136,8 @@ class ContactForm extends Model
             'middle_name' => 'Отчество',
             'phones' => 'Номер телефона',
             'emails' => 'Email',
-            'attraction_channel_id' => 'Канал привлечения'
+            'attraction_channel_id' => 'Канал привлечения',
+            'manager_id' => 'Ответсвенный'
         ];
     }
 

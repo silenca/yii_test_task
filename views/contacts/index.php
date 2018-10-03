@@ -3,6 +3,7 @@
 use app\assets\ContactAsset;
 use app\assets\GoogleApiAsset;
 use app\assets\TableAsset;
+use app\models\User;
 
 
 TableAsset::register($this);
@@ -113,6 +114,25 @@ $this->params['active'] = 'contact';
                                                             else
                                                                 echo '<option value="'.$channel->id.'">'.$channel->name.'</option>';
 
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                </td>
+                                            <?php elseif ($col_key == 'manager_id'):?>
+                                                <td>
+                                                    <select data-column="<?php echo($col_key); ?>" class="form-control cs-skin-slide search-input-select" data-init-plugin="form-input">
+                                                        <?php if(!isset($col_val['value'])):?>
+                                                            <option class="select-placeholder" value="" selected>Ответственный</option>
+                                                        <?php else:?>
+                                                            <option class="select-placeholder"  selected value="">Ответственный</option>
+                                                        <?php endif;?>
+                                                        <?php
+                                                        $users = User::find()->where(['role'=>5])->all();
+                                                        foreach ($users as $user) {
+                                                            if(isset($col_val['value']) && ($col_val['value'] == $key))
+                                                                echo '<option value="'.$user->id.'" >'.$user->firstname.' '.$user->lastname.'</option>';
+                                                            else
+                                                                echo '<option value="'.$user->id.'">'.$user->firstname.' '.$user->lastname.'</option>';
                                                         }
                                                         ?>
                                                     </select>

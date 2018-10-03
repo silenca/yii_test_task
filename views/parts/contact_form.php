@@ -103,6 +103,20 @@ use app\models\User;
                                             </div>
                                             <br>
                                             <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_manager_id"><i
+                                                            class="fa fa-fw fa-list-alt"></i></label>
+                                                <select id="contact_manager_id" name="manager_id" class="form-control select2-single">
+                                                    <option class="select-placeholder" value="" disabled selected>Ответственный</option>
+                                                    <?php
+                                                    $users = User::find()->where(['role'=>5])->all();
+                                                    foreach ($users as  $user) {
+                                                        echo '<option value="'.$user->id.'">'.$user->firstname.' '.$user->lastname.'</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <br>
+                                            <div class="input-group">
                                                 <label class="input-group-addon primary" for="contact_status"><i
                                                             class="fa fa-fw fa-list-alt"></i></label>
                                                 <select id="contact_status" name="status" class="form-control">

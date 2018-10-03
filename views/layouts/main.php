@@ -269,6 +269,7 @@ else {
         <?php if (!Yii::$app->user->isGuest): ?>
             <script type="text/javascript">
                 var userRole = <?= json_encode($this->params['user_role']); ?>;
+                var userId = <?= $this->params['user_id']; ?>;
             </script>
         <?php endif; ?>
 

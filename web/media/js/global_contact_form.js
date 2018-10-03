@@ -103,7 +103,8 @@ $(function() {
     $contact_form = $('#modalAddContact');
     $contact_data_form = $contact_form.find('.contact-data');
 
-    $('input[type=text], input[type=email],select', $contact_data_form).on('blur', function () {
+    $('input[type=text], input[type=email], select', $contact_data_form).on('blur', function () {
+        console.log('change')
         $(this).data('value', $(this).val());
         checkChangesContact($(this).attr('name'), $(this).data('value'), $contact_form);
     });
@@ -352,6 +353,11 @@ function buildContactForm(id, $form, callback) {
 
             manageContactFormPermissions(userRole);
 
+            if(userRole!= 'admin' && userRole!='supervisor' && data['manager_id'] != userId) {
+                $('#contact_manager_id').prop('disabled',true);
+            } else {
+                $('#contact_manager_id').prop('disabled',false);
+            }
             callback();
         }
     });
@@ -405,17 +411,35 @@ function fillContactData(data, $form) {
                 $tagsInput.attr('data-value', tags_str.join(','));
             break;
             case 'attraction_channel_id':
-                console.log(key);
-                console.log(value);
                 var input = $('#contact_attraction_channel_id option[value="'+value+'"]');
                 if($(input).length){
-                    $('#contact_attraction_channel_id option[selected]').attr('selected',false);
-                    $(input).attr('selected',true);
+                    $('#contact_attraction_channel_id option[selected]').prop('selected',false);
+                    $(input).prop('selected',true);
                     $('#contact_attraction_channel_id').attr('data-value',value);
+                } else {
+                    $('#contact_attraction_channel_id .select-placeholder').prop('selected', true)
                 }
-
-
             break;
+            case 'manager_id':
+                var input = $('#contact_manager_id option[value="'+value+'"]');
+                if($(input).length){
+                    $('#contact_manager_id option[selected]').prop('selected',false);
+                    $(input).attr('selected',true);
+                    $('#contact_manager_id').attr('data-value',value);
+                } else {
+                    $('#contact_manager_id .select-placeholder').prop('selected', true)
+                }
+                break;
+            case 'status':
+                var input = $('#contact_status option[value="'+value+'"]');
+                if($(input).length){
+                    $('#contact_status option[selected]').prop('selected',false);
+                    $(input).attr('selected',true);
+                    $('#contact_status').attr('data-value',value);
+                } else {
+                    $('#contact_status .select-placeholder').prop('selected', true)
+                }
+                break;
             default:
                 if (value) {
 
@@ -436,6 +460,7 @@ function checkChangesContact(name, value, $form) {
 }
 
 function editContact($form, name, value) {
+    console.log('edit');
     var data = {};
     $.each(contact_bind_inputs, function (key, value) {
         if (value != "undefined")

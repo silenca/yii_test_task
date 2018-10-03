@@ -59,6 +59,7 @@ class ContactTableWidget extends Widget {
             $data[$i][] = (isset($contact->notification_service_id) ? $contact->notificationService->name : '');
             $data[$i][] = $contact->language->slug;
             $data[$i][] = (isset($contact->status)? Contact::$statuses[$contact->status] : '');
+            $data[$i][] = (isset($contact->manager_id)? $contact->manager->firstname.' '.$contact->manager->lastname : '');
 
             if (Yii::$app->user->can('delete_contact')) {
                 $data[$i][] = '<div class="col-md-offset-3 remove"><i class="fa fa-remove"></i></div>';

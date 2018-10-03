@@ -269,9 +269,18 @@ class ContactsController extends BaseController
                     if ($contact->is_deleted) {
                         $contact->is_deleted = 0;
                     }
+
+                    if($contact->manager_id != Yii::$app->user->identity->getId() &&
+                        !Yii::$app->user->can('supervisor') && !Yii::$app->user->can('admin')) {
+                        $contact_form->manager_id = $contact->manager_id;
+                    }
                 } else {
                     $contact = new Contact();
-                    $contact->manager_id = Yii::$app->user->identity->id;
+                    if(!isset($post['manager_id'])
+                        || ($contact->manager_id != Yii::$app->user->identity->getId() &&
+                            !Yii::$app->user->can('supervisor') && !Yii::$app->user->can('admin'))) {
+                        $contact_form->manager_id = Yii::$app->user->identity->id;
+                    }
                 }
 
                 unset($post['_csrf']);
