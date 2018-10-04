@@ -109,15 +109,16 @@ class Contact extends \yii\db\ActiveRecord
     {
         return [
             [['int_id'], 'required'],
-            [['int_id', 'manager_id', 'notification_service_id', 'language_id', 'attraction_channel_id', 'status'], 'integer'],
+            [['int_id', 'manager_id', 'notification_service_id', 'language_id', 'attraction_channel_id'], 'integer'],
             [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'birthday', 'country', 'city'], 'string', 'max' => 255],
             [['name', 'surname', 'middle_name'], 'string', 'max' => 150],
             [['first_email', 'second_email'], 'string', 'max' => 255],
+//            [['status'],]
             [['notification_service_id'], 'exist',  'targetClass' => ContactNotificationService::className(), 'targetAttribute' => ['notification_service_id' => 'id']],
             [['attraction_channel_id'], 'exist', 'targetClass' => AttractionChannel::className(), 'targetAttribute' => ['attraction_channel_id' => 'id']],
 //            [['manager_id'], 'exist', 'targetClass' => User::className(), 'targetAttribute' => ['manager_id' => 'id']],
             [['language_id'], 'exist', 'targetClass' => ContactLanguage::className(), 'targetAttribute' => ['language_id' => 'id']],
-            [['sended_crm'], 'safe'],
+            [['sended_crm','status'], 'safe'],
             [['is_broadcast'], 'boolean','trueValue' => 1, 'falseValue' => 0],
 
         ];

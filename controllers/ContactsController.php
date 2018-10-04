@@ -281,6 +281,9 @@ class ContactsController extends BaseController
                             !Yii::$app->user->can('supervisor') && !Yii::$app->user->can('admin'))) {
                         $contact_form->manager_id = Yii::$app->user->identity->id;
                     }
+                    else {
+                        $contact_form->manager_id = Yii::$app->user->identity->id;
+                    }
                 }
 
                 unset($post['_csrf']);
