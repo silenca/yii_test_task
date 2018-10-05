@@ -413,31 +413,34 @@ function fillContactData(data, $form) {
             case 'attraction_channel_id':
                 var input = $('#contact_attraction_channel_id option[value="'+value+'"]');
                 if($(input).length){
-                    $('#contact_attraction_channel_id option[selected]').prop('selected',false);
-                    $(input).prop('selected',true);
+                    // $('#contact_attraction_channel_id option[selected]').prop('selected',false);
+                    // $(input).prop('selected',true);
+                    $('#contact_attraction_channel_id').val(value);
                     $('#contact_attraction_channel_id').attr('data-value',value);
                 } else {
-                    $('#contact_attraction_channel_id .select-placeholder').prop('selected', true)
+                    // $('#contact_attraction_channel_id .select-placeholder').prop('selected', true)
+                    $('#contact_attraction_channel_id').val('');
+                    $('#contact_attraction_channel_id').attr('data-value','');
                 }
             break;
             case 'manager_id':
                 var input = $('#contact_manager_id option[value="'+value+'"]');
                 if($(input).length){
-                    $('#contact_manager_id option[selected]').prop('selected',false);
-                    $(input).attr('selected',true);
+                    $('#contact_manager_id').val(value);
                     $('#contact_manager_id').attr('data-value',value);
                 } else {
-                    $('#contact_manager_id .select-placeholder').prop('selected', true)
+                    $('#contact_manager_id').val('')
+                    $('#contact_manager_id').attr('data-value','');
                 }
                 break;
             case 'status':
                 var input = $('#contact_status option[value="'+value+'"]');
                 if($(input).length){
-                    $('#contact_status option[selected]').prop('selected',false);
-                    $(input).attr('selected',true);
+                    $('#contact_status').val(value);
                     $('#contact_status').attr('data-value',value);
                 } else {
-                    $('#contact_status .select-placeholder').prop('selected', true)
+                    $('#contact_status').val('');
+                    $('#contact_status').attr('data-value','');
                 }
                 break;
             default:
