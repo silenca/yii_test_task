@@ -201,15 +201,6 @@ class Contact extends \yii\db\ActiveRecord
         ];
     }
 
-//    public function getPhoneColsWithVal() {
-//        $phones = [];
-//        isset($this->first_phone) ? $phones['first_phone'] = $this->first_phone : null;
-//        isset($this->second_phone) ? $phones['second_phone'] = $this->second_phone : null;
-//        isset($this->third_phone) ? $phones['third_phone'] = $this->third_phone : null;
-//        isset($this->fourth_phone) ? $phones['fourth_phone'] = $this->fourth_phone : null;
-//        return $phones;
-//    }
-
     public static function getEmailCols()
     {
         return [
@@ -225,13 +216,6 @@ class Contact extends \yii\db\ActiveRecord
             'second_email' => $this->second_email,
         ];
     }
-
-//    public function getEmailColsWithVal() {
-//        $emails = [];
-//        isset($this->first_email) ? $emails['first_email'] = $this->first_email : null;
-//        isset($this->second_email) ? $emails['second_email'] = $this->second_email : null;
-//        return $emails;
-//    }
 
     public static function getLocationCols()
     {
@@ -435,12 +419,6 @@ class Contact extends \yii\db\ActiveRecord
             ->viaTable('contact_tag', ['contact_id' => 'id']);
     }
 
-//    public function setTags($new_tags) {
-//        foreach ($new_tags as $new_tag) {
-//            $new_tag->save();
-//            $this->link('tags', $new_tag);
-//        }
-//    }
 
     public function setTags($new_tags)
     {
@@ -585,10 +563,7 @@ class Contact extends \yii\db\ActiveRecord
 
     public static function addContInPool($contact_id, $manager_id, $tag_id, $order_token)
     {
-//        $cont_pools = TempContactsPool::find(['manager_id' => $manager_id])->all();
-//        foreach ($cont_pools as $cont_pool) {
-//            $cont_pool->delete();
-//        }
+
         $cont_pool = TempContactsPool::findOne(['contact_id' => $contact_id, 'manager_id' => $manager_id, 'tag_id' => $tag_id]);
         if ($cont_pool) {
             $cont_pool->delete();

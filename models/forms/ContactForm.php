@@ -15,34 +15,46 @@ use app\components\Filter;
 class ContactForm extends Model
 {
 
-    var $name;
-    var $surname;
-    var $middle_name;
+    public $name;
+    public $surname;
+    public $middle_name;
 
-    var $phones;
-    var $emails;
+    public $phones;
+    public $emails;
 
-    var $first_phone;
-    var $second_phone;
-    var $third_phone;
-    var $fourth_phone;
+    public $first_phone;
+    public $second_phone;
+    public $third_phone;
+    public $fourth_phone;
 
-    var $first_email;
-    var $second_email;
+    public $first_email;
+    public $second_email;
 
-    var $tags_str;
-    var $tags;
+    public $tags_str;
+    public $tags;
 
-    var $country;
-    var $region;
-    var $area;
-    var $city;
-    var $street;
-    var $house;
-    var $flat;
+    public $country;
+    public $region;
+    public $area;
+    public $city;
+    public $street;
+    public $house;
+    public $flat;
 
-    var $edited_id;
-    var $conflict_id;
+    public $edited_id;
+    public $conflict_id;
+
+    public function attributeLabels()
+    {
+        return [
+            'name' => 'Имя',
+            'surname' => 'Фамилия',
+            'middle_name' => 'Отчество',
+            'phones' => 'Номер телефона',
+            'emails' => 'Email',
+            'street' => 'Улица'
+        ];
+    }
 
     public static function getAllCols() {
         return [
@@ -60,25 +72,6 @@ class ContactForm extends Model
             'flat'
         ];
     }
-
-    /*'name',
-    'surname',
-    'middle_name',
-    'first_phone',
-    'second_phone',
-    'third_phone',
-    'fourth_phone',
-    'first_email',
-    'second_email',
-    'country',
-    'region',
-    'area',
-    'city',
-    'street',
-    'house',
-    'flat',
-    'status'
-    */
 
     public function rules()
     {
@@ -126,18 +119,6 @@ class ContactForm extends Model
             }
         }
         return true;
-    }
-
-    public function attributeLabels()
-    {
-        return [
-            'name' => 'Имя',
-            'surname' => 'Фамилия',
-            'middle_name' => 'Отчество',
-            'phones' => 'Номер телефона',
-            'emails' => 'Email',
-            'street' => 'Улица'
-        ];
     }
 
     public function formName()
@@ -219,15 +200,6 @@ class ContactForm extends Model
             } elseif (strlen($phone) < 10 || strlen($phone) > 15) {
                 $this->addCustomError($attribute, 'Телефон заполнен некорректно');
             }
-//            elseif (!preg_match('/^(8|7|\+7)/', $phone)) {
-//                if ($this->getFirstError($attribute) == null) {
-//                    $this->addError($attribute, 'Код страны введен не верно');
-//                }
-//            } elseif (!preg_match('/^(8|7|\+7)((\d{10})|(\s\(\d{3}\)\s\d{3}\s\d{2}\s\d{2}))/', $phone)) {
-//                if ($this->getFirstError($attribute) == null) {
-//                    $this->addError($attribute, 'Телефон заполнен некорректно');
-//                }
-//            }
         }
     }
 
@@ -247,11 +219,7 @@ class ContactForm extends Model
         $emails = self::dataConvert($this->$attribute, 'emails');
         foreach ($emails as $email_key => $email_val) {
             $this->checkEmail($email_val, $attribute);
-//            $fields = Contact::getEmailCols();
-//            $this->isUnique($email_val, $attribute, $fields, function($attr, $value, $contact_id) {
-//                $this->addCustomError($attr, 'Email - ' . $value . ' уже существует в базе. ID = '. $contact_id);
-//            });
-            $this->$email_key = $email_val;
+            $this->{$email_key} = $email_val;
         }
     }
 

@@ -19,7 +19,7 @@ class User extends ActiveRecord implements IdentityInterface {
     }
 
     public $remove_tags;
-
+ 
     public static $safe_fields = [
         'int_id',
         'firstname',
