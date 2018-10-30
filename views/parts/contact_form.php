@@ -252,7 +252,7 @@ use app\models\User;
                                                             <div class="radio radio-primary">
                                                                     <input type="radio" name="attitude" class="call-attitude" value="1" id="action_call_attitude_1">
                                                                 <label for="action_call_attitude_1"></label>
-                                                                    <input type="radio" name="attitude" class="call-attitude" value="2" id="action_call_attitude_2">
+                                                                user->isGuest): ?>                                              <input type="radio" name="attitude" class="call-attitude" value="2" id="action_call_attitude_2">
                                                                 <label for="action_call_attitude_2"></label>
                                                                     <input type="radio" name="attitude" class="call-attitude" value="3" id="action_call_attitude_3" checked="checked">
                                                                 <label for="action_call_attitude_3"></label>
@@ -270,6 +270,30 @@ use app\models\User;
                                                     </div>
 
                                                 </form>
+                                                 <!---STARTOF_CLICKTOCALLBUTTON !-->
+                <button class="btn btn-primary btn-block btn-audio-call" type="button">Позвонить</button>
+                <div class="acb audio-call-block">
+                    <div class="acb-section audio-call-sip-options">
+                        <select name="audio-call-sip-channel" id="acb_sip_channel" class="acb-select form-control select2">
+                            <option class="select2-choice" value="default">Выберите SIP-канал</option>
+                            <option class="select2-choice" value=""><?= $value ?></option>
+                        </select>
+                    </div>
+                    <div class="acb-section audio-call-actions">
+                        <button type="button" class="btn btn-success acb-btn acb-call-btn" onclick='sipCall("call-audio");'>Вызов</button>
+                        <button type="button" class="btn btn-secondary acb-btn acb-hang-up-btn" value="HangUp" onclick='sipHangUp();' disabled>Завершить звонок</button>
+                    </div>
+                    <div class="acb-section audio-call-messages">
+                        <div class="acb-message panel-body">
+                            <audio id="audio-remote" class="acb-audio"></audio>
+                            <p class="acb-status acb-text-p">Ожидание ответа</p>
+                            <p class="acb-duration acb-text-p">00:00:00</p>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <!---ENDOF_CLICKTOCALLBUTTON !-->
                                             </div>
                                             <div id="action_email" class="contact-action" style="display: none">
                                                 <form id="form_action_email" action="/contacts/objectscheduleemail"

@@ -163,3 +163,24 @@ table.reports-table tr td {
     max-width: none;
     padding: 10px;
 }
+
+.audio-call-block {
+    display:none;
+}
+.acb-section {
+    margin-top : 5%;
+    margin-bottom : 5%;
+}
+.acb-status {
+    padding: 1%;
+    font-size: x-large;
+}
+.acb-duration {
+    padding: 2%;
+    font-size: larger;
+    border-radius: 15px;
+    background: #dcdcdc57;
+}
+.audio-call-messages {
+    display: none;
+}

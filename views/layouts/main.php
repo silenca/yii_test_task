@@ -87,7 +87,7 @@ if (!Yii::$app->user->isGuest) {
 <!--                                <a href="/object" class="detailed">-->
 <!--                                    <span class="title">Объекты</span>-->
 <!--                                    <span class="details"></span>-->
-<!--                                    <span class="icon-thumbnail --><?//= $this->params['active'] == 'object' ? 'bg-success' : null ?><!--" title="Объекты"><i class="pg-home"></i></span>-->
+<!--                                    <span class="icon-thumbnail --><?php //= $this->params['active'] == 'object' ? 'bg-success' : null ?><!--" title="Объекты"><i class="pg-home"></i></span>-->
 <!--                                </a>-->
 <!--                            </li>-->
 <!--                        --><?php //endif; ?>
@@ -130,7 +130,7 @@ if (!Yii::$app->user->isGuest) {
 <!--                                <a href="/receivable" class="detailed">-->
 <!--                                    <span class="title">Дебиторские задолженности</span>-->
 <!--                                    <span class="details"></span>-->
-<!--                                    <span class="icon-thumbnail --><?//= $this->params['active'] == 'receivable' ? 'bg-success' : null ?><!--" title="Дебиторские задолженности"><i class="pg-calender"></i></span>-->
+<!--                                    <span class="icon-thumbnail --><?php //= $this->params['active'] == 'receivable' ? 'bg-success' : null ?><!--" title="Дебиторские задолженности"><i class="pg-calender"></i></span>-->
 <!--                                </a>-->
 <!--                            </li>-->
 <!--                        --><?php //endif; ?>
@@ -138,8 +138,8 @@ if (!Yii::$app->user->isGuest) {
 <!--                            <li>-->
 <!--                                <a href="/managernotify" class="detailed">-->
 <!--                                    <span class="title">Уведомления</span>-->
-<!--                                    <span class="details">--><?//= $this->params['notify_count']; ?><!-- --><?php //echo UtilHelper::pluralForm($this->params['notify_count'], 'новый уведомлений', 'новых уведомления', 'новых уведомлений') ?><!--</span>-->
-<!--                                    <span class="icon-thumbnail --><?//= $this->params['active'] == 'notification' ? 'bg-success' : null ?><!--"  title="Уведомления">-->
+<!--                                    <span class="details">--><?php //= $this->params['notify_count']; ?><!-- --><?php //echo UtilHelper::pluralForm($this->params['notify_count'], 'новый уведомлений', 'новых уведомления', 'новых уведомлений') ?><!--</span>-->
+<!--                                    <span class="icon-thumbnail --><?php //= $this->params['active'] == 'notification' ? 'bg-success' : null ?><!--"  title="Уведомления">-->
 <!--                                        <i class="pg-comment"></i>-->
 <!--                                        --><?php //if ($this->params['notify_count'] > 0): ?>
 <!--                                            <span class="badge badge-danger">--><?php //echo $this->params['notify_count'] ?><!--</span>-->
@@ -153,7 +153,7 @@ if (!Yii::$app->user->isGuest) {
 <!--                                <a href="/contracts" class="detailed">-->
 <!--                                    <span class="title">Договоры</span>-->
 <!--                                    <span class="details">0 новых уведомлений</span>-->
-<!--                                    <span class="icon-thumbnail --><?//= $this->params['active'] == 'contracts' ? 'bg-success' : null ?><!--" title="Договоры">-->
+<!--                                    <span class="icon-thumbnail --><?php // $this->params['active'] == 'contracts' ? 'bg-success' : null ?><!--" title="Договоры">-->
 <!--                                        <i class="pg-comment"></i>-->
 <!--                                        --><?php //if ($this->params['new_contract_count'] > 0): ?>
 <!--                                            <span class="js-contract_count badge badge-danger">--><?php //echo $this->params['new_contract_count'] ?><!--</span>-->
