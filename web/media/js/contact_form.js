@@ -180,7 +180,7 @@ $(function() {
         locale: 'ru'
         //minDate: today
     });
-    ('.google-cal-show').on('change', function() {
+    $('.google-cal-show').on('change', function() {
         if ($(this).is(':checked')) {
             processGApiAuth();
         }
