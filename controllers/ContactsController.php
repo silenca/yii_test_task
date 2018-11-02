@@ -75,6 +75,15 @@ class ContactsController extends BaseController
                     ],
                     [
                         'actions' => ['remove-tag'],
+                        'actions' => [
+                            'remove-tag',
+                            'index',
+                            'getdata',
+                            'hide-columns',
+                            'search',
+                            'get-medium-objects',
+                            'link-with',
+                        ],
                         'allow' => true,
                         'roles' => ['admin', 'manager'],
                     ],
@@ -96,6 +105,7 @@ class ContactsController extends BaseController
             ],
         ];
     }
+
 
     public function actionIndex()
     {
@@ -558,5 +568,30 @@ class ContactsController extends BaseController
             $this->json([], 200);
         }
         $this->json([], 415, 'Tag not found');
+    }
+
+    public function actionAcceptCall() {
+        $call_id = Yii::$app->request->post('call_id',null);
+        if($call_id == null)
+            $this->json([],400,'Call id required');
+        /**
+         * @var $call Call
+         */
+        $call = Call::find()->where(['id'=>(int)$call_id])->one();
+        if($call == null)
+            $this->json([],404,'Call not found');
+        $call->accepted = 1;
+        $call->save();
+        Notification::closeCall(['call_id'=>$call->id]);
+    }
+    public function actionGetMediumObject($obj){
+
+    }
+    public function actionGetMediumObjects(){
+        $contacts = Contact::getMediumObjects();
+        var_dump($contacts);die;
+    }
+    public function actionSaveMediumObject($obj){
+//        $contact =
     }
 }

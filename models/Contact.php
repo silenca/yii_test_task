@@ -4,6 +4,11 @@ namespace app\models;
 
 use app\components\UtilHelper;
 use Yii;
+use HttpRequest;
+//use yii\httpclient\Request;
+use yii\httpclient\Client;
+
+use yii\httpclient\XmlParser;
 use yii\base\Exception;
 use yii\db\Query;
 
@@ -57,10 +62,23 @@ class Contact extends \yii\db\ActiveRecord
         'manager_id',
         'is_deleted',
         'remove_tags',
+        'attraction_channel_id',
+        'notification_service_id',
+        'is_broadcast',
+        'language_id',
+        'medium_oid'
     ];
 
     public $is_called;
     public $remove_tags;
+    const IS_BROADCAST_TRUE = 1;
+    const IS_BROADCAST_FALSE = 0;
+
+    const LEAD = 1;
+    const CONTACT = 2;
+    const MEDIUM_API_URL = 'http://91.225.122.210:8080/api/H:1D13C88C20AA6C6/D:WORK/D:1D13C9303C946F9/C:1D45F18F27C737D/';
+    const MEDIUM_API_OBJECT = 'O:'; //FOR SINGLE OBJECT
+    const MEDIUM_API_ITEM = 'I:'; //FOR LISTINGS
 
     /**
      * @inheritdoc
@@ -92,6 +110,8 @@ class Contact extends \yii\db\ActiveRecord
             [['int_id'], 'required'],
             [['int_id', 'manager_id'], 'integer'],
             [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'country', 'region', 'area', 'city', 'street', 'house', 'flat', 'status'], 'string', 'max' => 255],
+            [['int_id', 'manager_id', 'notification_service_id', 'language_id', 'attraction_channel_id'], 'integer'],
+            [['first_phone', 'medium_oid', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'birthday', 'country', 'city'], 'string', 'max' => 255],
             [['name', 'surname', 'middle_name'], 'string', 'max' => 150],
             [['first_email', 'second_email'], 'string', 'max' => 255],
             [['sended_crm'], 'safe'],
@@ -133,6 +153,13 @@ class Contact extends \yii\db\ActiveRecord
             'street',
             'house',
             'flat',
+            'is_broadcast',
+            'language_id',
+            'attraction_channel_id',
+            'notification_service_id',
+            'status',
+            'manager_id',
+            'medium_oid'
         ];
     }
 
@@ -155,6 +182,15 @@ class Contact extends \yii\db\ActiveRecord
             'street' => ['label' => 'Улица', 'have_search' => true, 'orderable' => true],
             'house' => ['label' => 'Дом', 'have_search' => true, 'orderable' => true],
             'flat' => ['label' => 'Квартира', 'have_search' => true, 'orderable' => true],
+            'birthday'=> ['label' => 'Дата рождения', 'have_search' => true, 'orderable' => true],
+            'city' => ['label' => 'Город проживания', 'have_search' => true, 'orderable' => true],
+            'medium_oid' => ['label' => 'Идентификатор Medium', 'have_search' => true, 'orderable' => true],
+            'attraction_channel_id' => ['label' => 'Канал привлечения', 'have_search' => true, 'orderable' => true],
+            'is_broadcast' => ['label' => 'Рассылка', 'have_search' => true, 'orderable' => true],
+            'notification_service_id' => ['label' => 'Способ оповещения', 'have_search' => true, 'orderable' => true],
+            'language_id' => ['label' => 'Язык', 'have_search' => true, 'orderable' => true],
+            'status' => ['label' => 'Статус', 'have_search' => true, 'orderable' => true],
+            'manager_id' => ['label' => 'Ответственный', 'have_search' => true, 'orderable' => true],
             'delete_button' => ['label' => 'Удалить', 'have_search' => false, 'orderable' => false],
         ];
         if (!Yii::$app->user->can('delete_contact')) {
@@ -582,6 +618,94 @@ class Contact extends \yii\db\ActiveRecord
         return false;
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAttractionChannel()
+    {
+        return $this->hasOne(AttractionChannel::className(), ['id' => 'attraction_channel_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLanguage()
+    {
+        return $this->hasOne(ContactLanguage::className(), ['id' => 'language_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getNotificationService()
+    {
+        return $this->hasOne(ContactNotificationService::className(), ['id' => 'notification_service_id']);
+    }
+
+    /**
+     * @param $oid
+     */
+    public function getMediumObject($oid)
+    {
+        $url = self::MEDIUM_API_URL.self::MEDIUM_API_OBJECT.$oid;
+        $response = (new HttpRequest($url, 'GET'))->send();
+
+        $client = new Client([
+            'baseUrl' => $url,
+            'responseConfig' => [
+                'format' => Client::FORMAT_XML
+            ],
+        ]);
+
+        $request = $client->createRequest();
+        $response = $request->send();
+        if ($response->isOk) {
+            $data = $response->data;
+            var_dump($data);die;
+        }
+        echo $response->format; // outputs: 'json'
+    }
+    public function postMediumObject($oid){
+        $url = self::MEDIUM_API_URL.self::MEDIUM_API_OBJECT.$oid;
+        $response = (new HttpRequest($url, 'GET'))->send();
+
+        $client = new Client([
+            'baseUrl' => $url,
+            'responseConfig' => [
+                'format' => Client::FORMAT_XML
+            ],
+        ]);
+        $client->setMethod('POST');
+
+        $request = $client->createRequest();
+        $response = $request->send();
+
+        if ($response->isOk) {
+            $newUserId = $response->data['id'];
+            var_dump($newUserId);die;
+        }
+    }
+    public static function getMediumObjects(){
+        $url = self::MEDIUM_API_URL.self::MEDIUM_API_ITEM.'PACK';
+//        $response = (new HttpRequest($url, 'GET'))->send();
+        $client = new Client([
+            'baseUrl' => $url,
+            'responseConfig' => [
+                'format' => Client::FORMAT_XML
+            ],
+        ]);
+        $clients = [];
+        $request = $client->createRequest();
+        $response = $request->send();
+        if ($response->isOk) {
+            $clients = $response->data;
+        }
+        return $clients;
+    }
+
+    /**
+     * @return bool
+     */
     public function sendToCRM()
     {
         $ch = curl_init();
