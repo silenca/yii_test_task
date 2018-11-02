@@ -20,7 +20,7 @@ class ManagerNotifyAsset extends AssetBundle
     public $css = [];
     public $js = [
         'media/js/contexts/manager_notify.js',
-        'media/js/contact_form.js',
+        'media/js/global_contact_form.js',
     ];
     public $depends = [];
 }

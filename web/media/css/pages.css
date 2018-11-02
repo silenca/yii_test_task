@@ -52,6 +52,7 @@ body {
 }
 body.fixed-header .header {
     position: fixed;
+    padding-left: 70px;
     left: 0;
     top: 0;
 }
@@ -169,6 +170,7 @@ input[type=number]::-webkit-outer-spin-button {
     height: 60px;
     width: 100%;
     vertical-align: middle;
+    padding-left: 30px;
     display: table-cell;
 }
 .header .header-inner .toggle-sidebar {
@@ -180,7 +182,7 @@ input[type=number]::-webkit-outer-spin-button {
 .header .brand {
     vertical-align: middle;
     width: 280px;
-    text-align: center;
+    /*text-align: center;*/
 }
 .header .bubble {
     border-radius: 100%;
@@ -6156,9 +6158,26 @@ fieldset[disabled] .form-control {
     left: -23px;
     top: -2px;
 }
+/* Select2 customize */
 .input-group-addon:last-child input {
     border-left: 0px;
 }
+.input-group > .select2 span.selection > span > ul{
+    display: block;
+    margin-bottom: 3px;
+}
+.input-group > .select2 span.selection > span > ul > li.select2-search.select2-search--inline > input{
+    margin-top: 0;
+}
+.input-group > .select2 span.selection > span > ul > span.select2-selection__clear{
+    margin-top: 8px;
+}
+.input-group > .select2 span.selection > span.select2-selection{
+    border-left: none;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
 /* Plugins
 --------------------------------------------------
 Datepicker
@@ -12230,12 +12249,16 @@ Main components
     .pace .pace-activity {
         top: 60px;
     }
+    .page-sidebar.open-custom-sidebar{
+      left: 0 !important;
+      top: 0 !important;
+      display: block;
+      position: fixed;
+    }
     .page-sidebar {
-        width: 250px;
-        z-index: auto;
-        left: 0 !important;
-        -webkit-transform: translate3d(0, 0px, 0px) !important;
-        transform: translate3d(0, 0px, 0px) !important;
+        width: 280px;
+        left: -280px;
+        z-index: 1000;
     }
     .page-sidebar .sidebar-menu .menu-items > li ul.sub-menu > li {
         padding: 0px 30px 0 36px;
@@ -12253,10 +12276,6 @@ Main components
     }
     .icon-thumbnail {
         margin-right: 24px;
-    }
-    .page-sidebar {
-        display: none;
-        z-index: auto;
     }
     .page-sidebar.visible {
         display: block;
@@ -13105,6 +13124,24 @@ a.detailed:hover .icon-thumbnail{
     color: #fff;
 }
 
+.sidebar-switch-header{
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  background-color: transparent;
+  color: #788195;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.sidebar-switch-header:hover {
+  color: #21252d;
+}
+
 .cstm-sidebar-switch{
     position: absolute;
     bottom: 60px;
@@ -13160,7 +13197,7 @@ input::-webkit-inner-spin-button {
     text-align: center;
 }
 
-.modal .modal-body.contact-modal {
+.modal .modal-body.contact-modal,.modal-body.sip-channel-modal,.modal-body.attraction-channel-modal {
     padding-top: 20px;
 }
 .report-visual {
@@ -13193,4 +13230,46 @@ input::-webkit-inner-spin-button {
 
 #object-table tr:hover .object-btn {
     display: inline-block !important;
+}
+
+.modal-xs {
+  width: 100vw;
+}
+
+.nopadding{
+  padding: 0;
+}
+
+.select2-pd-fix {
+  padding: 0 15px;
+}
+
+.pl-check {
+  padding-left: 5px;
+}
+
+@media screen and (max-width: 991px){
+  .pl-check {
+    padding-left: 15px;
+  }
+}
+
+@media screen and (max-width: 991px){
+  .controls {
+    margin-left: 5px;
+  }
+}
+
+@media screen and (max-width: 480px){
+  .controls {
+    margin-left: 0;
+    display: flex;
+    justify-content: center;
+  }
+  .input-group--custom {
+    width: 100%;
+  }
+  .w100{
+    width: 100%;
+  }
 }

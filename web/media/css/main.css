@@ -1,4 +1,4 @@
-#modalAddContact, #modalAddUser {
+#modalAddContact, #modalAddUser, #modalAddSipChannel, #modalAddAttractionChannel {
     left: auto;
     overflow: visible;
 }
@@ -112,6 +112,7 @@
     left: 95px;
     border-radius: 5px;
     padding: 10px;
+    z-index: 1;
 }
 
 .dropdown form {

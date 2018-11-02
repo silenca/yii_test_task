@@ -2,12 +2,16 @@
 
 namespace app\components\widgets;
 
+use app\models\Contact;
 use yii\base\Widget;
 use Yii;
 use app\components\Filter;
 
 class ContactTableWidget extends Widget {
 
+    /**
+     * @var $contacts Contact[]
+     */
     public $contacts;
     public $user_id;
     public $user_role;
@@ -48,12 +52,14 @@ class ContactTableWidget extends Widget {
             $data[$i][] = Filter::dataImplode($tag_names, ', ', '<a class="contact_open_disable contact-tags" href="javascript:void(0)">{value}</a>', true);
 
             $data[$i][] = $contact->country;
-            $data[$i][] = $contact->region;
-            $data[$i][] = $contact->area;
+            $data[$i][] = $contact->birthday;
             $data[$i][] = $contact->city;
-            $data[$i][] = $contact->street;
-            $data[$i][] = $contact->house;
-            $data[$i][] = $contact->flat;
+            $data[$i][] = (isset($contact->attraction_channel_id)?$contact->attractionChannel->name:'');
+            $data[$i][] = (isset($contact->is_broadcast)? Contact::$broadcast[$contact->is_broadcast] : '');
+            $data[$i][] = (isset($contact->notification_service_id) ? $contact->notificationService->name : '');
+            $data[$i][] = $contact->language->slug;
+            $data[$i][] = (isset($contact->status)? Contact::$statuses[$contact->status] : '');
+            $data[$i][] = (isset($contact->manager_id)? $contact->manager->firstname.' '.$contact->manager->lastname : '');
 
             if (Yii::$app->user->can('delete_contact')) {
                 $data[$i][] = '<div class="col-md-offset-3 remove"><i class="fa fa-remove"></i></div>';

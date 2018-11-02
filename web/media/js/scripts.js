@@ -21,6 +21,15 @@ var ExtList = function (params) {
     }
 };
 
+var switchers = {};
+
+function setSwitchery(switchElement, checkedBool) {
+    if((checkedBool && !switchElement.isChecked()) || (!checkedBool && switchElement.isChecked())) {
+        switchElement.setPosition(true);
+        switchElement.handleOnchange(true);
+    }
+}
+
 ExtList.prototype.setOptions = function () {
     //this.clearr();
     var select = this._el.firstChild;
@@ -153,11 +162,28 @@ function triggerChoise_CsSelect(el, val) {
     }
 
     if ($('.js-switch').length) {
-        var elem = document.querySelector('.js-switch');
-        var init = new Switchery(elem, {
-            size: 'small',
-            color: 'rgb(16, 207, 189)',
+        var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+
+        elems.forEach(function(html) {
+            if($(html).attr('id')!='' && $(html).attr('id')!=undefined) {
+                var index = $(html).attr('id');
+                switchers[index] = new Switchery(html, {
+                    size: 'small',
+                    color: 'rgb(16, 207, 189)',
+                });
+            } else {
+                var init = new Switchery(html, {
+                    size: 'small',
+                    color: 'rgb(16, 207, 189)',
+                });
+            }
+
         });
+        // var elem = document.querySelector('.js-switch');
+        // var init = new Switchery(elem, {
+        //     size: 'small',
+        //     color: 'rgb(16, 207, 189)',
+        // });
     }
 
 

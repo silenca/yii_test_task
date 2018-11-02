@@ -11,6 +11,7 @@ use yii\web\IdentityInterface;
 class User extends ActiveRecord implements IdentityInterface {
 
     const ROLE_ADMIN = 15;
+    const ROLE_SUPERVISOR = 10;
     const ROLE_MANAGER = 5;
     const ROLE_OPERATOR = 1;
 
@@ -50,7 +51,7 @@ class User extends ActiveRecord implements IdentityInterface {
             [['notification_key'], 'string', 'max' => 32],
             [['email'], 'email'],
             [['email'], 'unique'],
-            [['is_deleted', 'settings'], 'safe']
+            [['is_deleted', 'settings','filter_config','cols_config'], 'safe']
         ];
     }
 
@@ -73,6 +74,8 @@ class User extends ActiveRecord implements IdentityInterface {
             $user_role = 'manager';
         } elseif (Yii::$app->user->can('operator')) {
             $user_role = 'operator';
+        } elseif (Yii::$app->user->can('supervisor')) {
+            $user_role = 'supervisor';
         }
         return $user_role;
     }

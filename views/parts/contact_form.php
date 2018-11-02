@@ -1,11 +1,15 @@
 <?php
 use app\models\User;
 ?>
-<div class="modal fade slide-right modal-lg"
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css" rel="stylesheet">
+
+<div class="modal fade slide-right modal-lg modal-sm modal-xs col-3"
     id="modalAddContact" tabindex="-1" role="dialog" aria-hidden="true">
     <input type="hidden" id="contact-id" value=""/>
     <div
-        class="modal-dialog drop-shadow modal-lg">
+        class="modal-dialog drop-shadow modal-lg modal-sm modal-xs col-3">
         <div class="modal-content-wrapper">
             <div class="list-view-wrapper modal-content">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i
@@ -19,8 +23,7 @@ use app\models\User;
                                         id="contact_manager_name"></span></span>
                             </div>
                             <div class="row">
-                                <div
-                                    class="contact-data col-md-4">
+                                <div class="col-md-4 col-sm-12 contact-data">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <div class="panel-title contact-title">Новый контакт</div>
@@ -71,55 +74,115 @@ use app\models\User;
                                             </div>
                                             <br>
                                             <div class="input-group">
-                                                <label class="input-group-addon primary" for="contact_region"><i
-                                                        class="pg pg-home"></i></label>
-                                                <input type="text" id="contact_region" name="region"
-                                                       placeholder="Регион проживания" class="form-control">
-                                            </div>
-                                            <br>
-                                            <div class="input-group">
-                                                <label class="input-group-addon primary" for="contact_area"><i
-                                                        class="pg pg-home"></i></label>
-                                                <input type="text" id="contact_area" name="area" placeholder="Район"
-                                                       class="form-control">
-                                            </div>
-                                            <br>
-                                            <div class="input-group">
                                                 <label class="input-group-addon primary" for="contact_city"><i
-                                                        class="pg pg-home"></i></label>
+                                                            class="pg pg-home"></i></label>
                                                 <input type="text" id="contact_city" name="city"
                                                        placeholder="Город/поселок проживания" class="form-control">
                                             </div>
                                             <br>
-                                            <div class="input-group">
-                                                <label class="input-group-addon primary" for="contact_street"><i
-                                                        class="pg pg-home"></i></label>
-                                                <input type="text" id="contact_street" name="street" placeholder="Улица"
-                                                       class="form-control">
-                                            </div>
-                                            <br>
-                                            <div class="input-group">
-                                                <label class="input-group-addon primary" for="contact_house"><i
-                                                        class="pg pg-home"></i></label>
-                                                <input type="text" id="contact_house" name="house"
-                                                       placeholder="Номер дома" class="form-control">
-                                            </div>
-                                            <br>
-                                            <div class="input-group">
-                                                <label class="input-group-addon primary" for="contact_flat"><i
-                                                        class="pg pg-home"></i></label>
-                                                <input type="text" id="contact_flat" name="flat"
-                                                       placeholder="Номер квартиры" class="form-control">
+                                            <div class="input-group datepicker-content">
+                                                <label class="input-group-addon primary" for="contact_birthday"><i
+                                                            class="pg pg-home"></i></label>
+                                                <input type="text" width="276"  id="contact_birthday" name="birthday"
+                                                       placeholder="Дата рождения" class="form-control ">
                                             </div>
 
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_attraction_channel_id"><i
+                                                            class="fa fa-fw fa-list-alt"></i></label>
+                                                <select id="contact_attraction_channel_id" name="attraction_channel_id" class="form-control select2-single">
+                                                    <option class="select-placeholder" value="" selected>Канал привлечения</option>
+                                                    <?php
+                                                    $channels = \app\models\AttractionChannel::find()->where(['is_active'=>1])->all();
+                                                    foreach ($channels as  $channel) {
+                                                        echo '<option value="'.$channel->id.'">'.$channel->name.'</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_manager_id"><i
+                                                            class="fa fa-fw fa-list-alt"></i></label>
+                                                <select id="contact_manager_id" name="manager_id" class="form-control select2-single">
+                                                    <option class="select-placeholder" value="" disabled selected>Ответственный</option>
+                                                    <?php
+                                                    $users = User::find()->where(['role'=>5])->all();
+                                                    foreach ($users as  $user) {
+                                                        echo '<option value="'.$user->id.'">'.$user->firstname.' '.$user->lastname.'</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_status"><i
+                                                            class="fa fa-fw fa-list-alt"></i></label>
+                                                <select id="contact_status" name="status" class="form-control">
+                                                    <option class="select-placeholder" value=""  selected>Статус</option>
+                                                    <?php
+                                                    $statuses = \app\models\Contact::$statuses;
+                                                    foreach ($statuses as  $key=>$value) {
+                                                        echo '<option value="'.$key.'">'.$value.'</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <br>
+                                            <hr>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_language_id"><i
+                                                            class="fa fa-fw fa-language"></i></label>
+                                                <select id="contact_language_id" name="language_id" class="form-control select2-single">
+                                                    <?php
+                                                    echo '<option class="select-placeholder" value="" selected>Язык</option>';
+
+                                                    $languages = \app\models\ContactLanguage::find()->all();
+                                                    foreach ($languages as  $language) {
+                                                        echo '<option value="'.$language->id.'">'.$language->slug.'</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_is_broadcast"><i
+                                                            class="fa fa-fw fa-rss"></i></label>
+                                                <select id="contact_is_broadcast" name="is_broadcast" class="form-control select2-single">
+                                                    <option class="select-placeholder" value=""  selected>Рассылка</option>
+                                                    <?php
+                                                    $broadcasts = \app\models\Contact::$broadcast;
+                                                    foreach ($broadcasts as  $k=>$v) {
+                                                        echo '<option value="'.$k.'">'.$v.'</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <br>
+                                            <div class="input-group">
+                                                <label class="input-group-addon primary" for="contact_notification_service_id"><i
+                                                            class="fa fa-fw fa-tty"></i></label>
+                                                <select id="contact_notification_service_id" name="notification_service_id" class="form-control select2-single">
+                                                    <option class="select-placeholder" value=""  selected>Способ оповещения</option>
+                                                    <?php
+                                                    $services = \app\models\ContactNotificationService::find()->all();
+                                                    foreach ($services as  $service) {
+                                                        echo '<option value="'.$service->id.'">'.$service->name.'</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <br>
                                             <hr>
                                             <div class="form-group text-left">
                                                 <input id="contact_tags" name="tags_str" class="contact-tags" type="text" />
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
-                                <div
+                                <div class="col-md-4 col-sm-12"
                                     class="contact-history col-md-4">
                                     <div class="panel panel-transparent ">
                                         <!-- Nav tabs -->
@@ -186,7 +249,7 @@ use app\models\User;
                                         </div>
                                     </div>
                                 </div>
-                                <div class="contact-actions col-md-4">
+                                <div class="contact-actions col-md-4 col-sm-12">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <div class="panel-title block">

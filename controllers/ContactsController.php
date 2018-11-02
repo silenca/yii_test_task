@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\components\Filter;
+use app\components\Notification;
 use app\components\widgets\ContactTableWidget;
 use app\models\Contact;
 use app\models\ContactComment;
@@ -32,20 +33,21 @@ class ContactsController extends BaseController
                 'rules' => [
                     [
                         'actions' => [
-                            'index',
+//                            'index',
                             'view',
                             'history',
                             'addcomment',
-                            'getdata',
+//                            'getdata',
                             'edit',
-                            'hide-columns',
+//                            'hide-columns',
                             'get-contact-by-phone',
                             'get-contact-by-phone',
-                            'search',
-                            'link-with',
+//                            'search',
+//                            'link-with',
                             'objectschedulecall',
                             'objectscheduleemail',
                             'ring-round',
+                            'accept-call'
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -71,21 +73,27 @@ class ContactsController extends BaseController
                     [
                         'actions' => ['delete', 'delete-filtered'],
                         'allow' => true,
-                        'roles' => ['admin'],
+                        'roles' => ['admin','supervisor'],
                     ],
                     [
+<<<<<<< HEAD
                         'actions' => ['remove-tag'],
+=======
+>>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
                         'actions' => [
                             'remove-tag',
                             'index',
                             'getdata',
                             'hide-columns',
                             'search',
+<<<<<<< HEAD
                             'get-medium-objects',
+=======
+>>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
                             'link-with',
                         ],
                         'allow' => true,
-                        'roles' => ['admin', 'manager'],
+                        'roles' => ['admin', 'manager','supervisor'],
                     ],
                 ],
             ],
@@ -111,11 +119,52 @@ class ContactsController extends BaseController
     {
         $session = Yii::$app->session;
         $hide_columns = $session->get('contact_hide_columns');
-        if (!$hide_columns) {
-            $hide_columns = ["surname", "name", "middle_name", "emails", "country", "region", "area", "delete_button"];
+        /**
+         * @var $user User
+         */
+        $user = User::find()->where(['id'=>Yii::$app->user->identity->getId()])->one();
+        $cols = $user->cols_config;
+        if($cols != null) {
+            $cols = \json_decode($cols, true);
+        } else {
+            $cols = [];
         }
+
+        $detect = new \Mobile_Detect();
+        if (!$hide_columns) {
+            if(isset($cols['contacts'])){
+                $hide_columns = $cols['contacts'];
+            } else {
+                if($detect->isMobile()) {
+                    $hide_columns = [ "middle_name", "emails", "country", "city", "delete_button",'int_id','link_with','tags'];
+                } else {
+                    $hide_columns = ["surname", "name", "middle_name", "emails", "country", "delete_button"];
+                }
+            }
+        }
+        $cols['contacts'] = $hide_columns;
+        $user->cols_config = \json_encode($cols);
+        $user->save();
+
+
         $table_cols = Contact::getColsForTableView();
         $filter_cols = Contact::getColsForTableView();
+
+        if($user->getUserRole() == 'manager') {
+            unset($table_cols['delete_button']);
+            unset($filter_cols['delete_button']);
+        }
+
+        $config = $user->filter_config;
+        if($config != null) {
+            $config = \json_decode($config,true);
+            if(isset($config['contacts'])) {
+                foreach ($config['contacts'] as $k => $v) {
+                    if(!empty($k) && !empty($filter_cols[$k]['label']) && isset($filter_cols[$k]))
+                        $filter_cols[$k]['value'] = $v;
+                }
+            }
+        }
         unset($filter_cols['id']);
         return $this->render('index', ['hide_columns' => $hide_columns, 'table_cols' => $table_cols, 'filter_cols' => $filter_cols]);
     }
@@ -147,13 +196,18 @@ class ContactsController extends BaseController
             ];
         }
 
-        if ($user_role == 'manager' || $user_role == 'operator') {
+        if ($user_role == 'operator') {
             $query->joinWith('tags.users')->andWhere(['user.id' => $user_id]);
         }
         $query_total = clone $query;
         $total_count = $query_total->count();
 
         //Filtering
+        $user = User::find()->where(['id'=>Yii::$app->user->identity->getId()])->one();
+        $config = $user->filter_config;
+        $config = \json_decode($config,true);
+        if(!isset($config['contacts']))
+            $config['contacts'] = [];
         foreach ($request_data['columns'] as $column) {
             if (!empty($column['search']['value'])) {
                 if (isset($columns[$column['name']]['db_cols'])) {
@@ -168,7 +222,11 @@ class ContactsController extends BaseController
                     $query->andWhere(['like', $contact_tableName . '.' . $column['name'], $column['search']['value']]);
                 }
             }
+            if(!empty($column['name']))
+            $config['contacts'][$column['name']] = $column['search']['value'];
         }
+        $user->filter_config = \json_encode($config);
+        $user->save();
 
 
         $total_filtering_count = $query->count();
@@ -189,7 +247,6 @@ class ContactsController extends BaseController
         $contact_widget->user_id = $user_id;
         $contact_widget->user_role = $user_role;
         $data = $contact_widget->run();
-
         $json_data = [
             "draw" => intval($request_data['draw']),
             "recordsTotal" => intval($total_count),
@@ -209,12 +266,6 @@ class ContactsController extends BaseController
             $contact_form->edited_id = $post['id'];
         }
         $contact_form->attributes = $post;
-
-//        $call_order = Yii::$app->params['call_order_script'];
-
-//        $contact_form->tags_str = 'полисмен, комбайнер';
-//        $contact_form->tags_str = 'трактарист, бизнесмен, учитель';
-
         if ($contact_form->validate()) {
             try {
                 $contact = NULL;
@@ -227,9 +278,21 @@ class ContactsController extends BaseController
                     if ($contact->is_deleted) {
                         $contact->is_deleted = 0;
                     }
+
+                    if($contact->manager_id != Yii::$app->user->identity->getId() &&
+                        !Yii::$app->user->can('supervisor') && !Yii::$app->user->can('admin')) {
+                        $contact_form->manager_id = $contact->manager_id;
+                    }
                 } else {
                     $contact = new Contact();
-                    $contact->manager_id = Yii::$app->user->identity->id;
+                    if(!isset($post['manager_id'])
+                        || ($contact->manager_id != Yii::$app->user->identity->getId() &&
+                            !Yii::$app->user->can('supervisor') && !Yii::$app->user->can('admin'))) {
+                        $contact_form->manager_id = Yii::$app->user->identity->id;
+                    }
+                    else {
+                        $contact_form->manager_id = Yii::$app->user->identity->id;
+                    }
                 }
 
                 unset($post['_csrf']);
@@ -237,6 +300,7 @@ class ContactsController extends BaseController
 //                $contact->setTags($contact_form->tags);
                 $contact->attributes = $contact_form->attributes;
                 $contact->remove_tags = true;
+
 
                 if ($contact->edit([])) {
                     $contact->sendToCRM();
@@ -273,13 +337,10 @@ class ContactsController extends BaseController
                 $contact->surname = $post['last_name'];
                 $contact->middle_name = $post['middle_name'];
                 $contact->country = $post['country'];
-                $contact->region = $post['region'];
-                $contact->area = $post['area'];
                 $contact->city = $post['city'];
-                $contact->street = $post['street'];
-                $contact->house = $post['house'];
-                $contact->flat = $post['flat'];
                 $contact->int_id = $post['internal_no'];
+                $contact->status = $post['status'];
+                $contact->birthday = $post['birthday'];
 
                 if ($contact->save()) {
                     $contact_history = new ContactHistory();
@@ -584,6 +645,7 @@ class ContactsController extends BaseController
         $call->save();
         Notification::closeCall(['call_id'=>$call->id]);
     }
+<<<<<<< HEAD
     public function actionGetMediumObject($obj){
 
     }
@@ -594,4 +656,6 @@ class ContactsController extends BaseController
     public function actionSaveMediumObject($obj){
 //        $contact =
     }
+=======
+>>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
 }

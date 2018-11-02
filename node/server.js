@@ -28,6 +28,7 @@ handleDisconnect(connection);
 var clients = [];
 io.sockets.on('connection', function (socket) {
     clients.push(socket);
+    console.log(`New connection: ${socket.id}`);
     socket.on('disconnect', function () {
         var index = clients.indexOf(socket);
         if (index != -1) {
@@ -37,9 +38,11 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('join', function (data) {
+        console.log(data.notify_id);
         if (data.notify_id && data.notify_id.length === 32) {
             connection.query('SELECT `user`.`role` from `user` where `notification_key` = "' + data.notify_id + '" LIMIT 1', function (err, rows, fields) {
-                if (!err) {
+                // console.log(rows);
+                if (!err && rows.length>0) {
                     switch (rows[0].role) {
                         case 1:
                             socket.join('operator');
@@ -74,14 +77,26 @@ app.get('/toadmin', function (req, res) {
     res.send('Сообщение отправлено всем админам');
 });
 
+app.post('/close-call', function (req, res) {
+    io.to('operator').emit('close_call', {call_id:req.body.call_id});
+    io.to('manager').emit('close_call', {call_id:req.body.call_id});
+    // io.to('admin').emit('close_call', {call_id:req.body.call_id});
+});
+
 app.post('/incoming', function (req, res) {
     var data = {
         'contact_name': req.body.contact_name,
         'phone': req.body.phone,
+        'call_id':req.body.call_id,
         // 'language': req.body.language,
         'id': req.body.id
     };
+    if(req.body.attraction_channel_id != undefined)
+        data.attraction_channel_id = req.body.attraction_channel_id;
     io.to('operator').emit('call_incoming', data);
+    io.to('manager').emit('call_incoming', data);
+    // io.to('admin').emit('call_incoming', data);
+    console.log("Incoming call: "+req.body.phone);
     res.send('Сообщение отправлено всем операторам');
 });
 

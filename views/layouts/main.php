@@ -2,6 +2,7 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
+use app\assets\ContactAsset;
 use yii\helpers\Html;
 //use yii\bootstrap\Nav;
 //use yii\bootstrap\NavBar;
@@ -16,6 +17,10 @@ AppAsset::register($this);
 if (!Yii::$app->user->isGuest) {
     NotificationAsset::register($this);
     GoogleApiAsset::register($this);
+    ContactAsset::register($this);
+}
+else {
+
 }
 ?>
 <?php $this->beginPage() ?>
@@ -36,13 +41,13 @@ if (!Yii::$app->user->isGuest) {
         <meta content="" name="author" />
         <?= Html::csrfMetaTags() ?>
         <title><?= Html::encode($this->title) ?></title>
-        <? if(!Yii::$app->user->isGuest): ?>
+        <?php if(!Yii::$app->user->isGuest): ?>
         <script type="text/javascript">
             var notify_id = "<?= Yii::$app->user->identity->notification_key; ?>";
             var notify_host = "<?= Yii::$app->params['host_notify'] ?>";
             var _csrf = "<?= Yii::$app->request->getCsrfToken() ?>";
         </script>
-        <? endif; ?>
+        <?php endif; ?>
         <?php $this->head() ?>
         <script type="text/javascript">
             window.onload = function ()
@@ -82,6 +87,7 @@ if (!Yii::$app->user->isGuest) {
                                 </a>
                             </li>
                         <?php endif; ?>
+<<<<<<< HEAD
 <!--                        --><?php //if (Yii::$app->user->can('objects')): ?>
 <!--                            <li>-->
 <!--                                <a href="/object" class="detailed">-->
@@ -91,6 +97,9 @@ if (!Yii::$app->user->isGuest) {
 <!--                                </a>-->
 <!--                            </li>-->
 <!--                        --><?php //endif; ?>
+=======
+
+>>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
                         <?php if (Yii::$app->user->can('action')): ?>
                             <li>
                                 <a href="/action" class="detailed">
@@ -125,6 +134,7 @@ if (!Yii::$app->user->isGuest) {
                                 </a>
                             </li>
                         <?php endif; ?>
+<<<<<<< HEAD
 <!--                        --><?php //if (Yii::$app->user->can('receivables')): ?>
 <!--                            <li>-->
 <!--                                <a href="/receivable" class="detailed">-->
@@ -162,6 +172,9 @@ if (!Yii::$app->user->isGuest) {
 <!--                                </a>-->
 <!--                            </li>-->
 <!--                        --><?php //endif; ?>
+=======
+
+>>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
                         <?php if (Yii::$app->user->can('tags')): ?>
                             <li>
                                 <a href="/tags" class="detailed">
@@ -189,6 +202,24 @@ if (!Yii::$app->user->isGuest) {
                                 </a>
                             </li>
                         <?php endif; ?>
+                        <?php if(Yii::$app->user->can('sip_channel')):?>
+                            <li>
+                                <a href="/sip-channel" class="detailed">
+                                    <span class="title">SIP Каналы</span>
+                                    <span class="details"></span>
+                                    <span class="icon-thumbnail <?= $this->params['active'] == 'sip-channel' ? 'bg-success' : null ?>" title="SIP Каналы"><i class="fa fa-phone"></i></span>
+                                </a>
+                            </li>
+                        <?php endif;?>
+                        <?php if(Yii::$app->user->can('attraction_channel')):?>
+                            <li>
+                                <a href="/attraction-channel" class="detailed">
+                                    <span class="title">Каналы привлечения</span>
+                                    <span class="details"></span>
+                                    <span class="icon-thumbnail <?= $this->params['active'] == 'attraction-channel' ? 'bg-success' : null ?>" title="Каналы привлечения"><i class="fa fa-list-ul"></i></span>
+                                </a>
+                            </li>
+                        <?php endif;?>
                         <?php if (Yii::$app->user->can('use_archived_tags')): ?>
                             <li>
                                 <div class="row">
@@ -208,14 +239,35 @@ if (!Yii::$app->user->isGuest) {
             </nav>
             <div class="page-container">
                 <div class="header ">
+                    <div class="sidebar-switch-header js-switch-sidebar">
+                        <i class="fa fa-lg fa-fw fa-bars"></i>
+                    </div>
                     <!-- START MOBILE CONTROLS -->
                     <!-- RIGHT SIDE -->
                     <div class="pull-right full-height visible-sm visible-xs">
                         <!-- START ACTION BAR -->
                         <div class="sm-action-bar">
-                            <a href="#" class="btn-link" data-toggle="quickview" data-toggle-element="#quickview">
-                                <span class="icon-set menu-hambuger-plus"></span>
-                            </a>
+                            <div class="dropdown pull-right">
+                                <button class="profile-dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="thumbnail-wrapper d32 circular inline m-t-5">
+                                        <img src="<?= Yii::getAlias('@web') ?>/media/img/avatar.jpg" alt="" data-src="<?= Yii::getAlias('@web') ?>/media/img/avatar.jpg" data-src-retina="<?= Yii::getAlias('@web') ?>/media/img/avatar_small2x.jpg" width="32" height="32">
+                                    </span>
+                                </button>
+                                <ul class="dropdown-menu profile-dropdown" role="menu">
+                                    <li><a href="#"><i class="pg-settings_small"></i> Settings</a>
+                                    </li>
+                                    <li><a href="#"><i class="pg-outdent"></i> Feedback</a>
+                                    </li>
+                                    <li><a href="#"><i class="pg-signals"></i> Help</a>
+                                    </li>
+                                    <li class="bg-master-lighter">
+                                        <a href="/logout" class="clearfix" id="logout">
+                                            <span class="pull-left">Logout</span>
+                                            <span class="pull-right"><i class="pg-power"></i></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                             </div>
                         </div>
                         <!-- END ACTION BAR -->
                     </div>
@@ -264,9 +316,12 @@ if (!Yii::$app->user->isGuest) {
             <?= $content ?>
         <?php endif; ?>
 
+        <?php echo $this->render('/parts/contact_form'); ?>
+
         <?php if (!Yii::$app->user->isGuest): ?>
             <script type="text/javascript">
                 var userRole = <?= json_encode($this->params['user_role']); ?>;
+                var userId = <?= $this->params['user_id']; ?>;
             </script>
         <?php endif; ?>
 

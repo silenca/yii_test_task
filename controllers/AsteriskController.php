@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\SipChannel;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -175,8 +176,20 @@ class AsteriskController extends BaseController {
                     $request_params['id'] = $contact_id;
                     $request_params['contact_name'] = implode(' ', array_filter([$contact->surname, $contact->name, $contact->middle_name]));
                 }
-                Notification::incomingCall($request_params);
-                $call->outgoing($call_uniqueid, $contact_id, $callerid);
+                if($call->outgoing($call_uniqueid, $contact_id, $callerid,$call_form->sip_channel)) {
+                    if(isset($call_form->sip_channel)) {
+                        /**
+                         * @var $sip_channel SipChannel
+                         */
+                        $sip_channel = SipChannel::find()->where(['id'=>$call_form->sip_channel])->one();
+                        if($sip_channel->attraction_channel_id != null)
+                            $request_params['attraction_channel_id'] = $sip_channel->attraction_channel_id;
+                    }
+                    $request_params['phone'];
+                    $request_params['call_id'] = $call->id;
+                    Notification::incomingCall($request_params);
+                }
+
             } else if (strlen($callerid) == self::INT_ID_LENGTH && strlen($answered) == self::INT_ID_LENGTH) {
                 //Внутренний звонок
                 $call->incoming($call_uniqueid, $contact_id, $answered, null, null);

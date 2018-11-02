@@ -4,9 +4,12 @@ var dataTable,
 
 $(function () {
 
-    var show_columns = columns.filter(function (item) {
-        return hide_columns.indexOf(item) === -1;
-    });
+    if($('#contacts-table').length) {
+        var show_columns = columns.filter(function (item) {
+            return hide_columns.indexOf(item) === -1;
+        });
+    }
+
 
 
     var initTable = function () {
@@ -138,6 +141,7 @@ $(function () {
             }, 2000);
         });
 
+
         $('.search-input-select').on('change', function () {   // for select box
             $.each($searchBoxes, function (index, val) {
                 var n = $(this).attr('data-column');
@@ -146,6 +150,13 @@ $(function () {
             });
             dataTable.draw();
         });
+
+        $.each($searchBoxes, function (index, val) {
+            var n = $(this).attr('data-column');
+            var v = $(this).val();
+            dataTable.columns(n + ':name').search(v);
+        });
+        dataTable.draw();
     };
 
 

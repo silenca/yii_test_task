@@ -80,6 +80,7 @@ class ContactScheduledCall extends \yii\db\ActiveRecord {
                 $action->addManagerNotification($action->id, $this->system_date, 'scheduled_call', $this->manager_id, $this->contact_id);
             }
             if (!is_null($action_comment_text)) {
+//                $action_comment = new ActionComment(['comment' => $action_comment_text,'datetime'=>$this->system_date,'action_id'=>$action->id]);
                 $action_comment = new ActionComment(['comment' => $action_comment_text]);
                 $action_comment->save();
                 $action->link('comment', $action_comment);

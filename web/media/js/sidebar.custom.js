@@ -10,6 +10,9 @@
         $this.toggleClass('open-custom-sidebar');
       });
 
+      $('.header .js-switch-sidebar').on('click', function(){
+        $this.toggleClass('open-custom-sidebar');
+      });
     });
   }
 

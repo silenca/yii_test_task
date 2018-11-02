@@ -106,21 +106,25 @@ class ImportContactForm extends ContactForm
 
     public function checkPhone($phone, $attribute)
     {
-        if ($phone !== null) {
-            if (strlen($phone) != 11) {
-                $this->addError($attribute, 'Ошибка: номер (' . $phone . ') записан в ненадлежащем формате.');
-                return false;
-            }
-        }
-
-        $firstNumber = $phone[0];
-        if ($firstNumber !== null) {
-            if ($firstNumber == '8') {
-                $phone[0] = '7';
-            } else if ($firstNumber !== '7') {
-                $this->addError($attribute, 'Ошибка: номер (' . $phone . ') не принадлежит номерной ёмкости РФ.');
-                return false;
-            }
+//        if ($phone !== null) {
+//            if (strlen($phone) != 11) {
+//                $this->addError($attribute, 'Ошибка: номер (' . $phone . ') записан в ненадлежащем формате.');
+//                return false;
+//            }
+//        }
+//
+//        $firstNumber = $phone[0];
+//        if ($firstNumber !== null) {
+//            if ($firstNumber == '8') {
+//                $phone[0] = '7';
+//            } else if ($firstNumber !== '7') {
+//                $this->addError($attribute, 'Ошибка: номер (' . $phone . ') не принадлежит номерной ёмкости РФ.');
+//                return false;
+//            }
+//        }
+        if (!preg_match('/^\+?\d{10,}$/', $phone)) {
+            $this->addCustomError($attribute, 'Телефон должен содержать только цифры (не менее 10 цифр)');
+            return false;
         }
         $fields = Contact::getPhoneCols();
         $conflictId = $this->isUnique($phone, $attribute, $fields, function($attr, $value, $int_contact_id) use ($attribute) {

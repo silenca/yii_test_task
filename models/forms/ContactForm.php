@@ -33,6 +33,7 @@ class ContactForm extends Model
     public $tags_str;
     public $tags;
 
+<<<<<<< HEAD
     public $country;
     public $region;
     public $area;
@@ -55,6 +56,21 @@ class ContactForm extends Model
             'street' => 'Улица'
         ];
     }
+=======
+    var $country;
+    var $city;
+
+    var $status;
+    var $attraction_channel_id;
+    var $birthday;
+    var $notification_service_id;
+    var $language_id;
+    var $is_broadcast;
+
+    var $edited_id;
+    var $conflict_id;
+    var $manager_id;
+>>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
 
     public static function getAllCols() {
         return [
@@ -64,12 +80,14 @@ class ContactForm extends Model
             'middle_name',
             'emails',
             'country',
-            'region',
-            'area',
             'city',
-            'street',
-            'house',
-            'flat'
+            'attraction_channel_id',
+            'birthday',
+            'is_broadcast',
+            'language_id',
+            'notification_service_id',
+            'status',
+            'manager_id'
         ];
     }
 
@@ -81,22 +99,17 @@ class ContactForm extends Model
             [['emails'], 'emailArray'],
 
             [['name', 'surname'], 'match', 'pattern' => "/^[\s\p{Cyrillic}\-()]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
-            [['name', 'surname', 'middle_name'], 'string', 'length' => [1, 150],
+            [['name', 'surname', 'country', 'city', 'birthday', 'middle_name'], 'string', 'length' => [1, 150],
                 'tooShort' => 'Ошибка: поле {attribute} должно содержать не менее {min} символов',
                 'tooLong' => 'Ошибка: поле {attribute} должно содержать не более {max} символов'],
             [['middle_name'], 'match', 'pattern' => "/^[\s\p{Cyrillic}\-()]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
-            [['country'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
-            [['region', 'area'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
-            [['city'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\(\)\d]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
-            //[['street'], 'match', 'pattern' => "/^[-\s\d\p{Cyrillic}:_,.\(\)\\\\\/]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
-            [['house', 'flat'], 'match', 'pattern' => "/^[\p{Cyrillic}\s\-\.\d\/]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
 
             [['tags_str'], 'tagsArray'],
 
             [[
                 'first_phone', 'second_phone', 'third_phone', 'fourth_phone',
                 'first_email', 'second_email',
-                'middle_name', 'region', 'area', 'city', 'street', 'house', 'flat'
+                'middle_name', 'attraction_channel_id','manager_id','status', 'birthday', 'is_broadcast','notification_service_id', 'language_id', 'country', 'city'
             ], 'default'],
         ];
     }
@@ -121,6 +134,22 @@ class ContactForm extends Model
         return true;
     }
 
+<<<<<<< HEAD
+=======
+    public function attributeLabels()
+    {
+        return [
+            'name' => 'Имя',
+            'surname' => 'Фамилия',
+            'middle_name' => 'Отчество',
+            'phones' => 'Номер телефона',
+            'emails' => 'Email',
+            'attraction_channel_id' => 'Канал привлечения',
+            'manager_id' => 'Ответсвенный'
+        ];
+    }
+
+>>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
     public function formName()
     {
         return 'contact';
@@ -137,9 +166,9 @@ class ContactForm extends Model
         $res_data = [];
         $data = array_map('trim', explode(',', $data));
         if ($type == 'phones') {
-            $data = array_map(function($el) {
-                return preg_replace("/[^a-zA-Z0-9]/i","", $el);
-            }, $data);
+//            $data = array_map(function($el) {
+//                return preg_replace("/[^a-zA-Z0-9]/i","", $el);
+//            }, $data);
             $data_cols = Contact::getPhoneCols();
         } else {
             $data_cols = Contact::getEmailCols();
@@ -193,13 +222,27 @@ class ContactForm extends Model
     public function checkPhone($phone, $attribute)
     {
         if ($phone !== null) {
-            if (!preg_match('/^\d*$/', $phone)) {
-                $this->addCustomError($attribute, 'Телефон не должен содержать буквенные символы');
-            } elseif (strlen($phone) == 10) {
-                $this->addCustomError($attribute, 'Код страны не введен. Код России: 7');
-            } elseif (strlen($phone) < 10 || strlen($phone) > 15) {
-                $this->addCustomError($attribute, 'Телефон заполнен некорректно');
+//            if (!preg_match('/^\d*$/', $phone)) {
+//                $this->addCustomError($attribute, 'Телефон не должен содержать буквенные символы');
+//            } else
+            if (!preg_match('/^\+?\d{10,}$/', $phone)) {
+                $this->addCustomError($attribute, 'Телефон должен содержать только цифры (не менее 10 цифр)');
             }
+<<<<<<< HEAD
+=======
+//            elseif (strlen($phone) <= 10 || strlen($phone) > 15) {
+//                $this->addCustomError($attribute, 'Телефон заполнен некорректно');
+//            }
+//            elseif (!preg_match('/^(8|7|\+7)/', $phone)) {
+//                if ($this->getFirstError($attribute) == null) {
+//                    $this->addError($attribute, 'Код страны введен не верно');
+//                }
+//            } elseif (!preg_match('/^(8|7|\+7)((\d{10})|(\s\(\d{3}\)\s\d{3}\s\d{2}\s\d{2}))/', $phone)) {
+//                if ($this->getFirstError($attribute) == null) {
+//                    $this->addError($attribute, 'Телефон заполнен некорректно');
+//                }
+//            }
+>>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
         }
     }
 

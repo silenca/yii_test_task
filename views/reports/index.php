@@ -20,7 +20,7 @@ $this->params['active'] = 'reports';
         </ul>
         <div class="panel panel-transparent">
             <div class="panel-body">
-                <div class="col-lg-offset-9 col-md-3">
+                <div class="col-lg-offset-9 col-md-3 m-b-15">
                     <div class="input-group">
                         <label class="input-group-addon" for="daterange">За период</label>
                         <input id="daterange" type="text" name="daterange" placeholder="За период" class="form-control"/>

@@ -121,7 +121,7 @@ $(function() {
     $contact_form = $('#modalAddContact');
     $contact_data_form = $contact_form.find('.contact-data');
 
-    $('input[type=text], input[type=email]', $contact_data_form).on('blur', function () {
+    $('input[type=text], input[type=email],select', $contact_data_form).on('blur', function () {
         $(this).data('value', $(this).val());
         checkChanges($(this).attr('name'), $(this).data('value'), $contact_form);
     });
@@ -193,11 +193,12 @@ $(function() {
     var date = new Date();
     var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
+
+
     $('.datepicker').datetimepicker({
         locale: 'ru'
         //minDate: today
     });
-
     $('.google-cal-show').on('change', function() {
         if ($(this).is(':checked')) {
             processGApiAuth();
@@ -308,9 +309,15 @@ function openContactForm(id) {
     $contact_form.modal({backdrop: false});
 }
 
-function openNewContactForm() {
+function openNewContactForm(phone,attraction_channel) {
     clearContactForm($contact_form);
     $contact_form.modal({});
+    if(phone != undefined) {
+        $contact_form.find('#contact_phones').val(phone);
+    }
+    if(attraction_channel != undefined) {
+        $contact_form.find('#attraction_channel option[value='+attraction_channel+']').prop('selected',true);
+    }
     bindLiveChange($contact_data_form);
 }
 
@@ -329,6 +336,8 @@ function clearContactForm($form) {
     $form.find('input').val('');
     $form.find('#contact_manager_name').text('');
     $form.find('.contact-manager-name-cont').hide();
+    $form.find('#attraction_channel option.select-placeholder').prop('selected',true);
+    $form.find('#attraction_channel').data('value','');
     hideNotifications($form);
 }
 
@@ -404,6 +413,18 @@ function fillContactData(data, $form) {
                 });
                 $tagsInput.attr('data-value', tags_str.join(','));
                 // $tagsInput.tagsinput('add', tags);
+                break;
+            case 'attraction_channel_id':
+                var input = $form.find('#attraction_channel option[value="'+value+'"]');
+                if(input.length){
+                    input.prop('selected',true);
+                    $form.find('#attraction_channel').data('value',value);
+                }
+                else{
+                    $form.find('#attraction_channel').data('value','') ;
+                    $form.find('#attraction_channel option.select-placeholder').prop('selected',true);
+                }
+
                 break;
             // case 'manager_tags':
             //     managerTags = value;
@@ -489,7 +510,7 @@ function changeActionsForm(action) {
 }
 
 function bindLiveChange($form) {
-    $.each($('input[type=text],input[type=email]', $form), function (i, input) {
+    $.each($('input[type=text],input[type=email],select', $form), function (i, input) {
         var name = $(input).attr('name');
         if (name) {
             bind_inputs[name] = $(input).attr('data-value') + '';
