@@ -63,6 +63,7 @@ $this->params['active'] = 'contact';
                 </div>
                 <div class="pull-right">
                     <div class="col-xs-12">
+
                         <button class="btn btn-primary btn-cons pull-right" id="open-new-contact-from">
                             <i class="fa fa-plus"></i>
                             Добавить контакт

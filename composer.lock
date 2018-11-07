@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-
+    "content-hash": "4f4a71bded59097ef52eaebe6714fb36",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -329,7 +329,6 @@
                 "html"
             ],
             "time": "2015-08-05T01:03:42+00:00"
-
         },
         {
             "name": "mobiledetect/mobiledetectlib",
@@ -381,7 +380,7 @@
                 "mobile detector",
                 "php mobile detect"
             ],
-            "time": "2018-09-01 15:05:15"
+            "time": "2018-09-01T15:05:15+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -1151,7 +1150,10 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.4.0"
+        "php": ">=7.1.0",
+        "ext-json": "*",
+        "ext-curl": "*",
+        "ext-simplexml": "^7.2"
     },
     "platform-dev": []
 }

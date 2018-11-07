@@ -450,17 +450,21 @@ function checkChanges(name, value, $form) {
 function editContact($form, name, value) {
     var data = {};
     $.each(bind_inputs, function (key, value) {
-        if (value != "undefined")
+        if (value !== 'undefined') {
             data[key] = value;
+        }
     });
-    data['_csrf'] = _csrf;
-    if (bind_inputs['phones']) {
+    data._csrf = _csrf;
+    var bind_inputs = [];
+    if (bind_inputs.phones) {
+        console.log('=============data============');
+        console.log(data);
         $.post('/contacts/edit', data, function (response) {
             $form.find('label.error').remove();
             $form.find('.error').removeClass('error');
             var result = $.parseJSON(response);
-            if (result.status == 200) {
-                bind_inputs['id'] = result.data.id;
+            if (result.status === 200) {
+                bind_inputs.id = result.data.id;
                 if (name && value) {
                     bind_inputs[name] = value;
                 }
@@ -468,21 +472,21 @@ function editContact($form, name, value) {
                 if (typeof dataTable !== 'undefined') { dataTable.draw(false); }
                 if (typeof tagContactsdataTable !== 'undefined') { tagContactsdataTable.columns(0).search($('#contacts_list').val()).draw(); }
                 if (typeof contactsModaldataTable !== 'undefined') { contactsModaldataTable.columns().search('').draw(); }
-                if (!data['id']) {
+                if (!data.id) {
                     getHistory(result.data.id, $form);
                 }
             }
-            if (result.status == 415) {
+            if (result.status === 415) {
                 $.each(result.errors, function (name, errors) {
                     addError($form, name, errors);
                 });
 
             }
-            if (result.status == 412) {
+            if (result.status === 412) {
                 //alert(result.errors);
                 showNotification('#modalAddContact', result.errors, 'top', 'danger', 'bar');
             }
-            if (result.status == 403) {
+            if (result.status === 403) {
                 showNotification('#modalAddContact', result.errors, 'top', 'danger', 'bar', 5000);
             }
         });
@@ -492,17 +496,17 @@ function editContact($form, name, value) {
 
 function changeActionsForm(action) {
     switch (action) {
-        case "call":
+        case 'call':
             $contact_form.find('#contact-actions .contact-action').hide();
             $contact_form.find('#contact-actions #action_call').show();
             $contact_form.find('#contact-actions #action_schedule_date').show();
             break;
-        case "email":
+        case 'email':
             $contact_form.find('#contact-actions .contact-action').hide();
             $contact_form.find('#contact-actions #action_email').show();
             $contact_form.find('#contact-actions #action_schedule_date').show();
             break;
-        case "0":
+        case '0':
             $contact_form.find('#contact-actions .contact-action').hide();
             $contact_form.find('#contact-actions #action_schedule_date').hide();
             break;
@@ -529,10 +533,10 @@ function getHistory(id, $form) {
             $.each(response.data, function (i, val) {
                 var $item = $('<div/>');
                 switch (val.type) {
-                    case "scheduled_call":
+                    case 'scheduled_call':
                         $item.addClass('scheduled_call');
                         break;
-                    case "scheduled_email":
+                    case 'scheduled_email':
                         $item.addClass('scheduled_email');
                         break;
                     case 'ring_round':
@@ -540,7 +544,7 @@ function getHistory(id, $form) {
                         break;
                 }
 
-                $item.append(escapeHtml(val.datetime + " - " + val.text));
+                $item.append(escapeHtml(val.datetime + ' - ' + val.text));
                 $content.append($item);
             });
             $form.find('.history_loader').hide();
@@ -567,7 +571,7 @@ function addComment(id, $form) {
     $.post('/contacts/addcomment', data, function (response) {
         var result = $.parseJSON(response);
         if (result.status === 200) {
-            $form.find('.history_content').append("<div>" + result.data.datetime + " - " + result.data.text + "</div>");
+            $form.find('.history_content').append('<div>' + result.data.datetime + ' - ' + result.data.text + '</div>');
             $contact_comment.val('');
         }
     });
@@ -577,12 +581,12 @@ function addError($form, name, errors) {
     var $field = $form.find('[name="' + name + '"]');
     $.each(errors, function (i, error) {
         $field.addClass('error');
-        $field.after("<label class='error'>" + error + "</lable>");
+        $field.after('<label class=\'error\'>' + error + '</label>');
     });
 }
 
 var entityMap = {
-    "&": "&amp;",
+    '&': '&amp;',
     "<": "&lt;",
     ">": "&gt;",
     '"': '&quot;',
@@ -610,7 +614,7 @@ $('.acb-call-btn').click(function(e) {
     $(this).toggleClass('btn-secondary');
     $(this).toggleClass('btn-primary');
     $(this).attr('disabled', true);
-    sipCall("make-call");
+    sipCall('make-call');
 });
 $('.acb-hang-up-btn').click(function(e) {
     e.preventDefault();

@@ -797,16 +797,14 @@ ColVis.prototype = {
 		/* This results in a very small delay for the end user but it allows the animation to be
 		 * much smoother. If you don't want the animation, then the setTimeout can be removed
 		 */
-		$(nHidden).animate({"opacity": 1}, that.s.iOverlayFade);
-		$(nBackground).animate({"opacity": 0.1}, that.s.iOverlayFade, 'linear', function () {
-			/* In IE6 if you set the checked attribute of a hidden checkbox, then this is not visually
-			 * reflected. As such, we need to do it here, once it is visible. Unbelievable.
-			 */
-			if ( $.browser && $.browser.msie && $.browser.version == "6.0" )
-			{
-				that._fnDrawCallback();
-			}
-		});
+		$(nHidden).animate({"opacity": 0}, {"opacity": 1}, function (e) {
+            document.body.removeChild(that.dom.background);
+            document.body.removeChild(that.dom.catcher);
+        });
+		$(nBackground).animate({"opacity": 0}, {"opacity": 0.1}, function (e) {
+            document.body.removeChild(that.dom.background);
+            document.body.removeChild(that.dom.catcher);
+        });
 
 		/* Visual corrections to try and keep the collection visible */
 		if ( !this.s.bCssPosition )
@@ -845,9 +843,10 @@ ColVis.prototype = {
 		{
 			this.s.hidden = true;
 
-			$(this.dom.collection).animate({"opacity": 0}, that.s.iOverlayFade, function (e) {
-				this.style.display = "none";
-			} );
+			$(this.dom.collection).animate({"opacity": 0}, {"opacity": 0}, function (e) {
+                document.body.removeChild(that.dom.background);
+                document.body.removeChild(that.dom.catcher);
+            });
 
 			$(this.dom.background).animate({"opacity": 0}, that.s.iOverlayFade, function (e) {
 				document.body.removeChild( that.dom.background );

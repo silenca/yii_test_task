@@ -95,7 +95,6 @@ class Tag extends ActiveRecord
             'emails' => ['label' => 'Email', 'have_search' => true, 'orderable' => false, 'db_cols' => ['first_email', 'second_email']],
             'tags' => ['label' => 'Теги', 'have_search' => true, 'orderable' => false],
             'country' => ['label' => 'Страна', 'have_search' => true, 'orderable' => true, 'db_cols' => ['country']],
-            'region' => ['label' => 'Регион', 'have_search' => true, 'orderable' => true, 'db_cols' => ['region']],
             'city' => ['label' => 'Город', 'have_search' => true, 'orderable' => true, 'db_cols' => ['city']],
         ];
     }

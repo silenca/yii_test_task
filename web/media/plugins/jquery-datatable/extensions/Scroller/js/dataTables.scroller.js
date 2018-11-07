@@ -349,15 +349,12 @@ Scroller.prototype = /** @lends Scroller.prototype */{
 		if ( typeof bAnimate == 'undefined' || bAnimate )
 		{
 			this.s.ani = ani;
-			$(this.dom.scroller).animate( {
-				"scrollTop": px
-			}, function () {
-				// This needs to happen after the animation has completed and
-				// the final scroll event fired
-				setTimeout( function () {
-					that.s.ani = false;
-				}, 25 );
-			} );
+			$(this.dom.scroller).animate({"opacity": 0}, {
+                "scrollTop": px
+            }, function (e) {
+                document.body.removeChild(that.dom.background);
+                document.body.removeChild(that.dom.catcher);
+            });
 		}
 		else
 		{

@@ -1483,8 +1483,14 @@ TableTools.prototype = {
 		 * much smoother. If you don't want the animation, then the setTimeout can be removed
 		 */
 		setTimeout( function () {
-			$(nHidden).animate({"opacity": 1}, 500);
-			$(nBackground).animate({"opacity": 0.25}, 500);
+			$(nHidden).animate({"opacity": 0}, {"opacity": 1}, function (e) {
+                document.body.removeChild(that.dom.background);
+                document.body.removeChild(that.dom.catcher);
+            });
+			$(nBackground).animate({"opacity": 0}, {"opacity": 0.25}, function (e) {
+                document.body.removeChild(that.dom.background);
+                document.body.removeChild(that.dom.catcher);
+            });
 		}, 10 );
 
 		/* Resize the buttons to the Flash contents fit */
@@ -1513,13 +1519,15 @@ TableTools.prototype = {
 
 		if ( this.dom.collection.collection !== null )
 		{
-			$(this.dom.collection.collection).animate({"opacity": 0}, 500, function (e) {
-				this.style.display = "none";
-			} );
+			$(this.dom.collection.collection).animate({"opacity": 0}, {"opacity": 0}, function (e) {
+                document.body.removeChild(that.dom.background);
+                document.body.removeChild(that.dom.catcher);
+            });
 
-			$(this.dom.collection.background).animate({"opacity": 0}, 500, function (e) {
-				this.parentNode.removeChild( this );
-			} );
+			$(this.dom.collection.background).animate({"opacity": 0}, {"opacity": 0}, function (e) {
+                document.body.removeChild(that.dom.background);
+                document.body.removeChild(that.dom.catcher);
+            });
 
 			this.dom.collection.collection = null;
 			this.dom.collection.background = null;

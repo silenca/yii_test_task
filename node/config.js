@@ -1,8 +1,9 @@
 exports.mysql = {
-    host: '127.0.0.1',
+    host: 'localhost',
     user: 'root',
     password: '',
-    database: 'yiitt'
+    database: 'yiitt',
+    port: '3306'
 };
 
 exports.crm = {

@@ -164,7 +164,7 @@ $(function() {
 
     $('.action_send_now').on('change', function() {
         var $form = $(this).closest('form'),
-            opts = $form.attr('id') == 'form_action_call' ? form_action_call_validate : form_action_email_validate;
+            opts = $form.attr('id') === 'form_action_call' ? form_action_call_validate : form_action_email_validate;
         // $(this).parents('.panel').
         if ($(this).is(':checked')) {
             changeActionSendNow($form, 'enable', opts);
@@ -199,7 +199,7 @@ $(function() {
         itemValue: 'text',
         itemText: 'text',
         tagClass: function(item) {
-            if (userRole == 'admin') {
+            if (userRole === 'admin') {
                 return 'label label-success';
             } else if (managerTags.indexOf(item.text) === -1) {
                 return 'label';
@@ -216,7 +216,7 @@ $(function() {
 });
 
 function changeActionSendNow($form, action, opts) {
-    var state = action == 'enable';
+    var state = action === 'enable';
     $form.find('input[name="schedule_date"]').val('').attr('disabled', state);
     $form.find('.google-cal-show').attr('checked', false).attr('disabled', state);
     if (state) {
@@ -232,7 +232,7 @@ function resetActionForm(form) {
     $(form).find('input:not(:radio)').val('').attr('disabled', false);
     $(form).find('textarea').val('').attr('disabled', false);
     $(form).find('input[type="checkbox"]').prop('checked', false);
-    if ($(form).attr('id') == 'form_action_call') {
+    if ($(form).attr('id')=== 'form_action_call') {
         $(form).find('.attitude').hide();
     }
 }
@@ -385,18 +385,17 @@ function manageContactFormPermissions(userRole) {
 
 function fillContactData(data, $form) {
     $.each(data, function(key, value) {
-        console.log()
         switch (key) {
             case 'int_id':
                 $form.find('.contact-title').text('Контакт №' + value);
                 break;
             case 'is_deleted':
-                (value == 1) ? $('.contact-deleted').show() : $('.contact-deleted').hide();
+                (value=== 1) ? $('.contact-deleted').show() : $('.contact-deleted').hide();
                 break;
             case 'manager_name':
                 $('#contact_manager_name').text(value);
                 $('.contact-manager-name-cont').show();
-            break;
+                break;
             case 'tags':
                 var $tagsInput = $('#contact_tags'),
                     tags_str = [];
@@ -475,7 +474,7 @@ function editContact($form, name, value) {
             $form.find('label.error').remove();
             $form.find('.error').removeClass('error');
             var result = $.parseJSON(response);
-            if (result.status == 200) {
+            if (result.status=== 200) {
                 contact_bind_inputs['id'] = result.data.id;
                 if (name && value) {
                     contact_bind_inputs[name] = value;
@@ -488,17 +487,17 @@ function editContact($form, name, value) {
                     getHistory(result.data.id, $form);
                 }
             }
-            if (result.status == 415) {
+            if (result.status === 415) {
                 $.each(result.errors, function (name, errors) {
                     addError($form, name, errors);
                 });
 
             }
-            if (result.status == 412) {
+            if (result.status === 412) {
                 //alert(result.errors);
                 showNotification('#modalAddContact', result.errors, 'top', 'danger', 'bar');
             }
-            if (result.status == 403) {
+            if (result.status === 403) {
                 showNotification('#modalAddContact', result.errors, 'top', 'danger', 'bar', 5000);
             }
         });

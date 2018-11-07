@@ -437,30 +437,42 @@ AutoFill.prototype = {
 
 			if ( that.s.screen.height - that.s.screen.y + iScrollTop < 50 )
 			{
-				$('html, body').animate( {
-					"scrollTop": iScrollTop + 50
-				}, 240, 'linear' );
+				$('html, body').animate({"opacity": 0}, {
+                    "scrollTop": iScrollTop + 50
+                }, function (e) {
+                    document.body.removeChild(that.dom.background);
+                    document.body.removeChild(that.dom.catcher);
+                });
 			}
 			else if ( that.s.screen.y - iScrollTop < 50 )
 			{
-				$('html, body').animate( {
-					"scrollTop": iScrollTop - 50
-				}, 240, 'linear' );
+				$('html, body').animate({"opacity": 0}, {
+                    "scrollTop": iScrollTop - 50
+                }, function (e) {
+                    document.body.removeChild(that.dom.background);
+                    document.body.removeChild(that.dom.catcher);
+                });
 			}
 
 			if ( that.s.dt.oScroll.sY !== "" )
 			{
 				if ( that.s.screen.y > that.s.scroller.bottom - 50 )
 				{
-					$(that.s.dt.nTable.parentNode).animate( {
-						"scrollTop": $(that.s.dt.nTable.parentNode).scrollTop() + 50
-					}, 240, 'linear' );
+					$(that.s.dt.nTable.parentNode).animate({"opacity": 0}, {
+                        "scrollTop": $(that.s.dt.nTable.parentNode).scrollTop() + 50
+                    }, function (e) {
+                        document.body.removeChild(that.dom.background);
+                        document.body.removeChild(that.dom.catcher);
+                    });
 				}
 				else if ( that.s.screen.y < that.s.scroller.top + 50 )
 				{
-					$(that.s.dt.nTable.parentNode).animate( {
-						"scrollTop": $(that.s.dt.nTable.parentNode).scrollTop() - 50
-					}, 240, 'linear' );
+					$(that.s.dt.nTable.parentNode).animate({"opacity": 0}, {
+                        "scrollTop": $(that.s.dt.nTable.parentNode).scrollTop() - 50
+                    }, function (e) {
+                        document.body.removeChild(that.dom.background);
+                        document.body.removeChild(that.dom.catcher);
+                    });
 				}
 			}
 		}, 250 );

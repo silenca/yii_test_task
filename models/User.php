@@ -8,12 +8,16 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
+/**
+ * @property mixed role
+ */
 class User extends ActiveRecord implements IdentityInterface {
 
-    const ROLE_ADMIN = 15;
-    const ROLE_SUPERVISOR = 10;
-    const ROLE_MANAGER = 5;
-    const ROLE_OPERATOR = 1;
+    public const ROLE_ADMIN = 15;
+    public const ROLE_SUPERVISOR = 10;
+    public const ROLE_MANAGER = 5;
+    public const ROLE_OPERATOR = 1;
+    public $id;
 
     public static function tableName() {
         return 'user';

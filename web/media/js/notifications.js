@@ -1,6 +1,6 @@
 $(function () {
     var socket = io.connect(notify_host);
-    //var socket = io.connect('http://127.0.0.1:8001');
+    console.log(notify_host, notify_id);
     socket.emit('join', {notify_id: notify_id});
 
     function acceptCall(cal_id) {
@@ -20,7 +20,7 @@ $(function () {
                 + data.phone + "</a></div>");
         } else {
             $message_content.append("<div class='alert-link'><a href='javascript:void(0)' class='notification-open-new-contact' data-attraction-channel-id='" +
-                (data.attraction_channel_id!=undefined?data.attraction_channel_id:'') +
+                (data.attraction_channel_id!==undefined?data.attraction_channel_id:'') +
                 "' data-call-id='"+data.call_id+"'>" + data.phone + "</a></div>");
         }
 
