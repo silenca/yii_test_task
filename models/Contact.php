@@ -65,12 +65,9 @@ class Contact extends \yii\db\ActiveRecord
         'attraction_channel_id',
         'notification_service_id',
         'is_broadcast',
-<<<<<<< HEAD
         'language_id',
         'medium_oid'
-=======
-        'language_id'
->>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
+
     ];
 
     public $is_called;
@@ -83,12 +80,6 @@ class Contact extends \yii\db\ActiveRecord
     const MEDIUM_API_URL = 'http://91.225.122.210:8080/api/H:1D13C88C20AA6C6/D:WORK/D:1D13C9303C946F9/C:1D45F18F27C737D/';
     const MEDIUM_API_OBJECT = 'O:'; //FOR SINGLE OBJECT
     const MEDIUM_API_ITEM = 'I:'; //FOR LISTINGS
-
-    const IS_BROADCAST_TRUE = 1;
-    const IS_BROADCAST_FALSE = 0;
-
-    const LEAD = 1;
-    const CONTACT = 2;
 
     /**
      * @inheritdoc
@@ -127,15 +118,8 @@ class Contact extends \yii\db\ActiveRecord
     {
         return [
             [['int_id'], 'required'],
-<<<<<<< HEAD
-            [['int_id', 'manager_id'], 'integer'],
-            [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'country', 'region', 'area', 'city', 'street', 'house', 'flat', 'status'], 'string', 'max' => 255],
-            [['int_id', 'manager_id', 'notification_service_id', 'language_id', 'attraction_channel_id'], 'integer'],
-            [['first_phone', 'medium_oid', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'birthday', 'country', 'city'], 'string', 'max' => 255],
-=======
             [['int_id', 'manager_id', 'notification_service_id', 'language_id', 'attraction_channel_id'], 'integer'],
             [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'birthday', 'country', 'city'], 'string', 'max' => 255],
->>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
             [['name', 'surname', 'middle_name'], 'string', 'max' => 150],
             [['first_email', 'second_email'], 'string', 'max' => 255],
 //            [['status'],]
@@ -180,23 +164,13 @@ class Contact extends \yii\db\ActiveRecord
             'country',
             'birthday',
             'city',
-<<<<<<< HEAD
-            'street',
-            'house',
-            'flat',
-=======
->>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
             'is_broadcast',
             'language_id',
             'attraction_channel_id',
             'notification_service_id',
             'status',
-<<<<<<< HEAD
             'manager_id',
             'medium_oid'
-=======
-            'manager_id'
->>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
         ];
     }
 
@@ -213,20 +187,10 @@ class Contact extends \yii\db\ActiveRecord
             'emails' => ['label' => 'Email', 'have_search' => true, 'orderable' => false, 'db_cols' => ['first_email', 'second_email']],
             'tags' => ['label' => 'Теги', 'have_search' => true, 'orderable' => false],
             'country' => ['label' => 'Страна', 'have_search' => true, 'orderable' => true],
-<<<<<<< HEAD
-            'region' => ['label' => 'Регион', 'have_search' => true, 'orderable' => true],
-            'area' => ['label' => 'Район', 'have_search' => true, 'orderable' => true],
-            'city' => ['label' => 'Город', 'have_search' => true, 'orderable' => true],
-            'street' => ['label' => 'Улица', 'have_search' => true, 'orderable' => true],
-            'house' => ['label' => 'Дом', 'have_search' => true, 'orderable' => true],
-            'flat' => ['label' => 'Квартира', 'have_search' => true, 'orderable' => true],
-            'birthday'=> ['label' => 'Дата рождения', 'have_search' => true, 'orderable' => true],
-            'city' => ['label' => 'Город проживания', 'have_search' => true, 'orderable' => true],
+
             'medium_oid' => ['label' => 'Идентификатор Medium', 'have_search' => true, 'orderable' => true],
-=======
             'birthday'=> ['label' => 'Дата рождения', 'have_search' => true, 'orderable' => true],
             'city' => ['label' => 'Город проживания', 'have_search' => true, 'orderable' => true],
->>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
             'attraction_channel_id' => ['label' => 'Канал привлечения', 'have_search' => true, 'orderable' => true],
             'is_broadcast' => ['label' => 'Рассылка', 'have_search' => true, 'orderable' => true],
             'notification_service_id' => ['label' => 'Способ оповещения', 'have_search' => true, 'orderable' => true],
@@ -635,10 +599,7 @@ class Contact extends \yii\db\ActiveRecord
 
     public static function addContInPool($contact_id, $manager_id, $tag_id, $order_token)
     {
-<<<<<<< HEAD
 
-=======
->>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
         $cont_pool = TempContactsPool::findOne(['contact_id' => $contact_id, 'manager_id' => $manager_id, 'tag_id' => $tag_id]);
         if ($cont_pool) {
             $cont_pool->delete();
@@ -681,7 +642,6 @@ class Contact extends \yii\db\ActiveRecord
         return $this->hasOne(ContactNotificationService::className(), ['id' => 'notification_service_id']);
     }
 
-<<<<<<< HEAD
     /**
      * @param $oid
      */
@@ -742,8 +702,6 @@ class Contact extends \yii\db\ActiveRecord
         }
         return $clients;
     }
-=======
->>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
 
     /**
      * @return bool

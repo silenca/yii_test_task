@@ -76,20 +76,13 @@ class ContactsController extends BaseController
                         'roles' => ['admin','supervisor'],
                     ],
                     [
-<<<<<<< HEAD
-                        'actions' => ['remove-tag'],
-=======
->>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
                         'actions' => [
                             'remove-tag',
                             'index',
                             'getdata',
                             'hide-columns',
                             'search',
-<<<<<<< HEAD
                             'get-medium-objects',
-=======
->>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
                             'link-with',
                         ],
                         'allow' => true,
@@ -645,7 +638,6 @@ class ContactsController extends BaseController
         $call->save();
         Notification::closeCall(['call_id'=>$call->id]);
     }
-<<<<<<< HEAD
     public function actionGetMediumObject($obj){
 
     }
@@ -656,6 +648,4 @@ class ContactsController extends BaseController
     public function actionSaveMediumObject($obj){
 //        $contact =
     }
-=======
->>>>>>> 4ee9b1156a532a092c97ecdc4d2165e3b8aea6fb
 }
