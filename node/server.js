@@ -27,21 +27,20 @@ handleDisconnect(connection);
 
 var clients = [];
 io.sockets.on('connection', function (socket) {
-    clients.push(socket);
-    console.log(`New connection: ${socket.id}`);
-    socket.on('disconnect', function () {
-        var index = clients.indexOf(socket);
-        if (index != -1) {
-            socket.leave(socket.room);
-            clients.splice(index, 1);
-        }
-    });
-
+    // clients.push(socket);
     socket.on('join', function (data) {
+        console.log('datadata');
+        console.log(data);
+        console.log('data.notify_id');
         console.log(data.notify_id);
+        console.log('length');
+        console.log(data.notify_id.length);
         if (data.notify_id && data.notify_id.length === 32) {
             connection.query('SELECT `user`.`role` from `user` where `notification_key` = "' + data.notify_id + '" LIMIT 1', function (err, rows, fields) {
-                // console.log(rows);
+                console.log('row');
+                console.log(rows);
+                console.log('fields');
+                console.log(fields);
                 if (!err && rows.length>0) {
                     switch (rows[0].role) {
                         case 1:
@@ -59,8 +58,23 @@ io.sockets.on('connection', function (socket) {
                     console.log('Error while performing Query.', err);
                 }
             });
+        }else{
+            console.log('less');
         }
     });
+
+        // console.log(`New connection: ${socket.id}`);
+
+
+    socket.on('disconnect', function () {
+        var index = clients.indexOf(socket);
+        if (index != -1) {
+            socket.leave(socket.room);
+            clients.splice(index, 1);
+        }
+    });
+
+
 });
 
 

@@ -32,7 +32,11 @@ class ContactForm extends Model
 
     public $tags_str;
     public $tags;
-
+    public $country;
+    public $city;
+    public $edited_id;
+    public $conflict_id;
+    public $link_with;
 
     public function attributeLabels()
     {
@@ -45,8 +49,6 @@ class ContactForm extends Model
             'street' => 'Улица'
         ];
     }
-    var $country;
-    var $city;
 
     var $status;
     var $attraction_channel_id;
@@ -54,9 +56,6 @@ class ContactForm extends Model
     var $notification_service_id;
     var $language_id;
     var $is_broadcast;
-
-    var $edited_id;
-    var $conflict_id;
     var $manager_id;
 
     public static function getAllCols() {
@@ -74,7 +73,8 @@ class ContactForm extends Model
             'language_id',
             'notification_service_id',
             'status',
-            'manager_id'
+            'manager_id',
+            'link_with'
         ];
     }
 
@@ -96,7 +96,7 @@ class ContactForm extends Model
             [[
                 'first_phone', 'second_phone', 'third_phone', 'fourth_phone',
                 'first_email', 'second_email',
-                'middle_name', 'attraction_channel_id','manager_id','status', 'birthday', 'is_broadcast','notification_service_id', 'language_id', 'country', 'city'
+                'middle_name','link_with', 'attraction_channel_id','manager_id','status', 'birthday', 'is_broadcast','notification_service_id', 'language_id', 'country', 'city'
             ], 'default'],
         ];
     }
@@ -194,9 +194,25 @@ class ContactForm extends Model
     public function checkPhone($phone, $attribute)
     {
         if ($phone !== null) {
+//            if (!preg_match('/^\d*$/', $phone)) {
+//                $this->addCustomError($attribute, 'Телефон не должен содержать буквенные символы');
+//            } else
             if (!preg_match('/^\+?\d{10,}$/', $phone)) {
                 $this->addCustomError($attribute, 'Телефон должен содержать только цифры (не менее 10 цифр)');
             }
+
+//            elseif (strlen($phone) <= 10 || strlen($phone) > 15) {
+//                $this->addCustomError($attribute, 'Телефон заполнен некорректно');
+//            }
+//            elseif (!preg_match('/^(8|7|\+7)/', $phone)) {
+//                if ($this->getFirstError($attribute) == null) {
+//                    $this->addError($attribute, 'Код страны введен не верно');
+//                }
+//            } elseif (!preg_match('/^(8|7|\+7)((\d{10})|(\s\(\d{3}\)\s\d{3}\s\d{2}\s\d{2}))/', $phone)) {
+//                if ($this->getFirstError($attribute) == null) {
+//                    $this->addError($attribute, 'Телефон заполнен некорректно');
+//                }
+//            }
         }
     }
 

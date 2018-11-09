@@ -1,6 +1,5 @@
 /config/params-local.php
 /config/db.php
-/node/config.js
 # phpstorm project files
 .idea
 # nodejs restarter tool files

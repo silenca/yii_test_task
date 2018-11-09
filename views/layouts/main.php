@@ -86,8 +86,6 @@ else {
                                     <span class="icon-thumbnail <?= $this->params['active'] == 'contact' ? 'bg-success' : null ?>" title="Контакты"><i class="pg-contact_book"></i></span>
                                 </a>
                             </li>
-                        <?php endif; ?>
-
                         <?php if (Yii::$app->user->can('action')): ?>
                             <li>
                                 <a href="/action" class="detailed">
@@ -179,6 +177,8 @@ else {
                                 </div>
                             </li>
                         <?php endif; ?>
+                        <?php endif; ?>
+
                     </ul>
                     <div class="clearfix"></div>
                 </div>
@@ -273,6 +273,7 @@ else {
         <?php endif; ?>
 
         <?php $this->endBody() ?>
+
     </body>
 </html>
 <?php $this->endPage() ?>

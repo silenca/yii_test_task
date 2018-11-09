@@ -1,4 +1,7 @@
 <?php
+
+use app\components\SoapParser;
+
 if (file_exists(__DIR__ . '/params-local.php')) {
     $params = require(__DIR__ . '/params-local.php');
 } else {
@@ -12,6 +15,10 @@ $config = [
     'bootstrap' => ['log'],
     'timeZone' => 'Europe/Kiev',
     'components' => [
+        'SoapParser' => [
+            'class' => SoapParser::class,
+            'defaultRoles' => ['admin', 'manager', 'operator', 'supervisor']
+        ],
         'authManager' => [
             'class' => 'yii\rbac\PhpManager',
             'defaultRoles' => ['admin', 'manager', 'operator','supervisor']

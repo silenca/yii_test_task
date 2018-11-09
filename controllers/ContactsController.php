@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\components\Filter;
 use app\components\Notification;
 use app\components\widgets\ContactTableWidget;
+use app\models\Call;
 use app\models\Contact;
 use app\models\ContactComment;
 use app\models\ContactHistory;
@@ -16,11 +17,15 @@ use app\models\ContactTag;
 use app\models\forms\CommentForm;
 use app\models\forms\ContactForm;
 use app\models\User;
-use app\models\Call;
+use Faker\ORM\Doctrine\EntityPopulator;
+use SimpleXML;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\httpclient\Exception;
+use yii\httpclient\XmlParser as XmlParser;
 
 class ContactsController extends BaseController
 {
@@ -76,13 +81,18 @@ class ContactsController extends BaseController
                         'roles' => ['admin','supervisor'],
                     ],
                     [
+                        'actions' => ['remove-tag'],
                         'actions' => [
                             'remove-tag',
                             'index',
                             'getdata',
+                            'new-view',
                             'hide-columns',
                             'search',
-                            'get-medium-objects',
+                            'contacts',
+                            'get-medium-object',
+                            'update-medium-client',
+                            'save-medium-client',
                             'link-with',
                         ],
                         'allow' => true,
@@ -117,7 +127,7 @@ class ContactsController extends BaseController
          */
         $user = User::find()->where(['id'=>Yii::$app->user->identity->getId()])->one();
         $cols = $user->cols_config;
-        if($cols != null) {
+        if($cols !== null) {
             $cols = \json_decode($cols, true);
         } else {
             $cols = [];
@@ -143,13 +153,13 @@ class ContactsController extends BaseController
         $table_cols = Contact::getColsForTableView();
         $filter_cols = Contact::getColsForTableView();
 
-        if($user->getUserRole() == 'manager') {
+        if($user->getUserRole() === 'manager') {
             unset($table_cols['delete_button']);
             unset($filter_cols['delete_button']);
         }
 
         $config = $user->filter_config;
-        if($config != null) {
+        if($config !== null) {
             $config = \json_decode($config,true);
             if(isset($config['contacts'])) {
                 foreach ($config['contacts'] as $k => $v) {
@@ -162,15 +172,20 @@ class ContactsController extends BaseController
         return $this->render('index', ['hide_columns' => $hide_columns, 'table_cols' => $table_cols, 'filter_cols' => $filter_cols]);
     }
 
+    /**
+     *
+     */
     public function actionGetdata()
     {
         $request_data = Yii::$app->request->get();
+        $userEntity = Yii::$app->user->getIdentity();
         $contact_tableName = Contact::tableName();
         $query = Contact::find()->with('manager', 'tags')->distinct($contact_tableName . '.id');
         $query->where([$contact_tableName . '.is_deleted' => '0']);
         $columns = Contact::getColsForTableView();
-        $user_id = Yii::$app->user->identity->getId();
-        $user_role = Yii::$app->user->identity->getUserRole();
+        /** @var User $userEntity */
+        $user_id = $userEntity->id;
+        $user_role = $userEntity->role;
 
         //Sorting
         if (isset($request_data['order'])) {
@@ -189,7 +204,7 @@ class ContactsController extends BaseController
             ];
         }
 
-        if ($user_role == 'operator') {
+        if ($user_role === 'operator') {
             $query->joinWith('tags.users')->andWhere(['user.id' => $user_id]);
         }
         $query_total = clone $query;
@@ -233,7 +248,6 @@ class ContactsController extends BaseController
             ->limit($request_data['length'])
             ->offset($request_data['start']);
 
-        $dump = $query->createCommand()->rawSql;
         $contacts = $query->all();
         $contact_widget = new ContactTableWidget();
         $contact_widget->contacts = $contacts;
@@ -254,6 +268,7 @@ class ContactsController extends BaseController
     public function actionEdit()
     {
         $post = Yii::$app->request->post();
+
         $contact_form = new ContactForm();
         if ($post['id']) {
             $contact_form->edited_id = $post['id'];
@@ -262,7 +277,8 @@ class ContactsController extends BaseController
         if ($contact_form->validate()) {
             try {
                 $contact = NULL;
-                if (isset($post['id']) && !empty($post['id'])) {
+                if (isset($post['id']) && !empty($post['id']))
+                {
                     $contact = Contact::getById($post['id']);
                     if (!Yii::$app->user->can('updateContact', ['contact' => $contact])) {
                         $this->json(false, 403, 'Недостаточно прав для редактирования');
@@ -271,34 +287,47 @@ class ContactsController extends BaseController
                     if ($contact->is_deleted) {
                         $contact->is_deleted = 0;
                     }
-
-                    if($contact->manager_id != Yii::$app->user->identity->getId() &&
-                        !Yii::$app->user->can('supervisor') && !Yii::$app->user->can('admin')) {
+                    if(!$contact->medium_oid) {
+                        if (!empty($contact->status) && $contact->status === '2'){
+//                            $contact->medium_oid =
+                            $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
+                        }
+                    }else{
+                        if (!empty($contact->status) && $contact->status === '2') {
+                            $contact->medium_oid = Contact::updateMediumObject($contact->medium_oid, $contact_form->attributes);
+                        }
+                    }
+                    if($contact->manager_id !== Yii::$app->user->identity->getId() && !Yii::$app->user->can('supervisor') && !Yii::$app->user->can('admin')) {
                         $contact_form->manager_id = $contact->manager_id;
                     }
-                } else {
+                }
+                else {
                     $contact = new Contact();
+
                     if(!isset($post['manager_id'])
-                        || ($contact->manager_id != Yii::$app->user->identity->getId() &&
+                        || ($contact->manager_id !== Yii::$app->user->identity->getId() &&
                             !Yii::$app->user->can('supervisor') && !Yii::$app->user->can('admin'))) {
                         $contact_form->manager_id = Yii::$app->user->identity->id;
                     }
                     else {
                         $contact_form->manager_id = Yii::$app->user->identity->id;
                     }
-                }
+                    $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
 
-                unset($post['_csrf']);
-                unset($post['id']);
-//                $contact->setTags($contact_form->tags);
+                }
+                unset($post['_csrf'], $post['id']);
                 $contact->attributes = $contact_form->attributes;
                 $contact->remove_tags = true;
-
-
-                if ($contact->edit([])) {
+                try{
+                    $editEvent = $contact->edit([]);
+                } catch(\Exception $exception){
+                    return $exception;
+                }
+                if ($editEvent) {
                     $contact->sendToCRM();
                     $this->json(['id' => $contact->id], 200);
                 } else {
+                    $contact_form->getErrors();
                     $this->json(false, 415, $contact->getErrors());
                 }
             } catch (\Exception $ex) {
@@ -310,12 +339,16 @@ class ContactsController extends BaseController
         }
     }
 
-    public function actionSave()
+    /**
+     *
+     */
+    public function actionSave(): void
     {
-        $post = Yii::$app->request->post();
-        $contact_form = new ContactForm();
-        $contact_form->attributes = $post;
 
+        $post = Yii::$app->request->post();
+        $soap = new Yii::$app->SoapParser($post);
+//        var_dump($soap);die;
+        $contact_form = $post;
         if ($contact_form->validate()) {
             try {
                 $contact = new Contact();
@@ -355,8 +388,83 @@ class ContactsController extends BaseController
         }
     }
 
+    public function actionSyncAllMediumContacts()
+    {
+        $user = User::find()
+                ->where([
+                    'id'=>Yii::$app->user->identity->getId()
+                ])
+                ->one();
+        //TODO **refactoring-lowprior change user model's column names
+        $crmContacts = $user->cols_config;
+        $mediumContacts = Contact::getMediumObjects();
+        foreach($mediumContacts as $mediumContact) {
+            foreach($crmContacts as $crmContact) {
 
-    public function actionSearch()
+            }
+        }
+    }
+    public function actionForceUpdateContact($oid)
+    {
+        $request = Yii::$app->request->post();
+            try {
+                $contact = new Contact();
+                $xml = new XMLparser();
+                $xmlObject = $xml->parse($request);
+                var_dump($xmlObject);die;
+                foreach($xmlObject as $key=>$value) {
+                    switch($key){
+                        case 'name' || 'FIO':
+                        break;
+                         case 'ТелефонМоб' || 'Phone':
+                        break;
+                         case 'ДатаРождения' || 'birth':
+                        break;
+                         case 'ИсточникИнфомации' || 'ИсточникИнфомации':
+                        break;
+                         case 'ТелефонБинотел' || '':
+                        break;
+                         case 'name':
+                        break;
+                         case 'name':
+                        break;
+                    }
+                    $client[$key] = $value;
+                }
+
+                $contact->first_phone = $post['phone1'];
+                $contact->second_phone = $post['phone2'];
+                $contact->third_phone = $post['phone3'];
+                $contact->fourth_phone = $post['phone4'];
+                $contact->first_email = $post['email1'];
+                $contact->second_email = $post['email2'];
+                $contact->name = $post['first_name'];
+                $contact->surname = $post['last_name'];
+                $contact->middle_name = $post['middle_name'];
+                $contact->country = $post['country'];
+                $contact->city = $post['city'];
+                $contact->int_id = $post['internal_no'];
+                $contact->status = $post['status'];
+                $contact->birthday = $post['birthday'];
+
+                if ($contact->save()) {
+                    $contact_history = new ContactHistory();
+                    $contact_history->add($this->id, 'создан контакт (API)', 'new_contact');
+                    $contact_history->save();
+                    $contactStatusHistory = new ContactStatusHistory();
+                    $contactStatusHistory->add($this->id, $this->manager_id, 'lead');
+                    $contactStatusHistory->save();
+                    $this->json(['id' => $contact->id], 200);
+                } else {
+                    $this->json(false, 415, $contact->getErrors());
+                }
+            } catch (\Exception $ex) {
+                $this->json(false, 500);
+            }
+
+    }
+
+    public function actionSearch(): void
     {
         $search_term = Yii::$app->request->post('search_term');
         $id = Yii::$app->request->post('id');
@@ -371,8 +479,6 @@ class ContactsController extends BaseController
             ->orWhere(['like', $contact_tableName . '.third_phone', $search_term]);
 
         $query->andWhere(['is_deleted' => '0']);
-
-//        $dump = $query->createCommand()->rawSql;
 
         $user_id = Yii::$app->user->identity->getId();
         $user_role = Yii::$app->user->identity->getUserRole();
@@ -410,7 +516,7 @@ class ContactsController extends BaseController
         die;
     }
 
-    public function actionLinkWith()
+    public function actionLinkWith(): void
     {
         $linked_contact_id = Yii::$app->request->post('linked_contact_id');
         $link_to_contact_id = Yii::$app->request->post('link_to_contact_id');
@@ -431,25 +537,46 @@ class ContactsController extends BaseController
         }
     }
 
-    public function actionView()
+    public function actionNewView($contact){
+
+//        $newContactData = new Contact($contact->one());
+//        var_dump($contact);die;
+        $contact = $contact->one();
+        $email = 'E-mail';
+        $birthday = 'ДатаРождения';
+        $phone = 'ТелефонМоб';
+        $city = 'Город';
+
+        $syncData = Contact::getMediumObject($contact->medium_oid);
+        $contact->name =explode(' ', $syncData->name)[0];
+        $contact->surname =explode(' ', $syncData->name)[1];
+        $contact->middle_name =explode(' ', $syncData->name)[2];
+        $contact->first_phone =$syncData->$phone;
+        $contact->city =$syncData->$city;
+        $contact->birthday =$syncData->$birthday;
+        $contact->first_email = $syncData->$email;
+        $contact->status=2;
+        $contact->save();
+        return $contact;
+    }
+    public function actionView(): bool
     {
         $user_id = Yii::$app->user->identity->getId();
         $contact_id = Yii::$app->request->get('id');
         $contact = Contact::find()->with('tags')->where(['id' => $contact_id]);
+        $contact = $this->actionNewView($contact);
+//        var_dump($contact);die;
         $contact2 = clone $contact;
-        $contact2 = $contact2->one();
-        $contact_arr = $contact->asArray()->one();
-        $contact_data = array_intersect_key($contact_arr, array_flip(Contact::$safe_fields));
+        $contact_data = array_intersect_key($contact->attributes, array_flip(Contact::$safe_fields));
 
-        $contact_data['phones'] = Filter::dataImplode($contact2->getPhoneValues());
+        $contact_data['phones'] = Filter::dataImplode($contact->getPhoneValues());
 
-        $contact_data['emails'] = Filter::dataImplode($contact2->getEmailValues());
+        $contact_data['emails'] = Filter::dataImplode($contact->getEmailValues());
 
-        if (count($contact_arr['tags']) > 0) {
-            $contact_data['tags'] = $contact_arr['tags'];
-//            $dummp_c = $contact2->getTags()->joinWith(['users'])->where([User::tableName().'.id' => $user_id]);
-//            $dump = $dummp_c->createCommand()->rawSql;
-            $manager_tags = $contact2->getTags()->joinWith(['users'])->where([User::tableName() . '.id' => $user_id])->asArray()->all();
+        if (count($contact['tags']) > 0) {
+            $contact_data['tags'] = $contact['tags'];
+
+            $manager_tags = $contact->getTags()->joinWith(['users'])->where([User::tableName() . '.id' => $user_id])->asArray()->all();
             $manager_tags = array_map(function ($item) {
                 return $item['name'];
             }, $manager_tags);
@@ -461,14 +588,14 @@ class ContactsController extends BaseController
         $this->json($contact_data, 200);
     }
 
-    public function actionHistory()
+    public function actionHistory(): void
     {
         $contact_id = Yii::$app->request->get('id');
         $history = ContactHistory::getByContactId($contact_id);
         $this->json($history, 200);
     }
 
-    public function actionAddcomment()
+    public function actionAddcomment(): void
     {
         $post = Yii::$app->request->post();
         $comment_form = new CommentForm();
@@ -495,21 +622,19 @@ class ContactsController extends BaseController
         }
     }
 
-    public function actionDelete()
+    public function actionDelete(): void
     {
         if (Contact::deleteById(Yii::$app->request->post('id'))) {
             $this->json(false, 200);
         }
     }
 
-    public function actionDeleteFiltered()
+    public function actionDeleteFiltered(): void
     {
         $contact_tableName = Contact::tableName();
         $query = Contact::find()->with('manager', 'tags')->distinct($contact_tableName . '.id');
         $query->where([$contact_tableName . '.is_deleted' => '0']);
         $columns = Contact::getColsForTableView();
-
-        //Filtering
         foreach (Yii::$app->request->post() as $column => $value) {
             if (!empty($value) && isset($columns[$column])) {
                 if (isset($columns[$column]['db_cols'])) {
@@ -525,20 +650,19 @@ class ContactsController extends BaseController
                 }
             }
         }
-
         if (Contact::deleteById(ArrayHelper::map($query->all(), 'id', 'id'))) {
             $this->json(false, 200);
         }
     }
 
-    public function actionHideColumns()
+    public function actionHideColumns(): void
     {
         $hide_columns = Yii::$app->request->get('hide_columns');
         Yii::$app->session->set('contact_hide_columns', $hide_columns);
         $this->json(false, 200);
     }
 
-    public function actionRingRound()
+    public function actionRingRound(): void
     {
         $contact_id = Yii::$app->request->post('id');
         $action_comment_text = Yii::$app->request->post('action_comment');
@@ -560,7 +684,7 @@ class ContactsController extends BaseController
         $this->json(false, 500);
     }
 
-    public function actionObjectschedulecall()
+    public function actionObjectschedulecall(): void
     {
         $contact_id = Yii::$app->request->post('id');
         $schedule_date = Yii::$app->request->post('schedule_date');
@@ -581,7 +705,7 @@ class ContactsController extends BaseController
         $this->json(false, 500);
     }
 
-    public function actionObjectscheduleemail()
+    public function actionObjectscheduleemail(): void
     {
         $contact_id = Yii::$app->request->post('id');
         $schedule_date = Yii::$app->request->post('schedule_date');
@@ -600,8 +724,7 @@ class ContactsController extends BaseController
         $this->json(false, 500);
     }
 
-
-    public function actionGetContactByPhone()
+    public function actionGetContactByPhone(): void
     {
         $phone = Yii::$app->request->get('phone');
 
@@ -612,7 +735,7 @@ class ContactsController extends BaseController
         }
     }
 
-    public function actionRemoveTag()
+    public function actionRemoveTag(): void
     {
         $contact_id = Yii::$app->request->post('id');
         $tag_id = Yii::$app->request->post('tag_id');
@@ -623,8 +746,8 @@ class ContactsController extends BaseController
         }
         $this->json([], 415, 'Tag not found');
     }
-
-    public function actionAcceptCall() {
+    public function actionAcceptCall(): void
+    {
         $call_id = Yii::$app->request->post('call_id',null);
         if($call_id == null)
             $this->json([],400,'Call id required');
@@ -638,14 +761,47 @@ class ContactsController extends BaseController
         $call->save();
         Notification::closeCall(['call_id'=>$call->id]);
     }
-    public function actionGetMediumObject($obj){
+    public function actionGetMediumObject($oid){
+//        try{
+            $contacts = Contact::getMediumObject($oid);
+//            var_dump($contacts);;
+            return json_encode($contacts);
+    }
 
-    }
-    public function actionGetMediumObjects(){
+
+    public function actionContacts()
+    {
         $contacts = Contact::getMediumObjects();
-        var_dump($contacts);die;
+//        $contacts->parse();
+        $xmlParser = xml_parser_create();
+        $struct = xml_parse_into_struct($xmlParser, $contacts->getContent(), $array, $index);
+        $oids = [];
+        $clients = [];
+        $crmContacts = [];
+        foreach($array as $item) {
+            if (!empty($item['attributes'])) {
+                $attr = $item['attributes'];
+                $oid= $attr['OID'];
+                $crmContacts = Contact::findOne(['medium_oid'=>$oid]);
+                var_dump($crmContacts );die;
+                $clients[$oid] = $attr;
+                }
+            }
+        return json_encode($clients);
+//        var_dump($parsed);die;
+
+//        try {
+//            return true;
+//        } catch (\Exception $e) {
+//            return ['text'=>$e->getMessage()];
+//        }
     }
-    public function actionSaveMediumObject($obj){
-//        $contact =
+    public function actionSaveMediumClient($data): bool
+    {
+        return Contact::postMediumObject($data) === true;
+    }
+    public function actionUpdateMediumClient($oid, $data): bool
+    {
+        return Contact::updateMediumObject($oid, $data) === true;
     }
 }
