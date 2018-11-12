@@ -742,7 +742,7 @@ use yii\httpclient\XmlParser;
         {
 
             $body = '<OBJECT 
-                    name="'.$data['name'].' '.$data['surname'].' '.$data['second_name'].'" 
+                    name="'.$data['name'].' '.$data['surname'].' '.$data['middle_name'].'" 
                     ТелефонМоб="'.$data['phones'].'" 
                     E-mail="'.$data['emails'].' " 
                     ДатаРождения="'.$data['birthday'].'" 

@@ -312,7 +312,9 @@ class ContactsController extends BaseController
                     else {
                         $contact_form->manager_id = Yii::$app->user->identity->id;
                     }
-                    $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
+                    if (!empty($contact->status) && $contact->status === '2') {
+                        $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
+                    }
 
                 }
                 unset($post['_csrf'], $post['id']);
@@ -501,7 +503,7 @@ class ContactsController extends BaseController
             $contact['emails'] = implode("<br>", array_filter([$contact['first_email'], $contact['second_email']]));
         }
 
-        if (count($contacts) > 0) {
+        if (\count($contacts) > 0) {
             $json_data = [
                 "status" => 200,
                 "data" => $contacts,
@@ -546,42 +548,61 @@ class ContactsController extends BaseController
         $birthday = 'ДатаРождения';
         $phone = 'ТелефонМоб';
         $city = 'Город';
-
-        $syncData = Contact::getMediumObject($contact->medium_oid);
-        $contact->name =explode(' ', $syncData->name)[0];
-        $contact->surname =explode(' ', $syncData->name)[1];
-        $contact->middle_name =explode(' ', $syncData->name)[2];
-        $contact->first_phone =$syncData->$phone;
-        $contact->city =$syncData->$city;
-        $contact->birthday =$syncData->$birthday;
-        $contact->first_email = $syncData->$email;
-        $contact->status=2;
-        $contact->save();
+        if($contact->medium_oid){
+            $syncData = Contact::getMediumObject($contact->medium_oid);
+//            var_dump($syncData);die;
+            $name = explode(' ', $syncData->name);
+            $contact->name =$name[0];
+            $contact->surname =$name[1];
+            $contact->middle_name =$name[2];
+            $contact->first_phone =$syncData->$phone;
+            $contact->city =$syncData->$city;
+            $contact->birthday =$syncData->$birthday;
+            $contact->first_email = $syncData->$email;
+            $contact->status=2;
+            $contact->save();
+        }else{
+            $contact = $contact->one();
+        }
         return $contact;
     }
+
     public function actionView(): bool
     {
         $user_id = Yii::$app->user->identity->getId();
         $contact_id = Yii::$app->request->get('id');
         $contact = Contact::find()->with('tags')->where(['id' => $contact_id]);
+        if(!empty($contact->one()->medium_oid)){
         $contact = $this->actionNewView($contact);
-//        var_dump($contact);die;
-        $contact2 = clone $contact;
-        $contact_data = array_intersect_key($contact->attributes, array_flip(Contact::$safe_fields));
+        $attrs = $contact->attributes;
+            $contact_data = array_intersect_key($attrs, array_flip(Contact::$safe_fields));
 
-        $contact_data['phones'] = Filter::dataImplode($contact->getPhoneValues());
+            $contact_data['phones'] = Filter::dataImplode($contact->getPhoneValues());
 
-        $contact_data['emails'] = Filter::dataImplode($contact->getEmailValues());
+            $contact_data['emails'] = Filter::dataImplode($contact->getEmailValues());
+        }else{
+            $contact2 = clone $contact;
+            $contact2 = $contact2->one();
+            $contact_arr = $contact->asArray()->one();
+            $contact_data = array_intersect_key($contact_arr, array_flip(Contact::$safe_fields));
 
-        if (count($contact['tags']) > 0) {
-            $contact_data['tags'] = $contact['tags'];
+            $contact_data['phones'] = Filter::dataImplode($contact2->getPhoneValues());
 
-            $manager_tags = $contact->getTags()->joinWith(['users'])->where([User::tableName() . '.id' => $user_id])->asArray()->all();
-            $manager_tags = array_map(function ($item) {
-                return $item['name'];
-            }, $manager_tags);
-            $contact_data['manager_tags'] = $manager_tags;
+            $contact_data['emails'] = Filter::dataImplode($contact2->getEmailValues());
+
+            if (\count($contact_arr['tags']) > 0) {
+                $contact_data['tags'] = $contact_arr['tags'];
+//            $dummp_c = $contact2->getTags()->joinWith(['users'])->where([User::tableName().'.id' => $user_id]);
+//            $dump = $dummp_c->createCommand()->rawSql;
+                $manager_tags = $contact2->getTags()->joinWith(['users'])->where([User::tableName() . '.id' => $user_id])->asArray()->all();
+                $manager_tags = array_map(function ($item) {
+                    return $item['name'];
+                }, $manager_tags);
+                $contact_data['manager_tags'] = $manager_tags;
+            }
+//           $attrs = $contact->asArray()->one();
         }
+
 
         $contact_manager = User::find()->where(['id' => $contact_data['manager_id']])->one();
         $contact_data['manager_name'] = $contact_manager['firstname'];
@@ -800,6 +821,11 @@ class ContactsController extends BaseController
     {
         return Contact::postMediumObject($data) === true;
     }
+    public function actionMediumUpdate($data): bool
+    {
+
+    }
+
     public function actionUpdateMediumClient($oid, $data): bool
     {
         return Contact::updateMediumObject($oid, $data) === true;
