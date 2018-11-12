@@ -29,8 +29,18 @@ $config = [
         'log' => [
             'targets' => [
                 [
-                    'class' => 'yii\log\FileTarget',
+                    'class' => 'yii\log\DbTarget',
                     'levels' => ['error', 'warning'],
+                ],
+                [
+                    'class' => 'yii\log\EmailTarget',
+                    'levels' => ['error'],
+                    'categories' => ['yii\db\*'],
+                    'message' => [
+                        'from' => ['log@example.com'],
+                        'to' => ['admin@example.com', 'developer@example.com'],
+                        'subject' => 'Database errors at example.com',
+                    ],
                 ],
             ],
         ],
