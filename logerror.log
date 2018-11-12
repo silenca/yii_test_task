@@ -1,0 +1,98 @@
+➜  dopomoga git:(master) ✗ php yii serve --docroot="web/"
+Server started on http://localhost:8080/
+Document root is "web/"
+Quit the server with CTRL-C or COMMAND-C.
+[Mon Nov 12 14:02:47 2018] An Error occurred while handling another error:
+yii\base\InvalidRouteException: Unable to resolve the request "index/error". in /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/base/Module.php:537
+Stack trace:
+#0 /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/web/ErrorHandler.php(108): yii\base\Module->runAction('index/error')
+#1 /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/base/ErrorHandler.php(104): yii\web\ErrorHandler->renderException(Object(yii\web\NotFoundHttpException))
+#2 [internal function]: yii\base\ErrorHandler->handleException(Object(yii\web\NotFoundHttpException))
+#3 {main}
+Previous exception:
+yii\base\InvalidRouteException: Unable to resolve the request "index/index". in /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/base/Module.php:537
+Stack trace:
+#0 /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/web/Application.php(103): yii\base\Module->runAction('index/index', Array)
+#1 /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/base/Application.php(394): yii\web\Application->handleRequest(Object(yii\web\Request))
+#2 /Users/andy/sites/dopomoga/web/index.php(14): yii\base\Application->run()
+#3 {main}
+
+Next yii\web\NotFoundHttpException: Page not found. in /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/web/Application.php:115
+Stack trace:
+#0 /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/base/Application.php(394): yii\web\Application->handleRequest(Object(yii\web\Request))
+#1 /Users/andy/sites/dopomoga/web/index.php(14): yii\base\Application->run()
+#2 {main}
+$_SERVER = [
+    'DOCUMENT_ROOT' => '/Users/andy/sites/dopomoga/web',
+    'REMOTE_ADDR' => '::1',
+    'REMOTE_PORT' => '49916',
+    'SERVER_SOFTWARE' => 'PHP 7.2.12 Development Server',
+    'SERVER_PROTOCOL' => 'HTTP/1.1',
+    'SERVER_NAME' => 'localhost',
+    'SERVER_PORT' => '8080',
+    'REQUEST_URI' => '/',
+    'REQUEST_METHOD' => 'GET',
+    'SCRIPT_NAME' => '/index.php',
+    'SCRIPT_FILENAME' => '/Users/andy/sites/dopomoga/web/index.php',
+    'PHP_SELF' => '/index.php',
+    'HTTP_HOST' => 'localhost:8080',
+    'HTTP_CONNECTION' => 'keep-alive',
+    'HTTP_CACHE_CONTROL' => 'max-age=0',
+    'HTTP_UPGRADE_INSECURE_REQUESTS' => '1',
+    'HTTP_USER_AGENT' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36',
+    'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    'HTTP_ACCEPT_ENCODING' => 'gzip, deflate, br',
+    'HTTP_ACCEPT_LANGUAGE' => 'en-US,en;q=0.9,ru;q=0.8',
+    'REQUEST_TIME_FLOAT' => 1542024167.550261,
+    'REQUEST_TIME' => 1542024167,
+]
+[Mon Nov 12 14:02:47 2018] ::1:49916 [500]: /
+[Mon Nov 12 14:02:47 2018] ::1:49917 [200]: /favicon.ico
+[Mon Nov 12 14:02:48 2018] An Error occurred while handling another error:
+yii\base\InvalidRouteException: Unable to resolve the request "index/error". in /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/base/Module.php:537
+Stack trace:
+#0 /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/web/ErrorHandler.php(108): yii\base\Module->runAction('index/error')
+#1 /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/base/ErrorHandler.php(104): yii\web\ErrorHandler->renderException(Object(yii\web\NotFoundHttpException))
+#2 [internal function]: yii\base\ErrorHandler->handleException(Object(yii\web\NotFoundHttpException))
+#3 {main}
+Previous exception:
+yii\base\InvalidRouteException: Unable to resolve the request "index/index". in /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/base/Module.php:537
+Stack trace:
+#0 /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/web/Application.php(103): yii\base\Module->runAction('index/index', Array)
+#1 /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/base/Application.php(394): yii\web\Application->handleRequest(Object(yii\web\Request))
+#2 /Users/andy/sites/dopomoga/web/index.php(14): yii\base\Application->run()
+#3 {main}
+
+Next yii\web\NotFoundHttpException: Page not found. in /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/web/Application.php:115
+Stack trace:
+#0 /Users/andy/sites/dopomoga/vendor/yiisoft/yii2/base/Application.php(394): yii\web\Application->handleRequest(Object(yii\web\Request))
+#1 /Users/andy/sites/dopomoga/web/index.php(14): yii\base\Application->run()
+#2 {main}
+$_SERVER = [
+    'DOCUMENT_ROOT' => '/Users/andy/sites/dopomoga/web',
+    'REMOTE_ADDR' => '::1',
+    'REMOTE_PORT' => '49918',
+    'SERVER_SOFTWARE' => 'PHP 7.2.12 Development Server',
+    'SERVER_PROTOCOL' => 'HTTP/1.1',
+    'SERVER_NAME' => 'localhost',
+    'SERVER_PORT' => '8080',
+    'REQUEST_URI' => '/',
+    'REQUEST_METHOD' => 'GET',
+    'SCRIPT_NAME' => '/index.php',
+    'SCRIPT_FILENAME' => '/Users/andy/sites/dopomoga/web/index.php',
+    'PHP_SELF' => '/index.php',
+    'HTTP_HOST' => 'localhost:8080',
+    'HTTP_CONNECTION' => 'keep-alive',
+    'HTTP_CACHE_CONTROL' => 'max-age=0',
+    'HTTP_UPGRADE_INSECURE_REQUESTS' => '1',
+    'HTTP_USER_AGENT' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36',
+    'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    'HTTP_ACCEPT_ENCODING' => 'gzip, deflate, br',
+    'HTTP_ACCEPT_LANGUAGE' => 'en-US,en;q=0.9,ru;q=0.8',
+    'REQUEST_TIME_FLOAT' => 1542024168.056946,
+    'REQUEST_TIME' => 1542024168,
+]
+[Mon Nov 12 14:02:48 2018] ::1:49918 [500]: /
+[Mon Nov 12 14:02:48 2018] ::1:49919 [200]: /favicon.ico
+
+
