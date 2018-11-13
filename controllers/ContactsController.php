@@ -94,6 +94,7 @@ class ContactsController extends BaseController
                             'update-medium-client',
                             'save-medium-client',
                             'link-with',
+                            'sync-contacts'
                         ],
                         'allow' => true,
                         'roles' => ['admin', 'manager','supervisor'],
@@ -109,6 +110,7 @@ class ContactsController extends BaseController
                     'addcomment' => ['post'],
                     'objectschedulecall' => ['post'],
                     'objectscheduleemail' => ['post'],
+                    'sync-contacts' => ['get'],
                     'ring-round' => ['post'],
                     'link-with' => ['post'],
                     'search' => ['post'],
@@ -402,7 +404,7 @@ class ContactsController extends BaseController
         $mediumContacts = Contact::getMediumObjects();
         foreach($mediumContacts as $mediumContact) {
             foreach($crmContacts as $crmContact) {
-
+                print_r($crmContact);
             }
         }
     }
@@ -789,7 +791,41 @@ class ContactsController extends BaseController
             return json_encode($contacts);
     }
 
+    public static function actionSaveContacts($contact){
+        $isExists = Contact::find()->where(['medium_oid' => $contact['attributes']['OID'] ])->one();
+        $newContact = (!empty($isExists)) ? $isExists : new Contact();
+        $attrs = $contact['attributes'];
+        if($attrs['NAME']||$attrs['name']){
+            $newContact->name = explode(' ', $attrs['NAME'])[0];
+            $newContact->surname = explode(' ', $attrs['NAME'])[1];
+            $newContact->middle_name = explode(' ', $attrs['NAME'])[2];
+        }
+        if($attrs['ТелефонМоб']||$attrs['ТМлМфонМоб'])
+            $newContact->first_phone = $attrs['ТМлМфонМоб']||$attrs['ТелефонМоб'];
+        if($attrs['Город'])
+            $newContact->city = $attrs['Город'];
+        if($attrs['E-Mail']||$attrs['E-MAIL'])
+            $newContact->first_email = $attrs['E-MAIL']||$attrs['E-Mail'];
+        if($attrs['ДатаРождения'])
+            $newContact->birthday = $attrs['ДатаРождения'];
+        $newContact->medium_oid = $attrs['OID'];
+        $newContact->save();
+    }
+    public function actionSyncContacts(){
+        $contacts = Contact::getMediumObjects();
+        $xmlParser = xml_parser_create();
+        xml_parse_into_struct($xmlParser, $contacts->getContent(), $array, $index);
+//            var_dump($array);
+//            var_dump($contacts);
+//        print_r($array['oid']);
+//        $contacts = json_decode($this->actionContacts());
+        foreach ($array as $contact) {
+            if($contact['attributes']['OID']){
+                self::actionSaveContacts($contact);
+            }
 
+        }
+    }
     public function actionContacts()
     {
         $contacts = Contact::getMediumObjects();
@@ -804,7 +840,7 @@ class ContactsController extends BaseController
                 $attr = $item['attributes'];
                 $oid= $attr['OID'];
                 $crmContacts = Contact::findOne(['medium_oid'=>$oid]);
-                var_dump($crmContacts );die;
+//                var_dump($crmContacts );die;
                 $clients[$oid] = $attr;
                 }
             }

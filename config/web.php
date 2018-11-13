@@ -15,10 +15,6 @@ $config = [
     'bootstrap' => ['log'],
     'timeZone' => 'Europe/Kiev',
     'components' => [
-        'SoapParser' => [
-            'class' => SoapParser::class,
-            'defaultRoles' => ['admin', 'manager', 'operator', 'supervisor']
-        ],
         'authManager' => [
             'class' => 'yii\rbac\PhpManager',
             'defaultRoles' => ['admin', 'manager', 'operator','supervisor']
@@ -27,6 +23,9 @@ $config = [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'asdasAsadcSffgrd21aPleAerbhH',
             'baseUrl' => '',
+            'parsers' => [
+                'application/xml' => 'yii\web\XmlParser',
+            ]
         ],
         'session' => [
             'class' => 'yii\web\DbSession',
@@ -79,6 +78,7 @@ $config = [
                 'login' => 'auth/login',
                 'logout' => 'auth/logout',
                 //'<action>' => 'index/<action>',
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'api/contacts'],
                 'api/contact' => 'api/contact/add',
                 '<controller:\w+>'=>'<controller>/index',
                 '<controller:\w+>/<id:\d+>' => '<controller>/view',

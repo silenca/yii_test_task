@@ -46,7 +46,7 @@ use yii\httpclient\XmlParser;
      * @property User $manager
      * @property boolean $is_broadcast
      * @property boolean $link_with
-     * @property boolean $medium_oid
+     * @property string $medium_oid
      */
     class Contact extends ActiveRecord
     {
@@ -96,6 +96,22 @@ use yii\httpclient\XmlParser;
         private static function getIdentity(): ?\yii\web\IdentityInterface
         {
             return Yii::$app->user->identity;
+        }
+
+
+        public function fields()
+        {
+            return [
+                'oid' => 'medium_oid',
+                'E-mail' => 'first_email',
+                'name' => function () {
+                    return $this->name . ' ' . $this->surname . ' ' . $this->middle_name;
+                },
+                'ТелефонМоб' => 'first_phone',
+                'ДатаРождения' => 'birthday',
+                'ИсточникИнфомации' => 'attraction_channel_id'
+            ];
+
         }
 
 
@@ -456,6 +472,7 @@ use yii\httpclient\XmlParser;
         {
             return $this->hasMany(Call::className(), ['contact_id' => 'id']);
         }
+
 
 
         /**
