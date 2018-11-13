@@ -42,6 +42,7 @@ class AuthController extends BaseController
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
         }
+        $model->password = '';
         $errors = $model->getErrors('password');
         return $this->render('login', [
             'model' => $model,

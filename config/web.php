@@ -28,7 +28,7 @@ $config = [
             ]
         ],
         'session' => [
-            'class' => 'yii\web\DbSession',
+//            'class' => 'yii\web\DbSession',
             'timeout' => 3600,
             //'db' => 'mydb',
             //'sessionTable' => 'my_session',
