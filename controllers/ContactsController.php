@@ -318,7 +318,7 @@ class ContactsController extends BaseController
                 try {
                     $editEvent = $contact->edit([]);
                 } catch (\Exception $exception) {
-                    return $exception;
+
                 }
                 if ($editEvent) {
                     $contact->sendToCRM();
