@@ -29,18 +29,18 @@ var clients = [];
 io.sockets.on('connection', function (socket) {
     // clients.push(socket);
     socket.on('join', function (data) {
-        console.log('datadata');
-        console.log(data);
-        console.log('data.notify_id');
+        // console.log('datadata');
+        // console.log(data);
+        console.log('New connection:');
         console.log(data.notify_id);
-        console.log('length');
-        console.log(data.notify_id.length);
+        // console.log('length');
+        // console.log(data.notify_id.length);
         if (data.notify_id && data.notify_id.length === 32) {
             connection.query('SELECT `user`.`role` from `user` where `notification_key` = "' + data.notify_id + '" LIMIT 1', function (err, rows, fields) {
-                console.log('row');
-                console.log(rows);
-                console.log('fields');
-                console.log(fields);
+                // console.log('row');
+                // console.log(rows);
+                // console.log('fields');
+                // console.log(fields);
                 if (!err && rows.length>0) {
                     switch (rows[0].role) {
                         case 1:

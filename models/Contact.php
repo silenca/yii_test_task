@@ -525,7 +525,9 @@ class Contact extends ActiveRecord
                 return $this->name . ' ' . $this->surname . ' ' . $this->middle_name;
             },
             'ТелефонМоб' => 'first_phone',
-            'ДатаРождения' => 'birthday',
+            'ДатаРождения' => function () {
+                return $this->birthday.'T00:00:00.0';
+            },
             'ИсточникИнфомации' => 'attraction_channel_id'
         ];
 
