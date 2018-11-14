@@ -1,7 +1,6 @@
 <?php
 use app\models\User;
 ?>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
 <link href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css" rel="stylesheet">
 

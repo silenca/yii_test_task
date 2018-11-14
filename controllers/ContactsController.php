@@ -586,10 +586,17 @@ class ContactsController extends BaseController
             $contact->name = $name[0];
             $contact->surname = $name[1];
             $contact->middle_name = $name[2];
-            $contact->first_phone = $syncData->$phone;
-            $contact->city = $syncData->$city;
-            $contact->birthday = $syncData->$birthday;
-            $contact->first_email = $syncData->$email;
+            $contact->first_phone = get_object_vars($syncData)['@attributes'][$phone];
+            $contact->city = get_object_vars($syncData)['@attributes'][$city];
+            $brd_data =  get_object_vars($syncData)['@attributes'][$birthday];
+            if(!empty($brd_data)) {
+                $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$brd_data);
+                $contact->birthday = $birthday->format('Y-m-d');
+            }
+            $email_data = trim(get_object_vars($syncData)['@attributes'][$email]);
+            if(!empty($email_data)) {
+                $contact->first_email = $email_data;
+            }
             $contact->status = 2;
             $contact->save();
         } else {

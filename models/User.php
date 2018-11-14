@@ -17,7 +17,7 @@ class User extends ActiveRecord implements IdentityInterface {
     public const ROLE_SUPERVISOR = 10;
     public const ROLE_MANAGER = 5;
     public const ROLE_OPERATOR = 1;
-    public $id;
+//    public $id;
 
     public static function tableName() {
         return 'user';

@@ -455,6 +455,7 @@ function fillContactData(data, $form) {
 
 
 function checkChangesContact(name, value, $form) {
+    console.log(name+':'+value);
     if (contact_bind_inputs[name] !== value) {
         contact_bind_inputs[name] = value;
         editContact($form, name, value);

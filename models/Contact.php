@@ -459,11 +459,18 @@ class Contact extends ActiveRecord
     private static function buildMediumRequestBody($data, $url): \yii\httpclient\Request
     {
 
+        if(!empty($data['birthday'])) {
+            $birthday = \DateTime::createFromFormat('Y-m-d',$data['birthday']);
+            $birthday = $birthday->format('Y-m-d\TH:i:s');
+        } else {
+            $birthday ="";
+        }
+
         $body = '<OBJECT 
                     name="' . $data['name'] . ' ' . $data['surname'] . ' ' . $data['middle_name'] . '" 
                     ТелефонМоб="' . $data['phones'] . '" 
                     E-mail="' . $data['emails'] . ' " 
-                    ДатаРождения="' . $data['birthday'] . '" 
+                    ДатаРождения="' . $birthday . '" 
                     Город="' . $data['city'] . '" 
                     ИсточникИнфомации="' . $data['attraction_channel_id'] . '" 
                     ОбычноОплачивает="Самостоятельный расчет" />';
