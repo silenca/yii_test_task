@@ -18,14 +18,24 @@ class ContactsController extends ActiveController
 
     public function fields()
     {
+        if(!empty($this->birthday)) {
+            $birthday = \DateTime::createFromFormat('Y-m-d',$this->birthday);
+            if($birthday) {
+                $birthday = $birthday->format('Y-m-d\TH:i:s.0');
+            } else {
+                $birthday ="";
+            }
+        } else {
+            $birthday ="";
+        }
         return [
             'oid' => $this->medium_oid,
             'E-mail' => $this->first_email,
             'name' => function () {
-                return $this->name . ' ' . $this->surname . ' ' . $this->middle_name;
+                return $this->surname  . ' ' . $this->name . ' ' . $this->middle_name;
             },
             'ТелефонМоб' => $this->first_phone,
-            'ДатаРождения' => $this->birthday . 'T00:00:00.0',
+            'ДатаРождения' => $birthday,
             'ИсточникИнфомации' => $this->getAttractionChannel(),
         ];
     }

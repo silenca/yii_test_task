@@ -1,6 +1,7 @@
 var express = require('express');
 var config = require('./config.js');
 var io = require('socket.io').listen(config.socket.port);
+console.log('Start socket on: '+config.socket.port);
 var mysql = require('mysql');
 var bodyParser = require('body-parser');
 

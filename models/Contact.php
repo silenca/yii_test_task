@@ -461,7 +461,11 @@ class Contact extends ActiveRecord
 
         if(!empty($data['birthday'])) {
             $birthday = \DateTime::createFromFormat('Y-m-d',$data['birthday']);
-            $birthday = $birthday->format('Y-m-d\TH:i:s');
+            if($birthday) {
+                $birthday = $birthday->format('Y-m-d\TH:i:s.0');
+            } else {
+                $birthday ="";
+            }
         } else {
             $birthday ="";
         }
@@ -533,7 +537,13 @@ class Contact extends ActiveRecord
             },
             'ТелефонМоб' => 'first_phone',
             'ДатаРождения' => function () {
-                return $this->birthday.'T00:00:00.0';
+                if(!empty($this->birthday)) {
+                    $birthday = \DateTime::createFromFormat('Y-m-d',$this->birthday);
+                    if($birthday) {
+                        return $birthday->format('Y-m-d\TH:i:s.0');
+                    }
+                }
+                return "";
             },
             'ИсточникИнфомации' => 'attraction_channel_id'
         ];

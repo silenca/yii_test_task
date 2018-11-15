@@ -80,7 +80,6 @@ class ContactsController extends BaseController
                         'roles' => ['admin', 'supervisor'],
                     ],
                     [
-                        'actions' => ['remove-tag'],
                         'actions' => [
                             'remove-tag',
                             'index',
@@ -590,8 +589,15 @@ class ContactsController extends BaseController
             $contact->city = get_object_vars($syncData)['@attributes'][$city];
             $brd_data =  get_object_vars($syncData)['@attributes'][$birthday];
             if(!empty($brd_data)) {
-                $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$brd_data);
-                $contact->birthday = $birthday->format('Y-m-d');
+                $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s.0',$brd_data);
+                if($birthday) {
+                    $contact->birthday = $birthday->format('Y-m-d');
+                } else {
+                    $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$brd_data);
+                    if($birthday) {
+                        $contact->birthday = $birthday->format('Y-m-d');
+                    }
+                }
             }
             $email_data = trim(get_object_vars($syncData)['@attributes'][$email]);
             if(!empty($email_data)) {
