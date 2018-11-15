@@ -306,7 +306,7 @@ class ContactsController extends BaseController
                     } else {
                         $contact_form->manager_id = Yii::$app->user->identity->id;
                     }
-                    if (!empty($contact->status) && $contact->status === '2') {
+                    if (!empty($contact_form->status) && $contact_form->status == '2') {
                         $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
                     }
 
@@ -811,7 +811,7 @@ class ContactsController extends BaseController
         }
     }
 
-    public static function actionSaveContacts($contact): void
+    public static function actionSaveContacts($contact)
     {
         $isExists = Contact::find()->where(['medium_oid' => $contact['attributes']['OID']])->one();
         $newContact = (!empty($isExists)) ? $isExists : new Contact();
@@ -822,15 +822,28 @@ class ContactsController extends BaseController
             $newContact->middle_name = explode(' ', $attrs['NAME'])[2];
         }
         if ($attrs['ТелефонМоб'] || $attrs['ТМлМфонМоб'])
-            $newContact->first_phone = $attrs['ТМлМфонМоб'] || $attrs['ТелефонМоб'];
+            $newContact->first_phone = $attrs['ТМлМфонМоб'] ?? $attrs['ТелефонМоб'];
         if ($attrs['Город'])
             $newContact->city = $attrs['Город'];
         if ($attrs['E-Mail'] || $attrs['E-MAIL'])
-            $newContact->first_email = $attrs['E-MAIL'] || $attrs['E-Mail'];
-        if ($attrs['ДатаРождения'])
-            $newContact->birthday = $attrs['ДатаРождения'];
+            $newContact->first_email = $attrs['E-MAIL'] ?? $attrs['E-Mail'];
+        if ($attrs['ДатаРождения']) {
+            $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s.0',$attrs['ДатаРождения']);
+            if($birthday) {
+                $newContact->birthday =  $birthday->format('Y-m-d');
+            } else {
+                $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$attrs['ДатаРождения']);
+                if($birthday) {
+                    $newContact->birthday =  $birthday->format('Y-m-d');
+                }
+            }
+        }
+
         $newContact->medium_oid = $attrs['OID'];
-        $newContact->save();
+        if($newContact->save()) {
+            return $newContact->toArray();
+        }
+        return ['errors' => $newContact->getErrors(),'data' => $newContact->toArray()];
     }
 
     public function actionContacts()

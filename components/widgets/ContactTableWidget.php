@@ -55,7 +55,7 @@ class ContactTableWidget extends Widget {
             $data[$i][] = $contact->city;
             $data[$i][] = $contact->birthday;
             $data[$i][] = $contact->medium_oid;
-            $data[$i][] = $contact->link_with;
+//            $data[$i][] = $contact->link_with;
             $data[$i][] = (isset($contact->attraction_channel_id)?$contact->attractionChannel->name:'');
             $data[$i][] = (isset($contact->is_broadcast)? Contact::$broadcast[$contact->is_broadcast] : '');
             $data[$i][] = (isset($contact->notification_service_id) ? $contact->notificationService->name : '');
