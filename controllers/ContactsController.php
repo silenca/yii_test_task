@@ -817,8 +817,8 @@ class ContactsController extends BaseController
         $newContact = (!empty($isExists)) ? $isExists : new Contact();
         $attrs = $contact['attributes'];
         if ($attrs['NAME'] || $attrs['name']) {
-            $newContact->surname = explode(' ', $attrs['NAME'])[1];
-            $newContact->name = explode(' ', $attrs['NAME'])[0];
+            $newContact->surname = explode(' ', $attrs['NAME'])[0];
+            $newContact->name = explode(' ', $attrs['NAME'])[1];
             $newContact->middle_name = explode(' ', $attrs['NAME'])[2];
         }
         if ($attrs['ТелефонМоб'] || $attrs['ТМлМфонМоб'])
