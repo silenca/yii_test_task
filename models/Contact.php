@@ -471,7 +471,7 @@ class Contact extends ActiveRecord
         }
 
         $body = '<OBJECT 
-                    name="' . $data['name'] . ' ' . $data['surname'] . ' ' . $data['middle_name'] . '" 
+                    name="' . $data['surname'] . ' ' . $data['name'] . ' ' . $data['middle_name'] . '" 
                     ТелефонМоб="' . $data['phones'] . '" 
                     E-mail="' . $data['emails'] . ' " 
                     ДатаРождения="' . $birthday . '" 
@@ -533,14 +533,14 @@ class Contact extends ActiveRecord
             'oid' => 'medium_oid',
             'E-mail' => 'first_email',
             'name' => function () {
-                return $this->name . ' ' . $this->surname . ' ' . $this->middle_name;
+                return  $this->surname . ' ' . $this->name . ' ' . $this->middle_name;
             },
             'ТелефонМоб' => 'first_phone',
             'ДатаРождения' => function () {
                 if(!empty($this->birthday)) {
                     $birthday = \DateTime::createFromFormat('Y-m-d',$this->birthday);
                     if($birthday) {
-                        return $birthday->format('Y-m-d\TH:i:s.0');
+                        return $birthday->format('Y-m-d\TH:i:s');
                     }
                 }
                 return "";
