@@ -8,7 +8,6 @@
 namespace app\controllers\api;
 
 use yii\data\ActiveDataProvider;
-use yii\filters\AccessControl;
 use yii\rest\ActiveController;
 use yii\web\Response;
 use app\models\Contact;
@@ -26,12 +25,7 @@ class ContactsController extends ActiveController
 
 
         $behaviors = parent::behaviors();
-        $behaviors['access'] = ['class' => AccessControl::className(),
-            'rules' => [
-                ['actions' => ['create',],
-                'allow' => true,
-                'roles' => ['?'],]],
-        'actions' => ['create' => ['post']]];
+
         $behaviors['contentNegotiator']['formats']['text/html'] = Response::FORMAT_XML;
         return $behaviors;
     }
