@@ -817,8 +817,8 @@ class ContactsController extends BaseController
         $newContact = (!empty($isExists)) ? $isExists : new Contact();
         $attrs = $contact['attributes'];
         if ($attrs['NAME'] || $attrs['name']) {
-            $newContact->name = explode(' ', $attrs['NAME'])[0];
-            $newContact->surname = explode(' ', $attrs['NAME'])[1];
+            $newContact->surname = explode(' ', $attrs['NAME'])[0];
+            $newContact->name = explode(' ', $attrs['NAME'])[1];
             $newContact->middle_name = explode(' ', $attrs['NAME'])[2];
         }
         if ($attrs['ТелефонМоб'] || $attrs['ТМлМфонМоб'])
@@ -828,7 +828,7 @@ class ContactsController extends BaseController
         if ($attrs['E-Mail'] || $attrs['E-MAIL'])
             $newContact->first_email = $attrs['E-MAIL'] ?? $attrs['E-Mail'];
         if ($attrs['ДатаРождения']) {
-            $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s.0',$attrs['ДатаРождения']);
+            $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$attrs['ДатаРождения']);
             if($birthday) {
                 $newContact->birthday =  $birthday->format('Y-m-d');
             } else {
