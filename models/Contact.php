@@ -84,7 +84,7 @@ class Contact extends ActiveRecord
     ];
     public static $statuses = [
         self::LEAD => 'Лид',
-        self::CONTACT => 'Контакт',
+        self::CONTACT => 'Пациент',
 
     ]; //FOR SINGLE OBJECT
     public static $broadcast = [
