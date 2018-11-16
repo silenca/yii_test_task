@@ -48,15 +48,6 @@ return [
     'use_archived_tags' => [
         'type' => 2,
     ],
-    'sip_channel' => [
-        'type' => 2,
-    ],
-    'attraction_channel' => [
-        'type' => 2,
-    ],
-    'attraction_channel_set' => [
-        'type' => 2,
-    ],
     'manager' => [
         'type' => 1,
         'ruleName' => 'userRole',
@@ -64,12 +55,11 @@ return [
             'contacts',
             'action',
             'calls',
-//            'notifications',
+            'notifications',
             'tags',
             'updateContact',
             'listen_call',
             'edit_tag',
-            'attraction_channel_set',
         ],
     ],
     'operator' => [
@@ -81,28 +71,6 @@ return [
             'notifications',
             'updateContact',
             'tags',
-        ],
-    ],
-    'supervisor' => [
-        'type' => 1,
-        'ruleName' => 'userRole',
-        'children' => [
-            'contacts',
-            'action',
-//            'notifications',
-            'reports',
-            'calls',
-            'listen_call',
-            'delete_contact',
-            'updateContact',
-            'tags',
-            'import',
-//            'users',
-//            'updateUser',
-//            'delete_user',
-            'edit_tag',
-            'use_archived_tags',
-            'attraction_channel_set',
         ],
     ],
     'admin' => [
@@ -124,9 +92,6 @@ return [
             'delete_user',
             'edit_tag',
             'use_archived_tags',
-            'sip_channel',
-            'attraction_channel',
-            'attraction_channel_set'
         ],
     ],
 ];

@@ -582,14 +582,14 @@ class ContactsController extends BaseController
             $syncData = Contact::getMediumObject($contact->medium_oid);
 //            var_dump($syncData);die;
             $name = explode(' ', $syncData->name);
-            $contact->name = $name[0];
-            $contact->surname = $name[1];
+            $contact->name = $name[1];
+            $contact->surname = $name[0];
             $contact->middle_name = $name[2];
             $contact->first_phone = get_object_vars($syncData)['@attributes'][$phone];
             $contact->city = get_object_vars($syncData)['@attributes'][$city];
             $brd_data =  get_object_vars($syncData)['@attributes'][$birthday];
             if(!empty($brd_data)) {
-                $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s.0',$brd_data);
+                $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$brd_data);
                 if($birthday) {
                     $contact->birthday = $birthday->format('Y-m-d');
                 } else {
@@ -817,8 +817,8 @@ class ContactsController extends BaseController
         $newContact = (!empty($isExists)) ? $isExists : new Contact();
         $attrs = $contact['attributes'];
         if ($attrs['NAME'] || $attrs['name']) {
-            $newContact->surname = explode(' ', $attrs['NAME'])[0];
-            $newContact->name = explode(' ', $attrs['NAME'])[1];
+            $newContact->surname = explode(' ', $attrs['NAME'])[1];
+            $newContact->name = explode(' ', $attrs['NAME'])[0];
             $newContact->middle_name = explode(' ', $attrs['NAME'])[2];
         }
         if ($attrs['ТелефонМоб'] || $attrs['ТМлМфонМоб'])

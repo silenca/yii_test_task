@@ -8,6 +8,7 @@
 namespace app\controllers\api;
 
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\rest\ActiveController;
 use yii\web\Response;
 use app\models\Contact;
@@ -15,13 +16,39 @@ use app\models\Contact;
 class ContactsController extends ActiveController
 {
     public $modelClass = 'app\models\Contact';
+    public $serializer = [
+        'class' => 'yii\rest\Serializer',
+        'collectionEnvelope' => 'items',
+    ];
+
+    public function behaviors()
+    {
+
+
+        $behaviors = parent::behaviors();
+        $behaviors['access'] = ['class' => AccessControl::className(),
+            'rules' => [
+                ['actions' => ['create',],
+                'allow' => true,
+                'roles' => ['?'],]],
+        'actions' => ['create' => ['post']]];
+        $behaviors['contentNegotiator']['formats']['text/html'] = Response::FORMAT_XML;
+        return $behaviors;
+    }
+
+    public function actionIndex()
+    {
+        return new ActiveDataProvider([
+            'query' => self::fields(),
+        ]);
+    }
 
     public function fields()
     {
         if(!empty($this->birthday)) {
             $birthday = \DateTime::createFromFormat('Y-m-d',$this->birthday);
             if($birthday) {
-                $birthday = $birthday->format('Y-m-d\TH:i:s.0');
+                $birthday = $birthday->format('Y-m-d\TH:i:s');
             } else {
                 $birthday ="";
             }
@@ -38,25 +65,6 @@ class ContactsController extends ActiveController
             'ДатаРождения' => $birthday,
             'ИсточникИнфомации' => $this->getAttractionChannel(),
         ];
-    }
-
-    public function behaviors()
-    {
-        $behaviors = parent::behaviors();
-        $behaviors['contentNegotiator']['formats']['text/html'] = Response::FORMAT_XML;
-        return $behaviors;
-    }
-
-    public $serializer = [
-        'class' => 'yii\rest\Serializer',
-        'collectionEnvelope' => 'items',
-    ];
-
-    public function actionIndex()
-    {
-        return new ActiveDataProvider([
-            'query' => self::fields(),
-        ]);
     }
 
     public function actionCreate()
