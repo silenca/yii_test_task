@@ -5,9 +5,12 @@
  * Date: 11/5/18
  * Time: 12:38 PM
  */
+
 namespace app\controllers\api;
 
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
+//use yii\filters\auth\QueryParamAuth;
 use yii\rest\ActiveController;
 use yii\web\Response;
 use app\models\Contact;
@@ -22,10 +25,18 @@ class ContactsController extends ActiveController
 
     public function behaviors()
     {
-
-
         $behaviors = parent::behaviors();
-
+//        $behaviors['authenticator']['class'] = QueryParamAuth::className(); //todo implement this
+        $behaviors['access']['class'] = AccessControl::className();
+        $behaviors['access']['only'] = ['create', 'edit', 'index'];
+        $behaviors['access']['rules'] =
+            [
+                [
+                    'allow' => true,
+                    'actions' => ['create', 'edit', 'index'],
+                    'roles' => ['?'],
+                ]
+            ];
         $behaviors['contentNegotiator']['formats']['text/html'] = Response::FORMAT_XML;
         return $behaviors;
     }
@@ -39,21 +50,21 @@ class ContactsController extends ActiveController
 
     public function fields()
     {
-        if(!empty($this->birthday)) {
-            $birthday = \DateTime::createFromFormat('Y-m-d',$this->birthday);
-            if($birthday) {
+        if (!empty($this->birthday)) {
+            $birthday = \DateTime::createFromFormat('Y-m-d', $this->birthday);
+            if ($birthday) {
                 $birthday = $birthday->format('Y-m-d\TH:i:s');
             } else {
-                $birthday ="";
+                $birthday = "";
             }
         } else {
-            $birthday ="";
+            $birthday = "";
         }
         return [
             'oid' => $this->medium_oid,
             'E-mail' => $this->first_email,
             'name' => function () {
-                return $this->surname  . ' ' . $this->name . ' ' . $this->middle_name;
+                return $this->surname . ' ' . $this->name . ' ' . $this->middle_name;
             },
             'ТелефонМоб' => $this->first_phone,
             'ДатаРождения' => $birthday,
@@ -69,7 +80,7 @@ class ContactsController extends ActiveController
         $contacts = [];
         foreach ($array as $contact) {
             if ($contact['attributes']['OID']) {
-               $contacts[] = \app\controllers\ContactsController::actionSaveContacts($contact);
+                $contacts[] = \app\controllers\ContactsController::actionSaveContacts($contact);
             }
 
         }
