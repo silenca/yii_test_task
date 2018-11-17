@@ -31,7 +31,7 @@ io.sockets.on('connection', function (socket) {
     // clients.push(socket);
     socket.on('join', function (data) {
         // console.log('datadata');
-        // console.log(data);
+        console.log(data);
         console.log('New connection:');
         console.log(data.notify_id);
         // console.log('length');
