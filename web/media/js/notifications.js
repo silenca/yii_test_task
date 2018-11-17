@@ -1,5 +1,4 @@
-$(function () {
-    var socket = io.connect(notify_host);
+    var socket = io.connect('http://dopomogaplus.silencatech.com:8880', {secure:false});
     console.log(notify_host, notify_id);
     socket.emit('join', {notify_id: notify_id});
 
@@ -55,7 +54,7 @@ $(function () {
     //     var contract_count = parseInt($count_countent.text());
     //     $count_countent.text(++contract_count);
     // });
-});
+
 
 /*
  * message: text
