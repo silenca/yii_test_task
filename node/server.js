@@ -90,7 +90,7 @@ app.use(bodyParser.urlencoded({// to support URL-encoded bodies
 
 app.get('/toadmin', function (req, res) {
     res.send('Сообщение отправлено всем админам');
-});
+}); 
 
 app.post('/close-call', function (req, res) {
     io.to('operator').emit('close_call', {call_id:req.body.call_id});
