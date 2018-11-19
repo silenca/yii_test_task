@@ -44,6 +44,7 @@ else {
         <?php if(!Yii::$app->user->isGuest): ?>
         <script type="text/javascript">
             var notify_id = "<?= Yii::$app->user->identity->notification_key; ?>";
+            var role_id = "<?= Yii::$app->user->identity->role; ?>";
             var notify_host = "<?= Yii::$app->params['host_notify'] ?>";
             var _csrf = "<?= Yii::$app->request->getCsrfToken() ?>";
         </script>
