@@ -10,6 +10,22 @@ use yii\web\IdentityInterface;
 
 /**
  * @property mixed role
+ * @property int $id [int(11)]
+ * @property int $int_id [int(11)]
+ * @property string $email [varchar(255)]
+ * @property string $firstname [varchar(255)]
+ * @property string $lastname [varchar(255)]
+ * @property string $patronymic [varchar(255)]
+ * @property string $auth_key [varchar(32)]
+ * @property string $notification_key [varchar(32)]
+ * @property string $password_hash [varchar(255)]
+ * @property string $password_reset_token [varchar(255)]
+ * @property int $created_at [int(11)]
+ * @property int $updated_at [int(11)]
+ * @property bool $is_deleted [tinyint(1)]
+ * @property string $settings
+ * @property string $filter_config
+ * @property string $cols_config
  */
 class User extends ActiveRecord implements IdentityInterface {
 
@@ -95,7 +111,7 @@ class User extends ActiveRecord implements IdentityInterface {
      * @inheritdoc
      */
     public static function findIdentityByAccessToken($token, $type = null) {
-        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+        return static::findOne(['access_token' => $token]);
     }
 
     /**
@@ -169,6 +185,7 @@ class User extends ActiveRecord implements IdentityInterface {
      * Generates password hash from password and sets it to the model
      *
      * @param string $password
+     * @throws \yii\base\Exception
      */
     public function setPassword($password) {
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
@@ -183,6 +200,7 @@ class User extends ActiveRecord implements IdentityInterface {
 
     /**
      * Generates new password reset token
+     * @throws \yii\base\Exception
      */
     public function generatePasswordResetToken() {
         $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();

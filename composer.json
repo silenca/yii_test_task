@@ -28,7 +28,8 @@
         "ext-json": "*",
         "mobiledetect/mobiledetectlib": "dev-master",
           "ext-curl": "*",
-        "ext-SimpleXML": "^7.2"
+        "ext-SimpleXML": "^7.2",
+        "ext-xml": "*"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",

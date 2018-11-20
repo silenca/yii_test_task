@@ -8,13 +8,11 @@
 
 namespace app\controllers\api;
 
+use app\models\Contact;
 use yii\data\ActiveDataProvider;
-use yii\filters\AccessControl;
-//use yii\filters\auth\QueryParamAuth;
+use yii\filters\auth\QueryParamAuth;
 use yii\rest\ActiveController;
 use yii\web\Response;
-use app\models\Contact;
-
 class ContactsController extends ActiveController
 {
     public $modelClass = 'app\models\Contact';
@@ -26,17 +24,7 @@ class ContactsController extends ActiveController
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-//        $behaviors['authenticator']['class'] = QueryParamAuth::className(); //todo implement this
-        $behaviors['access']['class'] = AccessControl::className();
-        $behaviors['access']['only'] = ['create', 'edit', 'index'];
-        $behaviors['access']['rules'] =
-            [
-                [
-                    'allow' => true,
-                    'actions' => ['create', 'edit', 'index'],
-                    'roles' => ['?'],
-                ]
-            ];
+        $behaviors['authenticator']['class'] = QueryParamAuth::className();
         $behaviors['contentNegotiator']['formats']['text/html'] = Response::FORMAT_XML;
         return $behaviors;
     }
@@ -60,6 +48,7 @@ class ContactsController extends ActiveController
         } else {
             $birthday = "";
         }
+        /** @var Contact $this */
         return [
             'oid' => $this->medium_oid,
             'E-mail' => $this->first_email,
@@ -72,6 +61,9 @@ class ContactsController extends ActiveController
         ];
     }
 
+    /**
+     * @return false|string
+     */
     public function actionCreate()
     {
         $content = \Yii::$app->request->getRawBody();

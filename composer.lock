@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6cf7b410bb2b9a36cc43699642f89b0b",
+  "content-hash": "9a0cd4bb19b122df3c9d8ff459082ab9",
     "packages": [
         {
             "name": "cebe/markdown",
@@ -288,12 +288,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "41e285e7184aee087da882477173602281f00463"
+              "reference": "ddd5658c487ff2dd4c6cbfdeeb46505962adb6c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/41e285e7184aee087da882477173602281f00463",
-                "reference": "41e285e7184aee087da882477173602281f00463",
+              "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/ddd5658c487ff2dd4c6cbfdeeb46505962adb6c1",
+              "reference": "ddd5658c487ff2dd4c6cbfdeeb46505962adb6c1",
                 "shasum": ""
             },
             "require": {
@@ -339,7 +339,7 @@
                 "mail",
                 "mailer"
             ],
-            "time": "2018-09-11T07:13:26+00:00"
+          "time": "2018-11-20T07:53:32+00:00"
         },
         {
             "name": "twbs/bootstrap",
@@ -389,12 +389,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/yii2-framework.git",
-                "reference": "6db2fabfcff9950c4dbb65b1136650c32aff0a75"
+              "reference": "617cf48533e45879a2550864db40196f09cde731"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/6db2fabfcff9950c4dbb65b1136650c32aff0a75",
-                "reference": "6db2fabfcff9950c4dbb65b1136650c32aff0a75",
+              "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/617cf48533e45879a2550864db40196f09cde731",
+              "reference": "617cf48533e45879a2550864db40196f09cde731",
                 "shasum": ""
             },
             "require": {
@@ -481,7 +481,7 @@
                 "framework",
                 "yii2"
             ],
-            "time": "2018-11-05T21:05:49+00:00"
+          "time": "2018-11-19T22:12:17+00:00"
         },
         {
             "name": "yiisoft/yii2-bootstrap",
@@ -1014,7 +1014,8 @@
         "php": ">=7.1.0",
         "ext-json": "*",
         "ext-curl": "*",
-        "ext-simplexml": "^7.2"
+      "ext-simplexml": "^7.2",
+      "ext-xml": "*"
     },
     "platform-dev": []
 }
