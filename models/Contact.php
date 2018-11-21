@@ -462,7 +462,7 @@ class Contact extends ActiveRecord
         if(!empty($data['birthday'])) {
             $birthday = \DateTime::createFromFormat('Y-m-d',$data['birthday']);
             if($birthday) {
-                $birthday = $birthday->format('Y-m-d\TH:i:s.0');
+                $birthday = $birthday->format('Y-m-d\TH:i:s');
             } else {
                 $birthday ="";
             }
