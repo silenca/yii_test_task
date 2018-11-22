@@ -104,7 +104,7 @@ $(function() {
     $contact_data_form = $contact_form.find('.contact-data');
 
     $('input[type=text], input[type=email], select', $contact_data_form).on('blur', function () {
-        console.log('change')
+        console.log('change');
         $(this).data('value', $(this).val());
         checkChangesContact($(this).attr('name'), $(this).data('value'), $contact_form);
     });
@@ -383,6 +383,18 @@ function manageContactFormPermissions(userRole) {
     }
 }
 
+$('div.cs-options li[data-value=call]').click(function () {
+    login();
+    $('.btn-audio-call').click(function () {
+        var phone_number = $('#contact_phones').val();
+        if (phone_number.startsWith('+380')) {
+            phone_number = phone_number.slice(3);
+        } else if (phone_number.startsWith('0') && phone_number.length !== 10) {
+            phone_number = phone_number.trim();
+        }
+        makeCall(phone_number);
+    })
+});
 function fillContactData(data, $form) {
     $.each(data, function(key, value) {
         switch (key) {
@@ -428,7 +440,7 @@ function fillContactData(data, $form) {
                     $('#contact_manager_id').val(value);
                     $('#contact_manager_id').attr('data-value',value);
                 } else {
-                    $('#contact_manager_id').val('')
+                    $('#contact_manager_id').val('');
                     $('#contact_manager_id').attr('data-value','');
                 }
                 break;

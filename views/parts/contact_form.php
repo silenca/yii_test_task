@@ -3,6 +3,7 @@ use app\models\User;
 ?>
 
 <link href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css" rel="stylesheet">
+<audio id="audio-remote" autoplay></audio>
 
 <div class="modal fade slide-right modal-lg modal-sm modal-xs col-3"
     id="modalAddContact" tabindex="-1" role="dialog" aria-hidden="true">
@@ -91,7 +92,9 @@ use app\models\User;
                                                 <label class="input-group-addon primary" for="contact_attraction_channel_id"><i
                                                             class="fa fa-fw fa-list-alt"></i></label>
                                                 <select id="contact_attraction_channel_id" name="attraction_channel_id" class="form-control select2-single">
-                                                    <option class="select-placeholder" value="" selected>Канал привлечения</option>
+                                                    <option class="select-placeholder" value="" disabled selected>Канал
+                                                        привлечения
+                                                    </option>
                                                     <?php
                                                     $channels = \app\models\AttractionChannel::find()->where(['is_active'=>1])->all();
                                                     foreach ($channels as  $channel) {
@@ -119,7 +122,9 @@ use app\models\User;
                                                 <label class="input-group-addon primary" for="contact_status"><i
                                                             class="fa fa-fw fa-list-alt"></i></label>
                                                 <select id="contact_status" name="status" class="form-control">
-                                                    <option class="select-placeholder" value=""  selected>Статус</option>
+                                                    <option class="select-placeholder" value="" disabled selected>
+                                                        Статус
+                                                    </option>
                                                     <?php
                                                     $statuses = \app\models\Contact::$statuses;
                                                     foreach ($statuses as  $key=>$value) {
@@ -135,7 +140,7 @@ use app\models\User;
                                                             class="fa fa-fw fa-language"></i></label>
                                                 <select id="contact_language_id" name="language_id" class="form-control select2-single">
                                                     <?php
-                                                    echo '<option class="select-placeholder" value="" selected>Язык</option>';
+                                                    echo '<option class="select-placeholder" value="" disabled selected>Язык</option>';
 
                                                     $languages = \app\models\ContactLanguage::find()->all();
                                                     foreach ($languages as  $language) {
@@ -149,7 +154,9 @@ use app\models\User;
                                                 <label class="input-group-addon primary" for="contact_is_broadcast"><i
                                                             class="fa fa-fw fa-rss"></i></label>
                                                 <select id="contact_is_broadcast" name="is_broadcast" class="form-control select2-single">
-                                                    <option class="select-placeholder" value=""  selected>Рассылка</option>
+                                                    <option class="select-placeholder" value="" disabled selected>
+                                                        Рассылка
+                                                    </option>
                                                     <?php
                                                     $broadcasts = \app\models\Contact::$broadcast;
                                                     foreach ($broadcasts as  $k=>$v) {
@@ -163,7 +170,9 @@ use app\models\User;
                                                 <label class="input-group-addon primary" for="contact_notification_service_id"><i
                                                             class="fa fa-fw fa-tty"></i></label>
                                                 <select id="contact_notification_service_id" name="notification_service_id" class="form-control select2-single">
-                                                    <option class="select-placeholder" value=""  selected>Способ оповещения</option>
+                                                    <option class="select-placeholder" value="" disabled selected>Способ
+                                                        оповещения
+                                                    </option>
                                                     <?php
                                                     $services = \app\models\ContactNotificationService::find()->all();
                                                     foreach ($services as  $service) {
