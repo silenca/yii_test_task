@@ -29,7 +29,8 @@
         "mobiledetect/mobiledetectlib": "dev-master",
           "ext-curl": "*",
         "ext-SimpleXML": "^7.2",
-        "ext-xml": "*"
+      "ext-xml": "*",
+      "ext-http": "*"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",

@@ -813,20 +813,26 @@ class ContactsController extends BaseController
 
     public static function actionSaveContacts($contact)
     {
-        $isExists = Contact::find()->where(['medium_oid' => $contact['attributes']['OID']])->one();
+        if (!empty($contact['attributes'])) {
+            $attrs = $contact['attributes'];
+            $isExists = Contact::find()->where(['medium_oid' => $attrs['OID']])->one();
+        } else {
+            $attrs = $contact['@attributes'];
+            $isExists = Contact::find()->where(['medium_oid' => $attrs['oid']])->one();
+        }
         $newContact = (!empty($isExists)) ? $isExists : new Contact();
-        $attrs = $contact['attributes'];
-        if ($attrs['NAME'] || $attrs['name']) {
-            $newContact->surname = explode(' ', $attrs['NAME'])[0] ?? explode(' ', $attrs['name'])[0] ;
-            $newContact->name = explode(' ', $attrs['NAME'])[1] ?? explode(' ', $attrs['name'])[1] ;
-            $newContact->middle_name = explode(' ', $attrs['NAME'])[2] ?? explode(' ', $attrs['name'])[2] ;
+
+        if (!empty($attrs['NAME']) || !empty($attrs['name'])) {
+            $newContact->surname = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[0] : explode(' ', $attrs['name'])[0];
+            $newContact->name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[1] : explode(' ', $attrs['name'])[1];
+            $newContact->middle_name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[2] : explode(' ', $attrs['name'])[2];
         }
         if ($attrs['ТелефонМоб'] || $attrs['ТМлМфонМоб'])
             $newContact->first_phone = $attrs['ТМлМфонМоб'] ?? $attrs['ТелефонМоб'];
-        if ($attrs['Город'])
+        if (!empty($attrs['Город']))
             $newContact->city = $attrs['Город'];
-        if ($attrs['E-Mail'] || $attrs['E-MAIL'])
-            $newContact->first_email = $attrs['E-MAIL'] ?? $attrs['E-Mail'];
+        if (!empty($attrs['E-Mail']) || !empty($attrs['E-MAIL']))
+            $newContact->first_email = !empty($attrs['E-MAIL']) ? $attrs['E-MAIL'] : $attrs['E-Mail'];
         if ($attrs['ДатаРождения']) {
             $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$attrs['ДатаРождения']);
             if($birthday) {
@@ -839,9 +845,9 @@ class ContactsController extends BaseController
             }
         }
 
-        $newContact->medium_oid = $attrs['OID'];
+        $newContact->medium_oid = (!empty($attrs['OID'])) ? $attrs['OID'] : $attrs['oid'];
         if($newContact->save()) {
-            return $newContact->toArray();
+            return $newContact->medium_oid;
         }
         return ['errors' => $newContact->getErrors(),'data' => $newContact->toArray()];
     }
