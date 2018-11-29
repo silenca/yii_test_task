@@ -49,6 +49,7 @@ class SyncController extends Controller
                 $contactsSaved['count'] = $cnt++;
                 $contactsSaved[$cnt]['contact_oid'] = ContactsController::actionSaveContacts($contact);
             }
+            print_r($contactsSaved);
         } catch (HttpException $ex) {
             echo $ex;
         }
