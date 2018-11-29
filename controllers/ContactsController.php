@@ -831,7 +831,7 @@ class ContactsController extends BaseController
             $newContact->name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[1] : $name;
             $newContact->middle_name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[2] : $middle_name;
         }
-        if (!empty($$attrs['ТелефонМоб']) || !empty($$attrs['ТМлМфонМоб']))
+        if (!empty($attrs['ТелефонМоб']) || !empty($attrs['ТМлМфонМоб']))
             $newContact->first_phone = $attrs['ТМлМфонМоб'] ?? $attrs['ТелефонМоб'];
         if (!empty($attrs['Город']))
             $newContact->city = $attrs['Город'];
