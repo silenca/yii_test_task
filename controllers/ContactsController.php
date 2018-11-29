@@ -837,7 +837,7 @@ class ContactsController extends BaseController
             $newContact->city = $attrs['Город'];
         if (!empty($attrs['E-Mail']) || !empty($attrs['E-MAIL']))
             $newContact->first_email = !empty($attrs['E-MAIL']) ? $attrs['E-MAIL'] : $attrs['E-Mail'];
-        if (!empty($$attrs['ДатаРождения'])) {
+        if (!empty($attrs['ДатаРождения'])) {
             $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$attrs['ДатаРождения']);
             if($birthday) {
                 $newContact->birthday =  $birthday->format('Y-m-d');
