@@ -16,7 +16,7 @@ class SyncController extends Controller
     {
         $client = new Client();
         $dateFrom = date("Y-m-d") . 'T' . date("H:i:s");
-        $date = strtotime(date("Y-m-d H:i:s")) + (60 * 5);
+        $date = strtotime(date("Y-m-d H:i:s")) + (60 * 10);
         $dateTo = date("Y-m-d", $date) . 'T' . date("H:i:s", $date);
         try {
             $request = $client->createRequest();
