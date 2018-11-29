@@ -167,8 +167,9 @@ class ContactsController extends BaseController
                 }
             }
         }
+        $key = 1;
         unset($filter_cols['id']);
-        return $this->render('index', ['hide_columns' => $hide_columns, 'table_cols' => $table_cols, 'filter_cols' => $filter_cols]);
+        return $this->render('index', ['hide_columns' => $hide_columns, 'table_cols' => $table_cols, 'filter_cols' => $filter_cols, 'key' => $key]);
     }
 
     public function actionGetdata(): void
@@ -823,9 +824,12 @@ class ContactsController extends BaseController
         $newContact = (!empty($isExists)) ? $isExists : new Contact();
 
         if (!empty($attrs['NAME']) || !empty($attrs['name'])) {
-            $newContact->surname = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[0] : explode(' ', $attrs['name'])[0];
-            $newContact->name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[1] : explode(' ', $attrs['name'])[1];
-            $newContact->middle_name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[2] : explode(' ', $attrs['name'])[2];
+            $surname = !empty(explode(' ', $attrs['name'])[0]) ? explode(' ', $attrs['name'])[0] : " ";
+            $name = !empty(explode(' ', $attrs['name'])[1]) ? explode(' ', $attrs['name'])[1] : " ";
+            $middle_name = !empty(explode(' ', $attrs['name'])[2]) ? explode(' ', $attrs['name'])[2] : " ";
+            $newContact->surname = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[0] : $surname;
+            $newContact->name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[1] : $name;
+            $newContact->middle_name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[2] : $middle_name;
         }
         if ($attrs['ТелефонМоб'] || $attrs['ТМлМфонМоб'])
             $newContact->first_phone = $attrs['ТМлМфонМоб'] ?? $attrs['ТелефонМоб'];
