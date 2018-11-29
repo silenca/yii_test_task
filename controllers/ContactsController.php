@@ -850,7 +850,7 @@ class ContactsController extends BaseController
         }
 
         $newContact->medium_oid = (!empty($attrs['OID'])) ? $attrs['OID'] : $attrs['oid'];
-        $newContact->status = 'Пациент';
+        $newContact->status = Contact::$statuses['Пациент'];
         if($newContact->save()) {
             return $newContact->medium_oid;
         }
