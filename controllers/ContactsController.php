@@ -831,13 +831,13 @@ class ContactsController extends BaseController
             $newContact->name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[1] : $name;
             $newContact->middle_name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[2] : $middle_name;
         }
-        if ($attrs['ТелефонМоб'] || $attrs['ТМлМфонМоб'])
+        if (!empty($$attrs['ТелефонМоб']) || !empty($$attrs['ТМлМфонМоб']))
             $newContact->first_phone = $attrs['ТМлМфонМоб'] ?? $attrs['ТелефонМоб'];
         if (!empty($attrs['Город']))
             $newContact->city = $attrs['Город'];
         if (!empty($attrs['E-Mail']) || !empty($attrs['E-MAIL']))
             $newContact->first_email = !empty($attrs['E-MAIL']) ? $attrs['E-MAIL'] : $attrs['E-Mail'];
-        if ($attrs['ДатаРождения']) {
+        if (!empty($$attrs['ДатаРождения'])) {
             $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$attrs['ДатаРождения']);
             if($birthday) {
                 $newContact->birthday =  $birthday->format('Y-m-d');
