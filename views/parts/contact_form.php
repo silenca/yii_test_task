@@ -154,7 +154,7 @@ use app\models\User;
                                                 <label class="input-group-addon primary" for="contact_is_broadcast"><i
                                                             class="fa fa-fw fa-rss"></i></label>
                                                 <select id="contact_is_broadcast" name="is_broadcast" class="form-control select2-single">
-                                                    <option class="select-placeholder" value="" disabled selected>
+                                                    <option class="select-placeholder" disabled selected>
                                                         Рассылка
                                                     </option>
                                                     <?php
@@ -342,6 +342,13 @@ use app\models\User;
 
                                                 </form>
                                                  <!---STARTOF_CLICKTOCALLBUTTON !-->
+                                                <div class="acb-section audio-call-messages">
+                                                    <div class="acb-message panel-body">
+                                                        <audio id="audio-remote" class="acb-audio"></audio>
+                                                        <p class="acb-status acb-text-p">Ожидание ответа</p>
+                                                        <p class="acb-duration acb-text-p">00:00:00</p>
+                                                    </div>
+                                                </div>
                 <button class="btn btn-primary btn-block btn-audio-call" type="button">Позвонить</button>
                 <div class="acb audio-call-block">
                     <div class="acb-section audio-call-sip-options">
