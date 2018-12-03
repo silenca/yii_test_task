@@ -386,6 +386,7 @@ function manageContactFormPermissions(userRole) {
 $('div.cs-options li[data-value=call]').click(function () {
     login();
     $('.btn-audio-call').click(function () {
+        $('.audio-call-messages').show();
         var phone_number = $('#contact_phones').val();
         if (phone_number.startsWith('+380')) {
             phone_number = phone_number.slice(3);
