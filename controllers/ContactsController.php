@@ -817,9 +817,12 @@ class ContactsController extends BaseController
         if (!empty($contact['attributes'])) {
             $attrs = $contact['attributes'];
             $isExists = Contact::find()->where(['medium_oid' => $attrs['OID']])->one();
-        } else {
+        } else if(!empty($contact['@attributes'])) {
             $attrs = $contact['@attributes'];
             $isExists = Contact::find()->where(['medium_oid' => $attrs['oid']])->one();
+        }
+        else{
+            return null;
         }
         $newContact = (!empty($isExists)) ? $isExists : new Contact();
 
