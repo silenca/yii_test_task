@@ -581,31 +581,58 @@ class ContactsController extends BaseController
         $city = 'Город';
         if ($contact->medium_oid) {
             $syncData = Contact::getMediumObject($contact->medium_oid);
-//            var_dump($syncData);die;
-            $name = explode(' ', $syncData->name);
-            $contact->surname = $name[0];
-            $contact->name = $name[1];
-            $contact->middle_name = $name[2];
-            $contact->first_phone = get_object_vars($syncData)['@attributes'][$phone];
-            $contact->city = get_object_vars($syncData)['@attributes'][$city];
-            $brd_data =  get_object_vars($syncData)['@attributes'][$birthday];
-            if(!empty($brd_data)) {
-                $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$brd_data);
-                if($birthday) {
-                    $contact->birthday = $birthday->format('Y-m-d');
-                } else {
+            if(((array) $syncData)['@attributes']){
+                $name = explode(' ', $syncData->name);
+                $contact->surname = $name[0];
+                $contact->name = $name[1];
+                $contact->middle_name = $name[2];
+                $contact->first_phone = get_object_vars($syncData)['@attributes'][$phone];
+                $contact->city = get_object_vars($syncData)['@attributes'][$city];
+                $brd_data =  get_object_vars($syncData)['@attributes'][$birthday];
+                if(!empty($brd_data)) {
                     $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$brd_data);
                     if($birthday) {
                         $contact->birthday = $birthday->format('Y-m-d');
+                    } else {
+                        $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$brd_data);
+                        if($birthday) {
+                            $contact->birthday = $birthday->format('Y-m-d');
+                        }
                     }
                 }
+                $email_data = trim(get_object_vars($syncData)['@attributes'][$email]);
+                if(!empty($email_data)) {
+                    $contact->first_email = $email_data;
+                }
+                $contact->status = 2;
+                $contact->save();
             }
-            $email_data = trim(get_object_vars($syncData)['@attributes'][$email]);
-            if(!empty($email_data)) {
-                $contact->first_email = $email_data;
+            else{
+                $contact_local = Contact::getById($contact->id);
+                $contact->surname = $contact_local->surname;
+                $contact->name = $contact_local->name;
+                $contact->middle_name = $contact_local->middle_name;
+                $contact->first_phone = $contact_local->first_phone;
+                $contact->city = $contact_local->city;
+                $brd_data =  $contact_local->birthday;
+                if(!empty($brd_data)) {
+                    $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$brd_data);
+                    if($birthday) {
+                        $contact->birthday = $birthday->format('Y-m-d');
+                    } else {
+                        $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$brd_data);
+                        if($birthday) {
+                            $contact->birthday = $birthday->format('Y-m-d');
+                        }
+                    }
+                }
+                $email_data = trim($contact_local->first_email);
+                if(!empty($email_data)) {
+                    $contact->first_email = $email_data;
+                }
+                $contact->status = 2;
+                $contact->save();
             }
-            $contact->status = 2;
-            $contact->save();
         } else {
             $contact = $contact->one();
         }
