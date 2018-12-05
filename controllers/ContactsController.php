@@ -631,7 +631,7 @@ class ContactsController extends BaseController
                     $contact->first_email = $email_data;
                 }
                 $contact->status = 2;
-                $contact->save();
+                //$contact->save();
             }
         } else {
             $contact = $contact->one();
