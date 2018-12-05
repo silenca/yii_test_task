@@ -12,7 +12,7 @@ class m181205_102122_create_lastSyncDate_column extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('contact', 'lastSyncDate','DATETIME');
+        $this->addColumn('contact', 'lastSyncDate',$this->timestamp());
     }
 
     /**
