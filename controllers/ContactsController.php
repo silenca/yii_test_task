@@ -609,6 +609,14 @@ class ContactsController extends BaseController
             }
             else{
                 $contact_local = Contact::getById($contact->id);
+                $contact->int_id = $contact_local->int_id;
+                $contact->country = $contact_local->country;
+                $contact->attraction_channel_id = $contact_local->attraction_channel_id;
+                $contact->language_id = $contact_local->language_id;
+                $contact->notification_service_id = $contact_local->notification_service_id;
+                $contact->is_broadcast = $contact_local->is_broadcast;
+                $contact->city = $contact_local->city;
+                $contact->link_with = $contact_local->link_with;
                 $contact->surname = $contact_local->surname;
                 $contact->name = $contact_local->name;
                 $contact->middle_name = $contact_local->middle_name;
