@@ -346,7 +346,10 @@ use app\models\User;
                                                     <div class="acb-message panel-body">
                                                         <audio id="audio-remote" class="acb-audio"></audio>
                                                         <p class="acb-status acb-text-p">Ожидание ответа</p>
-                                                        <p class="acb-duration acb-text-p">00:00:00</p>
+                                                        <div class="acb-section audio-call-actions">
+                                                            <button type="button" class="btn btn-success acb-btn acb-call-btn" onclick='sipCall("call-audio");'>Вызов</button>
+                                                            <button type="button" class="btn btn-secondary acb-btn acb-hang-up-btn" value="HangUp" onclick='sipHangUp();' disabled>Завершить звонок</button>
+                                                        </div>
                                                     </div>
                                                 </div>
                 <button class="btn btn-primary btn-block btn-audio-call" type="button">Позвонить</button>
@@ -357,10 +360,7 @@ use app\models\User;
                             <option class="select2-choice" value=""><?= $value ?></option>
                         </select>
                     </div>
-                    <div class="acb-section audio-call-actions">
-                        <button type="button" class="btn btn-success acb-btn acb-call-btn" onclick='sipCall("call-audio");'>Вызов</button>
-                        <button type="button" class="btn btn-secondary acb-btn acb-hang-up-btn" value="HangUp" onclick='sipHangUp();' disabled>Завершить звонок</button>
-                    </div>
+
                     <div class="acb-section audio-call-messages">
                         <div class="acb-message panel-body">
                             <audio id="audio-remote" class="acb-audio"></audio>

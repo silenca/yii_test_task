@@ -87,6 +87,9 @@ var eventsListener = function (e) {
     switch (text) {
         case 'connecting':
             text = 'Соединение';
+            $('.acb-hang-up-btn').click(function(){
+                callSession.hangup();
+            });
             break;
         case 'm_stream_audio_remote_added':
             text = 'Соединение';
@@ -98,6 +101,8 @@ var eventsListener = function (e) {
                 break;
         case 'terminated':
             text = 'Завершен';
+            $('.acb-call-btn').enable();
+            $('.acb-hang-up-btn').disable();
             // timerMain('stop', $('.acb-duration'));
             break;
     }
@@ -110,4 +115,5 @@ var makeCall = function (phone_number) {
         events_listener: {events: '*', listener: eventsListener} // optional: '*' means all events
     });
     callSession.call(phone_number);
+
 };
