@@ -854,6 +854,7 @@ class Contact extends ActiveRecord
      */
     public function sendToCRM(): bool
     {
+        var_dump($this);die;
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -938,8 +939,8 @@ class Contact extends ActiveRecord
         $request_data = urldecode(http_build_query($contact));
         $log_data = date('j-m-Y G:i:s') . "\r\n" . 'Request: ' . $request_data . "\r\n\r\n";
         file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_contact.log', $log_data, FILE_APPEND);
-        file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_contact.log', 'Response: ' . $response_log_data . "\r\n", FILE_APPEND);
-        file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_contact.log', "=============================================\r\n\r\n", FILE_APPEND);
+//        file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_contact.log', 'Response: ' . $response_log_data . "\r\n", FILE_APPEND);
+//        file_put_contents(Yii::getAlias('@runtime_log_folder') . '/api_export_contact.log', "=============================================\r\n\r\n", FILE_APPEND);
 
         if (!\is_array($response)) {
             $response = (array)json_decode($response);

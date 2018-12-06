@@ -290,6 +290,7 @@ class ContactsController extends BaseController
                             $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
                         }
                     } else {
+                        $contact->medium_oid = Contact::updateMediumObject($contact->medium_oid, $contact_form->attributes);
                         if (!empty($contact->status) && $contact->status === '2') {
                             $contact->medium_oid = Contact::updateMediumObject($contact->medium_oid, $contact_form->attributes);
                         }
@@ -321,7 +322,7 @@ class ContactsController extends BaseController
 
                 }
                 if ($editEvent) {
-                    $contact->sendToCRM();
+                    $contact->save();
                     $this->json(['id' => $contact->id], 200);
                 } else {
                     $contact_form->getErrors();
@@ -593,7 +594,7 @@ class ContactsController extends BaseController
         $contact_manager = User::find()->where(['id' => $contact_data['manager_id']])->one();
         $contact_data['manager_name'] = $contact_manager['firstname'];
         $contact_fields = Contact::$safe_fields;
-        if(!Contact::checkLatestUpdate(Contact::find()->with('tags')->where(['id' => $contact_id])->one())){
+        if(!empty($contact->one()->medium_oid) && !Contact::checkLatestUpdate(Contact::find()->with('tags')->where(['id' => $contact_id])->one())){
             $contact->save(false, $contact_fields);
         }
         $this->json($contact_data, 200);
