@@ -391,6 +391,11 @@ $('div.cs-options li[data-value=call]').click(function () {
             }
             makeCall(phone_number);
         })
+        $('.acb-hang-up-btn').click(function(){
+            $(this).disable();
+            $('.acb-call-btn').enable();
+            callSession.hangup();
+        });
     })
 });
 function fillContactData(data, $form) {

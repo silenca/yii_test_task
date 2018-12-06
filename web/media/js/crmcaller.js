@@ -87,9 +87,7 @@ var eventsListener = function (e) {
     switch (text) {
         case 'connecting':
             text = 'Соединение';
-            $('.acb-hang-up-btn').click(function(){
-                callSession.hangup();
-            });
+
             break;
         case 'm_stream_audio_remote_added':
             text = 'Соединение';
