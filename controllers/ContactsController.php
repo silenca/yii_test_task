@@ -534,6 +534,7 @@ class ContactsController extends BaseController
         $contact = Contact::find()->with('tags')->where(['id' => $contact_id]);
         if (!empty($contact->one()->medium_oid) && Contact::getMediumObjectAttributes(true, $contact->one())) {
             /** @var Contact $contact */
+            $medium_oid_temp = $contact->one()->medium_oid;
             if(Contact::checkLatestUpdate($contact->one())){
 //                $contact2 = clone $contact;
                 /** @var Contact $contact2 */
@@ -594,7 +595,7 @@ class ContactsController extends BaseController
         $contact_manager = User::find()->where(['id' => $contact_data['manager_id']])->one();
         $contact_data['manager_name'] = $contact_manager['firstname'];
         $contact_fields = Contact::$safe_fields;
-        if(!empty($contact->one()->medium_oid) && !Contact::checkLatestUpdate(Contact::find()->with('tags')->where(['id' => $contact_id])->one())){
+        if(isset($medium_oid_temp) && !Contact::checkLatestUpdate(Contact::find()->with('tags')->where(['id' => $contact_id])->one())){
             $contact->save(false, $contact_fields);
         }
         $this->json($contact_data, 200);
