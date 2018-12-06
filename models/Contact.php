@@ -42,6 +42,7 @@ use yii\httpclient\XmlParser;
  * @property User $manager
  * @property boolean $is_broadcast
  * @property boolean $link_with
+ * @property string $lastSyncDate
  * @property string $medium_oid
  */
 class Contact extends ActiveRecord
@@ -77,7 +78,8 @@ class Contact extends ActiveRecord
         'is_broadcast',
         'language_id',
         'medium_oid',
-        'link_with'
+        'link_with',
+        'lastSyncDate'
     ];//STATUSES
     public static $mediumToCrmFields = [
 
@@ -140,7 +142,8 @@ class Contact extends ActiveRecord
             'manager_id',
             'medium_oid',
             'manager_id',
-            'link_with'
+            'link_with',
+            'lastSyncDate'
         ];
     }
 
@@ -411,6 +414,25 @@ class Contact extends ActiveRecord
             'all' => $all_count,
             'called' => $called_count,
         ];
+    }
+
+
+    //returns true if data into local DB is more actual, then Medium
+    public static function checkLatestUpdate($object){
+        $mediumObject = Contact::getMediumObject($object->medium_oid);
+        $mediumTime = get_object_vars($mediumObject)['@attributes']['date'];
+        $mediumTime[10] = ' ';
+        return strtotime($mediumTime) <= strtotime($object->attributes['lastSyncDate']) ? true : false;
+    }
+
+    public static function getMediumObjectAttributes($isCheck = false, $object){
+        $mediumObject = Contact::getMediumObject($object->medium_oid);
+        $attributes = ((array)$mediumObject)['@attributes'] ? get_object_vars($mediumObject)['@attributes'] : false;
+        if(!$attributes){
+            return false;
+        }
+        return !$isCheck ? $attributes : true;
+
     }
 
     public static function getMediumObject($oid)
@@ -897,7 +919,6 @@ class Contact extends ActiveRecord
         if (!empty($this->link_with)) {
             $contact['link_with'] = $this->link_with;
         }
-
         $history = ContactHistory::getByContactId($this->id);
         $contact['Comment'] = '';
         foreach ($history as $history_item) {
