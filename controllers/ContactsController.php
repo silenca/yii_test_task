@@ -308,9 +308,9 @@ class ContactsController extends BaseController
                     } else {
                         $contact_form->manager_id = Yii::$app->user->identity->id;
                     }
-                    if (!empty($contact_form->status) && $contact_form->status == '2') {
+//                    if (!empty($contact_form->status) && $contact_form->status == '2') {
                         $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
-                    }
+//                    }
 
                 }
                 unset($post['_csrf'], $post['id']);
