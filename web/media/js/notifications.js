@@ -1,6 +1,9 @@
-    var socket = io.connect('http://dopomogaplus.silencatech.com:8880', {secure:false});
-    console.log(notify_host, notify_id);
-    socket.emit('join', {notify_id: notify_id});
+ $(function(){
+  var socket = io.connect('ws://dopomogaplus.silencatech.com:8005', {secure:false});
+    console.log(socket);
+    socket.emit('join', {notify_id: notify_id, role_id: role_id}, function(e){
+        console.log('joined', e);
+    });
 
     function acceptCall(cal_id) {
         $.post('/contacts/accept-call', {call_id:cal_id,_csrf:_csrf}, function (response) {});
@@ -54,7 +57,7 @@
     //     var contract_count = parseInt($count_countent.text());
     //     $count_countent.text(++contract_count);
     // });
-
+});
 
 /*
  * message: text
