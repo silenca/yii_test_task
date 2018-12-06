@@ -290,6 +290,7 @@ class ContactsController extends BaseController
                             $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
                         }
                     } else {
+                        $contact->medium_oid = Contact::updateMediumObject($contact->medium_oid, $contact_form->attributes);
                         if (!empty($contact->status) && $contact->status === '2') {
                             $contact->medium_oid = Contact::updateMediumObject($contact->medium_oid, $contact_form->attributes);
                         }
@@ -321,7 +322,7 @@ class ContactsController extends BaseController
 
                 }
                 if ($editEvent) {
-                    $contact->sendToCRM();
+                    $contact->save();
                     $this->json(['id' => $contact->id], 200);
                 } else {
                     $contact_form->getErrors();
@@ -531,41 +532,72 @@ class ContactsController extends BaseController
         $user_id = Yii::$app->user->identity->getId();
         $contact_id = Yii::$app->request->get('id');
         $contact = Contact::find()->with('tags')->where(['id' => $contact_id]);
-        if (!empty($contact->one()->medium_oid)) {
+        if (!empty($contact->one()->medium_oid) && Contact::getMediumObjectAttributes(true, $contact->one())) {
             /** @var Contact $contact */
-            $contact = $this->actionNewView($contact);
-            $attrs = $contact->attributes;
-            $contact_data = array_intersect_key($attrs, array_flip(Contact::$safe_fields));
-
-            $contact_data['phones'] = Filter::dataImplode($contact->getPhoneValues());
-
-            $contact_data['emails'] = Filter::dataImplode($contact->getEmailValues());
-        } else {
-            $contact2 = clone $contact;
-            /** @var Contact $contact2 */
-            $contact2 = $contact2->one();
-            $contact_arr = $contact->asArray()->one();
-            $contact_data = array_intersect_key($contact_arr, array_flip(Contact::$safe_fields));
-
-            $contact_data['phones'] = Filter::dataImplode($contact2->getPhoneValues());
-
-            $contact_data['emails'] = Filter::dataImplode($contact2->getEmailValues());
-
-            if (\count($contact_arr['tags']) > 0) {
-                $contact_data['tags'] = $contact_arr['tags'];
+            $medium_oid_temp = $contact->one()->medium_oid;
+            if(Contact::checkLatestUpdate($contact->one())){
+//                $contact2 = clone $contact;
                 /** @var Contact $contact2 */
-                $manager_tags = $contact2->getTags()->joinWith(['users'])->where([User::tableName() . '.id' => $user_id])->asArray()->all();
-                $manager_tags = array_map(function ($item) {
-                    return $item['name'];
-                }, $manager_tags);
-                $contact_data['manager_tags'] = $manager_tags;
+                $attrs = $contact->one()['attributes'];
+                $contact_data = array_intersect_key($attrs, array_flip(Contact::$safe_fields));
+                $contact_data['phones'] = Filter::dataImplode($contact->one()->getPhoneValues());
+                $contact_data['emails'] = Filter::dataImplode($contact->one()->getEmailValues());
+//                $contact2 = $contact2->one();
+//                $contact_arr = $contact->asArray()->one();
+//                $contact_data = array_intersect_key($contact_arr, array_flip(Contact::$safe_fields));
+//                $contact_data['phones'] = Filter::dataImplode($contact2->getPhoneValues());
+//                $contact_data['emails'] = Filter::dataImplode($contact2->getEmailValues());
+
+//                if (\count($contact_arr['tags']) > 0) {
+//                    $contact_data['tags'] = $contact_arr['tags'];
+//                    /** @var Contact $contact2 */
+//                    $manager_tags = $contact2->getTags()->joinWith(['users'])->where([User::tableName() . '.id' => $user_id])->asArray()->all();
+//                    $manager_tags = array_map(function ($item) {
+//                        return $item['name'];
+//                    }, $manager_tags);
+//                    $contact_data['manager_tags'] = $manager_tags;
+//                }
+            }else{
+                $contact = $this->actionNewView($contact);
+                $attrs = $contact->attributes;
+                $contact_data = array_intersect_key($attrs, array_flip(Contact::$safe_fields));
+                $contact_data['phones'] = Filter::dataImplode($contact->getPhoneValues());
+                $contact_data['emails'] = Filter::dataImplode($contact->getEmailValues());
             }
+        } else {
+//            $contact2 = clone $contact;
+//            /** @var Contact $contact2 */
+//            $contact2 = $contact2->one();
+//            $contact_arr = $contact->asArray()->one();
+//            $contact_data = array_intersect_key($contact_arr, array_flip(Contact::$safe_fields));
+//
+//            $contact_data['phones'] = Filter::dataImplode($contact2->getPhoneValues());
+//
+//            $contact_data['emails'] = Filter::dataImplode($contact2->getEmailValues());
+//
+//            if (\count($contact_arr['tags']) > 0) {
+//                $contact_data['tags'] = $contact_arr['tags'];
+//                /** @var Contact $contact2 */
+//                $manager_tags = $contact2->getTags()->joinWith(['users'])->where([User::tableName() . '.id' => $user_id])->asArray()->all();
+//                $manager_tags = array_map(function ($item) {
+//                    return $item['name'];
+//                }, $manager_tags);
+//                $contact_data['manager_tags'] = $manager_tags;
+//            }
 //           $attrs = $contact->asArray()->one();
+            $attrs = $contact->one()['attributes'];
+            $contact_data = array_intersect_key($attrs, array_flip(Contact::$safe_fields));
+            $contact_data['phones'] = Filter::dataImplode($contact->one()->getPhoneValues());
+            $contact_data['emails'] = Filter::dataImplode($contact->one()->getEmailValues());
         }
 
 
         $contact_manager = User::find()->where(['id' => $contact_data['manager_id']])->one();
         $contact_data['manager_name'] = $contact_manager['firstname'];
+        $contact_fields = Contact::$safe_fields;
+        if(isset($medium_oid_temp) && !Contact::checkLatestUpdate(Contact::find()->with('tags')->where(['id' => $contact_id])->one())){
+            $contact->save(false, $contact_fields);
+        }
         $this->json($contact_data, 200);
     }
 
@@ -581,7 +613,6 @@ class ContactsController extends BaseController
         $city = 'Город';
         if ($contact->medium_oid) {
             $syncData = Contact::getMediumObject($contact->medium_oid);
-//            var_dump($syncData);die;
             $name = explode(' ', $syncData->name);
             $contact->surname = $name[0];
             $contact->name = $name[1];
@@ -605,7 +636,7 @@ class ContactsController extends BaseController
                 $contact->first_email = $email_data;
             }
             $contact->status = 2;
-            $contact->save();
+            //$contact->save();
         } else {
             $contact = $contact->one();
         }
@@ -817,9 +848,12 @@ class ContactsController extends BaseController
         if (!empty($contact['attributes'])) {
             $attrs = $contact['attributes'];
             $isExists = Contact::find()->where(['medium_oid' => $attrs['OID']])->one();
-        } else {
+        } else if(!empty($contact['@attributes'])) {
             $attrs = $contact['@attributes'];
             $isExists = Contact::find()->where(['medium_oid' => $attrs['oid']])->one();
+        }
+        else{
+            return null;
         }
         $newContact = (!empty($isExists)) ? $isExists : new Contact();
 
