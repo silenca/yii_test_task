@@ -1,5 +1,5 @@
  $(function(){
-  var socket = io.connect('ws://dopomogaplus.silencatech.com:8005', {secure:false});
+  var socket = io.connect('wss://dopomogaplus.silencatech.com:8005');
     console.log(socket);
     socket.emit('join', {notify_id: notify_id, role_id: role_id}, function(e){
         console.log('joined', e);

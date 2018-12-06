@@ -207,11 +207,6 @@ $(function() {
                 return 'label label-success';
             }
         }
-        // typeaheadjs: {
-        //     name: 'cities',
-        //     displayKey: 'text',
-        //     source: cities.ttAdapter()
-        // }
     });
 });
 
@@ -285,9 +280,7 @@ function changeValidationRequired(options, state) {
     }
 }
 
-// function changeActionSubmitHandler(options, callback) {
-//     options.submitHandler = callback;
-// }
+
 
 function openContactForm(id) {
     $contact_form.find('label.error').remove();
@@ -387,13 +380,17 @@ $('div.cs-options li[data-value=call]').click(function () {
     login();
     $('.btn-audio-call').click(function () {
         $('.audio-call-messages').show();
-        var phone_number = $('#contact_phones').val();
-        if (phone_number.startsWith('+380')) {
-            phone_number = phone_number.slice(3);
-        } else if (phone_number.startsWith('0') && phone_number.length !== 10) {
-            phone_number = phone_number.trim();
-        }
-        makeCall(phone_number);
+        $('.acb-call-btn').click(function (e) {
+            $(this).disable();
+            $('.acb-hang-up-btn').enable();
+            var phone_number = $('#contact_phones').val();
+            if (phone_number.startsWith('+380')) {
+                phone_number = phone_number.slice(3);
+            } else if (phone_number.startsWith('0') && phone_number.length !== 10) {
+                phone_number = phone_number.trim();
+            }
+            makeCall(phone_number);
+        })
     })
 });
 function fillContactData(data, $form) {
