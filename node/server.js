@@ -27,30 +27,8 @@ var clients = [];
 io.sockets.on('connection', function (socket) {
     socket.join('manager');
     console.log('manager');
-    socket.on('join', function (data) {
-                    switch(data.role_id){
-                        case 1:
-                            socket.join('operator');
-                            break;
-                        case 5:
-                            socket.join('manager');
-                            socketE = socket;
-                            break;
-                        case 15:
-                            socket.join('admin');
-                            break;
-                }
 
-            })
-    socket.on('disconnect', function () {
-        var index = clients.indexOf(socket);
-        if (index !== -1) {
-            socket.leave(socket.room);
-            clients.splice(index, 1);
-        }
-    })
-
-    })
+ })
 
 
 
