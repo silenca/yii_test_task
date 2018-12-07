@@ -1,6 +1,20 @@
 var express = require('express');
 var config = require('./config.js');
-var io = require('socket.io').listen(config.socket.port);
+//var io = require('socket.io')();
+
+var https = require('https');
+var fs = require('fs');
+var serve = https.createServer({
+    key: fs.readFileSync('/etc/letsencrypt/live/dopomogaplus.silencatech.com/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/dopomogaplus.silencatech.com/cert.pem'),
+    requestCert: true,
+    rejectUnauthorized:false
+}, express);
+//serve.listen(8002);
+
+var io = require('socket.io')(serve);
+serve.listen(8005);
+
 console.log('Start socket on: '+config.socket.port);
 var mysql = require('mysql');
 var bodyParser = require('body-parser');
@@ -13,30 +27,8 @@ var clients = [];
 io.sockets.on('connection', function (socket) {
     socket.join('manager');
     console.log('manager');
-    socket.on('join', function (data) {
-                    switch(data.role_id){
-                        case 1:
-                            socket.join('operator');
-                            break;
-                        case 5:
-                            socket.join('manager');
-                            socketE = socket;
-                            break;
-                        case 15:
-                            socket.join('admin');
-                            break;
-                }
 
-            })
-    socket.on('disconnect', function () {
-        var index = clients.indexOf(socket);
-        if (index !== -1) {
-            socket.leave(socket.room);
-            clients.splice(index, 1);
-        }
-    })
-
-    })
+ })
 
 
 
@@ -85,7 +77,6 @@ var server = app.listen(config.app.port, '127.0.0.1', function () {
     console.log('Example app listening at http://%s:%s', host, port);
 
 });
-
 //function getOnlineUsers() {
 //    var options = {
 //        host: config.crm.host,

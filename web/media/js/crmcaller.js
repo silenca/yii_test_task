@@ -19,10 +19,10 @@ function createSipStack() {
         impu: 'sip:600@dopomogaplus.silencatech.com:8088', // mandatory: valid SIP Uri (IMS Public Identity)
         password: 'YAahWJQsGE7lF5d', // optional
         display_name: '600', // optional
-        websocket_proxy_url: 'ws://dopomogaplus.silencatech.com:8088/ws', // optional
+        websocket_proxy_url: 'wss://dopomogaplus.silencatech.com:8089/ws', // optional
         enable_rtcweb_breaker: true, // optional
         disable_video: true,
-        enable_media_stream_cache: true,
+        enable_media_stream_cache: false,
         enable_early_ims: false,
         sip_headers: [ // optional
             {name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.0.0.0'},
@@ -120,4 +120,4 @@ var makeCall = function (phone_number) {
 
 var hangUp = function(){
     callSession.hangup();
-}
+    }
