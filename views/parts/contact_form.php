@@ -347,8 +347,8 @@ use app\models\User;
                                                         <audio id="audio-remote" class="acb-audio"></audio>
                                                         <p class="acb-status acb-text-p">Ожидание ответа</p>
                                                         <div class="acb-section audio-call-actions">
-                                                            <button type="button" class="btn btn-success acb-btn acb-call-btn" onclick='sipCall("call-audio");'>Вызов</button>
-                                                            <button type="button" class="btn btn-secondary acb-btn acb-hang-up-btn" value="HangUp" onclick='sipHangUp();' disabled>Завершить звонок</button>
+                                                            <button type="button" class="btn btn-success acb-btn acb-call-btn" id="call_btn" onclick='sipCall("call-audio");'>Вызов</button>
+                                                            <button type="button" class="btn btn-secondary acb-btn acb-hang-up-btn" id="hangup_btn" value="HangUp" disabled>Завершить звонок</button>
                                                         </div>
                                                     </div>
                                                 </div>

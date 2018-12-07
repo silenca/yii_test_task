@@ -41,7 +41,7 @@ var registerSession;
 var eventsListener = function (e) {
     console.info('session event = ' + e.type);
     if (e.type == 'connected' && e.session == registerSession) {
-        makeCall();
+        // makeCall();
     }
 };
 var login = function () {
@@ -51,35 +51,7 @@ var login = function () {
     registerSession.register();
 
 };
-// var timerMain = function(e, el){
-//     var seconds = 0, minutes = 0, hours = 0,
-//         t;
-//
-//     function add() {
-//         seconds++;
-//         if (seconds >= 60) {
-//             seconds = 0;
-//             minutes++;
-//             if (minutes >= 60) {
-//                 minutes = 0;
-//                 hours++;
-//             }
-//         }
-//
-//         el.text((hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + (seconds > 9 ? seconds : "0" + seconds));
-//
-//         timer();
-//     }
-//     function timer() {
-//         t = setTimeout(add, 1000);
-//     }
-//     if(e === 'start'){
-//         timer();
-//     }else{
-//         clearTimeout(t);
-//     }
-//
-// };
+
 var callSession;
 var eventsListener = function (e) {
     console.info('session event = ' + e.type);
@@ -120,4 +92,4 @@ var makeCall = function (phone_number) {
 
 var hangUp = function(){
     callSession.hangup();
-    }
+}
