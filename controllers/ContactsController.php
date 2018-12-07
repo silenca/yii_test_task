@@ -846,48 +846,54 @@ class ContactsController extends BaseController
 
     public static function actionSaveContacts($contact)
     {
-        if (!empty($contact['attributes'])) {
-            $attrs = $contact['attributes'];
-            $isExists = Contact::find()->where(['medium_oid' => $attrs['OID']])->one();
-        } else if(!empty($contact['@attributes'])) {
-            $attrs = $contact['@attributes'];
-            $isExists = Contact::find()->where(['medium_oid' => $attrs['oid']])->one();
-        }
-        else{
-            return null;
-        }
-        $newContact = (!empty($isExists)) ? $isExists : new Contact();
 
-        if (!empty($attrs['NAME']) || !empty($attrs['name'])) {
-            $surname = !empty(explode(' ', $attrs['name'])[0]) ? explode(' ', $attrs['name'])[0] : " ";
-            $name = !empty(explode(' ', $attrs['name'])[1]) ? explode(' ', $attrs['name'])[1] : " ";
-            $middle_name = !empty(explode(' ', $attrs['name'])[2]) ? explode(' ', $attrs['name'])[2] : " ";
-            $newContact->surname = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[0] : $surname;
-            $newContact->name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[1] : $name;
-            $newContact->middle_name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[2] : $middle_name;
-        }
-        if (!empty($attrs['ТелефонМоб']) || !empty($attrs['ТМлМфонМоб']))
-            $newContact->first_phone = $attrs['ТМлМфонМоб'] ?? $attrs['ТелефонМоб'];
-        if (!empty($attrs['Город']))
-            $newContact->city = $attrs['Город'];
-        if (!empty($attrs['E-mail']) || !empty($attrs['E-MAIL']))
-            $newContact->first_email = !empty($attrs['E-MAIL']) ? $attrs['E-MAIL'] : $attrs['E-mail'];
-        if (!empty($attrs['ДатаРождения'])) {
-            $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$attrs['ДатаРождения']);
-            if($birthday) {
-                $newContact->birthday =  $birthday->format('Y-m-d');
-            } else {
+        $localContact = Contact::find()->where(['medium_oid' => $contact['@attributes']['oid']])->one();
+        if($localContact && Contact::checkLatestUpdate($localContact)){
+            return Contact::updateMediumObject($localContact->attributes['medium_oid'], $localContact->attributes);
+        }else{
+            if (!empty($contact['attributes'])) {
+                $attrs = $contact['attributes'];
+                $isExists = Contact::find()->where(['medium_oid' => $attrs['OID']])->one();
+            } else if(!empty($contact['@attributes'])) {
+                $attrs = $contact['@attributes'];
+                $isExists = Contact::find()->where(['medium_oid' => $attrs['oid']])->one();
+            }
+            else{
+                return null;
+            }
+            $newContact = (!empty($isExists)) ? $isExists : new Contact();
+
+            if (!empty($attrs['NAME']) || !empty($attrs['name'])) {
+                $surname = !empty(explode(' ', $attrs['name'])[0]) ? explode(' ', $attrs['name'])[0] : " ";
+                $name = !empty(explode(' ', $attrs['name'])[1]) ? explode(' ', $attrs['name'])[1] : " ";
+                $middle_name = !empty(explode(' ', $attrs['name'])[2]) ? explode(' ', $attrs['name'])[2] : " ";
+                $newContact->surname = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[0] : $surname;
+                $newContact->name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[1] : $name;
+                $newContact->middle_name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[2] : $middle_name;
+            }
+            if (!empty($attrs['ТелефонМоб']) || !empty($attrs['ТМлМфонМоб']))
+                $newContact->first_phone = $attrs['ТМлМфонМоб'] ?? $attrs['ТелефонМоб'];
+            if (!empty($attrs['Город']))
+                $newContact->city = $attrs['Город'];
+            if (!empty($attrs['E-mail']) || !empty($attrs['E-MAIL']))
+                $newContact->first_email = !empty($attrs['E-MAIL']) ? $attrs['E-MAIL'] : $attrs['E-mail'];
+            if (!empty($attrs['ДатаРождения'])) {
                 $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$attrs['ДатаРождения']);
                 if($birthday) {
                     $newContact->birthday =  $birthday->format('Y-m-d');
+                } else {
+                    $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$attrs['ДатаРождения']);
+                    if($birthday) {
+                        $newContact->birthday =  $birthday->format('Y-m-d');
+                    }
                 }
             }
-        }
 
-        $newContact->medium_oid = (!empty($attrs['OID'])) ? $attrs['OID'] : $attrs['oid'];
-        $newContact->status = Contact::$statuses[2];
-        if($newContact->save()) {
-            return $newContact->medium_oid;
+            $newContact->medium_oid = (!empty($attrs['OID'])) ? $attrs['OID'] : $attrs['oid'];
+            $newContact->status = Contact::$statuses[2];
+            if($newContact->save()) {
+                return $newContact->medium_oid;
+            }
         }
         return ['errors' => $newContact->getErrors(),'data' => $newContact->toArray()];
     }

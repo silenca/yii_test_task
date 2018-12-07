@@ -486,8 +486,18 @@ class Contact extends ActiveRecord
         } else {
             $birthday ="";
         }
-        $phone = !empty($data['phones'])?$data['phones']:' ';
-        $emails = !empty($data['emails'])?$data['emails']:' ';
+        if(!empty($data['first_phone'])){
+            $phone = $data['first_phone'];
+        }else{
+            $phone = ' ';
+        }
+        if(!empty($data['first_email'])){
+            $emails = $data['first_email'];
+        }else{
+            $emails = ' ';
+        }
+        //$phone = !empty($data['phones'])?$data['phones']:' ';
+        //$emails = !empty($data['emails'])?$data['emails']:' ';
         $body = '<OBJECT 
                     name="' . $data['surname'] . ' ' . $data['name'] . ' ' . $data['middle_name'] . '" 
                     ТелефонМоб="' . $phone . '" 
