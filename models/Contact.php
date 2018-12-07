@@ -482,20 +482,16 @@ class Contact extends ActiveRecord
     {
 
         if(!empty($data['birthday'])) {
-            $birthday = \DateTime::createFromFormat('Y-m-d',$data['birthday']);
-            if($birthday) {
-                $birthday = $birthday->format('Y-m-d\TH:i:s');
-            } else {
-                $birthday ="";
-            }
+            $birthday = \DateTime::createFromFormat('Y-m-d',$data['birthday'])->format('Y-m-d\TH:i:s');
         } else {
             $birthday ="";
         }
-
+        $phone = !empty($data['phones'])?$data['phones']:' ';
+        $emails = !empty($data['emails'])?$data['emails']:' ';
         $body = '<OBJECT 
                     name="' . $data['surname'] . ' ' . $data['name'] . ' ' . $data['middle_name'] . '" 
-                    ТелефонМоб="' . $data['phones'] . '" 
-                    E-mail="' . $data['emails'] . ' " 
+                    ТелефонМоб="' . $phone . '" 
+                    E-mail="' . $emails . ' " 
                     ДатаРождения="' . $birthday . '" 
                     Город="' . $data['city'] . '" 
                     ИсточникИнфомации="' . $data['attraction_channel_id'] . '" 

@@ -19,6 +19,7 @@ use app\models\forms\ContactForm;
 use app\models\User;
 use SimpleXML;
 use Yii;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -869,8 +870,8 @@ class ContactsController extends BaseController
             $newContact->first_phone = $attrs['ТМлМфонМоб'] ?? $attrs['ТелефонМоб'];
         if (!empty($attrs['Город']))
             $newContact->city = $attrs['Город'];
-        if (!empty($attrs['E-Mail']) || !empty($attrs['E-MAIL']))
-            $newContact->first_email = !empty($attrs['E-MAIL']) ? $attrs['E-MAIL'] : $attrs['E-Mail'];
+        if (!empty($attrs['E-mail']) || !empty($attrs['E-MAIL']))
+            $newContact->first_email = !empty($attrs['E-MAIL']) ? $attrs['E-MAIL'] : $attrs['E-mail'];
         if (!empty($attrs['ДатаРождения'])) {
             $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$attrs['ДатаРождения']);
             if($birthday) {
