@@ -489,12 +489,12 @@ class Contact extends ActiveRecord
         if(!empty($data['first_phone'])){
             $phone = $data['first_phone'];
         }else{
-            $phone = ' ';
+            $phone = '';
         }
         if(!empty($data['first_email'])){
             $emails = $data['first_email'];
         }else{
-            $emails = ' ';
+            $emails = '';
         }
         //$phone = !empty($data['phones'])?$data['phones']:' ';
         //$emails = !empty($data['emails'])?$data['emails']:' ';
