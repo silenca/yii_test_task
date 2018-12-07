@@ -597,7 +597,7 @@ class ContactsController extends BaseController
         $contact_data['manager_name'] = $contact_manager['firstname'];
         $contact_fields = Contact::$safe_fields;
         if(isset($medium_oid_temp) && !Contact::checkLatestUpdate(Contact::find()->with('tags')->where(['id' => $contact_id])->one())){
-            $contact->save(false, $contact_fields);
+            $contact->save(true, $contact_fields);
         }
         $this->json($contact_data, 200);
     }
