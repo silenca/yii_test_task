@@ -500,8 +500,8 @@ class Contact extends ActiveRecord
         //$emails = !empty($data['emails'])?$data['emails']:' ';
         $body = '<OBJECT 
                     name="' . $data['surname'] . ' ' . $data['name'] . ' ' . $data['middle_name'] . '" 
-                    ТелефонМоб="' . $phone . '" 
-                    E-mail="' . $emails . ' " 
+                    ТелефонМоб="'.$phone.'" 
+                    E-mail= "'.$emails.'"
                     ДатаРождения="' . $birthday . '" 
                     Город="' . $data['city'] . '" 
                     ИсточникИнфомации="' . $data['attraction_channel_id'] . '" 

@@ -846,9 +846,14 @@ class ContactsController extends BaseController
 
     public static function actionSaveContacts($contact)
     {
-
-        $localContact = Contact::find()->where(['medium_oid' => $contact['@attributes']['oid']])->one();
-        if($localContact && Contact::checkLatestUpdate($localContact)){
+        if(!empty($contact['@attributes'])){
+            $localContact = Contact::find()->where(['medium_oid' => $contact['@attributes']['oid']])->one();
+        }elseif (!empty($contact['attributes'])){
+            $localContact = Contact::find()->where(['medium_oid' => $contact['@attributes']['oid']])->one();
+        }else {
+            $localContact = Contact::find()->where(['medium_oid' => $contact['oid']])->one();
+        }
+        if(!empty($localContact) && Contact::checkLatestUpdate($localContact)){
             return Contact::updateMediumObject($localContact->attributes['medium_oid'], $localContact->attributes);
         }else{
             if (!empty($contact['attributes'])) {
@@ -857,10 +862,14 @@ class ContactsController extends BaseController
             } else if(!empty($contact['@attributes'])) {
                 $attrs = $contact['@attributes'];
                 $isExists = Contact::find()->where(['medium_oid' => $attrs['oid']])->one();
+            }else{
+                $attrs = $contact;
             }
-            else{
-                return null;
-            }
+//            else{
+//                $isExists = Contact::find()->where(['medium_oid' => $contact['oid']])->one();
+////                if(empty($isExists))
+////                    return null;
+//            }
             $newContact = (!empty($isExists)) ? $isExists : new Contact();
 
             if (!empty($attrs['NAME']) || !empty($attrs['name'])) {

@@ -45,11 +45,17 @@ class SyncController extends Controller
             $response = $request->send();
             $contactsSaved = [];
             $cnt = 0;
-            foreach ($response->getData()['OBJECT'] as $contact) {
-                $contactsSaved['count'] = $cnt++;
-                $contactsSaved[$cnt]['contact_oid'] = ContactsController::actionSaveContacts($contact);
+            if(!empty($response->getData())){
+                foreach ($response->getData()['OBJECT'] as $contact) {
+                    $contactsSaved[$cnt]['contact_oid'] = ContactsController::actionSaveContacts($contact);
+                    $contactsSaved['count'] = $cnt++;
+                }
+                print_r($contactsSaved);
+            }else{
+                echo 'No data on Medium';
             }
-            print_r($contactsSaved);
+
+
         } catch (HttpException $ex) {
             echo $ex;
         }
