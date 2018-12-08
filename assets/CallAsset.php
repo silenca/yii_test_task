@@ -21,6 +21,7 @@ class CallAsset extends AssetBundle
     public $js = [
         'media/js/contexts/call.js',
         'media/js/global_contact_form.js',
+
     ];
     public $depends = [
         'app\assets\DatapickerAsset'
