@@ -459,7 +459,7 @@ function fillContactData(data, $form) {
                 }
                 break;
             case 'status':
-                var input = $('#contact_status option[value="'+value+'"]');
+                input = $('#contact_status option[value="'+value+'"]');
                 if($(input).length){
                     $('#contact_status').val(value);
                     $('#contact_status').attr('data-value',value);
@@ -467,6 +467,9 @@ function fillContactData(data, $form) {
                     $('#contact_status').val('');
                     $('#contact_status').attr('data-value','');
                 }
+                break;
+            case 'is_broadcast':
+                $('#contact_is_broadcast option[value = "'+value+'"]').attr('selected', 'selected');
                 break;
             default:
                 if (value) {

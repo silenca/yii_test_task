@@ -52,7 +52,6 @@ class ImportContactForm extends ContactForm
     'flat',
     'status'
     */
-
     public function rules()
     {
         $rules = parent::rules();
