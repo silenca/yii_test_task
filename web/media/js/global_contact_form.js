@@ -459,7 +459,7 @@ function fillContactData(data, $form) {
                 }
                 break;
             case 'status':
-                input = $('#contact_status option[value="'+value+'"]');
+                var input = $('#contact_status option[value="'+value+'"]');
                 if($(input).length){
                     $('#contact_status').val(value);
                     $('#contact_status').attr('data-value',value);
@@ -469,11 +469,17 @@ function fillContactData(data, $form) {
                 }
                 break;
             case 'is_broadcast':
-                $('#contact_is_broadcast option[value = "'+value+'"]').attr('selected', 'selected');
+                console.log('BROADCAST: '+value);
+                if(value != null){
+                    $('#contact_is_broadcast option[value = "'+value+'"]').attr('selected', 'selected');
+                    $('#contact_is_broadcast').attr('data-value', value)
+                }else{
+                    $('#contact_is_broadcast option[value = 0]').attr('selected', 'selected');
+                    $('#contact_is_broadcast').attr('data-value', 0)
+                }
                 break;
             default:
                 if (value) {
-
                     $form.find('#contact_' + key).val(value).attr('data-value', value);
                 } else {
                     $form.find('#contact_' + key).val('').attr('data-value', '');
@@ -493,6 +499,7 @@ function checkChangesContact(name, value, $form) {
 
 function editContact($form, name, value) {
     console.log('edit');
+    console.log(contact_bind_inputs);
     var data = {};
     $.each(contact_bind_inputs, function (key, value) {
         if (value != "undefined")
@@ -500,6 +507,7 @@ function editContact($form, name, value) {
     });
     data['_csrf'] = _csrf;
     if (contact_bind_inputs['phones']) {
+        console.dir(data);
         $.post('/contacts/edit', data, function (response) {
             $form.find('label.error').remove();
             $form.find('.error').removeClass('error');
