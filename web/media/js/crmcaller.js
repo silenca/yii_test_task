@@ -140,7 +140,7 @@ var     eventsListener = function (e) {
     $('.audio-call-messages .acb-status').text(text);
 };
 
-var makeCall = function (phone_number) {
+function makeCall(phone_number) {
     callSession = sipStack.newSession({
         audio_remote: document.getElementById('audio-remote'),
         events_listener: {events: '*', listener: eventsListener} // optional: '*' means all events
@@ -149,7 +149,7 @@ var makeCall = function (phone_number) {
 
 };
 
-var hangUp = function(){
+function hangUp(){
     callSession.hangup({ events_listener: { events: '*', listener: eventsListener } });
 };
 function AnswerCall(){
