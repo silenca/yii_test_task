@@ -89,6 +89,7 @@ function createSipStack() {
         await sleep(2000);
         login()
         $('.acb-call-btn').click(function (e) {
+            e.preventDefault();
             $(this).attr('disabled', true);
             $('.acb-hang-up-btn').attr('disabled', false);
             var phone_number = $('#contact_phones').val();
@@ -156,8 +157,7 @@ var     eventsListener = function (e) {
     }
     $('.audio-call-messages .acb-status').text(text);
 };
-
-function makeCall(phone_number) {
+var makeCall = function (phone_number) {
     callSession = sipStack.newSession({
         audio_remote: document.getElementById('audio-remote'),
         events_listener: {events: '*', listener: eventsListener} // optional: '*' means all events
@@ -166,10 +166,10 @@ function makeCall(phone_number) {
 
 };
 
-function hangUp(){
+var hangUp = function(){
     callSession.hangup({ events_listener: { events: '*', listener: eventsListener } });
 };
-function AnswerCall(){
+var AnswerCall = function(){
     callSession = sipStack.newSession('call-audio', {
         audio_remote: document.getElementById('audio-remote'),
         events_listener: {events: '*', listener: eventsListener} // optional: '*' means all events

@@ -378,14 +378,15 @@ function manageContactFormPermissions(userRole) {
 
 $('div.cs-options li[data-value=call]').click(function () {
     // login();
-    $('.btn-audio-call').click(function () {
-        // login();
-        $('.audio-call-messages').show();
 
-
-
-    })
 });
+$('.btn-audio-call').click(function () {
+    // login();
+    $('.audio-call-messages').show();
+
+
+
+})
 function fillContactData(data, $form) {
     $.each(data, function(key, value) {
         switch (key) {
