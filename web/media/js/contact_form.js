@@ -386,6 +386,7 @@ function manageContactFormPermissions(userRole) {
 }
 
 function fillContactData(data, $form) {
+    console.log('GOT IT');
     $.each(data, function(key, value) {
         switch (key) {
             case 'int_id':

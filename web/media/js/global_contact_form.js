@@ -469,13 +469,12 @@ function fillContactData(data, $form) {
                 }
                 break;
             case 'is_broadcast':
-                console.log('BROADCAST: '+value);
                 if(value != null){
                     $('#contact_is_broadcast option[value = "'+value+'"]').attr('selected', 'selected');
                     $('#contact_is_broadcast').attr('data-value', value)
                 }else{
-                    $('#contact_is_broadcast option[value = 0]').attr('selected', 'selected');
-                    $('#contact_is_broadcast').attr('data-value', 0)
+                    $('select-placeholder').attr('selected', 'selected');
+                    // $('#contact_is_broadcast').attr('data-value', 0)
                 }
                 break;
             default:

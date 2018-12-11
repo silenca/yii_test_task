@@ -57,7 +57,11 @@ class ContactTableWidget extends Widget {
             $data[$i][] = $contact->medium_oid;
 //            $data[$i][] = $contact->link_with;
             $data[$i][] = (isset($contact->attraction_channel_id)?$contact->attractionChannel->name:'');
-            $data[$i][] = (isset($contact->is_broadcast)? Contact::$broadcast[$contact->is_broadcast] : Contact::$broadcast[0]);
+            if(isset($contact->is_broadcast)){
+                $data[$i][] = ($contact->is_broadcast !== null)? Contact::$broadcast[$contact->is_broadcast]:'';
+            }else{
+                $data[$i][]='';
+            }
             $data[$i][] = (isset($contact->notification_service_id) ? $contact->notificationService->name : '');
             $data[$i][] = $contact->language->slug;
             $data[$i][] = (isset($contact->status)? Contact::$statuses[$contact->status] : '');

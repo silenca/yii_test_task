@@ -84,23 +84,30 @@ $(function () {
                 $(row).addClass('open-link');
             }
         };
-
+        console.log('settings');
+        console.log(settings);
+        //settings button menu
         $.each(show_columns, function (col_index, col_val) {
+            console.log('block1');
             settings.columnDefs.push({"name": col_val, "targets": col_index});
         });
 
         $.each(columns, function (col_index, col_val) {
+            console.log('block2');
             if (!columns_full[col_val]['orderable']) {
                 settings.columnDefs[1].targets.push(col_index);
             }
         });
 
         $.each(hide_columns, function (i, val) {
+            console.log('block3');
             var index = columns.indexOf(val);
             settings.columnDefs[0].targets.push(index);
         });
 
         dataTable = table.DataTable(settings);
+        console.log('see next');
+        console.log(dataTable);
 
         $deleteAllContactsBtn.on('click', function () {
             if (confirm("Вы действительно желаете удалить все найденные контакты (" + dataTable.settings()[0].fnRecordsDisplay() + " шт.)?")) {
