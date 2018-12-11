@@ -46,10 +46,6 @@ var eventsListener = function (e) {
     if(e.type == 'createAnswer' && e.session == registerSession) {
         showAnswerNotification(e)
     }
-    if(e.type == '__on_add_stream'){
-    case "__on_add_stream":
-        showAnswerNotification(e);
-    }
 
 };
 function createSipStack() {
