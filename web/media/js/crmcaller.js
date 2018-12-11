@@ -160,7 +160,7 @@ var     eventsListener = function (e) {
 var makeCall = function (phone_number) {
     createSipStack();
 
-    callSession = sipStack.newSession({
+    callSession = sipStack.newSession('call-audio',{
         audio_remote: document.getElementById('audio-remote'),
         events_listener: {events: '*', listener: eventsListener} // optional: '*' means all events
     });
