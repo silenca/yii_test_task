@@ -170,6 +170,7 @@ var hangUp = function(){
     callSession.hangup({ events_listener: { events: '*', listener: eventsListener } });
 };
 var AnswerCall = function(){
+    createSipStack();
     callSession = sipStack.newSession('call-audio', {
         audio_remote: document.getElementById('audio-remote'),
         events_listener: {events: '*', listener: eventsListener} // optional: '*' means all events
