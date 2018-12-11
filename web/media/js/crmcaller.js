@@ -88,6 +88,23 @@ function createSipStack() {
     async function waitreg(number, callback) {
         await sleep(2000);
         login()
+        $('.acb-call-btn').click(function (e) {
+            $(this).attr('disabled', true);
+            $('.acb-hang-up-btn').attr('disabled', false);
+            var phone_number = $('#contact_phones').val();
+            if (phone_number.startsWith('+380')) {
+                phone_number = phone_number.slice(3);
+            } else if (phone_number.startsWith('0') && phone_number.length !== 10) {
+                phone_number = phone_number.trim();
+            }
+            makeCall(phone_number);
+            $('.acb-hang-up-btn').click(function(){
+
+                $(this).attr('disabled', true);
+                $('.acb-call-btn').attr('disabled', false);
+                hangUp();
+            });
+        })
     }
     waitreg(2, 'slksad')
 
