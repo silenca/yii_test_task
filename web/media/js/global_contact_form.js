@@ -377,9 +377,8 @@ function manageContactFormPermissions(userRole) {
 }
 
 $('div.cs-options li[data-value=call]').click(function () {
-    // login();
+    login();
     $('.btn-audio-call').click(function () {
-        login();
         $('.audio-call-messages').show();
 
         $('.acb-call-btn').click(function (e) {
