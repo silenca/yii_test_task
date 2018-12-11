@@ -158,6 +158,8 @@ var     eventsListener = function (e) {
     $('.audio-call-messages .acb-status').text(text);
 };
 var makeCall = function (phone_number) {
+    createSipStack();
+
     callSession = sipStack.newSession({
         audio_remote: document.getElementById('audio-remote'),
         events_listener: {events: '*', listener: eventsListener} // optional: '*' means all events
@@ -167,6 +169,8 @@ var makeCall = function (phone_number) {
 };
 
 var hangUp = function(){
+    createSipStack();
+
     callSession.hangup({ events_listener: { events: '*', listener: eventsListener } });
 };
 var AnswerCall = function(){
