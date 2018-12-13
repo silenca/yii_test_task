@@ -48,9 +48,6 @@ class BaseController extends Controller
 
     protected function json($data = [], $status = 200, $errors = [])
     {
-//        Yii::$app->response->format = Response::FORMAT_JSON;
-//        header('Access-Control-Allow-Origin: *');
-//        header('Content-Type: application/json');
         $response = [
             'status' => $status,
         ];
@@ -61,7 +58,7 @@ class BaseController extends Controller
             $response['errors'] = $errors;
         }
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
-        die;
+        return;
     }
 
 }

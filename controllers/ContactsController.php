@@ -832,10 +832,6 @@ class ContactsController extends BaseController
         $contacts = Contact::getMediumObjects();
         $xmlParser = xml_parser_create();
         xml_parse_into_struct($xmlParser, $contacts->getContent(), $array, $index);
-//            var_dump($array);
-//            var_dump($contacts);
-//        print_r($array['oid']);
-//        $contacts = json_decode($this->actionContacts());
         foreach ($array as $contact) {
             if ($contact['attributes']['OID']) {
                 self::actionSaveContacts($contact);
@@ -865,11 +861,6 @@ class ContactsController extends BaseController
             }else{
                 $attrs = $contact;
             }
-//            else{
-//                $isExists = Contact::find()->where(['medium_oid' => $contact['oid']])->one();
-////                if(empty($isExists))
-////                    return null;
-//            }
             if(!empty($isExists)){
                 $newFlag = 0;
                 $newContact = $isExists;
@@ -877,7 +868,6 @@ class ContactsController extends BaseController
                 $newFlag = 1;
                 $newContact = new Contact();
             }
-//            $newContact = (!empty($isExists)) ? $isExists : new Contact();
 
             if (!empty($attrs['NAME']) || !empty($attrs['name'])) {
                 $surname = !empty(explode(' ', $attrs['name'])[0]) ? explode(' ', $attrs['name'])[0] : " ";
