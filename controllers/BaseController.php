@@ -58,6 +58,7 @@ class BaseController extends Controller
             $response['errors'] = $errors;
         }
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
+        die;
         return;
     }
 
