@@ -6,6 +6,7 @@ use app\components\Filter;
 use app\components\Notification;
 use app\components\widgets\ContactTableWidget;
 use app\models\Call;
+use app\models\Cdr;
 use app\models\Contact;
 use app\models\ContactComment;
 use app\models\ContactHistory;
