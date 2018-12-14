@@ -70,15 +70,19 @@ $this->params['active'] = 'call';
                                     <td>
                                     <?php
                                     if(gettype($value)==='object'){
-                                        if($value['is_deleted']){
+                                        if($value['name']!==''){
                                         ?>
-                                        <a class="contact" data-contact_id="" data-phone="<?=$value['first_phone']?>" href="javascript:void(0)"><?=$value['first_phone']?></a>
+                                        <a class="contact" data-contact_id="<?=$value['id']?>" data-phone="<?=$value['first_phone']?>" href="javascript:void(0)"><?=$value['name']?></a>
                                         <?php
                                         }else{
-                                            echo $value['first_phone'];
+                                            ?>
+                                            <a class="contact" data-contact_id="" data-phone="<?=$value['first_phone']?>" href="javascript:void(0)"><?=$value['first_phone']?></a>
+                                            <?php
                                         }
                                     }else{
-                                        echo $value;
+                                        ?>
+                                        <a class="contact" data-contact_id="" data-phone="<?=$value?>" href="javascript:void(0)"><?=$value?></a>
+                                        <?php
                                     }
                                     ?>
                                     </td><?php
