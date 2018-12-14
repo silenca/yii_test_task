@@ -98,4 +98,4 @@ $this->params['active'] = 'call';
     </div>
 </div>
 
-<?php //echo $this->render('/parts/contact_form'); ?>
+<?php echo $this->render('/parts/contact_form'); ?>
