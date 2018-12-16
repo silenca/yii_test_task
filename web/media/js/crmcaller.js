@@ -137,11 +137,11 @@ var domInCall = function () {
     ringTone.pause();
     $('.acb-call-btn').attr('disabled', true);
     $('.acb-hang-up-btn').attr('disabled', false);
-    $('#callStatus').show();
+    // $('#callStatus').show();
     $('#callStatusOut').show();
     $('#incomingCall').show();
 
-    $('#callInfoText').html('Установка соединения...');
+    // $('#callInfoText').html('Установка соединения...');
     $('#callInfoTextOut').html('Вызываем...');
     if(ongoing_session.getRemoteFriendlyName()){
     $('#callInfoNumber').html(ongoing_session.getRemoteFriendlyName());
