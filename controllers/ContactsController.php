@@ -6,6 +6,7 @@ use app\components\Filter;
 use app\components\Notification;
 use app\components\widgets\ContactTableWidget;
 use app\models\Call;
+use app\models\Cdr;
 use app\models\Contact;
 use app\models\ContactComment;
 use app\models\ContactHistory;
@@ -870,7 +871,14 @@ class ContactsController extends BaseController
 ////                if(empty($isExists))
 ////                    return null;
 //            }
-            $newContact = (!empty($isExists)) ? $isExists : new Contact();
+            if(!empty($isExists)){
+                $newFlag = 0;
+                $newContact = $isExists;
+            }else{
+                $newFlag = 1;
+                $newContact = new Contact();
+            }
+//            $newContact = (!empty($isExists)) ? $isExists : new Contact();
 
             if (!empty($attrs['NAME']) || !empty($attrs['name'])) {
                 $surname = !empty(explode(' ', $attrs['name'])[0]) ? explode(' ', $attrs['name'])[0] : " ";
@@ -900,6 +908,7 @@ class ContactsController extends BaseController
 
             $newContact->medium_oid = (!empty($attrs['OID'])) ? $attrs['OID'] : $attrs['oid'];
             $newContact->status = Contact::$statuses[2];
+            $newContact->is_broadcast = $newFlag ? null : $newContact->is_broadcast;
             if($newContact->save()) {
                 return $newContact->medium_oid;
             }

@@ -62,6 +62,6 @@ class BaseController extends Controller
         }
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
         die;
+        return;
     }
-
 }
