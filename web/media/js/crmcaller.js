@@ -136,8 +136,9 @@ var domInCall = function () {
     ringTone.pause();
     $('.acb-call-btn').attr('disabled', true);
     $('.acb-hang-up-btn').attr('disabled', false);
+    $('#callStatus').show();
     $('#callStatusOut').show();
-    $('#incomingCall').hide();
+    $('#incomingCall').show();
     $('#callStatusOut').hide();
 
     $('#callInfoText').html('Установка соединения...');
