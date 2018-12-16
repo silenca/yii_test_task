@@ -39,6 +39,8 @@ else {
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
         <meta content="" name="description" />
         <meta content="" name="author" />
+        <link rel="stylesheet" href="./media/css/font-awesome.min.css">
+        <link rel="stylesheet" href="./media/css/phone.css">
         <?= Html::csrfMetaTags() ?>
         <title><?= Html::encode($this->title) ?></title>
         <?php if(!Yii::$app->user->isGuest): ?>
@@ -62,6 +64,29 @@ else {
     <body class="fixed-header">
         <?php $this->beginBody() ?>
         <?php if (!Yii::$app->user->isGuest): ?>
+
+            <div id="wrapper" class="modal">
+                <div class="modal-body">
+                    <div class="call-modal">
+                    <div id="incomingCall" style="display: none">
+                        <div class="callInfo">
+                            <h3>Входящий вызов</h3>
+                            <p id="incomingCallNumber">Неизвестный</p>
+                        </div>
+                        <div id="answer"><i class="fa fa-phone"></i></div>
+                        <div id="reject"><i class="fa fa-phone"></i></div>
+                    </div>
+                    <div id="callStatus" style="display: none">
+                        <div class="callInfo">
+                            <h3 id="callInfoText">info text goes here</h3>
+                            <p id="callInfoNumber">info number goes here</p>
+                        </div>
+                        <div id="hangUp"><i class="fa fa-phone"></i>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
             <nav class="page-sidebar" data-pages="sidebar-custom">
                 <!-- BEGIN SIDEBAR MENU HEADER-->
                 <div class="sidebar-header m-b-20">
@@ -257,6 +282,8 @@ else {
                     </div>
                 </div>
                 <div class="page-content-wrapper">
+                    <audio id="audio-remote" autoplay></audio>
+                    <audio id="audio-local"></audio>
                     <?= $content ?>
                 </div>
             </div>
@@ -271,6 +298,7 @@ else {
                 var userRole = <?= json_encode($this->params['user_role']); ?>;
                 var userId = <?= $this->params['user_id']; ?>;
             </script>
+
         <?php endif; ?>
 
         <?php $this->endBody() ?>

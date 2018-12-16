@@ -9,8 +9,8 @@ use app\models\User;
 TableAsset::register($this);
 ContactAsset::register($this);
 GoogleApiAsset::register($this);
-if (Yii::$app->user->can('contracts')) {
-    SulutionFormAsset::register($this);
+if (Yii::$app->user->can('contacts')) {
+    ContactAsset::register($this);
 }
 
 $this->title = "Контакты";

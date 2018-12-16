@@ -3,8 +3,7 @@ use app\models\User;
 ?>
 
 <link href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css" rel="stylesheet">
-<audio id="audio-remote" autoplay></audio>
-
+<!--<audio id="audio-remote" autoplay></audio>-->
 <div class="modal fade slide-right modal-lg modal-sm modal-xs col-3"
     id="modalAddContact" tabindex="-1" role="dialog" aria-hidden="true">
     <input type="hidden" id="contact-id" value=""/>
@@ -323,7 +322,7 @@ use app\models\User;
                                                             <div class="radio radio-primary">
                                                                     <input type="radio" name="attitude" class="call-attitude" value="1" id="action_call_attitude_1">
                                                                 <label for="action_call_attitude_1"></label>
-                                                                user->isGuest): ?>                                              <input type="radio" name="attitude" class="call-attitude" value="2" id="action_call_attitude_2">
+                                                                    <input type="radio" name="attitude" class="call-attitude" value="2" id="action_call_attitude_2">
                                                                 <label for="action_call_attitude_2"></label>
                                                                     <input type="radio" name="attitude" class="call-attitude" value="3" id="action_call_attitude_3" checked="checked">
                                                                 <label for="action_call_attitude_3"></label>
@@ -344,11 +343,18 @@ use app\models\User;
                                                  <!---STARTOF_CLICKTOCALLBUTTON !-->
                                                 <div class="acb-section audio-call-messages">
                                                     <div class="acb-message panel-body">
-                                                        <audio id="audio-remote" class="acb-audio"></audio>
-                                                        <p class="acb-status acb-text-p">Ожидание ответа</p>
-                                                        <div class="acb-section audio-call-actions">
-                                                            <button type="button" class="btn btn-success acb-btn acb-call-btn" id="call_btn" onclick='sipCall("call-audio");'>Вызов</button>
-                                                            <button type="button" class="btn btn-secondary acb-btn acb-hang-up-btn" id="hangup_btn" value="HangUp" disabled>Завершить звонок</button>
+<!--                                                        <audio id="audio-remote" class="acb-audio"></audio>-->
+                                                        <div id="callStatusOut" >
+                                                            <div class="callInfoOut">
+                                                                <h3 id="callInfoTextOut">Ожидайте соединения</h3>
+                                                                <p id="callInfoNumberOut"></p>
+                                                            </div>
+
+                                                        </div>
+<!--                                                        <p class="acb-status acb-text-p">Ожидание ответа</p>-->
+                                                        <div class="acb-section audio-call-actions" >
+                                                            <button type="button" class="btn btn-success acb-btn acb-call-btn" id="call_btn" onclick=''>Вызов</button>
+                                                            <button type="button" class="btn btn-secondary acb-btn acb-hang-up-btn" id="hangup_btn" disabled>Завершить звонок</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -363,7 +369,7 @@ use app\models\User;
 
                     <div class="acb-section audio-call-messages">
                         <div class="acb-message panel-body">
-                            <audio id="audio-remote" class="acb-audio"></audio>
+<!--                            <audio id="audio-remote" class="acb-audio"></audio>-->
                             <p class="acb-status acb-text-p">Ожидание ответа</p>
                             <p class="acb-duration acb-text-p">00:00:00</p>
                         </div>
@@ -426,4 +432,19 @@ use app\models\User;
         </div>
     </div>
 </div>
+
+<script>
+    var ringTone       = new window.Audio("./media/sounds/ringtone.mp3");
+    var dtmfTone       = new window.Audio("./media/sounds/dtmf.wav");
+    // Load Dynamically.
+    var asteriskIp = 'dopomogaplus.silencatech.com';
+    var asteriskUser = '600';
+    var asteriskUserPass = 'AahWJQsGE7lF5d';
+    var asteriskUserName = '600';
+
+</script>
+<!--<audio id="audio_remote" autoplay="autoplay"> </audio>-->
+<!--<audio id="ringtone" loop src="media/sounds/ringtone.wav"> </audio>-->
+<!--<audio id="ringbacktone" loop src="media/sounds/ringbacktone.wav"> </audio>-->
+<!--<audio id="dtmfTone" src="media/sounds/dtmf.wav"> </audio>-->
 

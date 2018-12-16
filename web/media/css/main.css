@@ -2,6 +2,21 @@
     left: auto;
     overflow: visible;
 }
+.call-modal{
+    padding: 10px;
+    background: white;
+    min-height: 300px;
+    margin-top: 20%;
+    border-radius: 25px;
+
+}
+#wrapper.modal{
+    width: 400px;
+}
+.incomming-buttons{
+    display: inline-flex;
+    margin: 10px;
+}
 
 #modalAddContactToTag {
     overflow: scroll;

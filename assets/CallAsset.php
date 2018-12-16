@@ -19,8 +19,10 @@ class CallAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [];
     public $js = [
-        'media/js/contexts/call.js',
+//        'media/js/contexts/call.js',
         'media/js/global_contact_form.js',
+        'media/js/SIPml-api.js',
+        'media/js/crmcaller.js'
 
     ];
     public $depends = [
