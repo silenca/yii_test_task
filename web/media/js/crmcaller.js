@@ -107,8 +107,9 @@ var acceptCall = function (e) {
 $('.acb-call-btn').click(function () {
     var number = $('.acb-call-btn').parents('.contact-modal').find('#contact_phones').val();
     $('#callInfoTextOut').html('Ожидайте соединения...');
+    $('.acb-call-btn').attr('disabled', true);
+    $('.acb-hang-up-btn').attr('disabled', false);
     $('#callInfoNumberOut').html(number);
-    $('#callStatusOut').attr('style', '');
     makeCall(number);
 });
 $('#answer').click(function () {
@@ -139,7 +140,6 @@ var domInCall = function () {
     $('#callStatus').show();
     $('#callStatusOut').show();
     $('#incomingCall').show();
-    $('#callStatusOut').hide();
 
     $('#callInfoText').html('Установка соединения...');
     $('#callInfoTextOut').html('Вызываем...');
