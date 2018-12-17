@@ -33,7 +33,7 @@ $(function () {
         var settings = {
             "sDom": "<'table-responsive't><'row'<p i>>",
             "sPaginationType": "bootstrap",
-            "destroy": true,
+            "bPaginate" : true,
             "scrollCollapse": true,
             "oLanguage": {
                 "sLengthMenu": "_MENU_ ",
@@ -41,7 +41,7 @@ $(function () {
             },
             "iDisplayLength": 20,
             "processing": true,
-            "serverSide": true,
+            "serverSide": false,
             "order": [],
             "ajax": {
                 url: "/call/getdata", // json datasource
@@ -50,7 +50,24 @@ $(function () {
                     //alert('error data');
                 }
             },
-            "columnDefs": columnDefs,
+            "columns" : [
+                { "data": "date" },
+                { "data": "time" },
+                { "data": "type" },
+                { "data": "manager" },
+                { "data": "contact", "render": function (data){
+                        if(typeof(data) === 'object'){
+                            return data.name === "" ? '<a class="contact" data-contact_id="" data-phone="'+data.first_phone+'" href="javascript:void(0)">'+data.first_phone+'</a>' : '<a class="contact" data-contact_id="'+data.id+'" data-phone="'+data.first_phone+'" href="javascript:void(0)">'+data.name+'</a>';
+                        }
+                        return '<a class="contact" data-contact_id="" data-phone="'+data+'" href="javascript:void(0)">'+data+'</a>';
+                    }
+                },
+                { "data": "record", "render": function (data) {
+                        return '<audio controls="" src="https://dopomogaplus.silencatech.com/var/spool/asterisk/monitor/'+data+'.mp3" type="audio/mpeg"></audio>'
+                    }
+                }
+            ],
+            // "columnDefs": columnDefs,
             "createdRow": function (row, data, index) {
                 $(row).attr('id', data[0]);
             }
