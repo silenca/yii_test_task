@@ -15,17 +15,30 @@ var eventsListener = function (e) {
         ongoing_session   = e.newSession;
         ringTone.play();
         $('#wrapper').modal();
-        // console.log('ongoing_session',ongoing_session.o_session.o_uri_from.s_user_name);
-        // $('#incomingCallNumber').html('From ' + 'ongoing_session',ongoing_session.o_session.o_uri_from.s_user_name);
-        var html = 'From ' + ongoing_session.getRemoteFriendlyName();
-        html += '<div class="incomming-buttons">';
-        html += '<button class="btn btn-primary" id="incomming-btn-create-contact"disabled>Создать контакт</button>';
-        html += '<button class="btn btn-secondary" id="incomming-btn-open-contact" disabled>Открыть контакт</button>';
-        html += '</div>';
-
-        $('#incomingCallNumber').html(html);
-        $('#callControl').hide();
-        $('#incomingCall').show();
+        $.getJSON('/contacts/get-contact-by-phone', {phone:ongoing_session.getRemoteFriendlyName()}, function (response) {
+            $.getJSON('/contacts/view' , {id:response.data.contact_id} , function(response){
+                $('#contact-call').html(response.data.surname + ' ' + response.data.name + ' ' + response.data.middle_name);
+            })
+        });
+        console.log($('#contact-call'))
+        $('#contact-call').on('click', function (e){
+            $.getJSON('/contacts/get-contact-by-phone', {phone:ongoing_session.getRemoteFriendlyName()}, function (response) {
+                openContactForm (response.data.contact_id);
+            });
+        });
+        $('#answer').on('click', function (e){
+            $.getJSON('/contacts/get-contact-by-phone', {phone:ongoing_session.getRemoteFriendlyName()}, function (response) {
+                openContactForm (response.data.contact_id);
+            });
+            $('.modal-backdrop').css('display', 'none');
+            $('#wrapper > .modal-body').css('display', 'none');
+            $('#reject').remove();
+            $('#reject-wrap').append("<div id ='reject'><i class='fa fa-phone'></div>")
+        });
+        $('#reject-wrap').on('click', function(){
+            $('#reject-wrap').remove();
+            $('#incomingCall').append("<div id ='reject'><i class='fa fa-phone'></div>")
+        });
     }
 };
 

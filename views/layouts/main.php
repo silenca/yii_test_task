@@ -64,26 +64,15 @@ else {
     <body class="fixed-header">
         <?php $this->beginBody() ?>
         <?php if (!Yii::$app->user->isGuest): ?>
-
+            <div id="reject-wrap"></div>
             <div id="wrapper" class="modal">
                 <div class="modal-body">
                     <div class="call-modal">
-                    <div id="incomingCall" style="display: none">
-                        <div class="callInfo">
-                            <h3>Входящий вызов</h3>
-                            <p id="incomingCallNumber">Неизвестный</p>
+                        <div id="incomingCall" style="">
+                            <div id="answer"><i class="fa fa-phone"></i></div>
+                            <div id="reject"><i class="fa fa-phone"></i></div>
                         </div>
-                        <div id="answer"><i class="fa fa-phone"></i></div>
-                        <div id="reject"><i class="fa fa-phone"></i></div>
-                    </div>
-                    <div id="callStatus" style="display: none">
-                        <div class="callInfo">
-                            <h3 id="callInfoText">info text goes here</h3>
-                            <p id="callInfoNumber">info number goes here</p>
-                        </div>
-                        <div id="hangUp"><i class="fa fa-phone"></i>
-                        </div>
-                    </div>
+                        <div id="contact-call-wrap"><p id="contact-call"></p></div>
                     </div>
                 </div>
             </div>

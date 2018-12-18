@@ -8,7 +8,29 @@
     min-height: 300px;
     margin-top: 20%;
     border-radius: 25px;
-
+    display: flex;
+    flex-direction: column;
+}
+#incommingCall{
+    display: flex;
+    flex-direction: row;
+}
+#contact-call-wrap{
+    display: flex;
+    height: 100%;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+#contact-call{
+    font-size: 22px;
+    cursor: pointer;
+}
+#reject-wrap{
+    position: fixed;
+    top: 0;
+    left: 10px;
+    z-index: 1000000;
 }
 #wrapper.modal{
     width: 400px;
