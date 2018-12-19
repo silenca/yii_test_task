@@ -32,14 +32,40 @@ var eventsListener = function (e) {
             $('.modal-backdrop').css('display', 'none');
             $('#wrapper > .modal-body').css('display', 'none');
             $('#reject').remove();
-            $('#reject-wrap').append("<div id ='reject'><i class='fa fa-phone'></div>")
+            $('#reject-wrap').append("<div id ='reject'><i class='fa fa-phone'></div>");
+            timerRun = true;
+            $(function(){
+                initTime = new Date();
+                timer(initTime);
+                setTimeout(function run() {
+                    if(!timerRun){
+                        return 0;
+                    }
+                    timer(initTime);
+                    setTimeout(run, 500);
+                }, 500);
+            });
         });
         $('#reject-wrap').on('click', function(){ // action after reject
             $('#reject-wrap').remove();
             $('#incomingCall').append("<div id ='reject'><i class='fa fa-phone'></div>")
+            domHangup();
+            ongoing_session.hangup();
+            timerRun = false;
         });
     }
 };
+function timer(initTime, stop){
+    currentTime = new Date();
+    sec = Math.abs(currentTime.getSeconds() - initTime.getSeconds());
+    min = Math.abs(currentTime.getMinutes() - initTime.getMinutes());
+    hrs = Math.abs(currentTime.getHours() - initTime.getHours());
+    time = '';
+    time += hrs < 10 ? '0'+hrs+':' : hrs+':';
+    time += min < 10 ? '0'+min+':' : min+':';
+    time += sec < 10 ? '0'+sec : sec;
+    $('#call-timer').html(time);
+}
 function createSipStack() {
     sipStack = new SIPml.Stack({
             realm: 'dopomogaplus.silencatech.com', // mandatory: domain name
