@@ -5,43 +5,41 @@ var ongoing_session; // session to store incoming and outgoing calls
 var incomingCallEvent; // to get incomming call event
 ringTone.loop      = true;
 var eventsListener = function (e) {
-    // console.log(e);
-    // console.log('%c begning=>' + e.type, 'font-size:5em');
     if (e.type == 'started') {
         login();
     }
     if (e.type == 'i_new_call') {
+
         incomingCallEvent = e;
         ongoing_session   = e.newSession;
         ringTone.play();
         $('#wrapper').modal();
-        $.getJSON('/contacts/get-contact-by-phone', {phone:ongoing_session.getRemoteFriendlyName()}, function (response) {
+        $.getJSON('/contacts/get-contact-by-phone', {phone:ongoing_session.getRemoteFriendlyName()}, function (response) { // getting full name of incoming contact
             $.getJSON('/contacts/view' , {id:response.data.contact_id} , function(response){
                 $('#contact-call').html(response.data.surname + ' ' + response.data.name + ' ' + response.data.middle_name);
             })
         });
-        console.log($('#contact-call'))
-        $('#contact-call').on('click', function (e){
+        $('#contact-call').on('click', function (e){ // open contact form by click on the contact name
             $.getJSON('/contacts/get-contact-by-phone', {phone:ongoing_session.getRemoteFriendlyName()}, function (response) {
                 openContactForm (response.data.contact_id);
             });
         });
-        $('#answer').on('click', function (e){
+        $('#answer').on('click', function (e){ // action after answer
             $.getJSON('/contacts/get-contact-by-phone', {phone:ongoing_session.getRemoteFriendlyName()}, function (response) {
                 openContactForm (response.data.contact_id);
+                $('.contact-actions > .panel-default').append('<div id="call-timer"><span></span></div>');
             });
             $('.modal-backdrop').css('display', 'none');
             $('#wrapper > .modal-body').css('display', 'none');
             $('#reject').remove();
             $('#reject-wrap').append("<div id ='reject'><i class='fa fa-phone'></div>")
         });
-        $('#reject-wrap').on('click', function(){
+        $('#reject-wrap').on('click', function(){ // action after reject
             $('#reject-wrap').remove();
             $('#incomingCall').append("<div id ='reject'><i class='fa fa-phone'></div>")
         });
     }
 };
-
 function createSipStack() {
     sipStack = new SIPml.Stack({
             realm: 'dopomogaplus.silencatech.com', // mandatory: domain name
@@ -144,6 +142,14 @@ var domHangup = function () {
     $('#callControl').show();
     $('#callControlOut').show();
     $('#callStatusOut').hide();
+    if($('#reject-wrap')){
+        $('#reject-wrap').remove();
+
+    }
+    if(!$('#incomingCall > #reject')){
+        $('#incomingCall').append("<div id ='reject'><i class='fa fa-phone'></div>")
+
+    }
     // $('.audio-call-actions').hide();
 };
 var domInCall = function () {
