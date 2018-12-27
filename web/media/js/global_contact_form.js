@@ -208,6 +208,8 @@ $(function() {
             }
         }
     });
+
+    visitPlanning();
 });
 
 function changeActionSendNow($form, action, opts) {
@@ -521,6 +523,10 @@ function changeActionsForm(action) {
             $contact_form.find('#contact-actions #action_email').show();
             $contact_form.find('#contact-actions #action_schedule_date').show();
             break;
+        case 'visit':
+            $contact_form.find('#contact-actions .contact-action').hide();
+            $contact_form.find('#contact-actions #action_visit').show();
+            break;
         case "0":
             $contact_form.find('#contact-actions .contact-action').hide();
             $contact_form.find('#contact-actions #action_schedule_date').hide();
@@ -612,5 +618,20 @@ var entityMap = {
 function escapeHtml(string) {
     return String(string).replace(/[&<>"'\/]/g, function (s) {
         return entityMap[s];
+    });
+}
+
+function visitPlanning(){
+    $('body').on('click', '#visitPlanningBtn', function(e){
+        $('#modalAddContact').modal('hide');
+        $('#visitPlanningModal').modal({
+          backdrop: false
+        });
+    });
+
+    $('#visitPlanningModal').on('hidden.bs.modal', function (e) {
+        $('#modalAddContact').modal({
+          backdrop: false
+        });
     });
 }

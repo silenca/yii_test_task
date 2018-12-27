@@ -181,9 +181,9 @@ html, body {
     border: none;
 }
 
-.fa {
+/*.fa {
     margin-top: 11px;
-}
+}*/
 
 #answer .fa {
     -webkit-animation: callp 1s;

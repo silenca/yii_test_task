@@ -266,20 +266,19 @@ use app\models\User;
                                                         <option value="0">Действия</option>
                                                         <option value="call">Звонок</option>
                                                         <option value="email">Email</option>
+                                                        <option value="visit">Запланировать визит</option>
                                                     </select>
                                                 </div>
                                             </div>
                                         </div>
                                         <div id="contact-actions" class="panel-body">
                                             <div id="action_call" class="contact-action" style="display: none">
-                                                <form id="form_action_call" action="/contacts/objectschedulecall"
-                                                      method="POST">
+                                                <form id="form_action_call" action="/contacts/objectschedulecall" method="POST">
                                                     <input type="hidden" name="call_order_token" class="call_order_token">
                                                     <div class="panel panel-default block form-group" style="display: none">
                                                         <div class="row">
                                                             <div class="checkbox check-success text-left p-l-10">
-                                                                <input type="checkbox" name="action_send_now"
-                                                                       class="action_send_now" id="action_send_now_phone">
+                                                                <input type="checkbox" name="action_send_now" class="action_send_now" id="action_send_now_phone">
                                                                 <label for="action_send_now_phone">Отправить сейчас</label>
                                                             </div>
                                                         </div>
@@ -288,30 +287,22 @@ use app\models\User;
                                                         <label>Запланировать звонок</label>
                                                     </div>
                                                     <div class="form-group input-group datepicker-content">
-                                                        <label class="input-group-addon success"
-                                                               for=""><i
-                                                                class="fa fa-fw fa-calendar"></i></label>
-                                                        <input name="schedule_date" type="text"
-                                                               class="form-control object-schedule-datetime datepicker"
-                                                               placeholder="Когда применить?"/>
+                                                        <label class="input-group-addon success" for=""><i class="fa fa-fw fa-calendar"></i></label>
+                                                        <input name="schedule_date" type="text" class="form-control object-schedule-datetime datepicker" placeholder="Когда применить?" />
                                                     </div>
                                                     <div class="form-group">
                                                         <div class="checkbox check-success text-left">
-                                                            <input type="checkbox" class="google-cal-show"
-                                                                   id="google_cal_show_call">
+                                                            <input type="checkbox" class="google-cal-show" id="google_cal_show_call">
                                                             <label for="google_cal_show_call">В Google Calendar</label>
                                                         </div>
                                                     </div>
                                                     <div class="form-group text-left" style="display: none">
                                                         <label for="action_tag_description">Описание:</label>
-                                                        <textarea name="action_tag_description" id="action_tag_description" rows="10" cols="10"
-                                                                      class="action-tag-description form-control"></textarea>
+                                                        <textarea name="action_tag_description" id="action_tag_description" rows="10" cols="10" class="action-tag-description form-control"></textarea>
                                                     </div>
                                                     <hr>
                                                     <div class="form-group">
-                                                        <textarea name="action_comment" id="call_action-comment" rows="6" cols="10"
-                                                                      placeholder="Комментарий"
-                                                                      class="action-comment form-control"></textarea>
+                                                        <textarea name="action_comment" id="call_action-comment" rows="6" cols="10" placeholder="Комментарий" class="action-comment form-control"></textarea>
                                                     </div>
                                                     <div class="panel panel-default block form-group attitude padding-10" style="display: none">
                                                         <div class="row">
@@ -320,15 +311,15 @@ use app\models\User;
                                                             <div class="inline m-r-20">Нейтральное</div>
                                                             <div class="inline">Позитивное</div>
                                                             <div class="radio radio-primary">
-                                                                    <input type="radio" name="attitude" class="call-attitude" value="1" id="action_call_attitude_1">
+                                                                <input type="radio" name="attitude" class="call-attitude" value="1" id="action_call_attitude_1">
                                                                 <label for="action_call_attitude_1"></label>
-                                                                    <input type="radio" name="attitude" class="call-attitude" value="2" id="action_call_attitude_2">
+                                                                <input type="radio" name="attitude" class="call-attitude" value="2" id="action_call_attitude_2">
                                                                 <label for="action_call_attitude_2"></label>
-                                                                    <input type="radio" name="attitude" class="call-attitude" value="3" id="action_call_attitude_3" checked="checked">
+                                                                <input type="radio" name="attitude" class="call-attitude" value="3" id="action_call_attitude_3" checked="checked">
                                                                 <label for="action_call_attitude_3"></label>
-                                                                    <input type="radio" name="attitude" class="call-attitude" value="4" id="action_call_attitude_4">
+                                                                <input type="radio" name="attitude" class="call-attitude" value="4" id="action_call_attitude_4">
                                                                 <label for="action_call_attitude_4"></label>
-                                                                    <input type="radio" name="attitude" class="call-attitude" value="5" id="action_call_attitude_5">
+                                                                <input type="radio" name="attitude" class="call-attitude" value="5" id="action_call_attitude_5">
                                                                 <label for="action_call_attitude_5"></label>
                                                             </div>
                                                         </div>
@@ -340,45 +331,47 @@ use app\models\User;
                                                     </div>
 
                                                 </form>
-                                                 <!---STARTOF_CLICKTOCALLBUTTON !-->
+                                                <!---STARTOF_CLICKTOCALLBUTTON !-->
                                                 <div class="acb-section audio-call-messages">
                                                     <div class="acb-message panel-body">
-<!--                                                        <audio id="audio-remote" class="acb-audio"></audio>-->
-                                                        <div id="callStatusOut" >
+                                                        <!--                                                        <audio id="audio-remote" class="acb-audio"></audio>-->
+                                                        <div id="callStatusOut">
                                                             <div class="callInfoOut">
                                                                 <h3 id="callInfoTextOut">Ожидайте соединения</h3>
                                                                 <p id="callInfoNumberOut"></p>
                                                             </div>
 
                                                         </div>
-<!--                                                        <p class="acb-status acb-text-p">Ожидание ответа</p>-->
-                                                        <div class="acb-section audio-call-actions" >
+                                                        <!--                                                        <p class="acb-status acb-text-p">Ожидание ответа</p>-->
+                                                        <div class="acb-section audio-call-actions">
                                                             <button type="button" class="btn btn-success acb-btn acb-call-btn" id="call_btn" onclick=''>Вызов</button>
                                                             <button type="button" class="btn btn-secondary acb-btn acb-hang-up-btn" id="hangup_btn" disabled>Завершить звонок</button>
                                                         </div>
                                                     </div>
                                                 </div>
-                <button class="btn btn-primary btn-block btn-audio-call" type="button">Позвонить</button>
-                <div class="acb audio-call-block">
-                    <div class="acb-section audio-call-sip-options">
-                        <select name="audio-call-sip-channel" id="acb_sip_channel" class="acb-select form-control select2">
-                            <option class="select2-choice" value="default">Выберите SIP-канал</option>
-                            <option class="select2-choice" value=""><?= $value ?></option>
-                        </select>
-                    </div>
+                                                <button class="btn btn-primary btn-block btn-audio-call" type="button">Позвонить</button>
+                                                <div class="acb audio-call-block">
+                                                    <div class="acb-section audio-call-sip-options">
+                                                        <select name="audio-call-sip-channel" id="acb_sip_channel" class="acb-select form-control select2">
+                                                            <option class="select2-choice" value="default">Выберите SIP-канал</option>
+                                                            <option class="select2-choice" value="">
+                                                                <?= $value ?>
+                                                            </option>
+                                                        </select>
+                                                    </div>
 
-                    <div class="acb-section audio-call-messages">
-                        <div class="acb-message panel-body">
-<!--                            <audio id="audio-remote" class="acb-audio"></audio>-->
-                            <p class="acb-status acb-text-p">Ожидание ответа</p>
-                            <p class="acb-duration acb-text-p">00:00:00</p>
-                        </div>
-                    </div>
-                </div>
-                
-                
-                <!---ENDOF_CLICKTOCALLBUTTON !-->
+                                                    <div class="acb-section audio-call-messages">
+                                                        <div class="acb-message panel-body">
+                                                            <!--                            <audio id="audio-remote" class="acb-audio"></audio>-->
+                                                            <p class="acb-status acb-text-p">Ожидание ответа</p>
+                                                            <p class="acb-duration acb-text-p">00:00:00</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!---ENDOF_CLICKTOCALLBUTTON !-->
                                             </div>
+
                                             <div id="action_email" class="contact-action" style="display: none">
                                                 <form id="form_action_email" action="/contacts/objectscheduleemail"
                                                       method="POST">
@@ -421,6 +414,49 @@ use app\models\User;
                                                     </div>
                                                 </form>
                                             </div>
+
+                                            <div id="action_visit" class="contact-action" style="display: none">
+                                                <form>
+
+                                                    <div class="panel-title block">
+                                                        <div class="form-group cs-select-container cs-select-block">
+                                                            <select id="" class="cs-select cs-skin-slide"
+                                                                    data-init-plugin="cs-select">
+                                                                <option value="">Специализация врача</option>
+                                                                <option value="">Специализация 1</option>
+                                                                <option value="">Специализация 2</option>
+                                                                <option value="">Специализация 3</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="panel-title block">
+                                                        <div class="form-group cs-select-container cs-select-block">
+                                                            <select id="" class="cs-select cs-skin-slide"
+                                                                    data-init-plugin="cs-select">
+                                                                <option value="">Отделение</option>
+                                                                <option value="">Отделение 1</option>
+                                                                <option value="">Отделение 2</option>
+                                                                <option value="">Отделение 3</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group input-group datepicker-content">
+                                                        <label class="input-group-addon success" for=""><i class="fa fa-fw fa-calendar"></i></label>
+                                                        <input name="" type="text" class="form-control object-schedule-datetime datepicker" placeholder="Дата приема" aria-required="true" aria-invalid="false">
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <button class="btn btn-info btn-block" type="button" id="visitPlanningBtn">
+                                                            Добавить
+                                                        </button>
+                                                    </div>
+
+                                                </form>
+                                            </div>
+
+
                                         </div>
                                     </div>
                                 </div>
@@ -433,6 +469,180 @@ use app\models\User;
     </div>
 </div>
 
+<div class="modal vp-modal" tabindex="-1" role="dialog" id="visitPlanningModal"  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Запланировать визит</h4>
+      </div>  
+      <div class="modal-body">
+        <div class="row">
+            <div class="col-xs-4">
+                <div class="vp-date">27.12.2018</div>
+                <div class="vp-calendar">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Иванов</th>
+                                <th>Петров</th>
+                                <th>Сидоров</th>
+                            </tr>
+                            <tr>
+                                <th>кардиолог</th>
+                                <th>кардиолог</th>
+                                <th>кардиолог</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="vp-time active"><time>09:00</time></td>
+                                <td class="vp-time disable"><time>09:00</time></td>
+                                <td class="vp-time empty"><time>09:00</time></td>
+                            </tr>
+                            <tr>
+                                <td class="vp-time"><time>09:30</time></td>
+                                <td class="vp-time disable"><time>09:30</time></td>
+                                <td class="vp-time empty"><time>09:30</time></td>
+                            </tr>
+                            <tr>
+                                <td class="vp-time"><time>10:00</time></td>
+                                <td class="vp-time"><time>10:00</time></td>
+                                <td class="vp-time disable"><time>10:00</time></td>
+                            </tr>
+                            <tr>
+                                <td class="vp-time"><time>10:30</time></td>
+                                <td class="vp-time"><time>10:30</time></td>
+                                <td class="vp-time disable"><time>10:30</time></td>
+                            </tr>
+                            <tr>
+                                <td class="vp-time"><time>11:00</time></td>
+                                <td class="vp-time"><time>11:00</time></td>
+                                <td class="vp-time disable"><time>11:00</time></td>
+                            </tr>
+                            <tr>
+                                <td class="vp-time"><time>11:30</time></td>
+                                <td class="vp-time"><time>11:30</time></td>
+                                <td class="vp-time disable"><time>11:30</time></td>
+                            </tr>
+                            <tr>
+                                <td class="vp-time empty"><time>12:00</time></td>
+                                <td class="vp-time"><time>12:00</time></td>
+                                <td class="vp-time"><time>12:00</time></td>
+                            </tr>
+                            <tr>
+                                <td class="vp-time empty"><time>12:30</time></td>
+                                <td class="vp-time"><time>12:30</time></td>
+                                <td class="vp-time"><time>12:30</time></td>
+                            </tr>
+                        </tbody>
+                    </table>   
+                </div>
+
+            </div>
+            <div class="col-xs-4">
+                <form>
+
+                    <div class="panel-title block">
+                        <div class="form-group cs-select-container cs-select-block">
+                            <select id="" class="cs-select cs-skin-slide"
+                                    data-init-plugin="cs-select">
+                                <option value="">Специализация врача</option>
+                                <option value="">Специализация 1</option>
+                                <option value="">Специализация 2</option>
+                                <option value="">Специализация 3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="panel-title block">
+                        <div class="form-group cs-select-container cs-select-block">
+                            <select id="" class="cs-select cs-skin-slide"
+                                    data-init-plugin="cs-select">
+                                <option value="">Отделение</option>
+                                <option value="">Отделение 1</option>
+                                <option value="">Отделение 2</option>
+                                <option value="">Отделение 3</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input name="" type="text" class="form-control" placeholder="Доктор (ФИО)">
+                    </div>
+                    
+                    <div class="form-group input-group datepicker-content">
+                        <label class="input-group-addon success" for=""><i class="fa fa-fw fa-calendar"></i></label>
+                        <input name="" type="text" class="form-control object-schedule-datetime datepicker" placeholder="Дата приема" aria-required="true" aria-invalid="false">
+                    </div>
+                    
+                    <div class="form-group">
+                        <input name="" type="text" class="form-control" placeholder="Кабинет">
+                    </div>
+                    
+                    <div class="form-group">
+                        <textarea class="form-control"></textarea>
+                    </div>
+
+                </form>
+            </div>
+            <div class="col-xs-4">
+                <div class="vp-date">27.12.2018</div>
+                <div class="vp-calendar">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Кабинет УЗИ</th>
+                                <th>Рентгенкабинет</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="vp-time active"><time>09:00</time></td>
+                                <td class="vp-time disable"><time>09:00</time></td>
+                            </tr>
+                            <tr>
+                                <td class="vp-time"><time>09:30</time></td>
+                                <td class="vp-time disable"><time>09:30</time></td>
+                            </tr>
+                            <tr>
+                                <td class="vp-time"><time>10:00</time></td>
+                                <td class="vp-time"><time>10:00</time></td>
+                            </tr>
+                            <tr>
+                                <td class="vp-time"><time>10:30</time></td>
+                                <td class="vp-time"><time>10:30</time></td>
+                            </tr>
+                            <tr>
+                                <td class="vp-time"><time>11:00</time></td>
+                                <td class="vp-time"><time>11:00</time></td>
+                            </tr>
+                            <tr>
+                                <td class="vp-time"><time>11:30</time></td>
+                                <td class="vp-time"><time>11:30</time></td>
+                            </tr>
+                            <tr>
+                                <td class="vp-time empty"><time>12:00</time></td>
+                                <td class="vp-time"><time>12:00</time></td>
+                            </tr>
+                            <tr>
+                                <td class="vp-time empty"><time>12:30</time></td>
+                                <td class="vp-time"><time>12:30</time></td>
+                            </tr>
+                        </tbody>
+                    </table>   
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer text-center">
+        <button class="btn btn-complete" type="button">Сохранить</button>
+        <button class="btn btn-default" type="button">Отмена</button>
+      </div>  
+    </div>
+  </div>
+</div>
+
 <script>
     var ringTone       = new window.Audio("./media/sounds/ringtone.mp3");
     var dtmfTone       = new window.Audio("./media/sounds/dtmf.wav");
@@ -441,7 +651,6 @@ use app\models\User;
     var asteriskUser = '600';
     var asteriskUserPass = 'AahWJQsGE7lF5d';
     var asteriskUserName = '600';
-
 </script>
 <!--<audio id="audio_remote" autoplay="autoplay"> </audio>-->
 <!--<audio id="ringtone" loop src="media/sounds/ringtone.wav"> </audio>-->

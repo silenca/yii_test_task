@@ -222,3 +222,78 @@ table.reports-table tr td {
 .audio-call-messages {
     display: none;
 }
+
+.vp-modal {
+    background: rgba(0,0,0,40%);
+}
+
+.modal-open .vp-modal {
+    overflow: auto;
+}
+
+.vp-modal .modal-header {
+    padding-bottom: 25px;
+}
+
+.vp-modal .modal-title {
+    font-weight: 700;
+}
+
+.vp-modal .modal-dialog {
+    width: 1240px;
+}
+
+.vp-calendar {
+    font-size: 14px;
+    overflow: auto;
+}
+
+.vp-calendar th {
+    word-break: break-word;
+    text-align: center;
+    vertical-align: middle;
+    height: 30px;
+}
+
+.vp-date {
+    font-weight: 700;
+    line-height: 30px;
+    text-align: center;
+}
+
+.vp-time {
+    padding: 1px;
+}
+
+.vp-time time {
+    font-size: 20px;
+    display: block;
+    width: 120px;
+    height: 40px;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    cursor: pointer;
+    text-align: center;
+    line-height: 36px;
+    margin: 1px;
+}
+
+.vp-time:not(.disable) time:hover,
+.vp-time.active time {
+    background-color: #10cfbd;
+    color: #fff;
+}
+
+.vp-time.disable time {
+    background-color: #f55753;
+    color: #fff;
+    cursor: not-allowed;
+}
+
+.vp-time.empty time {
+    border-color: transparent;
+    cursor: default;
+    color: transparent;
+    pointer-events: none;
+    user-select: none;
+}

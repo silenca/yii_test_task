@@ -12901,9 +12901,9 @@ table .open-link {
 .datepicker-content {
     position: relative;
 }
-#action_visit .block {
+/*#action_visit .block {
     padding: 5px;
-}
+}*/
 /*#action_visit .block label, #action_email .block label {*/
     /*margin-top: 7px;*/
 /*}*/
