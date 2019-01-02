@@ -229,6 +229,7 @@ div.cs-skin-slide.cs-active{
 
 .vp-modal {
     background: rgba(0,0,0,40%);
+    text-align: center;
 }
 
 .modal-open .vp-modal {
@@ -244,7 +245,8 @@ div.cs-skin-slide.cs-active{
 }
 
 .vp-modal .modal-dialog {
-    width: 1024px;
+    display: inline-block;
+    width: auto;
     max-width: 100%;
     min-width: 600px;
 }
@@ -256,19 +258,23 @@ div.cs-skin-slide.cs-active{
     flex: 1 1 auto;
     display: flex;
     flex-flow: column;
-    align-items: center;
     justify-content: flex-start;
+    overflow: auto;
 }
 .vp-form{
     flex: 0 0 300px;
     width: 300px;
+    padding: 0 15px;
 }
 .vp-cabinet{
     flex: 1 1 auto;
     display: flex;
     flex-flow: column;
-    align-items: center;
     justify-content: flex-start;
+    overflow: auto;
+}
+.vp-form textarea{
+    resize: vertical;
 }
 
 .vp-calendar {
@@ -302,10 +308,6 @@ div.cs-skin-slide.cs-active{
 }
 
 .vp-time {
-    padding: 1px;
-}
-
-.vp-time time {
     font-size: 20px;
     display: block;
     width: 120px;
@@ -316,21 +318,30 @@ div.cs-skin-slide.cs-active{
     text-align: center;
     line-height: 36px;
     margin: 1px;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
 
-.vp-time:not(.disable) time:hover,
-.vp-time.active time {
+.vp-time:not(.disable):hover{
+    background-color: rgba(16,207,189,0.5);
+    color: #fff;
+}
+.vp-time.active {
     background-color: #10cfbd;
     color: #fff;
 }
 
-.vp-time.disable time {
+.vp-time.disable {
     background-color: #f55753;
     color: #fff;
     cursor: not-allowed;
 }
 
-.vp-time.empty time {
+.vp-time.empty {
     border-color: transparent;
     cursor: default;
     color: transparent;

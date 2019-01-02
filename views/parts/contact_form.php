@@ -481,47 +481,47 @@ use app\models\User;
             <div class="vp-doctor">
                 <div class="vp-date">27.12.2018</div>
                 <div class="vp-calendar">
-                    <div class="vp-column">
+                    <div class="vp-column" data-date="27.12.2018" data-field="doctor" data-value="Иванов">
                         <div class="vp-column-head">
-                          Иванов<br>
-                          кардиолог
+                            Иванов<br>
+                            кардиолог
                         </div>
-                        <div class="vp-time active"><time>09:00</time></div>
-                        <div class="vp-time"><time>09:30</time></div>
-                        <div class="vp-time"><time>10:00</time></div>
-                        <div class="vp-time"><time>10:30</time></div>
-                        <div class="vp-time"><time>11:00</time></div>
-                        <div class="vp-time"><time>11:30</time></div>
-                        <div class="vp-time empty"><time>12:00</time></div>
-                        <div class="vp-time empty"><time>12:30</time></div>
+                        <time class="vp-time" data-time="09:00">09:00</time>
+                        <time class="vp-time" data-time="09:30">09:30</time>
+                        <time class="vp-time" data-time="10:00">10:00</time>
+                        <time class="vp-time" data-time="10:30">10:30</time>
+                        <time class="vp-time" data-time="11:00">11:00</time>
+                        <time class="vp-time" data-time="11:30">11:30</time>
+                        <time class="vp-time empty" data-time="12:00">12:00</time>
+                        <time class="vp-time empty" data-time="12:30">12:30</time>
                     </div>
-                    <div class="vp-column">
+                    <div class="vp-column" data-date="27.12.2018" data-field="doctor" data-value="Петров">
                         <div class="vp-column-head">
-                          Петров<br>
-                          кардиолог
+                            Петров<br>
+                            кардиолог
                         </div>
-                        <div class="vp-time disable"><time>09:00</time></div>
-                        <div class="vp-time disable"><time>09:30</time></div>
-                        <div class="vp-time"><time>10:00</time></div>
-                        <div class="vp-time"><time>10:30</time></div>
-                        <div class="vp-time"><time>11:00</time></div>
-                        <div class="vp-time"><time>11:30</time></div>
-                        <div class="vp-time"><time>12:00</time></div>
-                        <div class="vp-time"><time>12:30</time></div>
+                        <time class="vp-time disable" data-time="09:00">09:00</time>
+                        <time class="vp-time disable" data-time="09:30">09:30</time>
+                        <time class="vp-time" data-time="10:00">10:00</time>
+                        <time class="vp-time" data-time="10:30">10:30</time>
+                        <time class="vp-time" data-time="11:00">11:00</time>
+                        <time class="vp-time" data-time="11:30">11:30</time>
+                        <time class="vp-time" data-time="12:00">12:00</time>
+                        <time class="vp-time" data-time="12:30">12:30</time>
                     </div>
-                    <div class="vp-column">
+                    <div class="vp-column" data-date="27.12.2018" data-field="doctor" data-value="Николаєв">
                         <div class="vp-column-head">
-                          Петров<br>
-                          кардиолог
+                            Николаєв<br>
+                            кардиолог
                         </div>
-                        <div class="vp-time empty"><time>09:00</time></div>
-                        <div class="vp-time empty"><time>09:30</time></div>
-                        <div class="vp-time disable"><time>10:00</time></div>
-                        <div class="vp-time disable"><time>10:30</time></div>
-                        <div class="vp-time disable"><time>11:00</time></div>
-                        <div class="vp-time disable"><time>11:30</time></div>
-                        <div class="vp-time"><time>12:00</time></div>
-                        <div class="vp-time"><time>12:30</time></div>
+                        <time class="vp-time empty" data-time="09:00">09:00</time>
+                        <time class="vp-time empty" data-time="09:30">09:30</time>
+                        <time class="vp-time disable" data-time="10:00">10:00</time>
+                        <time class="vp-time disable" data-time="10:30">10:30</time>
+                        <time class="vp-time disable" data-time="11:00">11:00</time>
+                        <time class="vp-time disable" data-time="11:30">11:30</time>
+                        <time class="vp-time" data-time="12:00">12:00</time>
+                        <time class="vp-time" data-time="12:30">12:30</time>
                     </div>
                 </div>
 
@@ -554,7 +554,7 @@ use app\models\User;
                     </div>
                     
                     <div class="form-group">
-                        <input name="" type="text" class="form-control" placeholder="Доктор (ФИО)">
+                        <input id="doctorName" name="doctorName" type="text" class="form-control" placeholder="Доктор (ФИО)" readonly>
                     </div>
                     
                     <div class="form-group input-group datepicker-content">
@@ -563,39 +563,44 @@ use app\models\User;
                     </div>
                     
                     <div class="form-group">
-                        <input name="" type="text" class="form-control" placeholder="Кабинет">
+                        <input id="cabinetName" name="cabinetName" type="text" class="form-control" placeholder="Кабинет" readonly>
                     </div>
                     
                     <div class="form-group">
                         <textarea class="form-control"></textarea>
                     </div>
+                    
+                    <input type="hidden" id="doctorStartTime" name="doctorStartTime">
+                    <input type="hidden" id="doctorEndTime" name="doctorEndTime">
+                    <input type="hidden" id="cabinetStartTime" name="cabinetStartTime">
+                    <input type="hidden" id="cabinetEndTime" name="cabinetEndTime">
 
                 </form>
             </div>
             <div class="vp-cabinet">
                 <div class="vp-date">27.12.2018</div>
                 <div class="vp-calendar">
-                    <div class="vp-column">
+                    <div class="vp-column" data-date="27.12.2018" data-field="cabinet" data-value="Кабинет УЗИ">
                         <div class="vp-column-head">Кабинет УЗИ</div>
-                        <div class="vp-time active"><time>09:00</time></div>
-                        <div class="vp-time"><time>09:30</time></div>
-                        <div class="vp-time"><time>10:00</time></div>
-                        <div class="vp-time"><time>10:30</time></div>
-                        <div class="vp-time"><time>11:00</time></div>
-                        <div class="vp-time"><time>11:30</time></div>
-                        <div class="vp-time empty"><time>12:00</time></div>
-                        <div class="vp-time empty"><time>12:30</time></div>
+                        <time class="vp-time" data-time="09:00">09:00</time>
+                        <time class="vp-time" data-time="09:30">09:30</time>
+                        <time class="vp-time" data-time="10:00">10:00</time>
+                        <time class="vp-time" data-time="10:30">10:30</time>
+                        <time class="vp-time" data-time="11:00">11:00</time>
+                        <time class="vp-time" data-time="11:30">11:30</time>
+                        <time class="vp-time empty" data-time="12:00">12:00</time>
+                        <time class="vp-time empty" data-time="12:30">12:30</time>
                     </div>
-                    <div class="vp-column">
+                    <div class="vp-column" data-date="27.12.2018" data-field="cabinet" data-value="Рентгенкабинет">
                         <div class="vp-column-head">Рентгенкабинет</div>
-                        <div class="vp-time disable"><time>09:00</time></div>
-                        <div class="vp-time disable"><time>09:30</time></div>
-                        <div class="vp-time"><time>10:00</time></div>
-                        <div class="vp-time"><time>10:30</time></div>
-                        <div class="vp-time"><time>11:00</time></div>
-                        <div class="vp-time"><time>11:30</time></div>
-                        <div class="vp-time"><time>12:00</time></div>
-                        <div class="vp-time"><time>12:30</time></div>
+                        <time class="vp-time disable" data-time="09:00">09:00</time>
+                        <time class="vp-time disable" data-time="09:30">09:30</time>
+                        <time class="vp-time" data-time="10:00">10:00</time>
+                        <time class="vp-time" data-time="10:30">10:30</time>
+                        <time class="vp-time" data-time="11:00">11:00</time>
+                        <time class="vp-time" data-time="11:30">11:30</time>
+                        <time class="vp-time" data-time="12:00">12:00</time>
+                        <time class="vp-time" data-time="12:30">12:30</time>
                     </div>
                 </div>
             </div>

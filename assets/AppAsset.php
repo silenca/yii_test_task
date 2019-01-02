@@ -50,9 +50,11 @@ class AppAsset extends AssetBundle {
         '/media/plugins/jquery-validation/js/jquery.validate.min.js',
         '/media/plugins/jquery-maskedinput/jquery.maskedinput.min.js',
         '/media/plugins/bootstrap-tag/bootstrap-tagsinput.min.js',
+        '/media/plugins/moment/moment.min.js',
         '/media/js/pages.js',
         '/media/js/sidebar.custom.js',
         '/media/js/scripts.js',
+        '/media/js/book-visit.js'
     ];
     public $depends = [
 
