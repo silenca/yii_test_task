@@ -477,70 +477,56 @@ use app\models\User;
         <h4 class="modal-title">Запланировать визит</h4>
       </div>  
       <div class="modal-body">
-        <div class="row">
-            <div class="col-xs-4">
+        <div class="vp-wrap">
+            <div class="vp-doctor">
                 <div class="vp-date">27.12.2018</div>
                 <div class="vp-calendar">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Иванов</th>
-                                <th>Петров</th>
-                                <th>Сидоров</th>
-                            </tr>
-                            <tr>
-                                <th>кардиолог</th>
-                                <th>кардиолог</th>
-                                <th>кардиолог</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="vp-time active"><time>09:00</time></td>
-                                <td class="vp-time disable"><time>09:00</time></td>
-                                <td class="vp-time empty"><time>09:00</time></td>
-                            </tr>
-                            <tr>
-                                <td class="vp-time"><time>09:30</time></td>
-                                <td class="vp-time disable"><time>09:30</time></td>
-                                <td class="vp-time empty"><time>09:30</time></td>
-                            </tr>
-                            <tr>
-                                <td class="vp-time"><time>10:00</time></td>
-                                <td class="vp-time"><time>10:00</time></td>
-                                <td class="vp-time disable"><time>10:00</time></td>
-                            </tr>
-                            <tr>
-                                <td class="vp-time"><time>10:30</time></td>
-                                <td class="vp-time"><time>10:30</time></td>
-                                <td class="vp-time disable"><time>10:30</time></td>
-                            </tr>
-                            <tr>
-                                <td class="vp-time"><time>11:00</time></td>
-                                <td class="vp-time"><time>11:00</time></td>
-                                <td class="vp-time disable"><time>11:00</time></td>
-                            </tr>
-                            <tr>
-                                <td class="vp-time"><time>11:30</time></td>
-                                <td class="vp-time"><time>11:30</time></td>
-                                <td class="vp-time disable"><time>11:30</time></td>
-                            </tr>
-                            <tr>
-                                <td class="vp-time empty"><time>12:00</time></td>
-                                <td class="vp-time"><time>12:00</time></td>
-                                <td class="vp-time"><time>12:00</time></td>
-                            </tr>
-                            <tr>
-                                <td class="vp-time empty"><time>12:30</time></td>
-                                <td class="vp-time"><time>12:30</time></td>
-                                <td class="vp-time"><time>12:30</time></td>
-                            </tr>
-                        </tbody>
-                    </table>   
+                    <div class="vp-column">
+                        <div class="vp-column-head">
+                          Иванов<br>
+                          кардиолог
+                        </div>
+                        <div class="vp-time active"><time>09:00</time></div>
+                        <div class="vp-time"><time>09:30</time></div>
+                        <div class="vp-time"><time>10:00</time></div>
+                        <div class="vp-time"><time>10:30</time></div>
+                        <div class="vp-time"><time>11:00</time></div>
+                        <div class="vp-time"><time>11:30</time></div>
+                        <div class="vp-time empty"><time>12:00</time></div>
+                        <div class="vp-time empty"><time>12:30</time></div>
+                    </div>
+                    <div class="vp-column">
+                        <div class="vp-column-head">
+                          Петров<br>
+                          кардиолог
+                        </div>
+                        <div class="vp-time disable"><time>09:00</time></div>
+                        <div class="vp-time disable"><time>09:30</time></div>
+                        <div class="vp-time"><time>10:00</time></div>
+                        <div class="vp-time"><time>10:30</time></div>
+                        <div class="vp-time"><time>11:00</time></div>
+                        <div class="vp-time"><time>11:30</time></div>
+                        <div class="vp-time"><time>12:00</time></div>
+                        <div class="vp-time"><time>12:30</time></div>
+                    </div>
+                    <div class="vp-column">
+                        <div class="vp-column-head">
+                          Петров<br>
+                          кардиолог
+                        </div>
+                        <div class="vp-time empty"><time>09:00</time></div>
+                        <div class="vp-time empty"><time>09:30</time></div>
+                        <div class="vp-time disable"><time>10:00</time></div>
+                        <div class="vp-time disable"><time>10:30</time></div>
+                        <div class="vp-time disable"><time>11:00</time></div>
+                        <div class="vp-time disable"><time>11:30</time></div>
+                        <div class="vp-time"><time>12:00</time></div>
+                        <div class="vp-time"><time>12:30</time></div>
+                    </div>
                 </div>
 
             </div>
-            <div class="col-xs-4">
+            <div class="vp-form">
                 <form>
 
                     <div class="panel-title block">
@@ -586,51 +572,31 @@ use app\models\User;
 
                 </form>
             </div>
-            <div class="col-xs-4">
+            <div class="vp-cabinet">
                 <div class="vp-date">27.12.2018</div>
                 <div class="vp-calendar">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Кабинет УЗИ</th>
-                                <th>Рентгенкабинет</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="vp-time active"><time>09:00</time></td>
-                                <td class="vp-time disable"><time>09:00</time></td>
-                            </tr>
-                            <tr>
-                                <td class="vp-time"><time>09:30</time></td>
-                                <td class="vp-time disable"><time>09:30</time></td>
-                            </tr>
-                            <tr>
-                                <td class="vp-time"><time>10:00</time></td>
-                                <td class="vp-time"><time>10:00</time></td>
-                            </tr>
-                            <tr>
-                                <td class="vp-time"><time>10:30</time></td>
-                                <td class="vp-time"><time>10:30</time></td>
-                            </tr>
-                            <tr>
-                                <td class="vp-time"><time>11:00</time></td>
-                                <td class="vp-time"><time>11:00</time></td>
-                            </tr>
-                            <tr>
-                                <td class="vp-time"><time>11:30</time></td>
-                                <td class="vp-time"><time>11:30</time></td>
-                            </tr>
-                            <tr>
-                                <td class="vp-time empty"><time>12:00</time></td>
-                                <td class="vp-time"><time>12:00</time></td>
-                            </tr>
-                            <tr>
-                                <td class="vp-time empty"><time>12:30</time></td>
-                                <td class="vp-time"><time>12:30</time></td>
-                            </tr>
-                        </tbody>
-                    </table>   
+                    <div class="vp-column">
+                        <div class="vp-column-head">Кабинет УЗИ</div>
+                        <div class="vp-time active"><time>09:00</time></div>
+                        <div class="vp-time"><time>09:30</time></div>
+                        <div class="vp-time"><time>10:00</time></div>
+                        <div class="vp-time"><time>10:30</time></div>
+                        <div class="vp-time"><time>11:00</time></div>
+                        <div class="vp-time"><time>11:30</time></div>
+                        <div class="vp-time empty"><time>12:00</time></div>
+                        <div class="vp-time empty"><time>12:30</time></div>
+                    </div>
+                    <div class="vp-column">
+                        <div class="vp-column-head">Рентгенкабинет</div>
+                        <div class="vp-time disable"><time>09:00</time></div>
+                        <div class="vp-time disable"><time>09:30</time></div>
+                        <div class="vp-time"><time>10:00</time></div>
+                        <div class="vp-time"><time>10:30</time></div>
+                        <div class="vp-time"><time>11:00</time></div>
+                        <div class="vp-time"><time>11:30</time></div>
+                        <div class="vp-time"><time>12:00</time></div>
+                        <div class="vp-time"><time>12:30</time></div>
+                    </div>
                 </div>
             </div>
         </div>

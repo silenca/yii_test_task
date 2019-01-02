@@ -223,6 +223,10 @@ table.reports-table tr td {
     display: none;
 }
 
+div.cs-skin-slide.cs-active{
+    z-index: 1050;
+}
+
 .vp-modal {
     background: rgba(0,0,0,40%);
 }
@@ -240,19 +244,55 @@ table.reports-table tr td {
 }
 
 .vp-modal .modal-dialog {
-    width: 1240px;
+    width: 1024px;
+    max-width: 100%;
+    min-width: 600px;
+}
+.vp-wrap{
+    display: flex;
+    width: auto;
+}
+.vp-doctor{
+    flex: 1 1 auto;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+.vp-form{
+    flex: 0 0 300px;
+    width: 300px;
+}
+.vp-cabinet{
+    flex: 1 1 auto;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .vp-calendar {
     font-size: 14px;
     overflow: auto;
+    display: flex;
 }
 
+.vp-column{
+    width: 130px;
+    display: flex;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.vp-column-head,
 .vp-calendar th {
     word-break: break-word;
     text-align: center;
     vertical-align: middle;
-    height: 30px;
+    height: 46px;
+    font-size: 14px;
+    font-weight: 700;
 }
 
 .vp-date {
