@@ -107,5 +107,11 @@ function clearReservation() {
   selectStak = [];
   curentItem = null;
   currentType = null;
+  $('#doctorName').val('');
+  $('#doctorStartTime').val('');
+  $('#doctorEndTime').val('');
+  $('#cabinrtName').val('');
+  $('#cabinetStartTime').val('');
+  $('#cabinetEndTime').val('');
   $('.vp-time').removeClass('active');
 }
