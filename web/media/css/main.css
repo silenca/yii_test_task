@@ -279,8 +279,10 @@ div.cs-skin-slide.cs-active{
 
 .vp-calendar {
     font-size: 14px;
-    overflow: auto;
+    flex: 1;
     display: flex;
+    max-height: 65vh;
+    overflow: auto;
 }
 
 .vp-column{
@@ -291,8 +293,7 @@ div.cs-skin-slide.cs-active{
     align-items: center;
 }
 
-.vp-column-head,
-.vp-calendar th {
+.vp-column-head {
     word-break: break-word;
     text-align: center;
     vertical-align: middle;

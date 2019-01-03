@@ -22,6 +22,9 @@ $(function () {
 });
 
 $('.vp-column').bind('mousedown', function(e){
+  curentItem = e.target.closest('.vp-time');
+  if($(curentItem).hasClass('disable')) return false;
+  
   currentCol = e.target.closest('.vp-column');
   field = $(currentCol).data('field');
   currentType = field;
@@ -35,7 +38,6 @@ $('.vp-column').bind('mousedown', function(e){
   
   bookVisit[field]['name'] = $(currentCol).data('value');
   bookVisit[field]['date'] = $(currentCol).data('date');
-  curentItem = e.target.closest('.vp-time');
   handleTime(curentItem);
   $('.vp-column').bind('mousemove', function (e) {
     target = e.target.closest('.vp-time');
@@ -60,10 +62,11 @@ function handleTime(item){
   if(index < 0){
     item.classList.add('active');
     selectStak.push(item);
-  }else{
-    item.classList.remove('active');
-    selectStak.splice(index, 1);
   }
+  // else{
+  //   item.classList.remove('active');
+  //   selectStak.splice(index, 1);
+  // }
 }
 
 function countTime(type, items) {

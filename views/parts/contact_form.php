@@ -608,7 +608,7 @@ use app\models\User;
       </div>
       <div class="modal-footer text-center">
         <button class="btn btn-complete" type="button">Сохранить</button>
-        <button class="btn btn-default" type="button">Отмена</button>
+        <button class="btn btn-default" type="button" data-dismiss="modal">Отмена</button>
       </div>  
     </div>
   </div>
