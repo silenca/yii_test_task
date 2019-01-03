@@ -420,31 +420,31 @@ use app\models\User;
 
                                                     <div class="panel-title block">
                                                         <div class="form-group cs-select-container cs-select-block">
-                                                            <select id="" class="cs-select cs-skin-slide"
+                                                            <select id="select-speciality" class="cs-select cs-skin-slide "
                                                                     data-init-plugin="cs-select">
-                                                                <option value="">Специализация врача</option>
-                                                                <option value="">Специализация 1</option>
-                                                                <option value="">Специализация 2</option>
-                                                                <option value="">Специализация 3</option>
+                                                                <option value="" disabled selected>Специализация врача</option>
+                                                                <option value="121">Терапевт</option>
+                                                                <option value="122">Кардиолог</option>
+                                                                <option value="123">ЛОР</option>
                                                             </select>
                                                         </div>
                                                     </div>
 
                                                     <div class="panel-title block">
                                                         <div class="form-group cs-select-container cs-select-block">
-                                                            <select id="" class="cs-select cs-skin-slide"
+                                                            <select id="select-department" class="cs-select cs-skin-slide"
                                                                     data-init-plugin="cs-select">
-                                                                <option value="">Отделение</option>
-                                                                <option value="">Отделение 1</option>
-                                                                <option value="">Отделение 2</option>
-                                                                <option value="">Отделение 3</option>
+                                                                <option value="" disabled selected>Отделение</option>
+                                                                <option value="031">Травматология</option>
+                                                                <option value="032">Кардиология</option>
+                                                                <option value="033">Хирургия</option>
                                                             </select>
                                                         </div>
                                                     </div>
 
                                                     <div class="form-group input-group datepicker-content">
                                                         <label class="input-group-addon success" for=""><i class="fa fa-fw fa-calendar"></i></label>
-                                                        <input name="" type="text" class="form-control object-schedule-datetime datepicker" placeholder="Дата приема" aria-required="true" aria-invalid="false">
+                                                        <input name="" id="set-booking-date" type="text" class="form-control object-schedule-datetime booking-date" placeholder="Дата приема" aria-required="true" aria-invalid="false">
                                                     </div>
 
                                                     <div class="form-group">
@@ -531,24 +531,20 @@ use app\models\User;
 
                     <div class="panel-title block">
                         <div class="form-group cs-select-container cs-select-block">
-                            <select id="" class="cs-select cs-skin-slide"
-                                    data-init-plugin="cs-select">
-                                <option value="">Специализация врача</option>
-                                <option value="">Специализация 1</option>
-                                <option value="">Специализация 2</option>
-                                <option value="">Специализация 3</option>
+                            <select id="speciality" class="form-control selectpicker" title="Специализация врача">
+                                <option value="121">Терапевт</option>
+                                <option value="122">Кардиолог</option>
+                                <option value="123">ЛОР</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="panel-title block">
                         <div class="form-group cs-select-container cs-select-block">
-                            <select id="" class="cs-select cs-skin-slide"
-                                    data-init-plugin="cs-select">
-                                <option value="">Отделение</option>
-                                <option value="">Отделение 1</option>
-                                <option value="">Отделение 2</option>
-                                <option value="">Отделение 3</option>
+                            <select id="department" class="form-control selectpicker" title="Отделение">
+                                <option value="031">Травматология</option>
+                                <option value="032">Кардиология</option>
+                                <option value="033">Хирургия</option>
                             </select>
                         </div>
                     </div>
@@ -559,7 +555,7 @@ use app\models\User;
                     
                     <div class="form-group input-group datepicker-content">
                         <label class="input-group-addon success" for=""><i class="fa fa-fw fa-calendar"></i></label>
-                        <input name="" type="text" class="form-control object-schedule-datetime datepicker" placeholder="Дата приема" aria-required="true" aria-invalid="false">
+                        <input name="" id="booking-date" type="text" class="form-control object-schedule-datetime booking-date" placeholder="Дата приема" aria-required="true" aria-invalid="false">
                     </div>
                     
                     <div class="form-group">

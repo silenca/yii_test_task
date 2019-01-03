@@ -188,6 +188,12 @@ $(function() {
         enabledHours: false,
         //minDate: today
     });
+    $('.booking-date').datetimepicker({
+        locale: 'ru',
+        format: "DD/MM/YYYY",
+        enabledHours: false,
+        //minDate: today
+    });
     $('.google-cal-show').on('change', function() {
         if ($(this).is(':checked')) {
             processGApiAuth();

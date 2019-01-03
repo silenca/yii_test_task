@@ -1,5 +1,27 @@
+$(function () {
+  $('.selectpicker').selectpicker();
+  
+  $('#visitPlanningModal').on('shown.bs.modal', function () {
+    $('#speciality').selectpicker('val', bookVisit.speciality);
+    $('#department').selectpicker('val', bookVisit.department);
+    $('#booking-date').data("DateTimePicker").date(bookVisit.date)
+  })
+});
+
+$('#select-speciality').on('change', function (e) {
+  bookVisit.speciality = $(e.target).val();
+});
+$('#select-department').on('change', function (e) {
+  bookVisit.department = $(e.target).val();
+});
+$('#set-booking-date').on("dp.change", function(e) {
+  bookVisit.date = e.date;
+});
 
 var bookVisit = {
+  speciality: '',
+  department: '',
+  date: '',
   doctor: {
     id: '',
     name: ''
@@ -97,6 +119,9 @@ function countTime(type, items) {
 
 function clearReservation() {
   bookVisit = {
+    speciality: '',
+    department: '',
+    date: '',
     doctor: {
       id: '',
       name: ''
@@ -118,3 +143,5 @@ function clearReservation() {
   $('#cabinetEndTime').val('');
   $('.vp-time').removeClass('active');
 }
+
+

@@ -276,6 +276,9 @@ div.cs-skin-slide.cs-active{
 .vp-form textarea{
     resize: vertical;
 }
+.vp-form .bootstrap-select{
+    width: 100%;
+}
 
 .vp-calendar {
     font-size: 14px;
