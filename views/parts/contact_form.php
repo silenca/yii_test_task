@@ -473,7 +473,7 @@ use app\models\User;
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clearReservation()"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Запланировать визит</h4>
       </div>  
       <div class="modal-body">
@@ -610,7 +610,7 @@ use app\models\User;
       </div>
       <div class="modal-footer text-center">
         <button class="btn btn-complete" type="button">Сохранить</button>
-        <button class="btn btn-default" type="button" data-dismiss="modal">Отмена</button>
+        <button class="btn btn-default" type="button" data-dismiss="modal" onclick="clearReservation()">Отмена</button>
       </div>  
     </div>
   </div>
