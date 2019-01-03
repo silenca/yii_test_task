@@ -481,7 +481,7 @@ use app\models\User;
             <div class="vp-doctor">
                 <div class="vp-date">27.12.2018</div>
                 <div class="vp-calendar">
-                    <div class="vp-column" data-date="27.12.2018" data-field="doctor" data-value="Иванов">
+                    <div class="vp-column" data-field="doctor" data-value="Иванов" data-id="1245">
                         <div class="vp-column-head">
                             Иванов<br>
                             кардиолог
@@ -495,7 +495,7 @@ use app\models\User;
                         <time class="vp-time empty" data-time="12:00">12:00</time>
                         <time class="vp-time empty" data-time="12:30">12:30</time>
                     </div>
-                    <div class="vp-column" data-date="27.12.2018" data-field="doctor" data-value="Петров">
+                    <div class="vp-column" data-field="doctor" data-value="Петров" data-id="2356">
                         <div class="vp-column-head">
                             Петров<br>
                             кардиолог
@@ -509,7 +509,7 @@ use app\models\User;
                         <time class="vp-time" data-time="12:00">12:00</time>
                         <time class="vp-time" data-time="12:30">12:30</time>
                     </div>
-                    <div class="vp-column" data-date="27.12.2018" data-field="doctor" data-value="Николаєв">
+                    <div class="vp-column" data-field="doctor" data-value="Николаєв" data-id="1223">
                         <div class="vp-column-head">
                             Николаєв<br>
                             кардиолог
@@ -569,9 +569,11 @@ use app\models\User;
                     <div class="form-group">
                         <textarea class="form-control"></textarea>
                     </div>
-                    
+    
+                    <input type="hidden" id="doctorId" name="doctorId">
                     <input type="hidden" id="doctorStartTime" name="doctorStartTime">
                     <input type="hidden" id="doctorEndTime" name="doctorEndTime">
+                    <input type="hidden" id="cabinetId" name="cabinetId">
                     <input type="hidden" id="cabinetStartTime" name="cabinetStartTime">
                     <input type="hidden" id="cabinetEndTime" name="cabinetEndTime">
 
@@ -580,7 +582,7 @@ use app\models\User;
             <div class="vp-cabinet">
                 <div class="vp-date">27.12.2018</div>
                 <div class="vp-calendar">
-                    <div class="vp-column" data-date="27.12.2018" data-field="cabinet" data-value="Кабинет УЗИ">
+                    <div class="vp-column" data-field="cabinet" data-value="Кабинет УЗИ" data-id="2312">
                         <div class="vp-column-head">Кабинет УЗИ</div>
                         <time class="vp-time" data-time="09:00">09:00</time>
                         <time class="vp-time" data-time="09:30">09:30</time>
@@ -591,7 +593,7 @@ use app\models\User;
                         <time class="vp-time empty" data-time="12:00">12:00</time>
                         <time class="vp-time empty" data-time="12:30">12:30</time>
                     </div>
-                    <div class="vp-column" data-date="27.12.2018" data-field="cabinet" data-value="Рентгенкабинет">
+                    <div class="vp-column" data-field="cabinet" data-value="Рентгенкабинет" data-id="1346">
                         <div class="vp-column-head">Рентгенкабинет</div>
                         <time class="vp-time disable" data-time="09:00">09:00</time>
                         <time class="vp-time disable" data-time="09:30">09:30</time>

@@ -1,15 +1,11 @@
 
 var bookVisit = {
   doctor: {
-    date: '',
-    timeStart: '',
-    timeEnd: '',
+    id: '',
     name: ''
   },
   cabinet: {
-    date: '',
-    timeStart: '',
-    timeEnd: '',
+    id: '',
     name: ''
   }
 };
@@ -41,8 +37,8 @@ startTimeSelect = function(e){
     $('#'+field+'EndTime').val('');
   }
   
+  bookVisit[field]['id'] = $(currentCol).data('id');
   bookVisit[field]['name'] = $(currentCol).data('value');
-  bookVisit[field]['date'] = $(currentCol).data('date');
   handleTime(curentItem);
   $(currentCol).bind('mousemove', function (e) {
     target = e.target.closest('.vp-time');
@@ -93,24 +89,20 @@ function countTime(type, items) {
       endTime = time;
     }
   }
-  $('#'+type+'StartTime').val(startTime.format('HH:mm'));
-  $('#'+type+'EndTime').val(endTime.add(29, 'm').format('HH:mm'));  // .add(30, 'm'); ?
+  $('#'+type+'Id').val(bookVisit[type]['id']);
   $('#'+type+'Name').val(bookVisit[type]['name']);
-  
+  $('#'+type+'StartTime').val(startTime.format('HH:mm'));
+  $('#'+type+'EndTime').val(endTime.add(30, 'm').format('HH:mm'));  // .add(30, 'm'); ?
 }
 
 function clearReservation() {
   bookVisit = {
     doctor: {
-      date: '',
-      timeStart: '',
-      timeEnd: '',
+      id: '',
       name: ''
     },
     cabinet: {
-      date: '',
-      timeStart: '',
-      timeEnd: '',
+      id: '',
       name: ''
     }
   };
