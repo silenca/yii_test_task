@@ -16,14 +16,19 @@ var bookVisit = {
 
 var selectStak = [];
 var curentItem;
+var currentCol;
 var currentType;
 
-$(function () {
+document.addEventListener("mousedown", function(e){
+  startTimeSelect(e);
+});
+document.addEventListener("mouseup", function(e){
+  endTimeSelect(e);
 });
 
-$('.vp-column').bind('mousedown', function(e){
+startTimeSelect = function(e){
   curentItem = e.target.closest('.vp-time');
-  if($(curentItem).hasClass('disable')) return false;
+  if(!curentItem || $(curentItem).hasClass('disable')) return false;
   
   currentCol = e.target.closest('.vp-column');
   field = $(currentCol).data('field');
@@ -39,22 +44,24 @@ $('.vp-column').bind('mousedown', function(e){
   bookVisit[field]['name'] = $(currentCol).data('value');
   bookVisit[field]['date'] = $(currentCol).data('date');
   handleTime(curentItem);
-  $('.vp-column').bind('mousemove', function (e) {
+  $(currentCol).bind('mousemove', function (e) {
     target = e.target.closest('.vp-time');
     if (target !== curentItem) {
       curentItem = e.target.closest('.vp-time');
       handleTime(curentItem);
     }
+  });
+  $(currentCol).mouseleave(function () {
+    $(currentCol).unbind('mousemove');
   })
-});
+};
 
-$('.vp-column').bind('mouseup', function(e){
-  $(".vp-column").unbind('mousemove');
-  countTime(currentType, selectStak);
-});
-$('.vp-column').bind('mouseleave', function(e){
-  $(".vp-column").unbind('mousemove');
-});
+endTimeSelect = function(e) {
+  if(currentCol) {
+    $(currentCol).unbind('mousemove');
+    countTime(currentType, selectStak);
+  }
+};
 
 function handleTime(item){
   if(!item) return false;
@@ -109,6 +116,7 @@ function clearReservation() {
   };
   selectStak = [];
   curentItem = null;
+  currentCol = null;
   currentType = null;
   $('#doctorName').val('');
   $('#doctorStartTime').val('');
