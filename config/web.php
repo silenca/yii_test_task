@@ -85,7 +85,7 @@ $config = [
                 '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
             ],
         ],
-
+        'medium' => require(__DIR__ . '/medium.php'),
     ],
     'params' => $params,
 ];

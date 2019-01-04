@@ -5,10 +5,12 @@ namespace app\commands;
 use app\controllers\ContactsController;
 use app\models\Contact;
 
+use app\models\Speciality;
 use yii\base\InvalidConfigException;
 use yii\httpclient\Client;
 use yii\console\Controller;
 use yii\web\HttpException;
+use Yii;
 
 class SyncController extends Controller
 {
@@ -61,4 +63,22 @@ class SyncController extends Controller
         }
     }
 
+    public function actionSpeciality()
+    {
+        $cnt = 0;
+        $speciality = Yii::$app->medium->speciality();
+        if(empty($speciality['error'])){
+            foreach ($speciality['data'] as $datum){
+                if(Speciality::import($datum)){
+                    $cnt++;
+                }else{
+                    echo "ERROR SAVE " .  print_r($datum) . "\n";
+                }
+            }
+
+            echo "SAVE|UPDATE {$cnt} items";
+        }else{
+            echo $speciality['error'];
+        }
+    }
 }

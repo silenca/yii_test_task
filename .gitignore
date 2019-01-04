@@ -1,5 +1,6 @@
 /config/params-local.php
 /config/db.php
+/config/medium.php
 /node/config.js
 /node/server.js
 /web/media/js/notifications.js
