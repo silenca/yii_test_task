@@ -53,6 +53,7 @@ class Contact extends ActiveRecord
     public const LEAD = 1;
     public const CONTACT = 2;
     public const MEDIUM_API_URL = 'http://91.225.122.210:8080/api/H:1D13C88C20AA6C6/D:WORK/D:1D13C9303C946F9/C:1D45F18F27C737D';
+    public const MEDIUM_API_URL_SAVE = 'http://91.225.122.210:5080/clients';
     public const MEDIUM_API_OBJECT = '/O:';
     public const MEDIUM_API_ITEM = '/I:';//STATUSES
     public static $safe_fields = [
@@ -458,7 +459,8 @@ class Contact extends ActiveRecord
      */
     public static function postMediumObject($data)
     {
-        $url = self::MEDIUM_API_URL . '?method=save_object';
+//        $url = self::MEDIUM_API_URL . '?method=save_object';
+        $url = self::MEDIUM_API_URL_SAVE;
         $client = self::buildMediumRequestBody($data, $url);
         try {
             $newUserResponse = $client->send();
@@ -518,10 +520,12 @@ class Contact extends ActiveRecord
     public static function updateMediumObject($oid, $data)
     {
         if ($oid) {
-            $url = self::MEDIUM_API_URL . self::MEDIUM_API_OBJECT . $oid . '?method=save_object';
+//            $url = self::MEDIUM_API_URL . self::MEDIUM_API_OBJECT . $oid . '?method=save_object';
+            $url = self::MEDIUM_API_URL_SAVE . self::MEDIUM_API_OBJECT . $oid;
             $client = self::buildMediumRequestBody($data, $url);
         } else {
-            $url = self::MEDIUM_API_URL . '?method=save_object';
+//            $url = self::MEDIUM_API_URL . '?method=save_object';
+            $url = self::MEDIUM_API_URL_SAVE;
             $client = self::buildMediumRequestBody($data, $url);
         }
         try {
