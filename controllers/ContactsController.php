@@ -199,7 +199,7 @@ class ContactsController extends BaseController
                 if(empty($doctorsSchedule['error'])){
                     // Список забронированих сиансов к доктору
                     $doctorsVisit = Yii::$app->medium->doctorsVisit($visitDate);
-                    if(empty($doctorsVisit['error']) && !empty($doctorsVisit['data'])){
+                    if(!empty($doctorsVisit['data'])){
                         foreach ($doctorsVisit['data'] as $doctorVisit){
                             $time = strtotime($doctorVisit['date']);
                             if(isset($doctorsSchedule['data'][$doctorVisit['oidV']]['gr_time'][$time])){
@@ -207,7 +207,7 @@ class ContactsController extends BaseController
                             }
                         }
                     }else{
-                        $response['error'] = $doctorsVisit['error'];
+//                        $response['error'] = $doctorsVisit['error'];
                     }
                 }else{
                     $response['error'] = $doctorsSchedule['error'];
@@ -218,7 +218,7 @@ class ContactsController extends BaseController
                 if(empty($cabinetsList['error'])){
                     // Список забронированых кабинетов
                     $cabinetsSchedule = Yii::$app->medium->cabinetSchedule($visitDate);
-                    if(empty($cabinetsSchedule['error'])){
+                    if(!empty($cabinetsSchedule['data'])){
                         foreach ($cabinetsSchedule['data'] as $cabinetSchedule){
                             $time = strtotime($cabinetSchedule['date']);
                             if(isset($cabinetsList['data'][$cabinetSchedule['oidK']]['gr_time'][$time])){
@@ -226,7 +226,7 @@ class ContactsController extends BaseController
                             }
                         }
                     }else{
-                        $response['error'] = $cabinetsSchedule['error'];
+//                        $response['error'] .= $cabinetsSchedule['error'];
                     }
                 }else{
                     $response['error'] .= " " . $cabinetsList['error'];
