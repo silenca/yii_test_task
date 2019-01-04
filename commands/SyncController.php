@@ -76,7 +76,7 @@ class SyncController extends Controller
                 }
             }
 
-            echo "SAVE|UPDATE {$cnt} items";
+            echo "SAVE|UPDATE {$cnt} items \n";
         }else{
             echo $speciality['error'];
         }
