@@ -150,7 +150,7 @@ class MediumApi
                 . '}) '
                 . 'return element x { $res[@gr] } ';
             $response = $this->sendMediumPost($url, $data);
-            if(!empty($response->getData())){
+            if(!empty($response->getContent()) && !empty($response->getData())){
                 foreach ($response->getData()['OBJECT'] as $content) {
                     if(!empty($content['@attributes'])){
                         $this->setMinMaxTime($content['@attributes'], $day);
@@ -195,10 +195,10 @@ class MediumApi
                 . 'attribute Phone {$ob/@Телефон}' . "\n"
                 . "}";
             $response = $this->sendMediumPost($url, $data);
-            if(mb_strcut($response->getContent(), 0, 2) != "<x>"){
+            if(!empty($response->getContent()) && mb_strcut($response->getContent(), 0, 2) != "<x>"){
                 $response->setContent("<x>".$response->getContent()."</x>");
             }
-            if(!empty($response->getData())){
+            if(!empty($response->getContent()) && !empty($response->getData())){
                 foreach ($response->getData()['OBJECT'] as $content) {
                     if(!empty($content['@attributes'])){
                         $result['data'][] = $content['@attributes'];
@@ -234,10 +234,10 @@ class MediumApi
                 . 'attribute name { $ob/@name }' . "\n"
                 . '}';
             $response = $this->sendMediumPost($url, $data);
-            if(mb_strcut($response->getContent(), 0, 2) != "<x>"){
+            if(!empty($response->getContent()) && mb_strcut($response->getContent(), 0, 2) != "<x>"){
                 $response->setContent("<x>".$response->getContent()."</x>");
             }
-            if(!empty($response->getData())){
+            if(!empty($response->getContent()) && !empty($response->getData())){
                 foreach ($response->getData()['OBJECT'] as $content) {
                     if(!empty($content['@attributes'])){
                         $result['data'][$content['@attributes']['oid']] = $content['@attributes'];
@@ -280,10 +280,10 @@ class MediumApi
                     . 'attribute Status {$ob/@Статус}' . "\n"
                     . '}';
             $response = $this->sendMediumPost($url, $data);
-            if(mb_strcut($response->getContent(), 0, 2) != "<x>"){
+            if(!empty($response->getContent()) && mb_strcut($response->getContent(), 0, 2) != "<x>"){
                 $response->setContent("<x>".$response->getContent()."</x>");
             }
-            if(!empty($response->getData())){
+            if(!empty($response->getContent()) && !empty($response->getData())){
                 foreach ($response->getData()['OBJECT'] as $content) {
                     if(!empty($content['@attributes'])){
                         $result['data'][] = $content['@attributes'];
@@ -308,7 +308,7 @@ class MediumApi
         try {
             $response = $this->sendMediumPost($url, $data);
             $result['data']['response'] = $response->getContent();
-            if(!empty($response->getData()[0])){
+            if(!empty($response->getContent()) && !empty($response->getData()[0])){
                 $result['data']['oid'] = $response->getData()[0];
             }else{
                 $result['error'] = 'No data on Medium records URL= "' . $url . '"';
