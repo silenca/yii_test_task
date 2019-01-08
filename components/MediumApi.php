@@ -9,6 +9,7 @@ class MediumApi
 {
     public $mediumApiDomain;
     public $doctorsVisit;
+    public $cabinetSchedule;
 
     private $minTime;
     private $maxTime;
@@ -267,7 +268,7 @@ class MediumApi
      */
     public function cabinetSchedule($day): array
     {
-        $url = $this->mediumApiDomain . '/api/H:1D13C88C20AA6C6/D:WORK/D:1D13C9303C946F9/C:1CDA3C6126B1EB1/I:PACK?loadmask='.$day;
+        $url = $this->mediumApiDomain . $this->cabinetSchedule .$day;
         $result = ['data'=>[],'error'=>''];
         try {
             $data = 'let $data := "' . $day . '"' . "\n"
