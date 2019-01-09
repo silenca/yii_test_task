@@ -1,5 +1,7 @@
 <?php
 use app\models\User;
+$speciality = \app\models\Speciality::find()->all();
+$departments = \app\models\Departments::find()->all();
 ?>
 
 <link href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css" rel="stylesheet">
@@ -421,9 +423,12 @@ use app\models\User;
                                                         <div class="form-group cs-select-container cs-select-block">
                                                             <select id="select-speciality" class="form-control selectpicker">
                                                                 <option value="" disabled selected>Специализация врача</option>
-                                                                <option value="121">Терапевт</option>
-                                                                <option value="122">Кардиолог</option>
-                                                                <option value="123">ЛОР</option>
+                                                                <?php
+                                                                    if($speciality)
+                                                                        foreach ($speciality as $specialization) {
+                                                                            echo '<option value="'.$specialization->id.'">'.$specialization->title.'</option>';
+                                                                        }
+																?>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -432,9 +437,12 @@ use app\models\User;
                                                         <div class="form-group cs-select-container cs-select-block">
                                                             <select id="select-department" class="form-control selectpicker">
                                                                 <option value="" disabled selected>Отделение</option>
-                                                                <option value="031">Травматология</option>
-                                                                <option value="032">Кардиология</option>
-                                                                <option value="033">Хирургия</option>
+                                                                <?php
+                                                                    if($departments)
+                                                                        foreach ($departments as $department) {
+                                                                            echo '<option value="'.$department->id.'">'.$department->title.'</option>';
+                                                                        }
+                                                                ?>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -446,7 +454,7 @@ use app\models\User;
 
                                                     <div class="form-group">
                                                         <button class="btn btn-info btn-block" type="button" id="visitPlanningBtn">
-                                                            Добавить
+                                                            Поиск окна
                                                         </button>
                                                     </div>
 
@@ -476,7 +484,7 @@ use app\models\User;
       <div class="modal-body">
         <div class="vp-wrap">
             <div class="vp-doctor">
-                <div class="vp-date">27.12.2018</div>
+                <!--<div class="vp-date">27.12.2018</div>
                 <div class="vp-calendar">
                     <div class="vp-column" data-field="doctor" data-value="Иванов" data-id="1245">
                         <div class="vp-column-head">
@@ -520,7 +528,7 @@ use app\models\User;
                         <time class="vp-time" data-time="12:00">12:00</time>
                         <time class="vp-time" data-time="12:30">12:30</time>
                     </div>
-                </div>
+                </div>-->
 
             </div>
             <div class="vp-form">
@@ -528,11 +536,14 @@ use app\models\User;
 
                     <div class="panel-title block">
                         <div class="form-group cs-select-container cs-select-block">
-                            <select id="speciality" class="form-control selectpicker" title="Специализация врача">
-                                <option value="" selected disabled>Специализация врача</option>
-                                <option value="121">Терапевт</option>
-                                <option value="122">Кардиолог</option>
-                                <option value="123">ЛОР</option>
+                           <select id="speciality" class="form-control selectpicker" title="Специализация врача">
+                               <option value="" selected disabled>Специализация врача</option>
+                               <?php
+                                      if($speciality)
+                                          foreach ($speciality as $specialization) {
+                                              echo '<option value="'.$specialization->id.'">'.$specialization->title.'</option>';
+                                          }
+                               ?>
                             </select>
                         </div>
                     </div>
@@ -541,9 +552,12 @@ use app\models\User;
                         <div class="form-group cs-select-container cs-select-block">
                             <select id="department" class="form-control selectpicker" title="Отделение">
                                 <option value="" selected disabled>Отделение</option>
-                                <option value="031">Травматология</option>
-                                <option value="032">Кардиология</option>
-                                <option value="033">Хирургия</option>
+                                <?php
+                                    if($departments)
+                                        foreach ($departments as $department) {
+                                            echo '<option value="'.$department->id.'">'.$department->title.'</option>';
+                                        }
+                                ?>
                             </select>
                         </div>
                     </div>
@@ -562,7 +576,7 @@ use app\models\User;
                     </div>
                     
                     <div class="form-group">
-                        <textarea class="form-control"></textarea>
+                        <textarea id="visitComment" class="form-control"></textarea>
                     </div>
     
                     <input type="hidden" id="doctorId" name="doctorId">
@@ -575,7 +589,7 @@ use app\models\User;
                 </form>
             </div>
             <div class="vp-cabinet">
-                <div class="vp-date">27.12.2018</div>
+                <!--<div class="vp-date">27.12.2018</div>
                 <div class="vp-calendar">
                     <div class="vp-column" data-field="cabinet" data-value="Кабинет УЗИ" data-id="2312">
                         <div class="vp-column-head">Кабинет УЗИ</div>
@@ -599,12 +613,13 @@ use app\models\User;
                         <time class="vp-time" data-time="12:00">12:00</time>
                         <time class="vp-time" data-time="12:30">12:30</time>
                     </div>
-                </div>
+                </div>-->
             </div>
         </div>
       </div>
       <div class="modal-footer text-center">
-        <button class="btn btn-complete" type="button" >Сохранить</button>
+	      <div id="visitProgress" style="display: none;"><img src="/media/img/icons/preloader.gif" width="25px"></div>
+        <button class="btn btn-complete" type="button">Сохранить</button>
         <button class="btn btn-default" type="button" data-dismiss="modal" onclick="clearReservation()">Отмена</button>
       </div>  
     </div>

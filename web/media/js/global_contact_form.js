@@ -2,6 +2,7 @@ var contact_bind_inputs = {};
 var $contact_form;
 var $contact_data_form;
 var managerTags = [];
+var visitProcess = false;
 
 var form_action_call_validate = {
     rules: {
@@ -190,7 +191,7 @@ $(function() {
     });
     $('.booking-date').datetimepicker({
         locale: 'ru',
-        format: "DD/MM/YYYY",
+        format: "DD.MM.YYYY",
         enabledHours: false,
         //minDate: today
     });
@@ -629,10 +630,19 @@ function escapeHtml(string) {
 
 function visitPlanning(){
     $('body').on('click', '#visitPlanningBtn', function(e){
-        $('#modalAddContact').modal('hide');
-        $('#visitPlanningModal').modal({
-          backdrop: false
-        });
+        var visitSpeciality = $('#select-speciality').val();
+		var visitDepartments = $('#select-department').val();
+		var visitDate = $('#set-booking-date').val();
+
+		if(visitSpeciality != '' && visitDepartments != '' && visitDate != ''){
+			visitPlanningPost(visitSpeciality, visitDepartments,visitDate);
+			$('#modalAddContact').modal('hide');
+			$('#visitPlanningModal').modal({
+				backdrop: false
+			});
+        }else{
+			showNotification('#action_visit', 'Все поля должны быть заполнены', 'bottom', 'danger', 'bar', 10000);
+        }
     });
 
     $('#visitPlanningModal').on('hidden.bs.modal', function (e) {
@@ -640,4 +650,157 @@ function visitPlanning(){
           backdrop: false
         });
     });
+
+    $('#speciality').on('change', function (e) {
+		visitPlanningModal();
+	});
+
+	$('#department').on('change', function (e) {
+		visitPlanningModal();
+	});
+
+	$('#booking-date').on("dp.hide", function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		visitPlanningModal();
+	});
+
+	$('#visitPlanningModal .btn-complete').on('click', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		var param = $('meta[name=csrf-param]').attr("content");
+		var token = $('meta[name=csrf-token]').attr("content");
+
+		var contactId = $('#contact-id').val();
+		var speciality = $('#speciality').val();
+		var department = $('#department').val();
+		var doctorName = $('#doctorName').val();
+		var bookingDate = $('#booking-date').val();
+		var cabinetName = $('#cabinetName').val();
+		var visitComment = $('#visitComment').val();
+		var doctorId = $('#doctorId').val();
+		var doctorStartTime = $('#doctorStartTime').val();
+		var doctorEndTime = $('#doctorEndTime').val();
+		var cabinetId = $('#cabinetId').val();
+		var cabinetStartTime = $('#cabinetStartTime').val();
+		var cabinetEndTime = $('#cabinetEndTime').val();
+        if(speciality != ''
+            && department != ''
+			&& doctorName != ''
+			&& bookingDate != ''
+			&& cabinetName != ''
+			&& visitComment != ''
+			&& doctorId != ''
+			&& doctorStartTime != ''
+			&& doctorEndTime != ''
+			&& cabinetId != ''
+			&& cabinetStartTime != ''
+			&& cabinetEndTime){
+			$('#visitPlanningModal .btn').hide();
+			$('#visitProgress').show();
+			var data = {
+			    'contactId': contactId,
+				'speciality': speciality,
+				'department': department,
+				'doctorName': doctorName,
+				'bookingDate': bookingDate,
+				'cabinetName': cabinetName,
+				'visitComment': visitComment,
+				'doctorId': doctorId,
+				'doctorStartTime': doctorStartTime,
+				'doctorEndTime': doctorEndTime,
+				'cabinetId': cabinetId,
+				'cabinetStartTime': cabinetStartTime,
+				'cabinetEndTime': cabinetEndTime
+			};
+			data[param] = token;
+			$.post('/contacts/send-visit/', data, function (responseData) {
+				if (responseData.error) {
+					showNotification('#visitPlanningModal .vp-form', responseData.error, 'bottom', 'danger', 'bar', 10000);
+				} else {
+					showNotification('#visitPlanningModal .vp-form', responseData.notify, 'top', 'success', 'bar');
+					showNotification('#visitPlanningModal .vp-form', responseData.notify, 'bottom', 'success', 'bar', 5000);
+					clearReservation();
+				}
+				$('#visitPlanningModal .btn').show();
+				$('#visitProgress').hide();
+			}, 'json')
+				.fail(function (error) {
+					console.log(error);
+					showNotification('#visitPlanningModal .vp-form', error.responseText, 'bottom', 'danger', 'bar', 10000);
+					$('#visitPlanningModal .btn').show();
+					$('#visitProgress').hide();
+				});
+        }else{
+			showNotification('#visitPlanningModal .vp-form', 'Все поля должны быть заполнены', 'bottom', 'danger', 'bar', 10000);
+        }
+	})
+}
+
+function visitPlanningModal() {
+	var visitSpeciality = $('#speciality').val();
+	var visitDepartments = $('#department').val();
+	var visitDate = $('#booking-date').val();
+
+	if(visitSpeciality != '' && visitDepartments != '' && visitDate != ''){
+		$('#doctorName').val('');
+		$('#cabinetName').val('');
+		$('#doctorId').val('');
+		$('#doctorStartTime').val('');
+		$('#doctorEndTime').val('');
+		$('#cabinetId').val('');
+		$('#cabinetStartTime').val('');
+		$('#cabinetEndTime').val('');
+		bookVisit['doctor'] = {
+			id: '',
+			name: ''
+		};
+		bookVisit['cabinet'] = {
+			id: '',
+			name: ''
+		};
+		visitPlanningPost(visitSpeciality, visitDepartments,visitDate);
+	}else{
+		showNotification('#visitPlanningModal .vp-form', 'Все поля должны быть заполнены', 'bottom', 'danger', 'bar', 10000);
+	}
+}
+
+function visitPlanningPost(visitSpeciality, visitDepartments,visitDate) {
+    if(!visitProcess) {
+		visitProcess = true;
+		var progress = '<div><img src="/media/img/icons/preloader.gif" width="25px"></div>';
+		var param = $('meta[name=csrf-param]').attr("content");
+		var token = $('meta[name=csrf-token]').attr("content");
+		var data = {
+			'visitSpeciality': visitSpeciality,
+			'visitDepartments': visitDepartments,
+			'visitDate': visitDate
+		};
+
+		data[param] = token;
+		$('#visitPlanningModal .vp-doctor').html(progress);
+		$('#visitPlanningModal .vp-cabinet').html(progress);
+
+		$.post('/contacts/search-visit/', data, function (responseData) {
+			if (responseData.error) {
+				showNotification('#visitPlanningModal', responseData.error, 'top', 'danger', 'bar', 10000);
+				$('#visitPlanningModal .vp-doctor').html('');
+				$('#visitPlanningModal .vp-cabinet').html('');
+			} else {
+				if (responseData.data) {
+					$('#visitPlanningModal .vp-doctor').html(responseData.data.doctors);
+					$('#visitPlanningModal .vp-cabinet').html(responseData.data.cabinets);
+				}
+			}
+			visitProcess = false;
+		}, 'json')
+			.fail(function (error) {
+				console.log(error);
+				showNotification('#visitPlanningModal', error.responseText, 'top', 'danger', 'bar', 10000);
+				$('#visitPlanningModal .vp-doctor').html('');
+				$('#visitPlanningModal .vp-cabinet').html('');
+				visitProcess = false;
+			});
+	}
 }

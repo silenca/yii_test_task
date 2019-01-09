@@ -15,8 +15,11 @@ use app\models\ContactScheduledCall;
 use app\models\ContactScheduledEmail;
 use app\models\ContactStatusHistory;
 use app\models\ContactTag;
+use app\models\ContactVisitLog;
+use app\models\Departments;
 use app\models\forms\CommentForm;
 use app\models\forms\ContactForm;
+use app\models\Speciality;
 use app\models\User;
 use SimpleXML;
 use Yii;
@@ -24,6 +27,7 @@ use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 
 class ContactsController extends BaseController
 {
@@ -68,6 +72,8 @@ class ContactsController extends BaseController
                     [
                         'actions' => [
                             'index',
+                            'search-visit',
+                            'send-visit',
                             'getdata',
                             'hide-columns',
                             'search',
@@ -85,6 +91,8 @@ class ContactsController extends BaseController
                         'actions' => [
                             'remove-tag',
                             'index',
+                            'search-visit',
+                            'send-visit',
                             'getdata',
                             'new-view',
                             'hide-columns',
@@ -172,6 +180,137 @@ class ContactsController extends BaseController
         $key = 1;
         unset($filter_cols['id']);
         return $this->render('index', ['hide_columns' => $hide_columns, 'table_cols' => $table_cols, 'filter_cols' => $filter_cols, 'key' => $key]);
+    }
+
+    public function actionSearchVisit(): string
+    {
+        $response = ['data'=>[], 'error'=>''];
+        if(Yii::$app->request->isAjax){
+            $visitSpecialityId = intval(Yii::$app->request->post('visitSpeciality'));
+            $visitDepartmentsId = intval(Yii::$app->request->post('visitDepartments'));
+            $visitDate = date("Y-m-d", strtotime(Yii::$app->request->post('visitDate')));
+
+            $visitSpeciality = Speciality::find()->where(['id'=>$visitSpecialityId])->one();
+            $visitDepartments = Departments::find()->where(['id'=>$visitDepartmentsId])->one();
+            if($visitSpeciality && $visitDepartments && $visitDate){
+                // Список доктаров
+                $doctorsSchedule = Yii::$app->medium->doctorsSchedule($visitDepartments->api_url, $visitDate, $visitSpeciality->oid);
+
+                if(empty($doctorsSchedule['error'])){
+                    // Список забронированих сиансов к доктору
+                    $doctorsVisit = Yii::$app->medium->doctorsVisit($visitDate);
+                    if(!empty($doctorsVisit['data'])){
+                        foreach ($doctorsVisit['data'] as $doctorVisit){
+                            $time = strtotime($doctorVisit['date']);
+                            if(isset($doctorsSchedule['data'][$doctorVisit['oidV']]['gr_time'][$time])){
+                                $doctorsSchedule['data'][$doctorVisit['oidV']]['gr_time'][$time]['class'] = 'disable';
+                            }
+                        }
+                    }else{
+//                        $response['error'] = $doctorsVisit['error'];
+                    }
+                }else{
+                    $response['error'] = $doctorsSchedule['error'];
+                }
+
+                // Список свободних кабинетов
+                $cabinetsList = Yii::$app->medium->cabinetList($visitDate);
+                if(empty($cabinetsList['error'])){
+                    // Список забронированых кабинетов
+                    $cabinetsSchedule = Yii::$app->medium->cabinetSchedule($visitDate);
+                    if(!empty($cabinetsSchedule['data'])){
+                        foreach ($cabinetsSchedule['data'] as $cabinetSchedule){
+                            $time = strtotime($cabinetSchedule['date']);
+                            if(isset($cabinetsList['data'][$cabinetSchedule['oidK']]['gr_time'][$time])){
+                                $cabinetsList['data'][$cabinetSchedule['oidK']]['gr_time'][$time]['class'] = 'disable';
+                            }
+                        }
+                    }else{
+//                        $response['error'] .= $cabinetsSchedule['error'];
+                    }
+                }else{
+                    $response['error'] .= " " . $cabinetsList['error'];
+                }
+
+                $response['data']['doctors'] = $this->renderPartial('//parts/contact_visit',[
+                    'type' => 'doctor',
+                    'visitDate' => $visitDate,
+                    'data' => $doctorsSchedule['data']
+                ]);
+                $response['data']['cabinets'] = $this->renderPartial('//parts/contact_visit',[
+                    'type' => 'cabinet',
+                    'visitDate' => $visitDate,
+                    'data' => $cabinetsList['data']
+                ]);
+
+            }else{
+                $response['error'] = "Нужно указать все данные";
+            }
+        }
+        return Json::encode($response);
+    }
+
+    public function actionSendVisit(): string
+    {
+        $response = ['data'=>[], 'notify'=>'', 'error'=>''];
+        if(Yii::$app->request->isAjax) {
+            $contactId = intval(Yii::$app->request->post('contactId'));// ID Пациент
+			$speciality = intval(Yii::$app->request->post('speciality'));
+			$departmentId = intval(Yii::$app->request->post('department'));
+			$doctorName = htmlspecialchars(Yii::$app->request->post('doctorName'));//Врач
+			$bookingDate = date("Y-m-d", strtotime(Yii::$app->request->post('bookingDate')));//ДатаПриема
+			$cabinetName = htmlspecialchars(Yii::$app->request->post('cabinetName'));//Кабинет
+			$visitComment = htmlspecialchars(Yii::$app->request->post('visitComment'));//Визит
+			$doctorId = htmlspecialchars(Yii::$app->request->post('doctorId'));//Врач
+			$doctorStartTime = strtotime($bookingDate . ' ' . Yii::$app->request->post('doctorStartTime'));//ДатаПриема
+			$doctorEndTime = strtotime($bookingDate . ' ' . Yii::$app->request->post('doctorEndTime'));
+			$cabinetId = htmlspecialchars(Yii::$app->request->post('cabinetId'));
+			$cabinetStartTime = strtotime($bookingDate . ' ' . Yii::$app->request->post('cabinetStartTime'));
+			$cabinetEndTime = strtotime($bookingDate . ' ' . Yii::$app->request->post('cabinetEndTime'));
+
+            $timeReceipt = ($doctorEndTime - $doctorStartTime) / 60;//ВремяПриема
+
+            if($doctorStartTime == $cabinetStartTime && $doctorEndTime == $cabinetEndTime) {
+                $department = Departments::findOne($departmentId);
+                if($department) {
+                    $contact = Contact::findOne($contactId);//Пациент
+                    if ($contact) {
+                        $data = '<OBJECT ДатаПриема="' . date("Y-m-d\TH:i:s", $doctorStartTime) . '" ВремяПриема="' . $timeReceipt . '" '
+                            . 'Пациент="' . $contact->surname . ' ' . $contact->name . ' ' . $contact->middle_name . '" '
+                            . 'Врач="' . $doctorName . '" Кабинет="' . $cabinetName . '" ИсточЗапис="Через контакт центр" '
+                            . 'Статус="В ожидании" Визит="' . $visitComment . '" '
+                            . 'ИсточникИнформации="DOC.UA">' . "\n"
+                            . '<Пациент link="C:1CDA3A9DBD62FBC/O:' . $contact->medium_oid . '"/>' . "\n"
+                            . '<Врач link="C:1CDCBA80BCACD1E/O:' . $doctorId . '"/>' . "\n"
+                            . '<Кабинет link="C:1CE311BD5A26671/O:' . $cabinetId . '"/>' . "\n"
+                            . '</OBJECT>';
+                        $response['data'] = $data;
+
+                        $records =  Yii::$app->medium->records($department->api_send_url, $data);
+                        if(empty($records['error'])){
+                            $response['notify'] = 'Запись была успешно отправлена. ID визита ' . $records['data']['oid'];
+                        }else{
+                            $response['error'] = $records['error'];
+                        }
+                        $log = new ContactVisitLog();
+                        $log->date = date('Y-m-d H:i:s');
+                        $log->date_visit = date('Y-m-d H:i:s', $doctorStartTime);
+                        $log->contact_id = $contact->id;
+                        $log->medium_oid = $records['data']['oid'];
+                        $log->request = $data;
+                        $log->response = $records['data']['response'];
+                        $log->save();
+                    } else {
+                        $response['error'] = "Контакт не найден";
+                    }
+                }else{
+                    $response['error'] = "Отделение с ID {$departmentId} не найдено";
+                }
+            }else{
+                $response['error'] = "Время записи к доктору, должно совпадать с временем записи в кабинет";
+            }
+        }
+        return Json::encode($response);
     }
 
     public function actionGetdata(): void

@@ -141,6 +141,7 @@ function clearReservation() {
   $('#cabinetName').val('');
   $('#cabinetStartTime').val('');
   $('#cabinetEndTime').val('');
+  $('#visitComment').val('');
   $('#booking-date').data("DateTimePicker").clear();
   $('.vp-time').removeClass('active');
   

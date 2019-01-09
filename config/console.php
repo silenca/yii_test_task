@@ -45,6 +45,7 @@ $config = [
             ],
         ],
         'db' => $db,
+        'medium' => require(__DIR__ . '/medium.php'),
     ],
     'params' => $params,
 ];
