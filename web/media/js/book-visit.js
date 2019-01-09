@@ -145,6 +145,7 @@ function clearReservation() {
   $('#booking-date').data("DateTimePicker").clear();
   $('.vp-time').removeClass('active');
   
+  $('#contact-action').selectpicker('val', '0');
   $('#select-speciality').selectpicker('val', '');
   $('#select-department').selectpicker('val', '');
   $('#set-booking-date').data("DateTimePicker").clear();
