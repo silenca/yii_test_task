@@ -282,6 +282,7 @@ class ContactsController extends BaseController
                             . 'ИсточникИнформации="DOC.UA">' . "\n"
                             . '<Пациент link="C:1CDA3A9DBD62FBC/O:' . $contact->medium_oid . '"/>' . "\n"
                             . '<Врач link="C:1CDCBA80BCACD1E/O:' . $doctorId . '"/>' . "\n"
+                            . '<Кабинет link="C:1CE311BD5A26671/O:' . $cabinetId . '"/>' . "\n"
                             . '</OBJECT>';
                         $response['data'] = $data;
 
