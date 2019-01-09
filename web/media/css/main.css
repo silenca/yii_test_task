@@ -260,6 +260,7 @@ div.cs-skin-slide.cs-active{
     flex-flow: column;
     justify-content: flex-start;
     overflow: auto;
+    min-width: 260px;
 }
 .vp-form{
     flex: 0 0 300px;
@@ -272,6 +273,7 @@ div.cs-skin-slide.cs-active{
     flex-flow: column;
     justify-content: flex-start;
     overflow: auto;
+    min-width: 260px;
 }
 .vp-form textarea{
     resize: vertical;
@@ -297,12 +299,15 @@ div.cs-skin-slide.cs-active{
 }
 
 .vp-column-head {
-    word-break: break-word;
     text-align: center;
     vertical-align: middle;
     height: 46px;
     font-size: 14px;
     font-weight: 700;
+    flex: 0 0 48px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
 }
 
 .vp-date {
