@@ -259,11 +259,10 @@ use app\models\User;
                                 <div class="contact-actions col-md-4 col-sm-12">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
-                                            <div class="panel-title block">
-                                                <div class="form-group cs-select-container cs-select-block">
-                                                    <select id="contact-action" class="cs-select cs-skin-slide"
-                                                            data-init-plugin="cs-select">
-                                                        <option value="0">Действия</option>
+                                            <div class="panel-title block panel-select">
+                                                <div class="form-group ">
+                                                    <select id="contact-action" class="form-control selectpicker">
+                                                        <option value="0" selected disabled>Действия</option>
                                                         <option value="call">Звонок</option>
                                                         <option value="email">Email</option>
                                                         <option value="visit">Запланировать визит</option>
@@ -420,8 +419,7 @@ use app\models\User;
 
                                                     <div class="panel-title block">
                                                         <div class="form-group cs-select-container cs-select-block">
-                                                            <select id="select-speciality" class="cs-select cs-skin-slide "
-                                                                    data-init-plugin="cs-select">
+                                                            <select id="select-speciality" class="form-control selectpicker">
                                                                 <option value="" disabled selected>Специализация врача</option>
                                                                 <option value="121">Терапевт</option>
                                                                 <option value="122">Кардиолог</option>
@@ -432,8 +430,7 @@ use app\models\User;
 
                                                     <div class="panel-title block">
                                                         <div class="form-group cs-select-container cs-select-block">
-                                                            <select id="select-department" class="cs-select cs-skin-slide"
-                                                                    data-init-plugin="cs-select">
+                                                            <select id="select-department" class="form-control selectpicker">
                                                                 <option value="" disabled selected>Отделение</option>
                                                                 <option value="031">Травматология</option>
                                                                 <option value="032">Кардиология</option>
@@ -527,11 +524,12 @@ use app\models\User;
 
             </div>
             <div class="vp-form">
-                <form>
+                <form id="visitBookingForm">
 
                     <div class="panel-title block">
                         <div class="form-group cs-select-container cs-select-block">
                             <select id="speciality" class="form-control selectpicker" title="Специализация врача">
+                                <option value="" selected disabled>Специализация врача</option>
                                 <option value="121">Терапевт</option>
                                 <option value="122">Кардиолог</option>
                                 <option value="123">ЛОР</option>
@@ -542,6 +540,7 @@ use app\models\User;
                     <div class="panel-title block">
                         <div class="form-group cs-select-container cs-select-block">
                             <select id="department" class="form-control selectpicker" title="Отделение">
+                                <option value="" selected disabled>Отделение</option>
                                 <option value="031">Травматология</option>
                                 <option value="032">Кардиология</option>
                                 <option value="033">Хирургия</option>
@@ -555,7 +554,7 @@ use app\models\User;
                     
                     <div class="form-group input-group datepicker-content">
                         <label class="input-group-addon success" for=""><i class="fa fa-fw fa-calendar"></i></label>
-                        <input name="" id="booking-date" type="text" class="form-control object-schedule-datetime booking-date" placeholder="Дата приема" aria-required="true" aria-invalid="false">
+                        <input name="visitDate" id="booking-date" type="text" class="form-control object-schedule-datetime booking-date" placeholder="Дата приема" aria-required="true" aria-invalid="false">
                     </div>
                     
                     <div class="form-group">
@@ -605,7 +604,7 @@ use app\models\User;
         </div>
       </div>
       <div class="modal-footer text-center">
-        <button class="btn btn-complete" type="button">Сохранить</button>
+        <button class="btn btn-complete" type="button" >Сохранить</button>
         <button class="btn btn-default" type="button" data-dismiss="modal" onclick="clearReservation()">Отмена</button>
       </div>  
     </div>

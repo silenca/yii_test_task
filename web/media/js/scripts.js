@@ -68,12 +68,12 @@ function triggerChoise_CsSelect(el, val) {
     $(el).val(val);
     $(el).closest('.cs-wrapper').find('.cs-placeholder').text($(el).find('option:selected').text());
 }
-//
-//ExtList.prototype.clearr = function () {
+
+// ExtList.prototype.clearr = function () {
 //    var select = this._el.firstChild;
 //    $(select).empty();
 //    return this;
-//}
+// }
 
 (function ($) {
     'use strict';

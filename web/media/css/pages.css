@@ -1418,6 +1418,17 @@ input[type=number]::-webkit-outer-spin-button {
     -webkit-transition: opacity 0.3s ease;
     transition: opacity 0.3s ease;
 }
+.panel .panel-heading .panel-title.panel-select{
+    overflow: initial;
+}
+.panel .panel-heading .panel-title.panel-select .dropdown-menu > li > a{
+    color: #626262!important;
+    opacity: 1;
+    text-transform: initial;
+}
+.panel .panel-heading .panel-title.panel-select .dropdown-menu > li.disabled > a{
+    color: #959595!important;
+}
 .panel .panel-heading .panel-controls {
     float: right;
     margin-top: -3px;

@@ -125,7 +125,9 @@
     }, Pages.prototype.initSelectFxPlugin = function () {
         window.SelectFx && $('select[data-init-plugin="cs-select"]').each(function () {
             var el = $(this).get(0);
-            $(el).wrap('<div class="cs-wrapper"></div>'), new SelectFx(el)
+            $(el).wrap('<div class="cs-wrapper"></div>'), new SelectFx(el, {
+              stickyPlaceholder: true
+            })
         })
     }, Pages.prototype.initUnveilPlugin = function () {
         $.fn.unveil && $("img").unveil()

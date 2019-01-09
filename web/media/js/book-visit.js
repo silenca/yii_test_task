@@ -4,7 +4,7 @@ $(function () {
   $('#visitPlanningModal').on('shown.bs.modal', function () {
     $('#speciality').selectpicker('val', bookVisit.speciality);
     $('#department').selectpicker('val', bookVisit.department);
-    $('#booking-date').data("DateTimePicker").date(bookVisit.date)
+    $('#booking-date').data("DateTimePicker").date(bookVisit.date);
   })
 });
 
@@ -138,10 +138,13 @@ function clearReservation() {
   $('#doctorName').val('');
   $('#doctorStartTime').val('');
   $('#doctorEndTime').val('');
-  $('#cabinrtName').val('');
+  $('#cabinetName').val('');
   $('#cabinetStartTime').val('');
   $('#cabinetEndTime').val('');
+  $('#booking-date').data("DateTimePicker").clear();
   $('.vp-time').removeClass('active');
+  
+  $('#select-speciality').selectpicker('val', '');
+  $('#select-department').selectpicker('val', '');
+  $('#set-booking-date').data("DateTimePicker").clear();
 }
-
-
