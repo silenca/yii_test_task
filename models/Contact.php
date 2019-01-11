@@ -457,11 +457,11 @@ class Contact extends ActiveRecord
      * @param array $data
      * @return int|null|string
      */
-    public static function postMediumObject($data)
+    public static function postMediumObject($data, $oid = null)
     {
-        $url = self::MEDIUM_API_URL . '?method=save_object';
-//        $url = self::MEDIUM_API_URL_SAVE;
-        $client = self::buildMediumRequestBody($data, $url);
+//        $url = self::MEDIUM_API_URL . '?method=save_object';
+        $url = self::MEDIUM_API_URL_SAVE;
+        $client = self::buildMediumRequestBody($data, $url, $oid);
         try {
             $newUserResponse = $client->send();
 
@@ -480,7 +480,7 @@ class Contact extends ActiveRecord
         return $newUserId;
     }
 
-    private static function buildMediumRequestBody($data, $url): \yii\httpclient\Request
+    private static function buildMediumRequestBody($data, $url, $oid = null): \yii\httpclient\Request
     {
 
         if(!empty($data['birthday'])) {
@@ -500,14 +500,14 @@ class Contact extends ActiveRecord
         }
         //$phone = !empty($data['phones'])?$data['phones']:' ';
         //$emails = !empty($data['emails'])?$data['emails']:' ';
-        $body = '<OBJECT 
-                    name="' . $data['surname'] . ' ' . $data['name'] . ' ' . $data['middle_name'] . '" 
+        $body = '<OBJECT '
+                    . ($oid ? ' oid="' . $oid . '" ' : '')
+                    . 'name="' . $data['surname'] . ' ' . $data['name'] . ' ' . $data['middle_name'] . '" 
                     ТелефонМоб="'.$phone.'" 
                     E-mail= "'.$emails.'"
                     ДатаРождения="' . $birthday . '" 
                     Город="' . $data['city'] . '" 
-                    ИсточникИнфомации="' . $data['attraction_channel_id'] . '" 
-                    ОбычноОплачивает="Самостоятельный расчет" />';
+                    ИсточникИнфомации="' . $data['attraction_channel_id'] . '" />';
         $client = new Client([
             'baseUrl' => $url,
             'responseConfig' => [
@@ -520,12 +520,12 @@ class Contact extends ActiveRecord
     public static function updateMediumObject($oid, $data)
     {
         if ($oid) {
-            $url = self::MEDIUM_API_URL . self::MEDIUM_API_OBJECT . $oid . '?method=save_object';
-//            $url = self::MEDIUM_API_URL_SAVE . self::MEDIUM_API_OBJECT . $oid;
-            $client = self::buildMediumRequestBody($data, $url);
+//            $url = self::MEDIUM_API_URL . self::MEDIUM_API_OBJECT . $oid . '?method=save_object';
+            $url = self::MEDIUM_API_URL_SAVE;
+            $client = self::buildMediumRequestBody($data, $url, $oid);
         } else {
-            $url = self::MEDIUM_API_URL . '?method=save_object';
-//            $url = self::MEDIUM_API_URL_SAVE;
+//            $url = self::MEDIUM_API_URL . '?method=save_object';
+            $url = self::MEDIUM_API_URL_SAVE;
             $client = self::buildMediumRequestBody($data, $url);
         }
         try {

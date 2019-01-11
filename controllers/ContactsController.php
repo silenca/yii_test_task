@@ -428,7 +428,7 @@ class ContactsController extends BaseController
                     if (!$contact->medium_oid) {
                         if (!empty($contact->status) && $contact->status === '2') {
 //                            $contact->medium_oid =
-                            $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
+                            $contact->medium_oid = Contact::postMediumObject($contact_form->attributes, $post['id']);
                         }
                     } else {
                         $contact->medium_oid = Contact::updateMediumObject($contact->medium_oid, $contact_form->attributes);
