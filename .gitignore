@@ -39,3 +39,11 @@ phpunit.phar
 
 *.swp
 /composer.bat
+
+/web/adminer.php
+/node/logs/dev_err.log
+/node/logs/dev_out.log
+install_nvm.sh
+/node_modules/.bin/
+/node_modules/npm/
+npm-debug.log
