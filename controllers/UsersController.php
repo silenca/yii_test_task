@@ -169,6 +169,7 @@ class UsersController extends BaseController
 
                 } else {
                     $user = new User();
+                    $user->auth_key = '';
                 }
                 // set or change user's password
                 if (isset($post['user_password'], $post['user_password_confirm']) && $post['user_password'] != '') {

@@ -26,6 +26,7 @@ use yii\web\IdentityInterface;
  * @property string $settings
  * @property string $filter_config
  * @property string $cols_config
+ * @property string $password_sip
  */
 class User extends ActiveRecord implements IdentityInterface {
 
@@ -50,6 +51,7 @@ class User extends ActiveRecord implements IdentityInterface {
         'role',
         'is_deleted',
         'settings',
+        'password_sip',
     ];
 
     /**
@@ -69,6 +71,7 @@ class User extends ActiveRecord implements IdentityInterface {
             [['firstname', 'lastname', 'patronymic', 'email', 'password_hash'], 'required'],
             [['int_id', 'role'], 'integer'],
             [['notification_key'], 'string', 'max' => 32],
+            [['password_sip'], 'string', 'max' => 250],
             [['email'], 'email'],
             [['email'], 'unique'],
             [['is_deleted', 'settings','filter_config','cols_config'], 'safe']
@@ -81,7 +84,8 @@ class User extends ActiveRecord implements IdentityInterface {
             'lastname' => 'фамилия',
             'patronymic' => 'отчество',
             'email' => 'email',
-            'password' => 'пароль'
+            'password' => 'пароль',
+            'password_sip' => 'Пароль Sip'
         ];
     }
 

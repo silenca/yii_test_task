@@ -29,6 +29,14 @@ use app\models\User;
                                                 <input type="text" id="user_internal" name="int_id"
                                                        placeholder="Внутренний номер" class="form-control">
                                             </div>
+	                                        <br>
+
+	                                        <div class="input-group">
+		                                        <label class="input-group-addon primary" for="user_password_sip">
+			                                        <i class="fa fa-fw fa-key"></i></label>
+		                                        <input type="password" id="user_password_sip" name="password_sip" placeholder="Пароль Sip"
+		                                               class="form-control">
+	                                        </div>
                                             <br>
 
                                             <div class="input-group">
@@ -75,7 +83,7 @@ use app\models\User;
 
                                             <div class="input-group">
                                                 <label class="input-group-addon primary" for="user_password"><i
-                                                        class="fa fa-fw fa-envelope"></i></label>
+                                                        class="fa fa-fw fa-unlock-alt"></i></label>
                                                 <input type="password" id="user_password" name="user_password" placeholder="Новый пароль"
                                                        class="form-control">
                                             </div>
@@ -83,7 +91,7 @@ use app\models\User;
 
                                             <div class="input-group">
                                                 <label class="input-group-addon primary" for="user_password_confirm"><i
-                                                        class="fa fa-fw fa-envelope"></i></label>
+                                                        class="fa fa-fw fa-unlock-alt"></i></label>
                                                 <input type="password" id="user_password_confirm" name="user_password_confirm" placeholder="Подтвердите пароль"
                                                        class="form-control">
                                             </div>

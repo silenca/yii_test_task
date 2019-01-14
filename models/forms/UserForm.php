@@ -23,6 +23,7 @@ class UserForm extends Model
     var $edit_tags;
     var $tags_str;
     var $tags;
+    var $password_sip;
 
     var $email;
 
@@ -36,6 +37,7 @@ class UserForm extends Model
             'role',
             'email',
             'int_id',
+            'password_sip',
 
         ];
     }
@@ -48,7 +50,7 @@ class UserForm extends Model
             [['email'], 'email'],
             [['tags_str'], 'tagsArray'],
 
-            [['firstname', 'lastname', 'patronymic'], 'string'],
+            [['firstname', 'lastname', 'patronymic', 'password_sip'], 'string'],
             [['int_id', 'role'], 'integer']
         ];
     }
@@ -104,7 +106,8 @@ class UserForm extends Model
             'firstname' => 'Имя',
             'lastname' => 'Фамилия',
             'patronymic' => 'Отчество',
-            'email' => 'Email'
+            'email' => 'Email',
+            'password_sip' => 'Пароль Sip',
         ];
     }
 

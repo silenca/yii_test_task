@@ -71,6 +71,7 @@ function buildUserForm(id, $form, callback) {
             $form.find('#user_lastname').val(data.lastname);
             $form.find('#user_firstname').val(data.firstname);
             $form.find('#user_patronymic').val(data.patronymic);
+            $form.find('#user_password_sip').val(data.password_sip);
 
             $form.find('#user_internal').val(data.int_id);
             $form.find('#user_role').val(data.role);
