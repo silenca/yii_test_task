@@ -5,6 +5,7 @@ namespace app\commands;
 use app\controllers\ContactsController;
 use app\models\Contact;
 
+use app\models\helpers\MediumLogsApi;
 use app\models\Speciality;
 use yii\base\InvalidConfigException;
 use yii\httpclient\Client;
@@ -21,9 +22,8 @@ class SyncController extends Controller
         $date = strtotime(date("Y-m-d H:i:s")) + (60 * 2);
         $dateTo = date("Y-m-d", $date) . 'T' . date("H:i:s", $date);
         try {
-            $request = $client->createRequest();
-            $request->setUrl('http://91.225.122.210:8080/api/H:1D13C88C20AA6C6/D:WORK/D:1D13C9303C946F9/C:1D45F18F27C737D/I:PACK');
-            $request->setData('for $ob in //PACK/OBJECT[oda:left(@update,19) > oda:left("' . $dateFrom . '",19) and oda:left(@update,19) < oda:left("' . $dateTo . '",19) ]       
+            $url = 'http://91.225.122.210:8080/api/H:1D13C88C20AA6C6/D:WORK/D:1D13C9303C946F9/C:1D45F18F27C737D/I:PACK';
+            $data = 'for $ob in //PACK/OBJECT[oda:left(@update,19) > oda:left("' . $dateFrom . '",19) and oda:left(@update,19) < oda:left("' . $dateTo . '",19) ]       
                     return element OBJECT
                     {
                     
@@ -43,8 +43,13 @@ class SyncController extends Controller
                     
                     attribute update {$ob/@update}
             
-                    }');
+                    }';
+            $log = MediumLogsApi::setRequestData($url, $data);
+            $request = $client->createRequest();
+            $request->setUrl($url);
+            $request->setData($data);
             $response = $request->send();
+            $log->setResponse($response->getContent());
             $contactsSaved = [];
             $cnt = 0;
             if(!empty($response->getData())){

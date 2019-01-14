@@ -4,6 +4,7 @@ namespace app\models;
 
 
 use app\components\UtilHelper;
+use app\models\helpers\MediumLogsApi;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\db\Query;
@@ -446,7 +447,10 @@ class Contact extends ActiveRecord
 
         ]);
         try {
-            $xml = simplexml_load_string($client->get($url)->send()->getContent());
+            $log = MediumLogsApi::setRequestData($url, '');
+            $content = $client->get($url)->send()->getContent();
+            $log->setResponse($content);
+            $xml = simplexml_load_string($content);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -459,12 +463,15 @@ class Contact extends ActiveRecord
      */
     public static function postMediumObject($data, $oid = null)
     {
+
 //        $url = self::MEDIUM_API_URL . '?method=save_object';
         $url = self::MEDIUM_API_URL_SAVE;
+
         $client = self::buildMediumRequestBody($data, $url, $oid);
+        $log = MediumLogsApi::setRequestData($url, $client->getContent());
         try {
             $newUserResponse = $client->send();
-
+            $log->setResponse($newUserResponse->getContent());
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -528,8 +535,10 @@ class Contact extends ActiveRecord
             $url = self::MEDIUM_API_URL_SAVE;
             $client = self::buildMediumRequestBody($data, $url);
         }
+        $log = MediumLogsApi::setRequestData($url, $client->getContent());
         try {
             $newUserResponse = $client->send();
+            $log->setResponse($newUserResponse->getContent());
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -549,6 +558,7 @@ class Contact extends ActiveRecord
     public static function getMediumObjects(): \yii\httpclient\Response
     {
         $url = self::MEDIUM_API_URL . self::MEDIUM_API_ITEM . 'PACK';
+        $log = MediumLogsApi::setRequestData($url, '');
         $client = new Client([
             'baseUrl' => $url,
             'responseConfig' => [
@@ -556,7 +566,9 @@ class Contact extends ActiveRecord
             ],
         ]);
         $request = $client->createRequest();
-        return $request->send();
+        $send = $request->send();
+        $log->setResponse($send->getContent());
+        return $send;
     }
 
     public function fields()

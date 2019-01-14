@@ -2,6 +2,7 @@
 
 namespace app\components;
 
+use app\models\helpers\MediumLogsApi;
 use yii\httpclient\Client;
 use yii\web\HttpException;
 
@@ -16,17 +17,23 @@ class MediumApi
 
     private function sendMedium($url, $data)
     {
+        $log = MediumLogsApi::setRequestData($url, $data);
         $client = new Client();
         $request = $client->createRequest();
         $request->setUrl($url);
         $request->setData($data);
-        return $request->send();
+        $send = $request->send();
+        $log->setResponse($send->getContent());
+        return $send;
     }
 
     private function sendMediumPost($url, $data)
     {
+        $log = MediumLogsApi::setRequestData($url, $data);
         $client = new Client();
-        return $client->post($url, $data)->send();
+        $send = $client->post($url, $data)->send();
+        $log->setResponse($send->getContent());
+        return $send;
     }
 
     private function setMinMaxTime($doctor, $day)
