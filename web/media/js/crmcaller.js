@@ -1,231 +1,381 @@
+$(function(){
+    var ctrl = new CallController('body');
 
-var sipStack;
-var isMuted = false; // store current status of audio mute
-var ongoing_session; // session to store incoming and outgoing calls
-var incomingCallEvent; // to get incomming call event
-ringTone.loop      = true;
-var eventsListener = function (e) {
-    if (e.type == 'started') {
-        login();
-    }
-    if (e.type == 'i_new_call') {
+    $('table').on('click', '.contact_open_disable', function(){
+        var contactId = $(this).closest('data-id').data('id'),
+            number = $(this).html();
 
-        incomingCallEvent = e;
-        ongoing_session   = e.newSession;
-        ringTone.play();
-        $('#wrapper').modal();
-        $.getJSON('/contacts/get-contact-by-phone', {phone:ongoing_session.getRemoteFriendlyName()}, function (response) { // getting full name of incoming contact
-            $.getJSON('/contacts/view' , {id:response.data.contact_id} , function(response){
-                $('#contact-call').html(response.data.surname + ' ' + response.data.name + ' ' + response.data.middle_name);
-            })
+        ctrl.doCall(number);
+        ctrl.showCard(number);
+
+        if(contactId) {
+            ctrl.updateCallerId(contactId);
+        }
+
+        $.getJSON('/contacts/get-contact-by-phone', {
+            phone: number
+        }, function(response) {
+            if(response.data) {
+                ctrl.updateCallerName(response.data.full_name);
+            }
         });
-        $('#contact-call').on('click', function (e){ // open contact form by click on the contact name
-            $.getJSON('/contacts/get-contact-by-phone', {phone:ongoing_session.getRemoteFriendlyName()}, function (response) {
-                openContactForm (response.data.contact_id);
+
+        openContactForm(contactId);
+        changeActionsForm('call');
+    });
+
+    $('.incoming_call_wrapper').on('click', function(e){
+        if($(e.target).is('.action')) {
+            return false;
+        }
+
+        var contactId = ctrl.getCallerId();
+        if(contactId) {
+            openContactForm(contactId);
+        } else {
+            openNewContactForm(ctrl.getCurrentPhoneNumber());
+        }
+
+        changeActionsForm('call');
+
+        ctrl.doAccept();
+    });
+
+    $('.incoming_call_wrapper').on('click', '.action_end_call', function(){
+        ctrl.doReject();
+    });
+
+    $('body').on('income_new.caller', function(){
+        var ctrl = $('body').data('callCtrl');
+        var number = ctrl.getCurrentPhoneNumber();
+        if(number) {
+            $.getJSON('/contacts/get-contact-by-phone', {
+                phone: number
+            }, function (response) { // getting full name of incoming contact
+                if(response.data) {
+                    ctrl.updateCallerId(response.data.contact_id);
+                    ctrl.updateCallerName(response.data.full_name);
+                }
             });
+        }
+    });
+
+    (function(){
+        var intervalId, started = 0, ONE_MINUTE = 60;
+        var prettyTime = function(val) {
+            var strVal = ''+val;
+            return (strVal.length == 1)?('0'+strVal):strVal;
+        };
+
+        var durationUpdater = function(){
+            var duration = started?(new Date().getTime() - started):0;
+
+            setCallTime(Math.round(duration/1000));
+        };
+
+        var setCallTime = function(durationSeconds){
+            var minutes = (durationSeconds - (durationSeconds % ONE_MINUTE))/ONE_MINUTE,
+                seconds = durationSeconds - minutes*ONE_MINUTE;
+
+            ctrl.updateCardTimer(_.map([
+                minutes,
+                seconds
+            ], prettyTime).join(':'));
+        };
+
+        $('body').on('callstarted.caller', function(){
+            started = new Date().getTime();
+            intervalId = setInterval(durationUpdater, 500);
         });
-        $('#answer').on('click', function (e){ // action after answer
-            $.getJSON('/contacts/get-contact-by-phone', {phone:ongoing_session.getRemoteFriendlyName()}, function (response) {
-                openContactForm (response.data.contact_id);
-                $('.contact-actions > .panel-default').append('<div id="call-timer"><span></span></div>');
-            });
-            $('.modal-backdrop').css('display', 'none');
-            $('#wrapper > .modal-body').css('display', 'none');
-            $('#reject').remove();
-            $('#reject-wrap').append("<div id ='reject'><i class='fa fa-phone'></div>");
-            timerRun = true;
-            $(function(){
-                initTime = new Date();
-                timer(initTime);
-                setTimeout(function run() {
-                    if(!timerRun){
-                        return 0;
-                    }
-                    timer(initTime);
-                    setTimeout(run, 500);
-                }, 500);
-            });
+
+        $('body').on('hangup.caller', function(){
+            clearInterval(intervalId);
+            setCallTime(started = 0);
         });
-        $('#reject-wrap').on('click', function(){ // action after reject
-            $('#reject-wrap').remove();
-            $('#incomingCall').append("<div id ='reject'><i class='fa fa-phone'></div>")
-            domHangup();
-            ongoing_session.hangup();
-            timerRun = false;
-        });
-    }
-};
-function timer(initTime, stop){
-    currentTime = new Date();
-    sec = Math.abs(currentTime.getSeconds() - initTime.getSeconds());
-    min = Math.abs(currentTime.getMinutes() - initTime.getMinutes());
-    hrs = Math.abs(currentTime.getHours() - initTime.getHours());
-    time = '';
-    time += hrs < 10 ? '0'+hrs+':' : hrs+':';
-    time += min < 10 ? '0'+min+':' : min+':';
-    time += sec < 10 ? '0'+sec : sec;
-    $('#call-timer').html(time);
-}
-function createSipStack() {
-    sipStack = new SIPml.Stack({
-            realm: 'dopomogaplus.silencatech.com', // mandatory: domain name
-            impi: '600', // mandatory: authorization name (IMS Private Identity)
-            impu: 'sip:600@dopomogaplus.silencatech.com:8088', // mandatory: valid SIP Uri (IMS Public Identity)
-            password: 'YAahWJQsGE7lF5d', // optional
-            display_name: '600', // optional
-            websocket_proxy_url: 'wss://dopomogaplus.silencatech.com:8089/ws', // optional
-            outbound_proxy_url: 'udp://dopomogaplus.silencatech.com:5060', // optional
-            enable_rtcweb_breaker: true, // optional
+    })();
+});
+
+function CallController(wr, opts, handles) {
+    var self = this;
+    var options = _.extend({
+        wrapper: wr,
+        sipConfig: {
+            realm: 'dopomogaplus.silencatech.com',
+            websocket_proxy_url: 'wss://dopomogaplus.silencatech.com:8089/ws',
+            outbound_proxy_url: 'udp://dopomogaplus.silencatech.com:5060',
+            enable_rtcweb_breaker: true,
             disable_video: true,
-//              ice_servers:           [{"url": "stun:stun.l.google.com:19302"}],
-            events_listener: { events: '*', listener: eventsListener },
+            ice_servers: [{"url": "stun:stun.l.google.com:19302"}],
+            disable_debug: true,
             enable_media_stream_cache: true,
             enable_early_ims: false,
-            sip_headers: [ // optional
+            sip_headers: [
                 { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.0.0.0' },
                 { name: 'Organization', value: 'Doubango Telecom' }
             ]
+        },
+        selectors: {
+            sipData: '.sip_config',
+            card: {
+                wrapper: '.incoming_call_wrapper',
+                name: '.name_holder',
+                number: '.number_holder',
+                id: '.id_holder',
+                timer: '.timer_holder'
+            }
+        },
+        tones: {
+            default: './media/sounds/ringtone.mp3'
         }
-    );
-}
-createSipStack();
-sipStack.start();
+    }, opts || {});
+    var handlers = _.extend({
+        login: function() {
+            sip.newSession('register', {
+                events_listener: self.buildListener('login')
+            }).register();
+        },
+        hangup: function(){
+            self.trigger('hangup');
+            session = null;
+        },
+        call: function(number){
+            session = sip.newSession('call-audio', {
+                audio_remote: document.getElementById('audio-remote'),
+                events_listener: self.buildListener('outcoming', {
+                    connected: function(){
+                        self.trigger('outcome_new');
+                        self.trigger('callstarted');
+                    },
+                    m_stream_audio_remote_added: function(){
+                        self.trigger('outcome_new');
+                    },
+                    terminated: function(){
+                        handlers.hangup();
+                    }
+                })
+            });
+            session.call(number);
 
-var login      = function () {
-    var registerSession = sipStack.newSession('register', {
-        events_listener: {events: '*', listener: eventsListener}
-    });
-    registerSession.register();
-};
-var makeCall   = function (number) {
-    var outCallSession = sipStack.newSession('call-audio', {
-        audio_remote:    document.getElementById('audio-remote'),
-        events_listener: {
-            events: '*', listener: function (e) {
-                // console.log(e);
-                // console.log('%c OUT = >' + e.type, 'font-size:5em');
-                if (e.type === 'connected') {
-                    $('#callInfoTextOut').html('Начался звонок...');
-                    $('#callInfoNumberOut').html(number);
-                }
-                else if (e.type === 'm_stream_audio_remote_added') {
-                    domInCall();
-                }
-                else if (e.type === 'terminated') {
-                    ongoing_session = false;
-                    domHangup();
-                }
+            self.trigger('calling');
+        },
+        card: {
+            show: function (number, name) {
+                self.updateCallerNumber(number);
+                self.updateCallerName(name || '');
+                self.updateCallerId(0);
+
+                self.getCardWrapper().show();
+            },
+            hide: function () {
+                self.getCardWrapper().hide();
+            },
+            updateTimer: function(val){
+                $(options.selectors.card.timer, self.getCardWrapper()).html(val);
             }
         }
-    });
-    outCallSession.call(number);
-    ongoing_session = outCallSession;
-};
-var acceptCall = function (e) {
-    var incoming_audio_configuration = {
-        audio_remote:    document.getElementById('audio-remote'),
-        expires:200,
-        events_listener: {
-            events: '*', listener: function (e) {
-                // console.log('%c In = >' + e.type, 'font-size:5em');
-                if (e.type === 'm_stream_audio_remote_added') {
-                    domInCall();
-                }
-                else if (e.type === 'terminated') {
-                    domHangup();
-                    ongoing_session = false;
-                }
+    }, handles || {});
+    var wrapper = null;
+    var cardWrapper = null;
+    var sip;
+    var session;
+    var tones = {};
+
+    this.getWrapper = function(){
+        if(_.isNull(wrapper)) {
+            wrapper = $(options.wrapper);
+            if(!wrapper.length) {
+                throw 'Invalid wrapper provided';
             }
         }
+        return wrapper;
     };
-    e.newSession.accept(incoming_audio_configuration);
-};
 
-$('.acb-call-btn').click(function () {
-    var number = $('.acb-call-btn').parents('.contact-modal').find('#contact_phones').val();
-    $('#callInfoTextOut').html('Ожидайте соединения...');
-    $('.acb-call-btn').attr('disabled', true);
-    $('.acb-hang-up-btn').attr('disabled', false);
-    $('#callInfoNumberOut').html(number);
-    makeCall(number);
-});
-$('#answer').click(function () {
-    acceptCall(incomingCallEvent);
-});
-var hangup    = function () {
-    domHangup();
-    ongoing_session.hangup();
-};
-var domHangup = function () {
-    ringTone.pause();
-    isMuted = false;
-    $('.acb-hang-up-btn').attr('disabled', true);
-    $('.acb-call-btn').attr('disabled', false);
-    $('#wrapper').modal('hide');
-    $('#muteIcon').removeClass('fa-microphone-slash');
-    $('#muteIcon').addClass('fa-microphone');
-    $('#incomingCall').hide();
-    $('#callControl').show();
-    $('#callControlOut').show();
-    $('#callStatusOut').hide();
-    if($('#reject-wrap')){
-        $('#reject-wrap').remove();
+    this.getCardWrapper = function(){
+        if(_.isNull(cardWrapper)) {
+            cardWrapper = $(options.selectors.card.wrapper);
+            if(!cardWrapper.length) {
+                throw 'Invalid card wrapper provided';
+            }
+        }
+        return cardWrapper;
+    };
 
-    }
-    if(!$('#incomingCall > #reject')){
-        $('#incomingCall').append("<div id ='reject'><i class='fa fa-phone'></div>")
+    this.buildListener = function(name, cbConfig) {
+        var callbacks = _.extend({}, cbConfig || {});
 
-    }
-    // $('.audio-call-actions').hide();
-};
-var domInCall = function () {
-    ringTone.pause();
-    $('.acb-call-btn').attr('disabled', true);
-    $('.acb-hang-up-btn').attr('disabled', false);
-    // $('#callStatus').show();
-    $('#callStatusOut').show();
-    $('#incomingCall').show();
+        return {
+            events: '*',
+            listener: function(e) {
+                console.log('[L]', '['+name.toUpperCase()+']', e.type);
+                var callback = callbacks[e.type] || null;
+                if(typeof callback === 'function') {
+                    return callback(e);
+                }
 
-    // $('#callInfoText').html('Установка соединения...');
-    $('#callInfoTextOut').html('Вызываем...');
-    if(ongoing_session.getRemoteFriendlyName()){
-    $('#callInfoNumber').html(ongoing_session.getRemoteFriendlyName());
-    }
-    // $('#callInfoNumberOut').html(ongoing_session.getRemoteFriendlyName());
-    $('.audio-call-actions').show();
-};
-// $('#hangUp').click(hangup);
-$('#hangup_btn').click(hangup);
-$('#reject').click(hangup);
-$('#mute').click(function () {
-    isMuted = isMuted ? false : true;
-    ongoing_session.mute('audio', isMuted);
-    if (isMuted) {
-        $('#muteIcon').addClass('fa-microphone-slash');
-        $('#muteIcon').removeClass('fa-microphone');
-    } else {
-        $('#muteIcon').removeClass('fa-microphone-slash');
-        $('#muteIcon').addClass('fa-microphone');
-    }
-});
-$('div.cs-options li[data-value=call]').click(function () {
-    $('.btn-audio-call').click(function () {
+                return;
+            }
+        };
+    };
 
-        $('.audio-call-messages').show();
+    this.init = function() {
+        _.each(options.tones, function(url, name){
+            tones[name] = new window.Audio(url);
+            tones[name].loop = true;
+        });
 
-        $('.acb-call-btn').click();
+        var sipConfig = $(options.selectors.sipData).data(),
+            login = sipConfig.login || '',
+            password = sipConfig.password || '';
 
-    })
-});
+        sip = new SIPml.Stack(_.extend(options.sipConfig, {
+            impi: ''+login,
+            impu: 'sip:'+login+'@dopomogaplus.silencatech.com:8088',
+            password: password,
+            display_name: ''+login,
+            events_listener: self.buildListener('main', {
+                started: handlers.login,
+                i_new_call: function(e){
+                    if(session) {
+                        // We already have active call
+                        // Hangup new one
+                        e.newSession.hangup();
+                        return;
+                    }
 
-$('#inCallButtons').on('click', '.dialpad-char', function (e) {
-    dtmfTone.play();
-    var $target = $(e.target);
-    var value   = $target.data('value');
-    ongoing_session.dtmf(value.toString());
-});
-window.onbeforeunload = function (event) {
-    if (ongoing_session) {
-        sipStack.stop();
-    }
+                    e.newSession.setConfiguration({
+                        events_listener: self.buildListener('incoming', {
+                            terminated: function() {
+                                handlers.hangup();
+                                console.log('Incoming terminated');
+                            }
+                        })
+                    });
+
+                    session = e.newSession;
+
+                    self.trigger('income_new');
+                }
+            })
+        }));
+
+        sip.start();
+
+        return self;
+    };
+
+    this.play = function(name) {
+        if(tones.hasOwnProperty(name)) {
+            tones[name].play().catch(function(){ console.log('Can not play tone "'+name+'"'); });
+        }
+        return self;
+    };
+
+    this.pause = function(name) {
+        if(tones.hasOwnProperty(name)) {
+            tones[name].pause();
+            tones[name].currentTime = 0;
+        }
+        return self;
+    };
+
+    this.doCall = function(number) {
+        self.showCard(number);
+        handlers.call(number);
+    };
+
+    this.doAccept = function(){
+        if(!session) {
+            return;
+        }
+
+        session.accept({
+            audio_remote: document.getElementById('audio-remote'),
+            expires: 200,
+            events_listener: self.buildListener('accepted', {
+                terminated: function(){
+                    handlers.hangup();
+                }
+            })
+        });
+
+        self.trigger('callstarted');
+        self.trigger('accepted');
+    };
+
+    this.doReject = function(){
+        if(!session) {
+            return;
+        }
+
+        session.hangup();
+
+        handlers.hangup();
+    };
+
+    this.getCurrentPhoneNumber = function(){
+        if(session) {
+            return session.getRemoteFriendlyName();
+        }
+
+        return null;
+    };
+
+    this.updateCallerData = function(field){
+        return function(value){
+            $(options.selectors.card[field], self.getCardWrapper()).html(value);
+        };
+    };
+
+    this.getCallerId = function(){
+        return $(options.selectors.card.id, self.getCardWrapper()).html();
+    };
+
+    this.updateCallerId = self.updateCallerData('id');
+    this.updateCallerName = self.updateCallerData('name');
+    this.updateCallerNumber = self.updateCallerData('number');
+
+    this.trigger = function(type, data){
+        console.log('[T]', type.toUpperCase(), data);
+        self.getWrapper().trigger(type+'.caller', _.extend({
+            ctrl: self
+        }, data || {}));
+    };
+
+    this.showCard = handlers.card.show;
+    this.hideCard = handlers.card.hide;
+    this.updateCardTimer = handlers.card.updateTimer;
+
+    // Assign handlers
+    self.getWrapper().on('income_new.caller', function(){
+        var number = self.getCurrentPhoneNumber();
+        if(!number) {
+            throw 'Invalid session data for incoming call';
+        }
+
+        self.play('default');
+
+        self.showCard(number);
+    });
+
+    self.getWrapper().on('calling.caller', function(){
+        self.play('default');
+    });
+
+    self.getWrapper().on('outcome_new.caller', function(){
+        self.pause('default');
+    });
+
+    self.getWrapper().on('hangup.caller accepted.caller', function(){
+        _.each(tones, function(tone, name){
+            self.pause(name);
+        });
+    });
+
+    self.getWrapper().on('hangup.caller', function(){
+        self.hideCard();
+    });
+
+    self.init();
+
+    self.getWrapper().data('callCtrl', self);
 };
