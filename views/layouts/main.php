@@ -287,7 +287,29 @@ else {
                 var userRole = <?= json_encode($this->params['user_role']); ?>;
                 var userId = <?= $this->params['user_id']; ?>;
             </script>
+        <?php endif; ?>
 
+        <?php if($this->params['sip']): ?>
+            <span class="hidden sip_config"
+                  data-login="<?php echo $this->params['sip']['login']; ?>"
+                  data-password="<?php echo $this->params['sip']['password']; ?>"
+                ></span>
+
+            <div class="incoming_call_wrapper">
+                <div class="action_holder">Входящий вызов от:</div>
+                <div class=""></div>
+                <div class="number_holder"></div>
+                <div class="name_holder"></div>
+                <span class="id_holder hidden"></span>
+                <div class="actions_wrapper">
+                    <span class="timer_holder pull-left">00:00</span>
+                    <span class="pull-right">
+                        <span class="action_end_call">
+                            <span class="action fa fa-phone text-danger fa-lg cursor"></span>
+                        </span>
+                    </span>
+                </div>
+            </div>
         <?php endif; ?>
 
         <?php $this->endBody() ?>

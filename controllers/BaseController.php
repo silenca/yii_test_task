@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\ContactContract;
 use app\models\ManagerNotification;
 use app\models\MissedCall;
+use app\models\SipChannel;
 use Yii;
 use yii\web\Controller;
 
@@ -24,6 +25,13 @@ class BaseController extends Controller
             if (Yii::$app->user->can('calls')) {
                 $missed_count = MissedCall::find()->where(['manager_id' => Yii::$app->user->identity->id])->count();
                 $this->view->params['missed_count'] = $missed_count;
+                $userData = Yii::$app->user->identity;
+                if($userData->int_id && $userData->password_sip) {
+                    $this->view->params['sip'] = [
+                        'login' => $userData->int_id,
+                        'password' => $userData->password_sip,
+                    ];
+                }
             }
             if (Yii::$app->user->can('contracts')) {
                 $new_contract_count = ContactContract::find()->where(['solution_id' => NULL])->count();
