@@ -925,7 +925,10 @@ class ContactsController extends BaseController
         $phone = Yii::$app->request->get('phone');
 
         if ($contact = Contact::getContactByPhone($phone)) {
-            $this->json(['contact_id' => $contact['id']], 200);
+            $this->json([
+                'contact_id' => $contact->id,
+                'full_name' => $contact->getFullName(),
+            ], 200);
         } else {
             $this->json(false, 404);
         }

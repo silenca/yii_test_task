@@ -966,4 +966,13 @@ class Contact extends ActiveRecord
 
         return true;
     }
+
+    public function getFullName()
+    {
+        return implode(' ', array_filter([
+            $this->surname,
+            $this->name,
+            $this->middle_name,
+        ]));
+    }
 }
