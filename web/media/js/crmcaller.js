@@ -316,8 +316,6 @@ function CallController(wr, opts, handles) {
 
         self.trigger('callstarted');
         self.trigger('accepted');
-
-        handlers.card.mode('incoming');
     };
 
     this.doReject = function(){
@@ -371,6 +369,8 @@ function CallController(wr, opts, handles) {
         }
 
         self.play('default');
+
+        handlers.card.mode('incoming');
 
         self.showCard(number);
     });
