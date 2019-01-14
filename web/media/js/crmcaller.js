@@ -294,7 +294,7 @@ function CallController(wr, opts, handles) {
     };
 
     this.doCall = function(number) {
-        options.card.mode('outcoming');
+        handlers.card.mode('outcoming');
         self.showCard(number);
         handlers.call(number);
     };
@@ -317,7 +317,7 @@ function CallController(wr, opts, handles) {
         self.trigger('callstarted');
         self.trigger('accepted');
 
-        options.card.mode('incoming');
+        handlers.card.mode('incoming');
     };
 
     this.doReject = function(){
