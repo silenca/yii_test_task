@@ -118,11 +118,16 @@ function CallController(wr, opts, handles) {
             sipData: '.sip_config',
             card: {
                 wrapper: '.incoming_call_wrapper',
+                title: '.action_holder',
                 name: '.name_holder',
                 number: '.number_holder',
                 id: '.id_holder',
                 timer: '.timer_holder'
             }
+        },
+        titles: {
+            incoming: 'Входящий вызов от:',
+            outcoming: 'Вы вызываете:'
         },
         tones: {
             default: './media/sounds/ringtone.mp3'
@@ -159,6 +164,15 @@ function CallController(wr, opts, handles) {
             self.trigger('calling');
         },
         card: {
+            mode: function(mode){
+                if(mode === undefined) {
+                    return cardMode;
+                } else {
+                    cardMode = mode;
+                }
+
+                self.updateCallerData('title')(options.titles[cardMode]);
+            },
             show: function (number, name) {
                 self.updateCallerNumber(number);
                 self.updateCallerName(name || '');
@@ -179,6 +193,7 @@ function CallController(wr, opts, handles) {
     var sip;
     var session;
     var tones = {};
+    var cardMode;
 
     this.getWrapper = function(){
         if(_.isNull(wrapper)) {
@@ -279,6 +294,7 @@ function CallController(wr, opts, handles) {
     };
 
     this.doCall = function(number) {
+        options.card.mode('outcoming');
         self.showCard(number);
         handlers.call(number);
     };
@@ -300,6 +316,8 @@ function CallController(wr, opts, handles) {
 
         self.trigger('callstarted');
         self.trigger('accepted');
+
+        options.card.mode('incoming');
     };
 
     this.doReject = function(){
