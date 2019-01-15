@@ -34,6 +34,8 @@ $(function(){
             return;
         }
 
+        $(this).addClass('disabled');
+
         ctrl.doCall(contact.number);
         ctrl.showCard(contact.number);
         ctrl.updateCallerId(contact.id);
@@ -45,6 +47,10 @@ $(function(){
                 ctrl.updateCallerName(response.data.full_name);
             }
         });
+    });
+
+    $('body').on('hangup.caller', function(){
+        $('.btn-audio-call').removeClass('disabled');
     });
 
     $('.incoming_call_wrapper').on('click', function(e){
