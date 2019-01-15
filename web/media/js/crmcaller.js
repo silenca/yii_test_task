@@ -2,7 +2,7 @@ $(function(){
     var ctrl = new CallController('body');
 
     $('table').on('click', '.contact_open_disable', function(){
-        var contactId = $(this).closest('data-id').data('id'),
+        var contactId = $(this).closest('[data-id]').data('id'),
             number = $(this).html();
 
         ctrl.doCall(number);
