@@ -351,7 +351,7 @@ function buildContactForm(id, $form, callback) {
         if (response.status === 200) {
             var data = response.data;
 
-            fillContactData(data, $form);
+            fillContactData(_.extend({id: id}, data), $form);
 
             manageContactFormPermissions(userRole);
 
@@ -386,6 +386,9 @@ function manageContactFormPermissions(userRole) {
 }
 
 function fillContactData(data, $form) {
+    $('.btn-audio-call').data('number', data.first_phone || '')
+                        .data('id', data.id || 0);
+
     $.each(data, function(key, value) {
         switch (key) {
             case 'int_id':

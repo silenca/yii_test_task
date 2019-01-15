@@ -1,4 +1,8 @@
 $(function(){
+    if(!$('.sip_config').length) {
+        return;
+    }
+
     var ctrl = new CallController('body');
 
     $('table').on('click', '.contact_open_disable', function(){
@@ -22,6 +26,25 @@ $(function(){
 
         openContactForm(contactId);
         changeActionsForm('call');
+    });
+
+    $('body').on('click', '.btn-audio-call', function(){
+        var contact = $(this).data();
+        if(!contact.id || !contact.number) {
+            return;
+        }
+
+        ctrl.doCall(contact.number);
+        ctrl.showCard(contact.number);
+        ctrl.updateCallerId(contact.id);
+
+        $.getJSON('/contacts/get-contact-by-phone', {
+            phone: contact.number
+        }, function(response) {
+            if(response.data) {
+                ctrl.updateCallerName(response.data.full_name);
+            }
+        });
     });
 
     $('.incoming_call_wrapper').on('click', function(e){
@@ -392,6 +415,22 @@ function CallController(wr, opts, handles) {
     self.getWrapper().on('hangup.caller', function(){
         self.hideCard();
     });
+
+    // Block page reload if have active session
+    window.onbeforeunload = function(e){
+        if(session) {
+            var message = "Перезагрузка страницы приведет к сбросу текущего звонка. Вы уверены, что хотите перезагрузить страницу?";
+            if (typeof e == "undefined") {
+                e = window.event;
+            }
+            if(e) {
+                e.returnValue = message;
+            }
+            return message;
+        } else {
+            return null;
+        }
+    };
 
     self.init();
 
