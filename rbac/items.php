@@ -94,4 +94,18 @@ return [
             'use_archived_tags',
         ],
     ],
+    'supervisor' => [
+        'type' => 1,
+        'ruleName' => 'userRole',
+        'children' => [
+            'contacts',
+            'action',
+            'calls',
+            'listen_call',
+            'reports',
+            'tags',
+            'edit_tag',
+            'import',
+        ],
+    ],
 ];
