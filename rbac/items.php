@@ -99,6 +99,7 @@ return [
         'ruleName' => 'userRole',
         'children' => [
             'contacts',
+            'updateContact',
             'action',
             'calls',
             'listen_call',

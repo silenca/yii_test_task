@@ -106,6 +106,7 @@ class RbacController extends Controller {
         $authManager->addChild($admin, $use_archived_tags);
 
         $authManager->addChild($supervisor, $contacts);
+        $authManager->addChild($supervisor, $updateContact);
         $authManager->addChild($supervisor, $actions);
         $authManager->addChild($supervisor, $calls);
         $authManager->addChild($supervisor, $listen_call);
