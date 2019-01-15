@@ -65,7 +65,9 @@ class BaseController extends Controller
         if ($data !== false) {
             $response['data'] = $data;
         }
-        if (count($errors) > 0) {
+        if(is_string($errors) && mb_strlen($errors) > 0){
+            $response['errors'][] = $errors;
+        }elseif (is_array($errors) && count($errors) > 0) {
             $response['errors'] = $errors;
         }
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
