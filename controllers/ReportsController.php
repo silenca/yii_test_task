@@ -16,7 +16,6 @@ use app\models\User;
 use app\models\Call;
 use app\models\CallManager;
 use app\models\ContactShow;
-use app\models\ContactVisit;
 use app\models\Contact;
 use app\components\widgets\ReportsWidget;
 

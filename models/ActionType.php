@@ -62,6 +62,7 @@ class ActionType extends \yii\db\ActiveRecord
             'scheduled_call' => 'Запланированный исходящий звонок',
             'scheduled_email' => 'Запланированное Email сообщение',
             'ring_round' => 'Прозвон контакта',
+            'scheduled_visit' => 'Запланированный визит',
         ];
         if ($this->_label === null) {
             $this->setLabel($labels[$this->name]);

@@ -63,6 +63,9 @@ class ActionTableWidget extends Widget
                 case "ring_round":
                     $data[$i][] = "Прозвон контакта";
                     break;
+                case "scheduled_visit":
+                    $data[$i][] = "Запланированный визит";
+                    break;
             }
 
             switch ($this->user_role) {

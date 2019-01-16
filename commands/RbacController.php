@@ -20,6 +20,7 @@ class RbacController extends Controller {
         $supervisor = $authManager->createRole('supervisor');
 
         $contacts = $authManager->createPermission('contacts');
+        $editStatusContact = $authManager->createPermission('editStatusContact');
         $actions = $authManager->createPermission('action');
         $reports = $authManager->createPermission('reports');
         $calls = $authManager->createPermission('calls');
@@ -39,6 +40,7 @@ class RbacController extends Controller {
         $use_archived_tags = $authManager->createPermission('use_archived_tags');
 
         $authManager->add($contacts);
+        $authManager->add($editStatusContact);
         $authManager->add($actions);
         $authManager->add($reports);
         $authManager->add($calls);
@@ -90,6 +92,7 @@ class RbacController extends Controller {
         $authManager->addChild($operator, $tags);
         
         $authManager->addChild($admin, $contacts);
+        $authManager->addChild($admin, $editStatusContact);
         $authManager->addChild($admin, $actions);
         $authManager->addChild($admin, $notifications);
         $authManager->addChild($admin, $reports);
@@ -106,6 +109,7 @@ class RbacController extends Controller {
         $authManager->addChild($admin, $use_archived_tags);
 
         $authManager->addChild($supervisor, $contacts);
+        $authManager->addChild($supervisor, $editStatusContact);
         $authManager->addChild($supervisor, $updateContact);
         $authManager->addChild($supervisor, $actions);
         $authManager->addChild($supervisor, $calls);

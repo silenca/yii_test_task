@@ -5,6 +5,8 @@ namespace app\controllers;
 use app\components\Filter;
 use app\components\Notification;
 use app\components\widgets\ContactTableWidget;
+use app\models\Action;
+use app\models\ActionType;
 use app\models\Call;
 use app\models\Cdr;
 use app\models\Contact;
@@ -14,6 +16,7 @@ use app\models\ContactRingRound;
 use app\models\ContactScheduledCall;
 use app\models\ContactScheduledEmail;
 use app\models\ContactStatusHistory;
+use app\models\ContactsVisits;
 use app\models\ContactTag;
 use app\models\ContactVisitLog;
 use app\models\Departments;
@@ -300,6 +303,24 @@ class ContactsController extends BaseController
                         $log->request = $data;
                         $log->response = $records['data']['response'];
                         $log->save();
+
+                        $visit = new ContactsVisits();
+                        $visit->create_date = date('Y-m-d H:i:s');
+                        $visit->edit_date = date('Y-m-d H:i:s');
+                        $visit->visit_date = date('Y-m-d H:i:s', $doctorStartTime);
+                        $visit->contact_id = $contact->id;
+                        $visit->medium_oid = $records['data']['oid'];
+                        $visit->department_id = $department->id;
+                        $visit->status = ContactsVisits::STATUS_PENDING;
+                        $visit->save();
+
+                        $action = new Action();
+                        $action_type = ActionType::find()->where(['name' => 'scheduled_visit'])->one();
+                        $action->add($contact->id, $action_type->id, [], date('Y-m-d H:i:s', $doctorStartTime));
+
+                        $contact_history = new ContactHistory();
+                        $contact_history->add($contact->id, 'Запланированный визит на ' . date('d-m-Y H:i:s', $doctorStartTime), 'scheduled_visit');
+                        $contact_history->save();
                     } else {
                         $response['error'] = "Контакт не найден";
                     }
@@ -421,18 +442,22 @@ class ContactsController extends BaseController
                     if (!Yii::$app->user->can('updateContact', ['contact' => $contact])) {
                         $this->json(false, 403, 'Недостаточно прав для редактирования');
                     }
+
+                    if(!Yii::$app->user->can('editStatusContact') && !empty($contact->status) && $contact->status != $contact_form->status){
+                        $this->json(false, 403, 'Недостаточно прав для редактирования статуса');
+                    }
+
                     //if contact is deleted then make alive
                     if ($contact->is_deleted) {
                         $contact->is_deleted = 0;
                     }
                     if (!$contact->medium_oid) {
-                        if (!empty($contact->status) && $contact->status === '2') {
-//                            $contact->medium_oid =
-                            $contact->medium_oid = Contact::postMediumObject($contact_form->attributes, $post['id']);
+                        if (!empty($contact->status) && $contact->status === Contact::CONTACT) {
+                            $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
                         }
                     } else {
                         $contact->medium_oid = Contact::updateMediumObject($contact->medium_oid, $contact_form->attributes);
-                        if (!empty($contact->status) && $contact->status === '2') {
+                        if (!empty($contact->status) && $contact->status === Contact::CONTACT) {
                             $contact->medium_oid = Contact::updateMediumObject($contact->medium_oid, $contact_form->attributes);
                         }
                     }
@@ -449,9 +474,12 @@ class ContactsController extends BaseController
                     } else {
                         $contact_form->manager_id = Yii::$app->user->identity->id;
                     }
-//                    if (!empty($contact_form->status) && $contact_form->status == '2') {
-                        $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
-//                    }
+                    if ((!empty($contact_form->status) && $contact_form->status == Contact::CONTACT)
+                        || empty($contact_form->status)
+                    ) {
+//                        $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
+                        $contact_form->status = Contact::LEAD;
+                    }
 
                 }
                 unset($post['_csrf'], $post['id']);

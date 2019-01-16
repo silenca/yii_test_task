@@ -5,6 +5,7 @@ namespace app\commands;
 use app\controllers\ContactsController;
 use app\models\Contact;
 
+use app\models\ContactsVisits;
 use app\models\helpers\MediumLogsApi;
 use app\models\Speciality;
 use yii\base\InvalidConfigException;
@@ -84,6 +85,34 @@ class SyncController extends Controller
             echo "SAVE|UPDATE {$cnt} items \n";
         }else{
             echo $speciality['error'];
+        }
+    }
+
+    public function actionVisitStatus()
+    {
+        $contactsVisits = ContactsVisits::find()
+            ->where('visit_date < :date',[':date'=>date('Y-m-d H:i:s')])
+            ->andWhere(['status'=>ContactsVisits::STATUS_PENDING])
+            ->all();
+        if($contactsVisits){
+            foreach ($contactsVisits as $contactsVisit){
+                if($contactsVisit->department){
+                    $visitStatus = Yii::$app->medium->visitStatus($contactsVisit->department->api_url, $contactsVisit->medium_oid);
+                    if(!empty($visitStatus['error'])){
+                        echo "Error update status visit " . $contactsVisit->medium_oid . $visitStatus['error'] . "\n";
+                    }else{
+                        if($visitStatus == ContactsVisits::STATUS_TAKE_PLACE_MEDIUM){
+                            $contactsVisit->status = ContactsVisits::STATUS_TAKE_PLACE;
+                            if($contactsVisit->save() && $contactsVisit->contact){
+                                $contactsVisit->contact->status = strval(Contact::CONTACT);
+                                if($contactsVisit->contact->save()){
+                                    echo "Update status visit " . $contactsVisit->medium_oid . "\n";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

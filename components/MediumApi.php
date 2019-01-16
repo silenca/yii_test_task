@@ -158,7 +158,7 @@ class MediumApi
                 . '} '
                 . '}) '
                 . 'return element x { $res[@gr] } ';
-            $response = $this->sendMediumPost($url, $data);
+            $response = $this->sendMediumPost($this->mediumApiDomain . "/api/" . $url . "/C:1CDCBA80BCACD1E/I:PACK", $data);
             if(!empty($response->getContent()) && !empty($response->getData())){
                 foreach ($response->getData()['OBJECT'] as $content) {
                     if(!empty($content['@attributes'])){
@@ -275,7 +275,7 @@ class MediumApi
      */
     public function cabinetSchedule($day): array
     {
-        $url = $this->mediumApiDomain . $this->cabinetSchedule .$day;
+        $url = $this->mediumApiDomain . $this->cabinetSchedule . $day;
         $result = ['data'=>[],'error'=>''];
         try {
             $data = 'let $data := "' . $day . '"' . "\n"
@@ -324,6 +324,21 @@ class MediumApi
             }
         } catch (HttpException $ex) {
             $result['error'] = $ex;
+        }
+        return $result;
+    }
+
+    public function visitStatus($url, $mediumId)
+    {
+        $result = ['data'=>'','error'=>''];
+        try{
+            $url = $this->mediumApiDomain . "/api/" . $url . "/C:1D45F000F6704C0/O:" . $mediumId;
+            $response = $this->sendMedium($url, '');
+            if($response->statusCode == '200' && !empty($response->getData()['@attributes']['Статус'])){
+                $result['data'] = $response->getData()['@attributes']['Статус'];
+            }
+        } catch (HttpException $ex) {
+            $result['error'] = $ex->getMessage();
         }
         return $result;
     }

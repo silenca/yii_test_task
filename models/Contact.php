@@ -446,12 +446,13 @@ class Contact extends ActiveRecord
             ]
 
         ]);
+        $log = MediumLogsApi::setRequestData($url, '');
         try {
-            $log = MediumLogsApi::setRequestData($url, '');
             $content = $client->get($url)->send()->getContent();
             $log->setResponse($content);
             $xml = simplexml_load_string($content);
         } catch (Exception $e) {
+            $log->setResponse('error');
             return $e->getMessage();
         }
         return $xml->attributes();
@@ -473,6 +474,7 @@ class Contact extends ActiveRecord
             $newUserResponse = $client->send();
             $log->setResponse($newUserResponse->getContent());
         } catch (Exception $e) {
+            $log->setResponse('error');
             return $e->getMessage();
         }
         $newUserId = 0;
@@ -540,6 +542,7 @@ class Contact extends ActiveRecord
             $newUserResponse = $client->send();
             $log->setResponse($newUserResponse->getContent());
         } catch (Exception $e) {
+            $log->setResponse('error');
             return $e->getMessage();
         }
         if ($newUserResponse->isOk && $newUserResponse !== 0) {

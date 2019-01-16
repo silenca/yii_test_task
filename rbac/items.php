@@ -3,6 +3,9 @@ return [
     'contacts' => [
         'type' => 2,
     ],
+    'editStatusContact' => [
+        'type' => 2,
+    ],
     'action' => [
         'type' => 2,
     ],
@@ -78,6 +81,7 @@ return [
         'ruleName' => 'userRole',
         'children' => [
             'contacts',
+            'editStatusContact',
             'action',
             'notifications',
             'reports',
@@ -99,6 +103,7 @@ return [
         'ruleName' => 'userRole',
         'children' => [
             'contacts',
+            'editStatusContact',
             'updateContact',
             'action',
             'calls',
