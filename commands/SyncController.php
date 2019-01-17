@@ -1,14 +1,9 @@
 <?php
-
 namespace app\commands;
 
 use app\controllers\ContactsController;
-use app\models\Contact;
-
-use app\models\ContactsVisits;
+use app\models\{Contact, ContactsVisits, Speciality};
 use app\models\helpers\MediumLogsApi;
-use app\models\Speciality;
-use yii\base\InvalidConfigException;
 use yii\httpclient\Client;
 use yii\console\Controller;
 use yii\web\HttpException;
@@ -16,55 +11,69 @@ use Yii;
 
 class SyncController extends Controller
 {
+    const MEDIUM_FETCH_URL = 'http://91.225.122.210:8080/api/H:1D13C88C20AA6C6/D:WORK/D:1D13C9303C946F9/C:1D45F18F27C737D/I:PACK';
+    const MEDIUM_FETCH_DATA_TPL = <<<'CODE'
+let $d1 := '{DATE_FROM}'
+let $d2 := '{DATE_TO}'
+return
+for $ob in //PACK/OBJECT[@update >= $d1 and @update < $d2]
+return element OBJECT
+{
+    attribute oid { $ob/@oid },
+    attribute update {  $ob/@update },
+    attribute FIO { $ob/@name },
+    attribute Email { $ob/@E-mail },
+    attribute Phone { $ob/@ТелефонМоб },
+    attribute Birth { $ob/@ДатаРождения },
+    attribute City { $ob/@Город }
+}
+CODE
+    ;
+
+    const MEDIUM_DATE_FORMAT = 'Y-m-d\TH:i:s';
+
     public function actionMedium()
     {
         $client = new Client();
-        $dateFrom = date("Y-m-d") . 'T' . date("H:i:s");
-        $date = strtotime(date("Y-m-d H:i:s")) + (60 * 2);
-        $dateTo = date("Y-m-d", $date) . 'T' . date("H:i:s", $date);
+
+        $dateTo = (new \DateTime())->format(self::MEDIUM_DATE_FORMAT);
+        $dateFrom = (new \DateTime())->modify('- 2 minutes')->format(self::MEDIUM_DATE_FORMAT);
         try {
-            $url = 'http://91.225.122.210:8080/api/H:1D13C88C20AA6C6/D:WORK/D:1D13C9303C946F9/C:1D45F18F27C737D/I:PACK';
-            $data = 'for $ob in //PACK/OBJECT[oda:left(@update,19) > oda:left("' . $dateFrom . '",19) and oda:left(@update,19) < oda:left("' . $dateTo . '",19) ]       
-                    return element OBJECT
-                    {
-                    
-                    attribute ID { $ob/@oid },
-                    
-                    attribute FIO { $ob/@name },
-                    
-                    attribute Phone { $ob/@ТелефонМоб },
-                    
-                    attribute Birth { $ob/@ДатаРождения },
-                    
-                    attribute IstInfo { $ob/@ИсточникИнфомации },
-                    
-                    attribute City { $ob/@Город },
-                    
-                    attribute Email { $ob/@E-mail },
-                    
-                    attribute update {$ob/@update}
-            
-                    }';
+            $url = self::MEDIUM_FETCH_URL;
+            $data = str_replace([
+                '{DATE_FROM}',
+                '{DATE_TO}',
+            ], [
+                $dateFrom,
+                $dateTo,
+            ], self::MEDIUM_FETCH_DATA_TPL);
+
             $log = MediumLogsApi::setRequestData($url, $data);
-            $request = $client->createRequest();
-            $request->setUrl($url);
-            $request->setData($data);
-            $response = $request->send();
+
+            $response = $client
+                            ->createRequest()
+                                ->addHeaders(['content-type' => 'application/x-www-form-urlencoded'])
+                                ->setUrl($url)
+                                ->setContent($data)
+                                ->send();
+            $response->setFormat(Client::FORMAT_XML);
             $log->setResponse($response->getContent());
+
+            // Hack for invalid XML response
+            $response->setContent('<root>'.$response->getContent().'</root>');
+
             $contactsSaved = [];
             $cnt = 0;
             if(!empty($response->getData())){
                 foreach ($response->getData()['OBJECT'] as $contact) {
-                    $contactsSaved[$cnt]['contact_oid'] = ContactsController::actionSaveContacts($contact);
+                    $contactsSaved[$cnt]['contact_oid'] = ContactsController::actionSaveContacts($contact['@attributes']);
                     $contactsSaved['count'] = $cnt++;
                 }
                 print_r($contactsSaved);
-            }else{
+            } else{
                 echo 'No data on Medium';
             }
-
-
-        } catch (HttpException $ex) {
+        } catch(HttpException $ex) {
             echo $ex;
         }
     }
