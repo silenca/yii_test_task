@@ -386,3 +386,8 @@ div.cs-skin-slide.cs-active{
 .incoming_call_wrapper .actions_wrapper .timer_holder {
     padding-top: 5px;
 }
+
+.error_visit{
+    position: absolute;
+    width: 90%;
+}

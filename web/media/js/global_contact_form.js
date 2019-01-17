@@ -642,14 +642,14 @@ function visitPlanning(){
 		var visitDepartments = $('#select-department').val();
 		var visitDate = $('#set-booking-date').val();
 
-		if(visitSpeciality != '' && visitDepartments != '' && visitDate != ''){
-			visitPlanningPost(visitSpeciality, visitDepartments,visitDate);
-			$('#modalAddContact').modal('hide');
+		if(visitSpeciality && visitDepartments && visitDate){
+			visitPlanningPost(visitSpeciality, visitDepartments,visitDate, 'newSearch');
+			/*$('#modalAddContact').modal('hide');
 			$('#visitPlanningModal').modal({
 				backdrop: false
-			});
+			});*/
         }else{
-			showNotification('#action_visit', 'Все поля должны быть заполнены', 'bottom', 'danger', 'bar', 10000);
+			showNotification('#action_visit .error_visit', 'Все поля должны быть заполнены', 'top', 'danger', 'bar', 10000);
         }
     });
 
@@ -768,13 +768,13 @@ function visitPlanningModal() {
 			id: '',
 			name: ''
 		};
-		visitPlanningPost(visitSpeciality, visitDepartments,visitDate);
+		visitPlanningPost(visitSpeciality, visitDepartments,visitDate, 'editSearch');
 	}else{
 		showNotification('#visitPlanningModal .vp-form', 'Все поля должны быть заполнены', 'bottom', 'danger', 'bar', 10000);
 	}
 }
 
-function visitPlanningPost(visitSpeciality, visitDepartments,visitDate) {
+function visitPlanningPost(visitSpeciality, visitDepartments,visitDate, type) {
     if(!visitProcess) {
 		visitProcess = true;
 		var progress = '<div><img src="/media/img/icons/preloader.gif" width="25px"></div>';
@@ -792,11 +792,21 @@ function visitPlanningPost(visitSpeciality, visitDepartments,visitDate) {
 
 		$.post('/contacts/search-visit/', data, function (responseData) {
 			if (responseData.error) {
-				showNotification('#visitPlanningModal', responseData.error, 'top', 'danger', 'bar', 10000);
-				$('#visitPlanningModal .vp-doctor').html('');
-				$('#visitPlanningModal .vp-cabinet').html('');
+			    if(type == 'newSearch'){
+					showNotification('#action_visit .error_visit', 'Нет доступных "окон" для формирования визита', 'top', 'danger', 'bar', 10000);
+                }else{
+                    showNotification('#visitPlanningModal', responseData.error, 'top', 'danger', 'bar', 10000);
+                    $('#visitPlanningModal .vp-doctor').html('');
+                    $('#visitPlanningModal .vp-cabinet').html('');
+                }
 			} else {
 				if (responseData.data) {
+					if(type == 'newSearch'){
+						$('#modalAddContact').modal('hide');
+						$('#visitPlanningModal').modal({
+							backdrop: false
+						});
+					}
 					$('#visitPlanningModal .vp-doctor').html(responseData.data.doctors);
 					$('#visitPlanningModal .vp-cabinet').html(responseData.data.cabinets);
 				}

@@ -187,7 +187,7 @@ class ContactsController extends BaseController
 
     public function actionSearchVisit(): string
     {
-        $response = ['data'=>[], 'error'=>''];
+        $response = ['data'=>[], 'error'=>'', 'notify'];
         if(Yii::$app->request->isAjax){
             $visitSpecialityId = intval(Yii::$app->request->post('visitSpeciality'));
             $visitDepartmentsId = intval(Yii::$app->request->post('visitDepartments'));
@@ -213,7 +213,8 @@ class ContactsController extends BaseController
 //                        $response['error'] = $doctorsVisit['error'];
                     }
                 }else{
-                    $response['error'] = $doctorsSchedule['error'];
+                    $response['notify'] = $doctorsSchedule['error'];
+                    $response['error'] = 'Нет доступных "окон" для формирования визита';
                 }
 
                 // Список свободних кабинетов
@@ -232,7 +233,8 @@ class ContactsController extends BaseController
 //                        $response['error'] .= $cabinetsSchedule['error'];
                     }
                 }else{
-                    $response['error'] .= " " . $cabinetsList['error'];
+                    $response['notify'] .= " " . $cabinetsList['error'];
+                    $response['error'] .= " " . 'Нет доступных "окон" для формирования визита';
                 }
 
                 $response['data']['doctors'] = $this->renderPartial('//parts/contact_visit',[
