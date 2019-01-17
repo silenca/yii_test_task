@@ -105,6 +105,9 @@ class SyncController extends Controller
                             $contactsVisit->status = ContactsVisits::STATUS_TAKE_PLACE;
                             if($contactsVisit->save() && $contactsVisit->contact){
                                 $contactsVisit->contact->status = strval(Contact::CONTACT);
+                                if (!$contactsVisit->contact->medium_oid) {
+                                    $contactsVisit->contact->medium_oid = Contact::postMediumObject($contactsVisit->contact);
+                                }
                                 if($contactsVisit->contact->save()){
                                     echo "Update status visit " . $contactsVisit->medium_oid . "\n";
                                 }
