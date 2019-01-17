@@ -467,11 +467,14 @@ class ContactsController extends BaseController
                 } else {
                     $contact = new Contact();
 
-                    if (!isset($post['manager_id'])
+                    /*if (!isset($post['manager_id'])
                         || ($contact->manager_id !== Yii::$app->user->identity->getId() &&
                             !Yii::$app->user->can('supervisor') && !Yii::$app->user->can('admin'))) {
                         $contact_form->manager_id = Yii::$app->user->identity->id;
                     } else {
+                        $contact_form->manager_id = Yii::$app->user->identity->id;
+                    }*/
+                    if(empty($post['manager_id'])){
                         $contact_form->manager_id = Yii::$app->user->identity->id;
                     }
                     if ((!empty($contact_form->status) && $contact_form->status == Contact::CONTACT)
