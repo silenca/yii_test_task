@@ -66,7 +66,7 @@ CODE
             $cnt = 0;
             if(!empty($response->getData())){
                 foreach ($response->getData()['OBJECT'] as $contact) {
-                    $contactsSaved[$cnt]['contact_oid'] = ContactsController::actionSaveContacts($contact['@attributes']);
+                    $contactsSaved[$cnt]['contact_oid'] = ContactsController::updateContact($contact['@attributes']);
                     $contactsSaved['count'] = $cnt++;
                 }
                 print_r($contactsSaved);
