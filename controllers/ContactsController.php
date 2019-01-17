@@ -201,7 +201,7 @@ class ContactsController extends BaseController
 
                 if(empty($doctorsSchedule['error'])){
                     // Список забронированих сиансов к доктору
-                    $doctorsVisit = Yii::$app->medium->doctorsVisit($visitDate);
+                    $doctorsVisit = Yii::$app->medium->doctorsVisit($visitDepartments->api_url, $visitDate);
                     if(!empty($doctorsVisit['data'])){
                         foreach ($doctorsVisit['data'] as $doctorVisit){
                             $time = strtotime($doctorVisit['date']);
@@ -218,10 +218,10 @@ class ContactsController extends BaseController
                 }
 
                 // Список свободних кабинетов
-                $cabinetsList = Yii::$app->medium->cabinetList($visitDate);
+                $cabinetsList = Yii::$app->medium->cabinetList($visitDepartments->api_url, $visitDate);
                 if(empty($cabinetsList['error'])){
                     // Список забронированых кабинетов
-                    $cabinetsSchedule = Yii::$app->medium->cabinetSchedule($visitDate);
+                    $cabinetsSchedule = Yii::$app->medium->cabinetSchedule($visitDepartments->api_url,$visitDate);
                     if(!empty($cabinetsSchedule['data'])){
                         foreach ($cabinetsSchedule['data'] as $cabinetSchedule){
                             $time = strtotime($cabinetSchedule['date']);

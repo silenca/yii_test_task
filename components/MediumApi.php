@@ -100,6 +100,7 @@ class MediumApi
     }
 
     /**
+     * Получаем специализации
      * @return array
      */
     public function speciality(): array
@@ -135,30 +136,30 @@ class MediumApi
 
     /**
      * Список доктаров
-     * @param $url
+     * @param $apiUrl
      * @param $day
      * @param $specialization
      * @return array
      */
-    public function doctorsSchedule($url, $day, $specialization): array
+    public function doctorsSchedule($apiUrl, $day, $specialization): array
     {
         $result = ['data'=>[],'error'=>''];
         try {
             $data = 'let $day := \'' . $day . '\' '
-                    . 'let $oidOtdela := \'' . $specialization . '\' '
+                . 'let $oidOtdela := \'' . $specialization . '\' '
+                . 'let $Mask := oda:left($day,7) '
+                . 'let $Path := "' . $apiUrl . '/C:1D1C22EBEED58C8/I:PACK|" '
+                . 'let $Resp := oda:xquery-doc(concat($Path,$Mask),"*") '
                 . 'let $res := '
                 . '(for $objDoctor in PACK/OBJECT[oda:right(Отделения/Отдел/@link,15)=$oidOtdela] '
+                . 'let $Obj := $Resp/PACK/OBJECT[Сотрудник/@oid=$objDoctor/@oid] '
                 . 'return element OBJECT { '
                 . 'attribute oid { $objDoctor/@oid }, '
                 . 'attribute name { $objDoctor/@name }, '
-                . 'attribute gr { '
-                . 'if (count($objDoctor/Исключения[oda:left(@Дата,10)=$day])>0) '
-                . 'then string-join($objDoctor/Исключения[oda:left(@Дата,10)=$day]/concat(substring(@С, 12, 5),\' - \',substring(@По, 12, 5)),\',\') '
-                . 'else string-join($objDoctor/Расп[oda:num(День/@key)=functx:day-of-week($day)]/ concat(substring(@С, 12, 5),\' - \',substring(@По, 12, 5)),\',\') '
-                . '} '
-                . '}) '
-                . 'return element x { $res[@gr] } ';
-            $response = $this->sendMediumPost($this->mediumApiDomain . "/api/" . $url . "/C:1CDCBA80BCACD1E/I:PACK", $data);
+                . 'attribute gr {$Obj/Расп[oda:left(@Дата,10)=$day]/concat(substring(@С, 12, 5),\' - \',substring(@По, 12, 5))}}) '
+                . 'return element x { $res[@gr] }';
+            
+            $response = $this->sendMediumPost($this->mediumApiDomain . "/api/" . $apiUrl . "/C:1CDCBA80BCACD1E/I:PACK", $data);
             if(!empty($response->getContent()) && !empty($response->getData())){
                 foreach ($response->getData()['OBJECT'] as $content) {
                     if(!empty($content['@attributes'])){
@@ -184,12 +185,12 @@ class MediumApi
 
     /**
      * Список забронированих сиансов к доктору
+     * @param $apiUrl
      * @param $day
      * @return array
      */
-    public function doctorsVisit($day): array
+    public function doctorsVisit($apiUrl, $day): array
     {
-        $url = $this->mediumApiDomain . $this->doctorsVisit . $day;
         $result = ['data'=>[],'error'=>''];
         try {
             $data = 'let $day := "' . $day . '"' . "\n"
@@ -203,7 +204,7 @@ class MediumApi
                 . 'attribute Patient {$ob/@Пациент},' . "\n"
                 . 'attribute Phone {$ob/@Телефон}' . "\n"
                 . "}";
-            $response = $this->sendMediumPost($url, $data);
+            $response = $this->sendMediumPost($this->mediumApiDomain .'/api/' . $apiUrl . $this->doctorsVisit . $day, $data);
             if(!empty($response->getContent()) && mb_strcut($response->getContent(), 0, 2) != "<x>"){
                 $response->setContent("<x>".$response->getContent()."</x>");
             }
@@ -228,12 +229,13 @@ class MediumApi
 
     /**
      * Список кабинетов
+     * @param $apiUrl
      * @param $day
      * @return array
      */
-    public function cabinetList($day): array
+    public function cabinetList($apiUrl, $day): array
     {
-        $url = $this->mediumApiDomain . '/api/H:1D13C88C20AA6C6/D:WORK/D:1D13C9303C946F9/C:1CE311BD5A26671/I:PACK';
+        $url = $this->mediumApiDomain . '/api/' . $apiUrl . '/C:1CE311BD5A26671/I:PACK';
         $result = ['data'=>[],'error'=>''];
         try {
             $data = 'for $ob in PACK/OBJECT' . "\n"
@@ -270,12 +272,13 @@ class MediumApi
 
     /**
      * Список забронированых кабинетов
+     * @param $apiUrl
      * @param $day
      * @return array
      */
-    public function cabinetSchedule($day): array
+    public function cabinetSchedule($apiUrl, $day): array
     {
-        $url = $this->mediumApiDomain . $this->cabinetSchedule . $day;
+        $url = $this->mediumApiDomain . '/api/' . $apiUrl . $this->cabinetSchedule . $day;
         $result = ['data'=>[],'error'=>''];
         try {
             $data = 'let $data := "' . $day . '"' . "\n"
