@@ -618,7 +618,7 @@ class Contact extends ActiveRecord
         return [
             [['int_id'], 'required'],
             [['int_id', 'manager_id'], 'integer'],
-            [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'country', 'city', 'status'], 'string', 'max' => 255],
+            [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'country', 'city'], 'string', 'max' => 255],
             [['int_id', 'manager_id', 'notification_service_id', 'language_id', 'attraction_channel_id'], 'integer'],
             [['first_phone', 'second_phone', 'third_phone', 'fourth_phone', 'first_email', 'second_email', 'birthday', 'country', 'city'], 'string', 'max' => 255],
             [['int_id', 'manager_id', 'notification_service_id', 'language_id', 'attraction_channel_id'], 'integer'],
