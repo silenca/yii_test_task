@@ -308,7 +308,7 @@ $departments = \app\models\Departments::find()->all();
                                                     <div class="form-group">
                                                         <textarea name="action_comment" id="call_action-comment" rows="6" cols="10" placeholder="Комментарий" class="action-comment form-control"></textarea>
                                                     </div>
-                                                    <div class="panel panel-default block form-group attitude padding-10" style="display: none">
+                                                    <?php /*<div class="panel panel-default block form-group attitude padding-10" style="display: none">
                                                         <div class="row">
                                                             <div class="text-left m-b-10">Отношение человека к звонку:</div>
                                                             <div class="inline m-r-20">Негативное</div>
@@ -327,7 +327,7 @@ $departments = \app\models\Departments::find()->all();
                                                                 <label for="action_call_attitude_5"></label>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </div>*/?>
                                                     <div class="form-group">
                                                         <button class="btn btn-complete btn-block" type="submit">
                                                             Добавить

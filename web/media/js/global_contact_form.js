@@ -223,11 +223,11 @@ function changeActionSendNow($form, action, opts) {
     var state = action === 'enable';
     $form.find('input[name="schedule_date"]').val('').attr('disabled', state);
     $form.find('.google-cal-show').attr('checked', false).attr('disabled', state);
-    if (state) {
+    /*if (state) {
         $form.find('.attitude').show();
     } else {
         $form.find('.attitude').hide();
-    }
+    }*/
     changeValidationRequired(opts, state);
 }
 
