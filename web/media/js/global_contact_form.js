@@ -332,6 +332,11 @@ function clearContactForm($form) {
     $form.find('.contact-manager-name-cont').hide();
     // $form.find('#contact_attraction_channel_id').data('value','');
     $form.find('.select-placeholder').prop('selected', true).closest('select').attr('data-value','');
+    $form.find('#contact_manager_id option[value="' + userId + '"]').prop('selected', true);
+    $form.find('#contact_manager_id').prop('disabled',false);
+    $form.find('#contact_manager_id').attr('data-value',userId);
+    $form.find('#contact_status option[value="' + contactStatusLead + '"]').prop('selected', true);
+    $form.find('#contact_status').attr('data-value',contactStatusLead);
     contact_bind_inputs = {};
     hideNotifications($form);
 }

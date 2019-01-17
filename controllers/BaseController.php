@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Contact;
 use app\models\ContactContract;
 use app\models\ManagerNotification;
 use app\models\MissedCall;
@@ -42,6 +43,7 @@ class BaseController extends Controller
                 $this->view->params['user_role'] = $user_role;
                 $user_id = Yii::$app->user->identity->getId();
                 $this->view->params['user_id'] = $user_id;
+                $this->view->params['contact_status_lead'] = Contact::LEAD;
             }
             if (Yii::$app->user->can('use_archived_tags')) {
                 $use_archive_tags = Yii::$app->user->identity->getSetting('use_archive_tags');

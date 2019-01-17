@@ -111,7 +111,10 @@ $departments = \app\models\Departments::find()->all();
                                                 <select id="contact_manager_id" name="manager_id" class="form-control select2-single">
                                                     <option class="select-placeholder" value="" disabled selected>Ответственный</option>
                                                     <?php
-                                                    $users = User::find()->where(['role'=>5])->all();
+                                                    $users = User::find()->where(['role'=>5])
+	                                                    ->orWhere(['role'=>15])
+	                                                    ->orWhere(['role'=>10])
+	                                                    ->all();
                                                     foreach ($users as  $user) {
                                                         echo '<option value="'.$user->id.'">'.$user->firstname.' '.$user->lastname.'</option>';
                                                     }

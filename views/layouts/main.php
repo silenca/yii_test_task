@@ -286,6 +286,7 @@ else {
             <script type="text/javascript">
                 var userRole = <?= json_encode($this->params['user_role']); ?>;
                 var userId = <?= $this->params['user_id']; ?>;
+                var contactStatusLead = <?= $this->params['contact_status_lead'];?>
             </script>
         <?php endif; ?>
 
