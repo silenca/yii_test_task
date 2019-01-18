@@ -3,11 +3,18 @@ namespace app\controllers;
 
 use yii\log\Logger;
 use yii\web\Request;
-use yii\web\Response;
 
 class SocialController extends BaseController
 {
     const FB_MODE_SUBSCRIBE = 'subscribe';
+
+    public function beforeAction($action)
+    {
+        if($this->action->id == 'fb') {
+            $this->enableCsrfValidation = false;
+        }
+        return true;
+    }
 
     public function actionFb()
     {
