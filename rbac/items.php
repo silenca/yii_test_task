@@ -54,6 +54,9 @@ return [
     'attraction_channel' => [
         'type' => 2,
     ],
+    'sip_channel' => [
+        'type' => 2,
+    ],
     'manager' => [
         'type' => 1,
         'ruleName' => 'userRole',
@@ -100,6 +103,7 @@ return [
             'edit_tag',
             'use_archived_tags',
             'attraction_channel',
+            'sip_channel',
         ],
     ],
     'supervisor' => [
