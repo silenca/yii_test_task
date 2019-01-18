@@ -109,7 +109,7 @@ CODE
                     if(!empty($visitStatus['error'])){
                         echo "Error update status visit " . $contactsVisit->medium_oid . $visitStatus['error'] . "\n";
                     }else{
-                        if($visitStatus == ContactsVisits::STATUS_TAKE_PLACE_MEDIUM){
+                        if($visitStatus['data'] == ContactsVisits::STATUS_TAKE_PLACE_MEDIUM){
                             $contactsVisit->status = ContactsVisits::STATUS_TAKE_PLACE;
                             if($contactsVisit->save() && $contactsVisit->contact){
                                 $contactsVisit->contact->status = strval(Contact::CONTACT);
