@@ -125,7 +125,8 @@ $departments = \app\models\Departments::find()->all();
                                             <div class="input-group">
                                                 <label class="input-group-addon primary" for="contact_status"><i
                                                             class="fa fa-fw fa-list-alt"></i></label>
-                                                <select id="contact_status" name="status" class="form-control">
+                                                <select id="contact_status" name="status" class="form-control"
+                                                    <?php echo (!Yii::$app->user->can('editStatusContact') ? 'disabled="disabled"':'');?>>
                                                     <option class="select-placeholder" value="" disabled selected>
                                                         Статус
                                                     </option>

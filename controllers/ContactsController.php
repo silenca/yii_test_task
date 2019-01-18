@@ -453,15 +453,10 @@ class ContactsController extends BaseController
                     if ($contact->is_deleted) {
                         $contact->is_deleted = 0;
                     }
-                    if (!$contact->medium_oid) {
-                        if (!empty($contact->status) && $contact->status === Contact::CONTACT) {
-                            $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
-                        }
-                    } else {
+                    if (!$contact->medium_oid && $contact_form->status == Contact::CONTACT) {
+                        $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
+                    } elseif($contact_form->status == Contact::CONTACT) {
                         $contact->medium_oid = Contact::updateMediumObject($contact->medium_oid, $contact_form->attributes);
-                        if (!empty($contact->status) && $contact->status === Contact::CONTACT) {
-                            $contact->medium_oid = Contact::updateMediumObject($contact->medium_oid, $contact_form->attributes);
-                        }
                     }
                     if ($contact->manager_id !== Yii::$app->user->identity->getId() && !Yii::$app->user->can('supervisor') && !Yii::$app->user->can('admin')) {
                         $contact_form->manager_id = $contact->manager_id;
@@ -479,13 +474,16 @@ class ContactsController extends BaseController
                     if(empty($post['manager_id'])){
                         $contact_form->manager_id = Yii::$app->user->identity->id;
                     }
-                    if ((!empty($contact_form->status) && $contact_form->status == Contact::CONTACT)
+                    if ((!empty($contact_form->status) && $contact_form->status == Contact::CONTACT
+                            && !Yii::$app->user->can('editStatusContact'))
                         || empty($contact_form->status)
                     ) {
-//                        $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
                         $contact_form->status = Contact::LEAD;
                     }
 
+                    if(Yii::$app->user->can('editStatusContact') && $contact_form->status == Contact::CONTACT){
+                        $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
+                    }
                 }
                 unset($post['_csrf'], $post['id']);
                 $contact->attributes = $contact_form->attributes;
