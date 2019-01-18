@@ -659,6 +659,14 @@ function visitPlanning(){
         });
     });
 
+    $('#modalAddContact .close').on('click', function (e) {
+		$('#contact-action').selectpicker('val', 0);
+		$forms = $('#contact-actions').find('.contact-action');
+		$.each($forms, function(i, form) {
+			$(form).hide();
+		});
+	});
+
     $('#speciality').on('change', function (e) {
 		visitPlanningModal();
 	});
