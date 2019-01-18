@@ -11,4 +11,10 @@ return [
 
     'crm_host' => 'http://127.0.0.1:8086',
     'call_crm_host' => 'http://sip3.openrussia.org/',
+
+    'fb' => [
+        'hub_verify_token' => 'myToken',
+        'public' => '',
+        'secret' => '',
+    ],
 ];
