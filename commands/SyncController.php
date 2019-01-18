@@ -4,9 +4,8 @@ namespace app\commands;
 use app\controllers\ContactsController;
 use app\models\{Contact, ContactsVisits, Speciality};
 use app\models\helpers\MediumLogsApi;
-use yii\httpclient\Client;
+use yii\httpclient\{Client, Exception as ClientException};
 use yii\console\Controller;
-use yii\web\HttpException;
 use Yii;
 
 class SyncController extends Controller
@@ -95,8 +94,12 @@ CODE
             } else{
                 echo 'No data on Medium';
             }
-        } catch(HttpException $ex) {
-            echo $ex;
+        } catch(ClientException $ex) {
+            echo implode(PHP_EOL, [
+                'Error quering medium',
+                $ex->getMessage(),
+                $ex->getTraceAsString(),
+            ]).PHP_EOL.PHP_EOL;
         }
     }
 
