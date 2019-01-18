@@ -1093,44 +1093,42 @@ class ContactsController extends BaseController
 
     public static function updateContact($contact)
     {
-        $localContact = null;
-        $oid = $contact['iod'] ?? 0;
+        $existingContact = null;
+        $oid = $contact['oid'] ?? 0;
         if($oid) {
-            $localContact = Contact::findOne(['medium_oid' => $oid]);
-        }
-
-        $isNew = !!$localContact;
-
-        if($localContact && Contact::checkLatestUpdate($localContact)){
-            return Contact::updateMediumObject($localContact->attributes['medium_oid'], $localContact->attributes);
-        } else{
-            $newContact = $localContact ?? new Contact();
-
-            list($surname, $name, $middle_name) = explode(' ', $contact['FIO']);
-            $newContact->setAttributes([
-                'name' => $name,
-                'surname' => $surname,
-                'middle_name' => $middle_name,
-                'first_phone' => $contact['Phone'],
-                'city' => $contact['City'],
-                'first_email' => $contact['Email'],
-            ]);
-
-            $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s', $contact['Birth']);
-            if($birthday) {
-                $newContact->birthday =  $birthday->format('Y-m-d');
-            }
-
-            $newContact->medium_oid = $contact['oid'];
-            $newContact->status = Contact::$statuses[Contact::CONTACT];
-            $newContact->is_broadcast = $isNew ? null : $newContact->is_broadcast;
-
-            if($newContact->save()) {
-                return $newContact->medium_oid;
+            $existingContact = Contact::findOne(['medium_oid' => $oid]);
+            if($existingContact->lastSyncDate > $contact['update']) {
+                return $oid;
             }
         }
 
-        return ['errors' => $newContact->getErrors(),'data' => $newContact->toArray()];
+        if(!$existingContact) {
+            $existingContact = new Contact();
+            $existingContact->is_broadcast = null;
+            $existingContact->medium_oid = $contact['oid'];
+            $existingContact->status = Contact::$statuses[Contact::CONTACT];
+        }
+
+        list($surname, $name, $middle_name) = explode(' ', $contact['FIO']);
+        $existingContact->setAttributes([
+            'name' => $name,
+            'surname' => $surname,
+            'middle_name' => $middle_name,
+            'first_phone' => $contact['Phone'],
+            'city' => $contact['City'],
+            'first_email' => $contact['Email'],
+        ]);
+
+        $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s', $contact['Birth']);
+        if($birthday) {
+            $existingContact->birthday =  $birthday->format('Y-m-d');
+        }
+
+        if($existingContact->save()) {
+            return $existingContact->medium_oid;
+        }
+
+        return ['errors' => $existingContact->getErrors(),'data' => $existingContact->toArray()];
     }
 
     public function actionContacts()

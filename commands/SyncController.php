@@ -52,21 +52,43 @@ CODE
 
             $response = $client
                             ->createRequest()
-                                ->addHeaders(['content-type' => 'application/x-www-form-urlencoded'])
+                                ->addHeaders(['Content-type' => 'application/x-www-form-urlencoded'])
                                 ->setUrl($url)
                                 ->setContent($data)
                                 ->send();
             $response->setFormat(Client::FORMAT_XML);
             $log->setResponse($response->getContent());
 
-            // Hack for invalid XML response
+            // Hack for parsing invalid XML response
             $response->setContent('<root>'.$response->getContent().'</root>');
 
             $contactsSaved = [];
             $cnt = 0;
-            if(!empty($response->getData())){
-                foreach ($response->getData()['OBJECT'] as $contact) {
-                    $contactsSaved[$cnt]['contact_oid'] = ContactsController::updateContact($contact['@attributes']);
+
+            $contactsData = $response->getData();
+            $contacts = [];
+            switch(count($contactsData['OBJECT'] ?? [])) {
+                case 0:
+                    echo 'No data on Medium';
+                    break;
+                case 1:
+                    $contacts[] = $contactsData['OBJECT']['@attributes'];
+                    break;
+                default:
+                    $contacts = array_reduce($contactsData['OBJECT'], function($list, $item){
+                        if($item['@attributes']['oid']) {
+                            $list[$item['@attributes']['oid']] = $item['@attributes'];
+                        } else {
+                            $list[] = $item['@attributes'];
+                        }
+                        return $list;
+                    }, $contacts);
+                    break;
+            }
+
+            if(count($contacts)){
+                foreach($contacts as $contact) {
+                    $contactsSaved[$cnt]['contact_oid'] = ContactsController::updateContact($contact);
                     $contactsSaved['count'] = $cnt++;
                 }
                 print_r($contactsSaved);
