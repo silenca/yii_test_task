@@ -1,6 +1,7 @@
 <?php
 namespace app\controllers;
 
+use yii\log\Logger;
 use yii\web\Request;
 use yii\web\Response;
 
@@ -16,6 +17,15 @@ class SocialController extends BaseController
                 return $this->getFbSubscribeResponse($request);
             }
 
+            $fbPayload = json_decode($request->getRawBody(), true);
+            $action = 'registerFb'.ucfirst($fbPayload['field'] ?? '');
+            if(method_exists($this, $action)) {
+                return $this->$action($fbPayload['value']);
+            } else {
+                $this->log(['payload' => $fbPayload], 'fb');
+            }
+
+            return '';
         } catch(\Exception $e) {
             echo $e->getMessage();die;
         }
@@ -34,5 +44,16 @@ class SocialController extends BaseController
         }
 
         return '';
+    }
+
+    protected function registerFbLeadgen(array $data = [])
+    {
+        $this->log(['data' => $data], 'fb');
+        return '';
+    }
+
+    protected function log($data, $type)
+    {
+        \Yii::getLogger()->log($data, Logger::LEVEL_INFO, 'app.socials.'.$type);
     }
 }

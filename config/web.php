@@ -67,6 +67,12 @@ $config = [
                         'subject' => 'Database errors at example.com',
                     ],
                 ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'categories' => ['app.socials.*'],
+                    'logFile' => '@runtime/logs/socials.log',
+                    'logVars' => []
+                ],
             ],
         ],
         'db' => require(__DIR__ . '/db.php'),
