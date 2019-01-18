@@ -4,7 +4,9 @@ namespace app\commands;
 use app\controllers\ContactsController;
 use app\models\{Contact, ContactsVisits, Speciality};
 use app\models\helpers\MediumLogsApi;
-use yii\httpclient\{Client, Exception as ClientException};
+use yii\httpclient\{
+    Client, Exception as ClientException, Request, Response, XmlFormatter, XmlParser
+};
 use yii\console\Controller;
 use Yii;
 
@@ -58,40 +60,12 @@ CODE
             $response->setFormat(Client::FORMAT_XML);
             $log->setResponse($response->getContent());
 
-            // Hack for parsing invalid XML response
-            $response->setContent('<root>'.$response->getContent().'</root>');
-
-            $contactsSaved = [];
-            $cnt = 0;
-
-            $contactsData = $response->getData();
-            $contacts = [];
-            switch(count($contactsData['OBJECT'] ?? [])) {
-                case 0:
-                    echo 'No data on Medium';
-                    break;
-                case 1:
-                    $contacts[] = $contactsData['OBJECT']['@attributes'];
-                    break;
-                default:
-                    $contacts = array_reduce($contactsData['OBJECT'], function($list, $item){
-                        if($item['@attributes']['oid']) {
-                            $list[$item['@attributes']['oid']] = $item['@attributes'];
-                        } else {
-                            $list[] = $item['@attributes'];
-                        }
-                        return $list;
-                    }, $contacts);
-                    break;
-            }
-
-            if(count($contacts)){
+            $contacts = $this->parseContactsXml($response->getContent());
+            if(count($contacts)) {
                 foreach($contacts as $contact) {
-                    $contactsSaved[$cnt]['contact_oid'] = ContactsController::updateContact($contact);
-                    $contactsSaved['count'] = $cnt++;
+                    ContactsController::updateContact($contact);
                 }
-                print_r($contactsSaved);
-            } else{
+            } else {
                 echo 'No data on Medium';
             }
         } catch(ClientException $ex) {
@@ -150,6 +124,23 @@ CODE
                     }
                 }
             }
+        }
+    }
+
+    protected function parseContactsXml(string $xml)
+    {
+        $oXml = new \SimpleXMLElement('<xml>'.$xml.'</xml>');
+
+        if($oXml) {
+            return array_reduce($oXml->xpath('OBJECT'), function($list, \SimpleXMLElement $el){
+                $idx = count($list);
+                foreach($el->attributes() as $name=>$value) {
+                    $list[$idx][$name] = (string) $value;
+                }
+                return $list;
+            }, []);
+        } else {
+            return [];
         }
     }
 }
