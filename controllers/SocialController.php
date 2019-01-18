@@ -22,14 +22,25 @@ class SocialController extends BaseController
         try {
             if($request->get('hub_mode')) {
                 return $this->getFbSubscribeResponse($request);
-            }
-
-            $fbPayload = json_decode($request->getRawBody(), true);
-            $action = 'registerFb'.ucfirst($fbPayload['field'] ?? '');
-            if(method_exists($this, $action)) {
-                return $this->$action($fbPayload['value']);
             } else {
-                $this->log(['payload' => $fbPayload], 'fb');
+                $fbPayload = json_decode($request->getRawBody(), true);
+
+                $fbObject = $fbPayload['object'];
+                foreach ($fbPayload['entry']['changes'] as $fbChange) {
+                    try {
+                        $action = 'registerFb' . ucfirst($fbObject) . ucfirst($fbChange['field'] ?? '');
+                        if (method_exists($this, $action)) {
+                            $this->$action($fbChange['value']);
+                        } else {
+                            $this->log(['item' => $fbChange], 'fb');
+                        }
+                    } catch (\Exception $e) {
+                        $this->log(['error' => [
+                            $e->getMessage(),
+                            $e->getTraceAsString(),
+                        ], 'item' => $fbChange], 'fb');
+                    }
+                }
             }
 
             return '';
@@ -53,7 +64,7 @@ class SocialController extends BaseController
         return '';
     }
 
-    protected function registerFbLeadgen(array $data = [])
+    protected function registerFbPageLeadgen(array $data = [])
     {
         $this->log(['data' => $data], 'fb');
         return '';
