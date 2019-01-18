@@ -1106,7 +1106,6 @@ class ContactsController extends BaseController
             $existingContact = new Contact();
             $existingContact->is_broadcast = null;
             $existingContact->medium_oid = $contact['oid'];
-            $existingContact->status = Contact::$statuses[Contact::CONTACT];
         }
 
         list($surname, $name, $middle_name) = explode(' ', $contact['FIO']);
@@ -1117,6 +1116,7 @@ class ContactsController extends BaseController
             'first_phone' => $contact['Phone'] ?? '',
             'city' => $contact['City'] ?? '',
             'first_email' => $contact['Email'] ?? '',
+            'status' => Contact::CONTACT,
         ]);
 
         $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s', $contact['Birth'] ?? null);
