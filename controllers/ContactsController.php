@@ -456,7 +456,7 @@ class ContactsController extends BaseController
                     if (!$contact->medium_oid && $contact_form->status == Contact::CONTACT) {
                         $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
                     } elseif($contact_form->status == Contact::CONTACT) {
-                        $contact->medium_oid = Contact::updateMediumObject($contact->medium_oid, $contact_form->attributes);
+                        Contact::updateMediumObject($contact->medium_oid, $contact_form->attributes);
                     }
                     if ($contact->manager_id !== Yii::$app->user->identity->getId() && !Yii::$app->user->can('supervisor') && !Yii::$app->user->can('admin')) {
                         $contact_form->manager_id = $contact->manager_id;
