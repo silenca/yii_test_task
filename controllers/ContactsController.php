@@ -1097,7 +1097,7 @@ class ContactsController extends BaseController
         $oid = $contact['oid'] ?? 0;
         if($oid) {
             $existingContact = Contact::findOne(['medium_oid' => $oid]);
-            if($existingContact->lastSyncDate > $contact['update']) {
+            if($existingContact && ($existingContact->lastSyncDate > $contact['update'])) {
                 return $oid;
             }
         }
@@ -1114,12 +1114,12 @@ class ContactsController extends BaseController
             'name' => $name,
             'surname' => $surname,
             'middle_name' => $middle_name,
-            'first_phone' => $contact['Phone'],
-            'city' => $contact['City'],
-            'first_email' => $contact['Email'],
+            'first_phone' => $contact['Phone'] ?? '',
+            'city' => $contact['City'] ?? '',
+            'first_email' => $contact['Email'] ?? '',
         ]);
 
-        $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s', $contact['Birth']);
+        $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s', $contact['Birth'] ?? null);
         if($birthday) {
             $existingContact->birthday =  $birthday->format('Y-m-d');
         }
