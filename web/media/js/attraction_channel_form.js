@@ -248,7 +248,7 @@ $(document).ready(function() {
         }
     });
 
-    $attraction_channel_data_form.find('input[type=text], input[type=email], #attraction_channel_type, #attraction_channel_integration_type')
+    $attraction_channel_data_form.find('input[type=text], input[type=email], #attraction_channel_integration_type')
         .on('change', function () {
         if (bind_inputs[$(this).attr('name')] !== $(this).val()) {
             bind_inputs[$(this).attr('name')] = $(this).val();

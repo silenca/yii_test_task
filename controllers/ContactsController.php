@@ -1089,6 +1089,46 @@ class ContactsController extends BaseController
         return ['errors' => $newContact->getErrors(),'data' => $newContact->toArray()];
     }
 
+    public static function updateContact($contact)
+    {
+        $existingContact = null;
+        $oid = $contact['oid'] ?? 0;
+        if($oid) {
+            $existingContact = Contact::findOne(['medium_oid' => $oid]);
+            if($existingContact && ($existingContact->lastSyncDate > $contact['update'])) {
+                return $oid;
+            }
+        }
+
+        if(!$existingContact) {
+            $existingContact = new Contact();
+            $existingContact->is_broadcast = null;
+            $existingContact->medium_oid = $contact['oid'];
+        }
+
+        list($surname, $name, $middle_name) = explode(' ', $contact['FIO']);
+        $existingContact->setAttributes([
+            'name' => $name,
+            'surname' => $surname,
+            'middle_name' => $middle_name,
+            'first_phone' => $contact['Phone'] ?? '',
+            'city' => $contact['City'] ?? '',
+            'first_email' => $contact['Email'] ?? '',
+            'status' => Contact::CONTACT,
+        ]);
+
+        $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s', $contact['Birth'] ?? null);
+        if($birthday) {
+            $existingContact->birthday =  $birthday->format('Y-m-d');
+        }
+
+        if($existingContact->save()) {
+            return $existingContact->medium_oid;
+        }
+
+        return ['errors' => $existingContact->getErrors(),'data' => $existingContact->toArray()];
+    }
+
     public function actionContacts()
     {
         $contacts = Contact::getMediumObjects();
