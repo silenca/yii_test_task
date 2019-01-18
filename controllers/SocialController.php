@@ -26,7 +26,7 @@ class SocialController extends BaseController
                 $fbPayload = json_decode($request->getRawBody(), true);
 
                 $fbObject = $fbPayload['object'];
-                foreach ($fbPayload['entry']['changes'] as $fbChange) {
+                foreach ($fbPayload['entry'][0]['changes'] as $fbChange) {
                     try {
                         $action = 'registerFb' . ucfirst($fbObject) . ucfirst($fbChange['field'] ?? '');
                         if (method_exists($this, $action)) {
