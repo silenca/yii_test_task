@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-  "content-hash": "9a0cd4bb19b122df3c9d8ff459082ab9",
+    "content-hash": "84dc7f17d6ca052b10f772dbaad8a482",
     "packages": [
         {
             "name": "cebe/markdown",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cebe/markdown.git",
-                "reference": "530bc7dcbdfea5ad2da030110ee3ac07cc797f90"
+                "reference": "eeb1bf622e80f337479e00a5db94c56e7cf1326b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cebe/markdown/zipball/530bc7dcbdfea5ad2da030110ee3ac07cc797f90",
-                "reference": "530bc7dcbdfea5ad2da030110ee3ac07cc797f90",
+                "url": "https://api.github.com/repos/cebe/markdown/zipball/eeb1bf622e80f337479e00a5db94c56e7cf1326b",
+                "reference": "eeb1bf622e80f337479e00a5db94c56e7cf1326b",
                 "shasum": ""
             },
             "require": {
@@ -64,7 +64,7 @@
                 "markdown",
                 "markdown-extra"
             ],
-            "time": "2018-06-13T20:42:05+00:00"
+            "time": "2018-12-10 09:41:35"
         },
         {
             "name": "doctrine/lexer",
@@ -124,20 +124,20 @@
                 "parser",
                 "php"
             ],
-            "time": "2018-10-21T19:22:05+00:00"
+            "time": "2018-10-21 19:22:05"
         },
         {
             "name": "egulias/email-validator",
-            "version": "2.1.6",
+            "version": "2.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/egulias/EmailValidator.git",
-                "reference": "0578b32b30b22de3e8664f797cf846fc9246f786"
+                "reference": "709f21f92707308cdf8f9bcfa1af4cb26586521e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/0578b32b30b22de3e8664f797cf846fc9246f786",
-                "reference": "0578b32b30b22de3e8664f797cf846fc9246f786",
+                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/709f21f92707308cdf8f9bcfa1af4cb26586521e",
+                "reference": "709f21f92707308cdf8f9bcfa1af4cb26586521e",
                 "shasum": ""
             },
             "require": {
@@ -181,7 +181,7 @@
                 "validation",
                 "validator"
             ],
-            "time": "2018-09-25T20:47:26+00:00"
+            "time": "2018-12-04T22:38:24+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -231,17 +231,112 @@
             "time": "2018-02-23T01:58:20+00:00"
         },
         {
+            "name": "facebook/graph-sdk",
+            "version": "5.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/facebook/php-graph-sdk.git",
+                "reference": "2d8250638b33d73e7a87add65f47fabf91f8ad9b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/facebook/php-graph-sdk/zipball/2d8250638b33d73e7a87add65f47fabf91f8ad9b",
+                "reference": "2d8250638b33d73e7a87add65f47fabf91f8ad9b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4|^7.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "~5.0",
+                "mockery/mockery": "~0.8",
+                "phpunit/phpunit": "~4.0"
+            },
+            "suggest": {
+                "guzzlehttp/guzzle": "Allows for implementation of the Guzzle HTTP client",
+                "paragonie/random_compat": "Provides a better CSPRNG option in PHP 5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Facebook\\": "src/Facebook/"
+                },
+                "files": [
+                    "src/Facebook/polyfills.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Facebook Platform"
+            ],
+            "authors": [
+                {
+                    "name": "Facebook",
+                    "homepage": "https://github.com/facebook/php-graph-sdk/contributors"
+                }
+            ],
+            "description": "Facebook SDK for PHP",
+            "homepage": "https://github.com/facebook/php-graph-sdk",
+            "keywords": [
+                "facebook",
+                "sdk"
+            ],
+            "time": "2018-12-11 22:56:31"
+        },
+        {
+            "name": "facebook/php-ads-sdk",
+            "version": "3.2.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/facebook/facebook-php-business-sdk.git",
+                "reference": "0064bac15f069c89d5b9dcca8ec477379eb21a51"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/facebook/facebook-php-business-sdk/zipball/0064bac15f069c89d5b9dcca8ec477379eb21a51",
+                "reference": "0064bac15f069c89d5b9dcca8ec477379eb21a51",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.6",
+                "symfony/finder": "~2.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FacebookAds\\": "src/FacebookAds/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "PHP SDK for Facebook Business",
+            "homepage": "https://developers.facebook.com/",
+            "keywords": [
+                "ads",
+                "business",
+                "facebook",
+                "instagram",
+                "page",
+                "sdk"
+            ],
+            "time": "2019-01-15T23:19:09+00:00"
+        },
+        {
             "name": "mobiledetect/mobiledetectlib",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/serbanghita/Mobile-Detect.git",
-                "reference": "9713866c051565de918b19c4ad03535af1e00e87"
+                "reference": "62e1d5e23ed9f8ddbed1fcc52881bc7aec493d26"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/serbanghita/Mobile-Detect/zipball/9713866c051565de918b19c4ad03535af1e00e87",
-                "reference": "9713866c051565de918b19c4ad03535af1e00e87",
+                "url": "https://api.github.com/repos/serbanghita/Mobile-Detect/zipball/62e1d5e23ed9f8ddbed1fcc52881bc7aec493d26",
+                "reference": "62e1d5e23ed9f8ddbed1fcc52881bc7aec493d26",
                 "shasum": ""
             },
             "require": {
@@ -280,7 +375,7 @@
                 "mobile detector",
                 "php mobile detect"
             ],
-            "time": "2018-10-05T15:14:50+00:00"
+            "time": "2018-11-28 05:58:43"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -288,12 +383,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/swiftmailer/swiftmailer.git",
-              "reference": "ddd5658c487ff2dd4c6cbfdeeb46505962adb6c1"
+                "reference": "e8c3ed713d199760c1730fb89a38cefe7f54c4ae"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/ddd5658c487ff2dd4c6cbfdeeb46505962adb6c1",
-              "reference": "ddd5658c487ff2dd4c6cbfdeeb46505962adb6c1",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/e8c3ed713d199760c1730fb89a38cefe7f54c4ae",
+                "reference": "e8c3ed713d199760c1730fb89a38cefe7f54c4ae",
                 "shasum": ""
             },
             "require": {
@@ -302,7 +397,7 @@
             },
             "require-dev": {
                 "mockery/mockery": "~0.9.1",
-                "symfony/phpunit-bridge": "~3.3@dev"
+                "symfony/phpunit-bridge": "^3.4.19|^4.1.8"
             },
             "suggest": {
                 "ext-intl": "Needed to support internationalized email addresses",
@@ -339,7 +434,7 @@
                 "mail",
                 "mailer"
             ],
-          "time": "2018-11-20T07:53:32+00:00"
+            "time": "2018-12-11 07:20:26"
         },
         {
             "name": "twbs/bootstrap",
@@ -389,12 +484,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/yii2-framework.git",
-              "reference": "617cf48533e45879a2550864db40196f09cde731"
+                "reference": "55b54a0234d918666f8afe123d0346da09adbd9d"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/617cf48533e45879a2550864db40196f09cde731",
-              "reference": "617cf48533e45879a2550864db40196f09cde731",
+                "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/55b54a0234d918666f8afe123d0346da09adbd9d",
+                "reference": "55b54a0234d918666f8afe123d0346da09adbd9d",
                 "shasum": ""
             },
             "require": {
@@ -481,7 +576,7 @@
                 "framework",
                 "yii2"
             ],
-          "time": "2018-11-19T22:12:17+00:00"
+            "time": "2019-01-09 11:51:31"
         },
         {
             "name": "yiisoft/yii2-bootstrap",
@@ -578,7 +673,7 @@
                 "extension installer",
                 "yii2"
             ],
-            "time": "2018-08-25T10:44:34+00:00"
+            "time": "2018-08-25 10:44:34"
         },
         {
             "name": "yiisoft/yii2-httpclient",
@@ -625,7 +720,7 @@
                 "httpclient",
                 "yii2"
             ],
-            "time": "2018-10-24T12:14:04+00:00"
+            "time": "2018-10-24 12:14:04"
         },
         {
             "name": "yiisoft/yii2-swiftmailer",
@@ -675,7 +770,7 @@
                 "swiftmailer",
                 "yii2"
             ],
-            "time": "2018-09-23T22:01:14+00:00"
+            "time": "2018-09-23 22:01:14"
         }
     ],
     "packages-dev": [
@@ -685,12 +780,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fzaninotto/Faker.git",
-                "reference": "82daf83b19d934291d4c2f2a22a4b3e0aacc68dd"
+                "reference": "06ac73da6517f58afe998ed46f93825d7a277d8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/82daf83b19d934291d4c2f2a22a4b3e0aacc68dd",
-                "reference": "82daf83b19d934291d4c2f2a22a4b3e0aacc68dd",
+                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/06ac73da6517f58afe998ed46f93825d7a277d8d",
+                "reference": "06ac73da6517f58afe998ed46f93825d7a277d8d",
                 "shasum": ""
             },
             "require": {
@@ -727,7 +822,7 @@
                 "faker",
                 "fixtures"
             ],
-            "time": "2018-09-26T15:12:10+00:00"
+            "time": "2018-11-22 13:56:51"
         },
         {
             "name": "iiifx-production/yii2-autocomplete-helper",
@@ -777,11 +872,11 @@
                 "yii",
                 "yii2"
             ],
-            "time": "2017-07-25T20:09:43+00:00"
+            "time": "2017-07-25 20:09:43"
         },
         {
             "name": "phpspec/php-diff",
-            "version": "dev-master",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/php-diff.git",
@@ -861,7 +956,7 @@
                 "yii2"
             ],
             "abandoned": "codeception/codeception",
-            "time": "2018-04-26T18:21:40+00:00"
+            "time": "2018-04-26 18:21:40"
         },
         {
             "name": "yiisoft/yii2-debug",
@@ -869,17 +964,23 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/yii2-debug.git",
-                "reference": "383c3b295b7e207e658aeb71959d086618cae2e7"
+                "reference": "f1f455565400eba978ef483015b7e0d5fed8b971"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-debug/zipball/383c3b295b7e207e658aeb71959d086618cae2e7",
-                "reference": "383c3b295b7e207e658aeb71959d086618cae2e7",
+                "url": "https://api.github.com/repos/yiisoft/yii2-debug/zipball/f1f455565400eba978ef483015b7e0d5fed8b971",
+                "reference": "f1f455565400eba978ef483015b7e0d5fed8b971",
                 "shasum": ""
             },
             "require": {
-                "yiisoft/yii2": "~2.0.13",
-                "yiisoft/yii2-bootstrap": "~2.0.0"
+                "ext-mbstring": "*",
+                "php": ">=5.4",
+                "yiisoft/yii2": "~2.0.13"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "<7",
+                "yiisoft/yii2-coding-standards": "~2.0",
+                "yiisoft/yii2-swiftmailer": "*"
             },
             "type": "yii2-extension",
             "extra": {
@@ -900,6 +1001,10 @@
                 {
                     "name": "Qiang Xue",
                     "email": "qiang.xue@gmail.com"
+                },
+                {
+                    "name": "Simon Karlen",
+                    "email": "simi.albi@outlook.com"
                 }
             ],
             "description": "The debugger extension for the Yii framework",
@@ -908,7 +1013,7 @@
                 "debugger",
                 "yii2"
             ],
-            "time": "2018-09-23T21:41:56+00:00"
+            "time": "2018-12-14 19:01:42"
         },
         {
             "name": "yiisoft/yii2-faker",
@@ -955,31 +1060,39 @@
                 "faker",
                 "yii2"
             ],
-            "time": "2018-05-04T06:55:41+00:00"
+            "time": "2018-05-04 06:55:41"
         },
         {
             "name": "yiisoft/yii2-gii",
-            "version": "2.0.0-beta",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/yii2-gii.git",
-                "reference": "25c74e5f8f5c75bc3d76c26c44bcd132cb3af212"
+                "reference": "b7becd5f43f610048b30c13d9ac29589b29b9661"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-gii/zipball/25c74e5f8f5c75bc3d76c26c44bcd132cb3af212",
-                "reference": "25c74e5f8f5c75bc3d76c26c44bcd132cb3af212",
+                "url": "https://api.github.com/repos/yiisoft/yii2-gii/zipball/b7becd5f43f610048b30c13d9ac29589b29b9661",
+                "reference": "b7becd5f43f610048b30c13d9ac29589b29b9661",
                 "shasum": ""
             },
             "require": {
-                "phpspec/php-diff": ">=1.0.2",
-                "yiisoft/yii2": "*",
-                "yiisoft/yii2-bootstrap": "*"
+                "phpspec/php-diff": "^1.1.0",
+                "yiisoft/yii2": "~2.0.14"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "<7",
+                "yiisoft/yii2-coding-standards": "~2.0"
             },
             "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
-                    "yii\\gii\\": ""
+                    "yii\\gii\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -989,9 +1102,7 @@
             "authors": [
                 {
                     "name": "Qiang Xue",
-                    "email": "qiang.xue@gmail.com",
-                    "homepage": "http://www.yiiframework.com/",
-                    "role": "Founder and project lead"
+                    "email": "qiang.xue@gmail.com"
                 }
             ],
             "description": "The Gii extension for the Yii framework",
@@ -1000,7 +1111,7 @@
                 "gii",
                 "yii2"
             ],
-            "time": "2014-04-13T21:58:59+00:00"
+            "time": "2018-12-10 08:30:52"
         }
     ],
     "aliases": [],
@@ -1014,8 +1125,8 @@
         "php": ">=7.1.0",
         "ext-json": "*",
         "ext-curl": "*",
-      "ext-simplexml": "^7.2",
-      "ext-xml": "*"
+        "ext-simplexml": "^7.2",
+        "ext-xml": "*"
     },
     "platform-dev": []
 }
