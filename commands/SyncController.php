@@ -2,7 +2,9 @@
 namespace app\commands;
 
 use app\controllers\ContactsController;
-use app\models\{Contact, ContactsVisits, Speciality};
+use app\models\{
+    Contact, ContactsVisits, Speciality, Vars
+};
 use app\models\helpers\MediumLogsApi;
 use yii\httpclient\{
     Client, Exception as ClientException, Request, Response, XmlFormatter, XmlParser
@@ -33,20 +35,28 @@ CODE
 
     const MEDIUM_DATE_FORMAT = 'Y-m-d\TH:i:s';
 
+    const VAR_LAST_SYNC_TS = 'lastSyncTs';
+
     public function actionMedium()
     {
-        $client = new Client();
+        $lastSync = Vars::get(self::VAR_LAST_SYNC_TS, 0);
 
-        $dateTo = (new \DateTime())->format(self::MEDIUM_DATE_FORMAT);
-        $dateFrom = (new \DateTime())->modify('- 2 minutes')->format(self::MEDIUM_DATE_FORMAT);
+        if(!$lastSync) {
+            $dateFrom = (new \DateTime())->modify('- 2 minutes');
+        } else {
+            $dateFrom = \DateTime::createFromFormat('U', $lastSync);
+        }
+        $dateTo = (new \DateTime());
+
+        $client = new Client();
         try {
             $url = self::MEDIUM_FETCH_URL;
             $data = str_replace([
                 '{DATE_FROM}',
                 '{DATE_TO}',
             ], [
-                $dateFrom,
-                $dateTo,
+                $this->dateString($dateFrom),
+                $this->dateString($dateTo),
             ], self::MEDIUM_FETCH_DATA_TPL);
 
             $log = MediumLogsApi::setRequestData($url, $data);
@@ -68,6 +78,8 @@ CODE
             } else {
                 echo 'No data on Medium';
             }
+
+            Vars::set(self::VAR_LAST_SYNC_TS, time());
         } catch(ClientException $ex) {
             echo implode(PHP_EOL, [
                 'Error quering medium',
@@ -125,6 +137,11 @@ CODE
                 }
             }
         }
+    }
+
+    protected function dateString(\DateTime $date)
+    {
+        return $date->format(self::MEDIUM_DATE_FORMAT);
     }
 
     protected function parseContactsXml(string $xml)
