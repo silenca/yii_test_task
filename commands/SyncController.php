@@ -47,6 +47,7 @@ CODE
             $dateFrom = \DateTime::createFromFormat('U', $lastSync);
         }
         $dateTo = (new \DateTime());
+        $lastSync = $dateTo->format('U') - 1;
 
         $client = new Client();
         try {
@@ -79,7 +80,7 @@ CODE
                 echo 'No data on Medium';
             }
 
-            Vars::set(self::VAR_LAST_SYNC_TS, time());
+            Vars::set(self::VAR_LAST_SYNC_TS, $lastSync);
         } catch(ClientException $ex) {
             echo implode(PHP_EOL, [
                 'Error quering medium',
