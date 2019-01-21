@@ -519,6 +519,10 @@ class Contact extends ActiveRecord
                     ИсточникИнфомации="' . $data['attraction_channel_id'] . '" />';
         $client = new Client([
             'baseUrl' => $url,
+            'requestConfig' => [
+                'format' => Client::FORMAT_XML,
+                'headers' => ['Content-type' => 'application/x-www-form-urlencoded']
+            ],
             'responseConfig' => [
                 'format' => Client::FORMAT_XML
             ]
