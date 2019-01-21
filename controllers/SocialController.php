@@ -1,12 +1,21 @@
 <?php
 namespace app\controllers;
 
+use Facebook\Facebook;
+use FacebookAds\Logger\CurlLogger;
+use FacebookAds\Object\Lead;
+use FacebookAds\Api as FbAdsApi;
 use yii\log\Logger;
 use yii\web\Request;
 
 class SocialController extends BaseController
 {
     const FB_MODE_SUBSCRIBE = 'subscribe';
+
+    /**
+     * @var FbAdsApi
+     */
+    protected $fbApiInitialized = false;
 
     public function beforeAction($action)
     {
@@ -20,6 +29,9 @@ class SocialController extends BaseController
     {
         $request = \Yii::$app->request;
         try {
+            if(!$this->initFbApi()) {
+                throw new \Exception('Can not initialize FB API');
+            }
             if($request->get('hub_mode')) {
                 return $this->getFbSubscribeResponse($request);
             } else {
@@ -66,8 +78,29 @@ class SocialController extends BaseController
 
     protected function registerFbPageLeadgen(array $data = [])
     {
-        $this->log(['data' => $data], 'fb');
+        $lead = (new Lead($data['leadgen_id']))->getSelf([], [])->exportAllData();
+        $this->log(['data' => $data, 'lead' => print_r($lead, true)], 'fb');
         return '';
+    }
+
+    protected function initFbApi()
+    {
+        if(!$this->fbApiInitialized) {
+            try {
+                $fbParams = \Yii::$app->params['fb'] ?? [];
+                FbAdsApi::init(
+                    $fbParams['appId'] ?? null,
+                    $fbParams['secret'] ?? null,
+                    $fbParams['accessToken'] ?? null
+                );
+                FbAdsApi::instance()->setLogger(new CurlLogger());
+                $this->fbApiInitialized = true;
+            } catch(\Exception $e) {
+                $this->fbApiInitialized = false;
+            }
+        }
+
+        return $this->fbApiInitialized;
     }
 
     protected function log($data, $type)
