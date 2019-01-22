@@ -19,6 +19,14 @@ class MediumApi
     public const CONTACT_URL = 'http://91.225.122.210:8080/api/H:1D13C88C20AA6C6/D:WORK/D:1D13C9303C946F9/C:1D45F18F27C737D';
     public const KEY_OBJECT = '/O:';
 
+    protected static $apiFieldsMap = [
+        'name' => 'FIO',
+        'E-mail' => 'Email',
+        'ТелефонМоб' => 'Phone',
+        'ДатаРождения' => 'Birth',
+        'Город' => 'City',
+    ];
+
     private function sendMedium($url, $data)
     {
         $log = MediumLogsApi::setRequestData($url, $data);
@@ -400,12 +408,17 @@ class MediumApi
             return array_reduce($oXml->xpath('OBJECT'), function($list, \SimpleXMLElement $el){
                 $idx = count($list);
                 foreach($el->attributes() as $name=>$value) {
-                    $list[$idx][$name] = (string) $value;
+                    $list[$idx][self::mapFieldName($name)] = (string) $value;
                 }
                 return $list;
             }, []);
         } else {
             return [];
         }
+    }
+
+    protected static function mapFieldName(string $name)
+    {
+        return self::$apiFieldsMap[$name] ?? $name;
     }
 }
