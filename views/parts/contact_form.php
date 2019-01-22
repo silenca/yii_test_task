@@ -205,7 +205,7 @@ $departments = \app\models\Departments::find()->all();
                                                    aria-expanded="true"><span>История</span></a>
                                             </li>
                                             <li class="script-tab">
-                                                <a data-toggle="tab" href="#script" aria-expanded="false"><span>Скрипт</span></a>
+                                                <a data-toggle="tab" href="#call_history" aria-expanded="false"><span>Звонки</span></a>
                                             </li>
                                         </ul>
                                         <!-- Tab panes -->
@@ -241,20 +241,11 @@ $departments = \app\models\Departments::find()->all();
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="tab-pane slide-left" id="script">
+                                            <div class="tab-pane slide-left" id="call_history">
                                                 <div class="row">
-                                                    <div class="panel panel-default contact-script-rel">
+                                                    <div class="panel panel-default">
                                                         <div class="panel-body">
-                                                            <div class="form-group">
-                                                                <div class="" style="height: 600px; overflow-y: auto">
-                                                                    <img
-                                                                        class="script_loader image-responsive-height m-t-45 demo-mw-100"
-                                                                        src="media/img/progress/progress.svg" alt="Progress"
-                                                                        style="display: none">
-                                                                    <div class="script_content text-left">
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                            <div class="calls_wrapper"></div>
                                                         </div>
                                                     </div>
                                                 </div>

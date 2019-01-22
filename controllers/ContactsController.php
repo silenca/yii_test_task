@@ -734,6 +734,8 @@ class ContactsController extends BaseController
         $contact_data['phones'] = Filter::dataImplode($contact->getPhoneValues());
         $contact_data['emails'] = Filter::dataImplode($contact->getEmailValues());
 
+        $contact_data['calls'] = Call::fetchByContactId($contact->id);
+
         $manager = User::findOne($contact_data['manager_id']);
         /**@var $manager User*/
         $contact_data['manager_name'] = $manager?$manager->firstname:'';

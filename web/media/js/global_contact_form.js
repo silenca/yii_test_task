@@ -461,6 +461,20 @@ function fillContactData(data, $form) {
                     // $('#contact_is_broadcast').attr('data-value', 0)
                 }
                 break;
+            case 'calls':
+                $('.calls_wrapper', $form).html('');
+                _.each(value, function(call, cId){
+                    $('.calls_wrapper', $form).append(
+                        '<div data-call-id="'+cId+'">'+
+                            '<p>Время: '+call.started+'</p>'+
+                            '<p>Тип: '+call.directionName+' - '+call.statusName+'</p>'+
+                            '<p>Менеджер: '+call.manager+'</p>'+
+                            (call.file?('<audio controls="" src="https://dopomogaplus.silencatech.com'+call.file+'" type="audio/mpeg"></audio>'):(''))+
+                            '<hr />'+
+                        '</div>'
+                    );
+                });
+                break;
             default:
                 if (value) {
                     $form.find('#contact_' + key).val(value).attr('data-value', value);
