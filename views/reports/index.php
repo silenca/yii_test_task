@@ -16,7 +16,7 @@ $this->params['active'] = 'reports';
     <div class="container-fluid container-fixed-lg bg-white">
         <ul class="breadcrumb">
             <li><a href="/">Главная</a></li>
-            <li><a href="/reports" class="active">Отчеты</a></li>
+            <li><a href="/reports/index" class="active">Отчеты</a></li>
         </ul>
         <div class="panel panel-transparent">
             <div class="panel-body">

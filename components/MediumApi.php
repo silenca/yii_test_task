@@ -202,7 +202,8 @@ class MediumApi
                 . 'attribute oidK { oda:right($ob/Кабинет/@link,15) },' . "\n"
                 . 'attribute date { $ob/@ДатаПриема },' . "\n"
                 . 'attribute Patient {$ob/@Пациент},' . "\n"
-                . 'attribute Phone {$ob/@Телефон}' . "\n"
+                . 'attribute Phone {$ob/@Телефон},' . "\n"
+                . 'attribute time {$ob/@ВремяПриема}' . "\n"
                 . "}";
             $response = $this->sendMediumPost($this->mediumApiDomain .'/api/' . $apiUrl . $this->doctorsVisit . $day, $data);
             if(!empty($response->getContent()) && mb_strcut($response->getContent(), 0, 2) != "<x>"){
@@ -289,7 +290,8 @@ class MediumApi
                     . 'attribute oidVizita { $ob/@oid },' . "\n"
                     . 'attribute date { $ob/@ДатаПриема },' . "\n"
                     . 'attribute Cabinet {$ob/@Кабинет},' . "\n"
-                    . 'attribute Status {$ob/@Статус}' . "\n"
+                    . 'attribute Status {$ob/@Статус},' . "\n"
+                    . 'attribute time {$ob/@ВремяПриема}' . "\n"
                     . '}';
             $response = $this->sendMediumPost($url, $data);
             if(!empty($response->getContent()) && mb_strcut($response->getContent(), 0, 2) != "<x>"){

@@ -204,9 +204,12 @@ class ContactsController extends BaseController
                     $doctorsVisit = Yii::$app->medium->doctorsVisit($visitDepartments->api_url, $visitDate);
                     if(!empty($doctorsVisit['data'])){
                         foreach ($doctorsVisit['data'] as $doctorVisit){
-                            $time = strtotime($doctorVisit['date']);
-                            if(isset($doctorsSchedule['data'][$doctorVisit['oidV']]['gr_time'][$time])){
-                                $doctorsSchedule['data'][$doctorVisit['oidV']]['gr_time'][$time]['class'] = 'disable';
+                            $timeStart = strtotime($doctorVisit['date']);
+                            $timeStop = $timeStart + $doctorVisit['time'] * 60;
+                            for($timeFor = $timeStart; $timeFor < $timeStop;$timeFor = $timeFor + 1800){
+                                if(isset($doctorsSchedule['data'][$doctorVisit['oidV']]['gr_time'][$timeFor])){
+                                    $doctorsSchedule['data'][$doctorVisit['oidV']]['gr_time'][$timeFor]['class'] = 'disable';
+                                }
                             }
                         }
                     }else{
@@ -224,9 +227,12 @@ class ContactsController extends BaseController
                     $cabinetsSchedule = Yii::$app->medium->cabinetSchedule($visitDepartments->api_url,$visitDate);
                     if(!empty($cabinetsSchedule['data'])){
                         foreach ($cabinetsSchedule['data'] as $cabinetSchedule){
-                            $time = strtotime($cabinetSchedule['date']);
-                            if(isset($cabinetsList['data'][$cabinetSchedule['oidK']]['gr_time'][$time])){
-                                $cabinetsList['data'][$cabinetSchedule['oidK']]['gr_time'][$time]['class'] = 'disable';
+                            $timeStartK = strtotime($cabinetSchedule['date']);
+                            $timeStopK = $timeStartK + $cabinetSchedule['time'] * 60;
+                            for($timeForK = $timeStartK; $timeForK < $timeStopK;$timeForK = $timeForK + 1800){
+                                if(isset($cabinetsList['data'][$cabinetSchedule['oidK']]['gr_time'][$timeForK])){
+                                    $cabinetsList['data'][$cabinetSchedule['oidK']]['gr_time'][$timeForK]['class'] = 'disable';
+                                }
                             }
                         }
                     }else{
