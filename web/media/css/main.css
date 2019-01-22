@@ -391,3 +391,8 @@ div.cs-skin-slide.cs-active{
     position: absolute;
     width: 90%;
 }
+
+#reports-table_wrapper table.dataTable thead th h6{
+    font-size: 8px;
+    font-weight: bold;
+}

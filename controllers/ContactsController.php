@@ -314,6 +314,7 @@ class ContactsController extends BaseController
                         $visit->medium_oid = $records['data']['oid'];
                         $visit->department_id = $department->id;
                         $visit->status = ContactsVisits::STATUS_PENDING;
+                        $visit->manager_id = Yii::$app->user->id;
                         $visit->save();
 
                         $action = new Action();
@@ -479,6 +480,10 @@ class ContactsController extends BaseController
                         || empty($contact_form->status)
                     ) {
                         $contact_form->status = Contact::LEAD;
+                    }
+
+                    if($contact_form->status == Contact::LEAD){
+                        $contact->is_new_lead = 1;
                     }
 
                     if(Yii::$app->user->can('editStatusContact') && $contact_form->status == Contact::CONTACT){

@@ -41,6 +41,17 @@ $this->params['active'] = 'reports';
                                     Пользователь
                                 <?php endif; ?>
                             </td>
+                            <td>
+	                            <select data-column="0"  class="cs-select cs-skin-slide search-input-select-two" data-init-plugin="cs-select">
+		                            <option value="0">Канал привлечения</option>
+                                    <?php
+                                    $channels = \app\models\AttractionChannel::find()->all();
+                                    foreach ($channels as  $channel) {
+                                        echo '<option value="'.$channel->id.'">'.$channel->name.'</option>';
+                                    }
+                                    ?>
+	                            </select>
+                            </td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -50,10 +61,11 @@ $this->params['active'] = 'reports';
                     <thead>
                         <tr>
                             <th>Пользователь</th>
-                            <th>Исходящие звонки</th>
-                            <th>Входящие звонки</th>
-                            <th>Теги</th>
-                            <th>Контакты</th>
+	                        <th>Входящие звонки<br><h6>(принятые/пропущенные)</h6></th>
+                            <th>Исходящие звонки<br><h6>(осуществленных/отвеченных)</h6></th>
+                            <th>Лиды</th>
+                            <th>Визиты<br><h6>(в ожидании/состоялся)</h6></th>
+	                        <th>Контакты</th>
                         </tr>
                     </thead>
                     <tbody></tbody>

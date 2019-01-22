@@ -13,6 +13,7 @@ namespace app\models;
  * @property integer $department_id
  * @property string $medium_oid
  * @property integer $status
+ * @property integer $manager_id
  * @property Departments $department
  */
 class ContactsVisits extends \yii\db\ActiveRecord
@@ -37,7 +38,7 @@ class ContactsVisits extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['contact_id','department_id','status'], 'integer'],
+            [['contact_id','department_id','status', 'manager_id'], 'integer'],
             [['medium_oid'], 'string'],
         ];
     }
@@ -50,5 +51,10 @@ class ContactsVisits extends \yii\db\ActiveRecord
     public function getContact()
     {
         return $this->hasOne(Contact::className(), ['id' => 'contact_id']);
+    }
+
+    public function getManager()
+    {
+        return $this->hasOne(User::className(), ['id' => 'manager_id']);
     }
 }

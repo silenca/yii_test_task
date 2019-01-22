@@ -26,9 +26,9 @@ class Call extends \yii\db\ActiveRecord {
     //const CALL_NEW = 'new';
     const CALL_INCOMING = 'incoming';
     const CALL_OUTGOING = 'outgoing';
-    const CALL_STATUS_MISSED = 'missed';
-    const CALL_STATUS_FAILURE = 'failure';
-    const CALL_STATUS_ANSWERED = 'answered';
+    const CALL_STATUS_MISSED = 'missed';//пропущенный
+    const CALL_STATUS_FAILURE = 'failure';//отказ
+    const CALL_STATUS_ANSWERED = 'answered';//ответил
     const CALL_STATUS_NEW = 'new';
 
     /**

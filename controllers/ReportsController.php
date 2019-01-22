@@ -9,6 +9,7 @@
 namespace app\controllers;
 
 use app\models\ContactStatusHistory;
+use app\models\ContactsVisits;
 use yii\filters\AccessControl;
 use Yii;
 use yii\db\Query;
@@ -50,6 +51,7 @@ class ReportsController extends BaseController
         $date_start = date('Y-m-01 00:00:00');
         $date_end = date('Y-m-t 23:59:59');
         $tags_id = null;
+        $attraction_channel = null;
 
         if ($request_data['columns'][0]['search']['value']) {
             $user_id = $request_data['columns'][0]['search']['value'];
@@ -62,6 +64,9 @@ class ReportsController extends BaseController
         }
         if ($request_data['columns'][3]['search']['value']) {
             $tags_id = explode(',', $request_data['columns'][3]['search']['value']);
+        }
+        if ($request_data['columns'][4]['search']['value']) {
+            $attraction_channel = explode(',', $request_data['columns'][4]['search']['value']);
         }
         $show_archive_tags = Yii::$app->user->identity->getSetting('use_archive_tags');
 
@@ -148,9 +153,21 @@ class ReportsController extends BaseController
         $outgoings = $outgoingQuery->all();
         $outgoingData = [];
         foreach ($outgoings as $outgoing) {
-            $outgoingData[$outgoing['id']]['success'] = 0;
-            if ($outgoing['status'] == 'answered')
+            if(!isset($outgoingData[$outgoing['id']]['success'])){
+                $outgoingData[$outgoing['id']]['success'] = 0;
+            }
+            if(!isset($outgoingData[$outgoing['id']]['missed'])){
+                $outgoingData[$outgoing['id']]['missed'] = 0;
+            }
+            if(!isset($outgoingData[$outgoing['id']]['all'])){
+                $outgoingData[$outgoing['id']]['all'] = 0;
+            }
+
+            if ($outgoing['status'] == 'answered'){
                 $outgoingData[$outgoing['id']]['success'] += $outgoing['count'];
+            }else{
+                $outgoingData[$outgoing['id']]['missed'] += $outgoing['count'];
+            }
             $outgoingData[$outgoing['id']]['all'] += $outgoing['count'];
         }
 
@@ -193,6 +210,112 @@ class ReportsController extends BaseController
         foreach ($serveds as $served) {
             $servedsData[$served['id']] = $served['count'];
         }
+
+        /*
+         * Получение количество созданих лидов
+         * select count(id) AS count, manager_id From contact WHERE is_new_lead = 1 GROUP BY manager_id
+         */
+        $contactsLeadsQuery = new Query();
+        $contactsLeadsQuery->select('count(`id`) AS `count`, `manager_id`')
+            ->from('`contact`')
+            ->where('`is_new_lead` = 1')
+            ->groupBy('`manager_id`');
+        if ($user_id) {
+            $contactsLeadsQuery->andWhere(['`manager_id`' => $user_id]);
+        }
+        if ($date_start) {
+            $contactsLeadsQuery->andWhere(['>=','`create_date`', $date_start]);
+        }
+        if ($date_end) {
+            $contactsLeadsQuery->andWhere(['<=','`create_date`', $date_end]);
+        }
+        if ($attraction_channel) {
+            $contactsLeadsQuery->andWhere(['`attraction_channel_id`' => $attraction_channel]);
+        }
+
+        $contactsLeads = $contactsLeadsQuery->all();
+        $contactsLeadsData = [];
+        if($contactsLeads){
+            foreach ($contactsLeads as $contactsLead){
+                $contactsLeadsData[$contactsLead['manager_id']] = $contactsLead['count'];
+            }
+        }
+
+        /*
+         * Количество визитов созданих менеджером
+         * SELECT count(`contacts_visits`.`id`) AS `count`, `contacts_visits`.`status`, `contacts_visits`.`manager_id` FROM `contacts_visits`
+            GROUP BY `contacts_visits`.`manager_id`, `contacts_visits`.`status`
+         */
+        $createVisitsQuery = new Query();
+        $createVisitsQuery->select('count(`contacts_visits`.`id`) AS `count`, `contacts_visits`.`status`, `contacts_visits`.`manager_id`')
+            ->from('`contacts_visits`')
+            ->join('LEFT JOIN', '`contact`', '`contact`.`id` = `contacts_visits`.`contact_id`')
+            ->groupBy('`contacts_visits`.`manager_id`, `contacts_visits`.`status`');
+        if ($user_id) {
+            $createVisitsQuery->andWhere(['`contacts_visits`.`edit_date`' => $user_id]);
+        }
+        if ($date_start) {
+            $createVisitsQuery->andWhere(['>=','`contacts_visits`.`edit_date`', $date_start]);
+        }
+        if ($date_end) {
+            $createVisitsQuery->andWhere(['<=','`contacts_visits`.`edit_date`', $date_end]);
+        }
+        if ($attraction_channel) {
+            $createVisitsQuery->andWhere(['`contact`.`attraction_channel_id`' => $attraction_channel]);
+        }
+        $createVisits = $createVisitsQuery->all();
+        $createVisitsData = [];
+        if($createVisits){
+            foreach ($createVisits as $createVisit){
+
+                if(!isset($createVisitsData[$createVisit['manager_id']]['pending'])){
+                    $createVisitsData[$createVisit['manager_id']]['pending'] = 0;
+                }
+                if(!isset($createVisitsData[$createVisit['manager_id']]['take_place'])){
+                    $createVisitsData[$createVisit['manager_id']]['take_place'] = 0;
+                }
+
+                if ($createVisit['status'] == ContactsVisits::STATUS_TAKE_PLACE){
+                    $createVisitsData[$createVisit['manager_id']]['take_place'] += $createVisit['count'];
+                }else{
+                    $createVisitsData[$createVisit['manager_id']]['pending'] += $createVisit['count'];
+                }
+            }
+        }
+
+        /*
+         * Количество контактов , перещедших из статуса "Лид" в статус "Пациент"
+         * select count(id) AS count, manager_id From contact WHERE is_new_lead = 1 AND status = 2 GROUP BY manager_id
+         */
+        $leadInContactQuery = new Query();
+        $leadInContactQuery->select('count(id) AS count, manager_id')
+            ->from('contact')
+            ->where([
+                'is_new_lead' => '1',
+                'status' => Contact::CONTACT
+            ])
+            ->groupBy('manager_id');
+        if ($user_id) {
+            $leadInContactQuery->andWhere(['`manager_id`' => $user_id]);
+        }
+        if ($date_start) {
+            $leadInContactQuery->andWhere(['>=','`create_date`', $date_start]);
+        }
+        if ($date_end) {
+            $leadInContactQuery->andWhere(['<=','`create_date`', $date_end]);
+        }
+        if ($attraction_channel) {
+            $leadInContactQuery->andWhere(['`attraction_channel_id`' => $attraction_channel]);
+        }
+        $leadInContacts = $leadInContactQuery->all();
+        $leadInContactsData = [];
+        if($leadInContacts){
+            foreach ($leadInContacts as $leadInContact){
+                $leadInContactsData[$leadInContact['manager_id']] = $leadInContact['count'];
+            }
+        }
+
+
         /*
          Получаем все теги для пользователя, по которым он делал звонки
          select  distinct `tag`.`id` as `tag_id`, `tag`.`name`, `tag`.`is_deleted`, `user`.`id` as `user_id`, `user`.`firstname` from `call`
@@ -246,6 +369,9 @@ class ReportsController extends BaseController
         $report_widget->outgoings = $outgoingData;
         $report_widget->serveds = $servedsData;
         $report_widget->userCallTags = $userCallTagsData;
+        $report_widget->contactsLeads = $contactsLeadsData;
+        $report_widget->createVisits = $createVisitsData;
+        $report_widget->leadInContacts = $leadInContactsData;
         $data = $report_widget->run();
         $json_data = array(
             "draw" => intval($request_data['draw']),

@@ -7,6 +7,7 @@ var tag_filters = [];
 var start_date_filter = null;
 var end_date_filter = null;
 var user_filter = null;
+var attraction_channel = null;
 
 var date = new Date();
 var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -47,7 +48,8 @@ $(function () {
                 {"targets": 0, "orderable": false},
                 {"targets": 1, "orderable": false},
                 {"targets": 2, "orderable": false},
-                {
+                {"targets": 3, "orderable": false},
+                /*{
                     "targets": 3,
                     "orderable": false,
                     "createdCell": function (td, cellData, rowData, row, col) {
@@ -61,8 +63,9 @@ $(function () {
                         });
                         $(td).html("<div class='tags_block clearfix'>" + tags + "</div>");
                     }
-                },
+                },*/
                 {"targets": 4, "orderable": false},
+                {"targets": 5, "orderable": false},
             ],
             "createdRow": function (row, data, index) {
 
@@ -85,6 +88,17 @@ $(function () {
             start_date_filter ? dataTable.columns(1).search(start_date_filter) : null;
             end_date_filter ? dataTable.columns(2).search(end_date_filter) : null;
             tag_filters ? dataTable.columns(3).search(tag_filters) : null;
+			attraction_channel ? dataTable.columns(4).search(attraction_channel) : null;
+            dataTable.draw();
+        });
+
+        $('.search-input-select-two').on('change', function () {   // for select box
+			attraction_channel = $(this).val();
+            user_filter ? dataTable.columns(0).search(user_filter) : null;
+            start_date_filter ? dataTable.columns(1).search(start_date_filter) : null;
+            end_date_filter ? dataTable.columns(2).search(end_date_filter) : null;
+            tag_filters ? dataTable.columns(3).search(tag_filters) : null;
+			attraction_channel ? dataTable.columns(4).search(attraction_channel) : null;
             dataTable.draw();
         });
     };
@@ -152,6 +166,7 @@ $(function () {
             start_date_filter ? dataTable.columns(1).search(start_date_filter) : null;
             end_date_filter ? dataTable.columns(2).search(end_date_filter) : null;
             tag_filters ? dataTable.columns(3).search(tag_filters) : null;
+			attraction_channel ? dataTable.columns(4).search(attraction_channel) : null;
             dataTable.draw();
         }
     );
@@ -168,6 +183,7 @@ $(function () {
         start_date_filter ? dataTable.columns(1).search(start_date_filter) : null;
         end_date_filter ? dataTable.columns(2).search(end_date_filter) : null;
         tag_filters ? dataTable.columns(3).search(tag_filters) : null;
+		attraction_channel ? dataTable.columns(4).search(attraction_channel) : null;
         dataTable.draw();
     });
 });
