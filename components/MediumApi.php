@@ -2,6 +2,7 @@
 
 namespace app\components;
 
+use app\models\Contact;
 use app\models\helpers\MediumLogsApi;
 use yii\httpclient\Client;
 use yii\web\HttpException;
@@ -14,6 +15,17 @@ class MediumApi
 
     private $minTime;
     private $maxTime;
+
+    public const CONTACT_URL = 'http://91.225.122.210:8080/api/H:1D13C88C20AA6C6/D:WORK/D:1D13C9303C946F9/C:1D45F18F27C737D';
+    public const KEY_OBJECT = '/O:';
+
+    protected static $apiFieldsMap = [
+        'name' => 'FIO',
+        'E-mail' => 'Email',
+        'ТелефонМоб' => 'Phone',
+        'ДатаРождения' => 'Birth',
+        'Город' => 'City',
+    ];
 
     private function sendMedium($url, $data)
     {
@@ -346,5 +358,69 @@ class MediumApi
             $result['error'] = $ex->getMessage();
         }
         return $result;
+    }
+
+    public static function getContact($oid)
+    {
+        $url = implode('', [self::CONTACT_URL, self::KEY_OBJECT, $oid]);
+
+        $client = new Client();
+
+        $log = MediumLogsApi::setRequestData($url, '');
+        try {
+            $response = $client->get($url)->send();
+            if($response->getStatusCode() != 200) {
+                throw new \Exception('Error querying MediumAPI');
+            }
+            // There should be only one contact information so fetch it by index
+            return self::parseContactsXml($response->getContent())[0] ?? false;
+        } catch(\Exception $e) {
+            $log->setResponse('[ERROR] '.$e->getMessage());
+            return false;
+        }
+
+        return $xml->attributes();
+    }
+
+    public static function isUpToDate(Contact $contact, array $mediumData): bool
+    {
+        $lastSyncDate = strtotime($contact->lastSyncDate);
+        $mediumUpdate = strtotime($mediumData['update']);
+
+        if(!$lastSyncDate || !$mediumUpdate) {
+            return false;
+        }
+
+        if($lastSyncDate < $mediumUpdate) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static function parseContactsXml(string $xml)
+    {
+        if(false !== strpos($xml, '<?xml')) {
+            // Remove XML comment to be able to correctly parse XML string
+            $xml = str_replace('<?xml version="1.0"?>', '', $xml);
+        }
+        $oXml = new \SimpleXMLElement('<xml>'.$xml.'</xml>');
+
+        if($oXml) {
+            return array_reduce($oXml->xpath('OBJECT'), function($list, \SimpleXMLElement $el){
+                $idx = count($list);
+                foreach($el->attributes() as $name=>$value) {
+                    $list[$idx][self::mapFieldName($name)] = (string) $value;
+                }
+                return $list;
+            }, []);
+        } else {
+            return [];
+        }
+    }
+
+    protected static function mapFieldName(string $name)
+    {
+        return self::$apiFieldsMap[$name] ?? $name;
     }
 }

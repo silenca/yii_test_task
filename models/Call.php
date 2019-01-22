@@ -348,6 +348,29 @@ class Call extends \yii\db\ActiveRecord {
         }
         return $res;
     }
+
+    public static function fetchByContactId($contactId)
+    {
+        $callsData = [];
+
+        $calls = self::findAll(['contact_id' => $contactId]);
+        foreach($calls as $call) {
+            /**@var $call Call*/
+            $manager = $call->getManager()->one();
+
+            $callsData[$call->id] = [
+                'started' => $call->date_time,
+                'direction' => $call->type,
+                'directionName' => ucfirst($call->type),
+                'status' => $call->status,
+                'statusName' => ucfirst($call->status),
+                'manager' => $manager?$manager->firstname:'-',
+                'file' => $call->record,
+            ];
+        }
+
+        return $callsData;
+    }
     
     public function setContactIdByPhone($phone, $contact_id) {
         $this->updateAll(['contact_id' => $contact_id], ['phone_number' => $phone]);

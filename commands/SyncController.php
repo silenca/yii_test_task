@@ -1,6 +1,7 @@
 <?php
 namespace app\commands;
 
+use app\components\MediumApi;
 use app\controllers\ContactsController;
 use app\models\{
     Contact, ContactsVisits, Speciality, Vars
@@ -71,7 +72,7 @@ CODE
             $response->setFormat(Client::FORMAT_XML);
             $log->setResponse($response->getContent());
 
-            $contacts = $this->parseContactsXml($response->getContent());
+            $contacts = MediumApi::parseContactsXml($response->getContent());
             if(count($contacts)) {
                 foreach($contacts as $contact) {
                     ContactsController::updateContact($contact);
@@ -143,22 +144,5 @@ CODE
     protected function dateString(\DateTime $date)
     {
         return $date->format(self::MEDIUM_DATE_FORMAT);
-    }
-
-    protected function parseContactsXml(string $xml)
-    {
-        $oXml = new \SimpleXMLElement('<xml>'.$xml.'</xml>');
-
-        if($oXml) {
-            return array_reduce($oXml->xpath('OBJECT'), function($list, \SimpleXMLElement $el){
-                $idx = count($list);
-                foreach($el->attributes() as $name=>$value) {
-                    $list[$idx][$name] = (string) $value;
-                }
-                return $list;
-            }, []);
-        } else {
-            return [];
-        }
     }
 }
