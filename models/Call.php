@@ -356,13 +356,15 @@ class Call extends \yii\db\ActiveRecord {
         $calls = self::findAll(['contact_id' => $contactId]);
         foreach($calls as $call) {
             /**@var $call Call*/
+            $manager = $call->getManager()->one();
+
             $callsData[$call->id] = [
                 'started' => $call->date_time,
                 'direction' => $call->type,
                 'directionName' => ucfirst($call->type),
                 'status' => $call->status,
                 'statusName' => ucfirst($call->status),
-                'manager' => 'Manager ???',
+                'manager' => $manager?$manager->firstname:'-',
                 'file' => $call->record,
             ];
         }
