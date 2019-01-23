@@ -654,15 +654,15 @@ function visitPlanning(){
         var visitSpeciality = $('#select-speciality').val();
 		var visitDepartments = $('#select-department').val();
 		var visitDate = $('#set-booking-date').val();
+		visitVerificationForm();
 
 		if(visitSpeciality && visitDepartments && visitDate){
+            $('#speciality').parent('.form-group').removeClass('has-error');
+            $('#department').parent('.form-group').removeClass('has-error');
+            $('#booking-date').parent('.form-group').removeClass('has-error');
 			visitPlanningPost(visitSpeciality, visitDepartments,visitDate, 'newSearch');
-			/*$('#modalAddContact').modal('hide');
-			$('#visitPlanningModal').modal({
-				backdrop: false
-			});*/
         }else{
-			showNotification('#action_visit .error_visit', 'Все поля должны быть заполнены', 'top', 'danger', 'bar', 10000);
+			showNotification('#action_visit .messages_visit', 'Все поля должны быть заполнены', 'top', 'danger', 'bar', 10000);
         }
     });
 
@@ -697,6 +697,7 @@ function visitPlanning(){
 	$('#visitPlanningModal .btn-complete').on('click', function (e) {
 		e.preventDefault();
 		e.stopPropagation();
+		visitVerificationForm();
 
 		var param = $('meta[name=csrf-param]').attr("content");
 		var token = $('meta[name=csrf-token]').attr("content");
@@ -705,26 +706,46 @@ function visitPlanning(){
 		var speciality = $('#speciality').val();
 		var department = $('#department').val();
 		var doctorName = $('#doctorName').val();
+		if(!doctorName){
+			$('#doctorName').parent('.form-group').addClass('has-error');
+		}else{
+			$('#doctorName').parent('.form-group').removeClass('has-error');
+		}
 		var bookingDate = $('#booking-date').val();
+		if(!bookingDate){
+			$('#booking-date').parent('.form-group').addClass('has-error');
+		}else{
+			$('#booking-date').parent('.form-group').removeClass('has-error');
+		}
 		var cabinetName = $('#cabinetName').val();
+		if(!cabinetName){
+			$('#cabinetName').parent('.form-group').addClass('has-error');
+		}else{
+			$('#cabinetName').parent('.form-group').removeClass('has-error');
+		}
 		var visitComment = $('#visitComment').val();
+		if(!visitComment){
+			$('#visitComment').parent('.form-group').addClass('has-error');
+        }else{
+			$('#visitComment').parent('.form-group').removeClass('has-error');
+        }
 		var doctorId = $('#doctorId').val();
 		var doctorStartTime = $('#doctorStartTime').val();
 		var doctorEndTime = $('#doctorEndTime').val();
 		var cabinetId = $('#cabinetId').val();
 		var cabinetStartTime = $('#cabinetStartTime').val();
 		var cabinetEndTime = $('#cabinetEndTime').val();
-        if(speciality != ''
-            && department != ''
-			&& doctorName != ''
-			&& bookingDate != ''
-			&& cabinetName != ''
-			&& visitComment != ''
-			&& doctorId != ''
-			&& doctorStartTime != ''
-			&& doctorEndTime != ''
-			&& cabinetId != ''
-			&& cabinetStartTime != ''
+        if(speciality
+            && department
+			&& doctorName
+			&& bookingDate
+			&& cabinetName
+			&& visitComment
+			&& doctorId
+			&& doctorStartTime
+			&& doctorEndTime
+			&& cabinetId
+			&& cabinetStartTime
 			&& cabinetEndTime){
 			$('#visitPlanningModal .btn').hide();
 			$('#visitProgress').show();
@@ -748,8 +769,9 @@ function visitPlanning(){
 				if (responseData.error) {
 					showNotification('#visitPlanningModal .vp-form', responseData.error, 'bottom', 'danger', 'bar', 10000);
 				} else {
-					showNotification('#visitPlanningModal .vp-form', responseData.notify, 'top', 'success', 'bar');
-					showNotification('#visitPlanningModal .vp-form', responseData.notify, 'bottom', 'success', 'bar', 5000);
+					$('#visitPlanningModal').modal('hide');
+					openContactForm(contactId);
+					showNotification('#action_visit .messages_visit', responseData.notify, 'top', 'success', 'bar', 5000);
 					clearReservation();
 				}
 				$('#visitPlanningModal .btn').show();
@@ -767,12 +789,54 @@ function visitPlanning(){
 	})
 }
 
+function visitVerificationForm(){
+	var speciality = $('#speciality');
+	if(!speciality.val()){
+		speciality.parent('.form-group').addClass('has-error');
+	}else{
+		speciality.parent('.form-group').removeClass('has-error');
+	}
+	var department = $('#department');
+	if(!department.val()){
+		department.parent('.form-group').addClass('has-error');
+	}else{
+		department.parent('.form-group').removeClass('has-error');
+	}
+	var bookingDate = $('#booking-date');
+	if(!bookingDate.val()){
+		bookingDate.parent('.form-group').addClass('has-error');
+	}else{
+		bookingDate.parent('.form-group').removeClass('has-error');
+	}
+
+	var select_speciality = $('#select-speciality');
+	if(!select_speciality.val()){
+		select_speciality.parent('.form-group').addClass('has-error');
+	}else{
+		select_speciality.parent('.form-group').removeClass('has-error');
+	}
+	var select_department = $('#select-department');
+	if(!select_department.val()){
+		select_department.parent('.form-group').addClass('has-error');
+	}else{
+		select_department.parent('.form-group').removeClass('has-error');
+	}
+	var select_bookingDate = $('#set-booking-date');
+	if(!select_bookingDate.val()){
+		select_bookingDate.parent('.form-group').addClass('has-error');
+	}else{
+		select_bookingDate.parent('.form-group').removeClass('has-error');
+	}
+
+}
+
 function visitPlanningModal() {
 	var visitSpeciality = $('#speciality').val();
 	var visitDepartments = $('#department').val();
 	var visitDate = $('#booking-date').val();
+	visitVerificationForm();
 
-	if(visitSpeciality != '' && visitDepartments != '' && visitDate != ''){
+	if(visitSpeciality && visitDepartments && visitDate){
 		$('#doctorName').val('');
 		$('#cabinetName').val('');
 		$('#doctorId').val('');
@@ -814,7 +878,7 @@ function visitPlanningPost(visitSpeciality, visitDepartments,visitDate, type) {
 		$.post('/contacts/search-visit/', data, function (responseData) {
 			if (responseData.error) {
 			    if(type == 'newSearch'){
-					showNotification('#action_visit .error_visit', 'Нет доступных "окон" для формирования визита', 'top', 'danger', 'bar', 10000);
+					showNotification('#action_visit .messages_visit', 'Нет доступных "окон" для формирования визита', 'top', 'danger', 'bar', 10000);
                 }else{
                     showNotification('#visitPlanningModal', responseData.error, 'top', 'danger', 'bar', 10000);
                     $('#visitPlanningModal .vp-doctor').html('');

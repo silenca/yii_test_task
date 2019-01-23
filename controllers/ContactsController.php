@@ -290,7 +290,8 @@ class ContactsController extends BaseController
                         $data = '<OBJECT ДатаПриема="' . date("Y-m-d\TH:i:s", $doctorStartTime) . '" ВремяПриема="' . $timeReceipt . '" '
                             . 'Пациент="' . $contact->surname . ' ' . $contact->name . ' ' . $contact->middle_name . '" '
                             . 'Врач="' . $doctorName . '" Кабинет="' . $cabinetName . '" ИсточЗапис="Через контакт центр" '
-                            . 'Статус="В ожидании" Визит="' . $visitComment . '" '
+//                            . 'Статус="В ожидании" Визит="Новый" Комментарий="' . $visitComment . '" '
+                            . 'Статус="В ожидании" Визит="Новый" '
                             . 'ИсточникИнформации="DOC.UA">' . "\n"
                             . '<Пациент link="C:1CDA3A9DBD62FBC/O:' . $contact->medium_oid . '"/>' . "\n"
                             . '<Врач link="C:1CDCBA80BCACD1E/O:' . $doctorId . '"/>' . "\n"

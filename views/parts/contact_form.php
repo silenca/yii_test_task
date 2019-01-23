@@ -452,7 +452,7 @@ $departments = \app\models\Departments::find()->all();
                                                             Поиск окна
                                                         </button>
                                                     </div>
-	                                                <div class="error_visit"></div>
+	                                                <div class="messages_visit"></div>
 
                                                 </form>
                                             </div>
