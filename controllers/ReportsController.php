@@ -252,7 +252,7 @@ class ReportsController extends BaseController
             ->join('LEFT JOIN', '`contact`', '`contact`.`id` = `contacts_visits`.`contact_id`')
             ->groupBy('`contacts_visits`.`manager_id`, `contacts_visits`.`status`');
         if ($user_id) {
-            $createVisitsQuery->andWhere(['`contacts_visits`.`edit_date`' => $user_id]);
+            $createVisitsQuery->andWhere(['`contacts_visits`.`manager_id`' => $user_id]);
         }
         if ($date_start) {
             $createVisitsQuery->andWhere(['>=','`contacts_visits`.`edit_date`', $date_start]);
