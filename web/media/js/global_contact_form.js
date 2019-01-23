@@ -453,13 +453,12 @@ function fillContactData(data, $form) {
                 }
                 break;
             case 'is_broadcast':
-                if(value != null){
-                    $('#contact_is_broadcast option[value = "'+value+'"]').attr('selected', 'selected');
-                    $('#contact_is_broadcast').attr('data-value', value)
-                }else{
-                    $('select-placeholder').attr('selected', 'selected');
-                    // $('#contact_is_broadcast').attr('data-value', 0)
+                if(value == null) {
+                    value = '';
                 }
+
+                $('#contact_is_broadcast')  .val(value)
+                                            .attr('data-value', value);
                 break;
             case 'calls':
                 $('.calls_wrapper', $form).html('');

@@ -159,7 +159,7 @@ $departments = \app\models\Departments::find()->all();
                                                 <label class="input-group-addon primary" for="contact_is_broadcast"><i
                                                             class="fa fa-fw fa-rss"></i></label>
                                                 <select id="contact_is_broadcast" name="is_broadcast" class="form-control select2-single">
-                                                    <option class="select-placeholder" disabled selected>
+                                                    <option class="select-placeholder" disabled selected value="">
                                                         Рассылка
                                                     </option>
                                                     <?php
