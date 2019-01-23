@@ -372,7 +372,7 @@ function CallController(wr, opts, handles) {
     };
 
     this.getCallerId = function(){
-        return $(options.selectors.card.id, self.getCardWrapper()).html();
+        return parseInt($(options.selectors.card.id, self.getCardWrapper()).html());
     };
 
     this.updateCallerId = self.updateCallerData('id');
