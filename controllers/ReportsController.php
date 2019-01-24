@@ -218,7 +218,7 @@ class ReportsController extends BaseController
         $contactsLeadsQuery = new Query();
         $contactsLeadsQuery->select('count(`id`) AS `count`, `manager_id`')
             ->from('`contact`')
-            ->where('`is_new_lead` = 1')
+//            ->where('`is_new_lead` = 1')
             ->groupBy('`manager_id`');
         if ($user_id) {
             $contactsLeadsQuery->andWhere(['`manager_id`' => $user_id]);
@@ -291,7 +291,7 @@ class ReportsController extends BaseController
         $leadInContactQuery->select('count(id) AS count, manager_id')
             ->from('contact')
             ->where([
-                'is_new_lead' => '1',
+                //'is_new_lead' => '1',
                 'status' => Contact::CONTACT
             ])
             ->groupBy('manager_id');
