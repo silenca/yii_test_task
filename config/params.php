@@ -1,6 +1,7 @@
 <?php
 Yii::setAlias('@web_folder', realpath(__DIR__.'/../web/'));
 Yii::setAlias('@runtime_log_folder', realpath(__DIR__.'/../runtime/logs'));
+Yii::setAlias('@asterisk_config_folder', realpath(__DIR__.'/../config'));
 
 return [
     'adminEmail' => 'admin@example.com',
