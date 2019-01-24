@@ -47,3 +47,4 @@ install_nvm.sh
 /node_modules/.bin/
 /node_modules/npm/
 npm-debug.log
+sip.conf
