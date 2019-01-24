@@ -23,6 +23,21 @@ class AsteriskController extends BaseController {
 
     const INT_ID_LENGTH = 3;
 
+    const CALL_STATUS_ANSWERED = 'ANSWERED';
+    const CALL_STATUS_NO_ANSWER = 'NO ANSWER';
+
+    const PAYLOAD_JSON = 'json';
+
+    protected $callStatusMap = [
+        self::CALL_STATUS_ANSWERED => Call::CALL_STATUS_ANSWERED,
+        self::CALL_STATUS_NO_ANSWER => Call::CALL_STATUS_MISSED,
+    ];
+
+    protected $typeToManagerKeyMap = [
+        Call::TYPE_INCOMING => 'answered',
+        Call::TYPE_OUTCOMING => 'callerid',
+    ];
+
     public function behaviors() {
         return [
             'access' => [
@@ -47,46 +62,41 @@ class AsteriskController extends BaseController {
         ];
     }
 
-    public function actionGetmanagerbycallerid() {
-        $json = file_get_contents('php://input');
-        $post = json_decode($json, true);
-        $caller_phone = $post['callerid'];
-        $call_uniqueid = $post['uniqueid'];
-        if (Filter::isPositiveNumber($caller_phone) && Filter::length($caller_phone, 4, 15)) {
-            $contact = Contact::getContactByPhone($caller_phone);
-            $manager_int_id = null;
-            $contact_id = null;
-            if ($contact) {
-                $manager = $contact->manager;
-                $manager_int_id = $manager->int_id;
-                $contact_id = $contact->id;
-            }
-            $online_user_ids = SessionHelper::getOnlineUserIds();
-            $online_users = User::getManagerIntIdsByIds($online_user_ids);
-            $response = [];
-            if ($manager_int_id) {
-                $response['responsible'] = strval($manager_int_id);
-            }
-            $response['free'] = implode(',', $online_users);
+    public function actionGetmanagerbycallerid()
+    {
+        $request = $this->getPayload();
 
-            $this->json($response, 200);
-        } else {
-            $this->json(false, 415, ['callerid' => 'Incorrect data']);
+        try {
+            $callerPhone = $request['callerid'] ?? null;
+            if(Filter::isPositiveNumber($callerPhone) && Filter::length($callerPhone, 4, 15)) {
+                $data = [
+                    'responsible' => '',
+                    'free' => User::getAvailableIntIds(),
+                ];
+                $contact = Contact::getContactByPhone($callerPhone);
+                if($contact && $contact->manager) {
+                    $data['responsible'] = (string) $contact->manager->int_id;
+                }
+
+                return $this->json($data);
+            } else {
+                throw new \Exception('Invalid caller data');
+            }
+        } catch(\Exception $e) {
+            return $this->json([], $e->getCode() ?? 415, ['error' => $e->getMessage()]);
         }
     }
 
-    public function actionAnsweredoperator() {
+    public function actionAnsweredoperator()
+    {
         $this->json([], 200);
-//        $caller_phone = Yii::$app->request->post('callerid');
-//        $answered_id = Yii::$app->request->post('answered');
-//        $call_uniqueid = Yii::$app->request->get('uniqueid');
-//        if (Filter::isPositiveNumber($caller_phone) && Filter::isPositiveNumber($answered_id)) {
-//            
-//        } else {
-//            $this->json([], 415, ['callerid' => 'Не корректные данные']);
-//        }
     }
 
+    /**
+     * @throws \Exception
+     *
+     * @TODO Delete method because it seems like it is never used
+     */
     public function actionSendIncomingCall()
     {
         $phone = Yii::$app->request->post('phone');
@@ -151,137 +161,128 @@ class AsteriskController extends BaseController {
         $this->json([], 500);
     }
 
-    public function actionCallstart() {
-        $call_form = new CallForm();
-        $json = file_get_contents('php://input');
-        $post = json_decode($json, true);
-        $call_form->scenario = CallForm::SCENARIO_CALLSTART;
-        $call_form->load($post);
-        if ($call_form->validate()) {
-            $callerid = $post['callerid'];
-            $answered = $post['answered'];
-            $call_uniqueid = $post['uniqueid'];
-            $manager_int_id = null;
-            $contact_id = null;
-            $call = new Call();
-            if (strlen($callerid) !== self::INT_ID_LENGTH && strlen($answered) !== self::INT_ID_LENGTH) {
-                //Входящий звонок
-                if (substr($callerid, 0, 1) == '+') {
-                    $callerid = substr($callerid, 1);
-                }
-                $contact = Contact::getContactByPhone($callerid);
-                $request_params['phone'] = $callerid;
-                if ($contact) {
-                    $contact_id = $contact->id;
-                    $request_params['id'] = $contact_id;
-                    $request_params['contact_name'] = implode(' ', array_filter([$contact->surname, $contact->name, $contact->middle_name]));
-                }
-                if($call->outgoing($call_uniqueid, $contact_id, $callerid,$call_form->sip_channel)) {
-                    if(isset($call_form->sip_channel)) {
-                        /**
-                         * @var $sip_channel SipChannel
-                         */
-                        $sip_channel = SipChannel::find()->where(['id'=>$call_form->sip_channel])->one();
-                        if($sip_channel->attraction_channel_id != null)
-                            $request_params['attraction_channel_id'] = $sip_channel->attraction_channel_id;
-                    }
-                    $request_params['phone'];
-                    $request_params['call_id'] = $call->id;
-                    Notification::incomingCall($request_params);
-                }
-
-            } else if (strlen($callerid) == self::INT_ID_LENGTH && strlen($answered) == self::INT_ID_LENGTH) {
-                //Внутренний звонок
-                $call->incoming($call_uniqueid, $contact_id, $answered, null, null);
-            } else {
-                //Исходящий
-                $contact = Contact::getContactByPhone($answered);
-                $manager_int_id = $callerid;
-                if ($contact) {
-                    $contact_id = $contact->id;
-                }
-                $call_order_token = null;
-                if (isset($post['call_order_token']) && $post['call_order_token'] !== $call_uniqueid && $post['call_order_token'] !== 'None' && $post['call_order_token'] !== 'NONE') {
-                    $call_order_token = $post['call_order_token'];
-                }
-                //$call_order_token = (isset($post['call_order_token']) && $post['call_order_token'] !== $call_uniqueid) ? $post['call_order_token'] : null;
-
-                $tag_id = null;
-                if (isset($post['tag_id']) && $post['tag_id'] !== 'NONE' && $post['tag_id'] !== 'None') {
-                    $tag_id = $post['tag_id'];
-                }
-                $call->incoming($call_uniqueid, $contact_id, $answered, $call_order_token, $tag_id);
-            }
-            $this->json([], 200);
-        } else {
-            $this->json([], 415, $call_form->getErrors());
-        }
-    }
-
-    public function actionCallend() {
-        $call_form = new CallForm();
+    public function actionCallstart()
+    {
+        $form = new CallForm();
         try {
-            $json = file_get_contents('php://input');
-            $post = json_decode($json, true);
-            if ($post['answered'] === false) {
-                 $post['answered'] = '';
-             }
-            $call_form->scenario = CallForm::SCENARIO_CALLEND;
-            $call_form->load($post);
-            if ($call_form->validate()) {
-                $uniqueid = $post['uniqueid'];
-                $call = Call::getByUniquelId($uniqueid);
-                if ($call) {
-                    $date_time = $post['datetime'];
-                    $status = $post['status'];
-                    if ($call->type == Call::CALL_INCOMING) {
-                        //Исходящий
-                        $managers = $post['callerid'];
-                    } else {
-                        //Входящий
-                        $managers = $post['answered'];
-                    }
-                    $total_time = null;
-                    $answered_time = null;
-                    $record_file = null;
-                    if ($status == "ANSWERED") {
-                        $total_time = $post['totaltime'];
-                        $answered_time = $post['answeredtime'];
-                        $record_file = $post['record_file'];
-                    }
+            $request = json_decode(file_get_contents('php://input'), true);
 
-//                    if (isset($call->contact_id)) {
-//
-//                        if ($cont_pool = TempContactsPool::findOne(['order_token' => $call->call_order_token])) {
-//                            //$call->tag_id = $cont_pool->tag_id;
-//                            $cont_pool->delete();
-//                        }
-//                    }
-                    //file_put_contents('/var/log/pool.log', 'callEnd : ' . $call->call_order_token .' : ' . $call->tag_id . PHP_EOL, FILE_APPEND);
-                    $tag_id = null;
-                    if (isset($post['tag_id']) && $post['tag_id'] !== 'NONE' && $post['tag_id'] !== 'None') {
-                        $tag_id = $post['tag_id'];
-                    }
-                    if ($call->callEnd($date_time, $total_time, $answered_time, $record_file, $status, $managers, $tag_id)) {
-                        $this->json([], 200);
-                    }
-
-                    $this->json([], 500);
-                } else {
-                    $this->json([], 415, ['uniqueid' => 'Not found']);
-                }
-            } else {
-                $this->json([], 415, $call_form->getErrors());
+            if (!is_array($request) || empty($request)) {
+                throw new \Exception('Invalid request data', 400);
             }
-        } catch (\Exception $ex) {
-            $this->json([], 500);
+
+            $form->scenario = CallForm::SCENARIO_CALLSTART;
+            $form->load($request);
+
+            if(!$form->validate()) {
+                throw new \Exception(implode('::', $form->getErrors()), 415);
+            }
+
+            $callerNumber = $request['callerid'];
+            $answeredNumber = $request['answered'];
+            $callId = $request['uniqueid'];
+
+            $callData = [];
+            $contact = null;
+
+            switch(true) {
+                case Call::isIncomingCall($callerNumber, $answeredNumber):
+                    $contact = Contact::getContactByPhone($callerNumber);
+
+                    $callData = [
+                        'type' => Call::TYPE_INCOMING,
+                        'phone_number' => $callerNumber,
+                    ];
+                    break;
+                case Call::isOutcomingCall($callerNumber, $answeredNumber):
+                    $contact = Contact::getContactByPhone($answeredNumber);
+
+                    $callOrderToken = $request['call_order_token'] ?? 'None';
+                    if(strtoupper($callOrderToken) == 'NONE') {
+                        $callOrderToken = null;
+                    }
+                    // "tag_id" processing was removed
+                    $callData = [
+                        'type' => Call::TYPE_OUTCOMING,
+                        'phone_number' => $answeredNumber,
+                        'call_order_token' => $callOrderToken,
+                    ];
+                    break;
+            }
+
+            if(!empty($callData)) {
+                $call = new Call();
+                $call->setAttributes([
+                    'unique_id' => $callId,
+                    'date_time' => date(Call::DATE_TIME_FORMAT),
+                    'contact_id' => null,
+                    'status' => Call::CALL_STATUS_NEW,
+                    'sip_channel_id' => $form->sip_channel,
+                    'sended_crm' => 1,
+                ]);
+
+                if($contact) {
+                    $callData['contact_id'] = $contact->id;
+                    $callData['sender_crm'] = 0;
+                }
+
+                $call->setAttributes($callData);
+                $call->save();
+            }
+
+            return $this->json([]);
+        } catch(\Exception $e) {
+            return $this->json([], $e->getCode() ?? 400, explode('::', $e->getMessage()));
         }
     }
 
-    public function actionTest() {
-        $call = Call::getByUniquelId('1464945097.69');
-        $manager = User::find()->where(['id' => 3])->one();
-        $call->sendToCRM($manager);
+    public function actionCallend()
+    {
+        $form = new CallForm();
+        $form->scenario = CallForm::SCENARIO_CALLEND;
+
+        try {
+            $request = json_decode(file_get_contents('php://input'), true);
+            $form->load($request);
+            if(!$form->validate()) {
+                throw new \Exception(implode('::', $form->getErrors()), 415);
+            }
+
+            $call = Call::getByUniquelId($request['uniqueid'] ?? '');
+            if(!$call) {
+                throw new \Exception('Can not find call with ID: '.$request['uniqueid'], 404);
+            }
+
+            $call->setAttributes([
+                'date_time' => data(Call::DATE_TIME_FORMAT, strtotime($request['datetime'])),
+                'total_time' => intval($request['totaltime'] ?? 0),
+                'answered_time' => intval($request['answeredtime'] ?? 0),
+                'record' => $request['record_file'],
+                'status' => $this->callStatusMap[$request['status']] ?? Call::CALL_STATUS_FAILURE,
+            ]);
+
+            // Update CallManager relation and create notifications for managers
+            $call->setManagersForCall(
+                $this->typeToManagerKeyMap[$call->type] ?? '',
+                $request['status']
+            );
+
+            $call->save();
+
+            return $this->json([]);
+        } catch(\Exception $e) {
+            return $this->json([], $e->getCode() ?? 500, explode('::', $e->getMessage()));
+        }
     }
 
+    protected function getPayload($type = self::PAYLOAD_JSON)
+    {
+        $content = file_get_contents('php://input');
+        switch($type) {
+            case self::PAYLOAD_JSON:
+                return json_decode($content, true);
+            default:
+                return $content;
+        }
+    }
 }
