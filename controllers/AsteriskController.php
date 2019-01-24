@@ -89,7 +89,24 @@ class AsteriskController extends BaseController {
 
     public function actionAnsweredoperator()
     {
-        $this->json([], 200);
+        $request = $this->getPayload();
+        try {
+            $call = Call::getByUniquelId($request['uniqueid'] ?? 0);
+            if(!$call) {
+                throw new \Exception('Can not find call with ID#'.$request['uniqueid']);
+            }
+
+            $manager = User::getManagerByIntId($request['answered'] ?? 0);
+            if(!$manager) {
+                throw new \Exception('Can not find manager with INT_ID: '.$request['answered']);
+            }
+
+            $call->assignManager($manager->id);
+
+            return $this->json([], 200);
+        } catch(\Exception $e) {
+            return $this->json([], $e->getCode() || 400, explode('::', $e->getMessage()));
+        }
     }
 
     /**
@@ -262,10 +279,27 @@ class AsteriskController extends BaseController {
             ]);
 
             // Update CallManager relation and create notifications for managers
-            $call->setManagersForCall(
-                $this->typeToManagerKeyMap[$call->type] ?? '',
-                $request['status']
-            );
+            if(($request['status'] ?? '') === self::CALL_STATUS_NO_ANSWER) {
+                $intIds = array_map(
+                    'trim',
+                    explode(',', $this->typeToManagerKeyMap[$call->type] ?? '')
+                );
+                $managers = User::find()->where(['int_id' => $intIds])->all();
+                foreach($managers as $manager) {
+                    // Create notification
+                    (new ManagerNotification())->add(
+                        $call->date_time,
+                        'call_missed',
+                        $manager->id,
+                        $call->phone_number,
+                        $call->contact_id
+                    );
+                    // Assign call to manager
+                    $call->assignManager($manager->id);
+                    // Register missed call
+                    (new MissedCall())->add($call->id, $manager->id);
+                }
+            }
 
             $call->save();
 
