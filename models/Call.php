@@ -13,6 +13,7 @@ use app\models\FailExportCall;
  * @property integer $id
  * @property string $date_time
  * @property string $type
+ * @property string $status
  * @property integer $contact_id
  * @property integer $phone_number
  * @property string $record
@@ -30,6 +31,11 @@ class Call extends \yii\db\ActiveRecord {
     const CALL_STATUS_FAILURE = 'failure';//отказ
     const CALL_STATUS_ANSWERED = 'answered';//ответил
     const CALL_STATUS_NEW = 'new';
+
+    const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
+
+    const TYPE_INCOMING = 'incoming';
+    const TYPE_OUTCOMING = 'outcoming';
 
     /**
      * @inheritdoc
@@ -164,6 +170,10 @@ class Call extends \yii\db\ActiveRecord {
         return $this->save();
     }
 
+    /**
+     * @param $unique_id
+     * @return Call
+     */
     public static function getByUniquelId($unique_id) {
         return self::find()->where(['unique_id' => $unique_id])->one();
     }
@@ -394,5 +404,20 @@ class Call extends \yii\db\ActiveRecord {
 
     public function getManager() {
         return $this->hasMany(User::className(), ['id' => 'manager_id'])->viaTable('call_manager', ['call_id' => 'id']);
+    }
+
+    public static function isIncomingCall(string $initiator, string $respondent): bool
+    {
+        return !self::isInternal($initiator) && !self::isInternal($respondent);
+    }
+
+    public static function isOutcomingCall(string $initiator, string $respondent): bool
+    {
+        return self::isInternal($initiator) && !self::isInternal($respondent);
+    }
+
+    protected static function isInternal(string $number): bool
+    {
+        return preg_match('^[\d]{3}$', $number);
     }
 }
