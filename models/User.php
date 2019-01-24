@@ -332,4 +332,8 @@ class User extends ActiveRecord implements IdentityInterface {
         return $this->save();
     }
 
+    public static function getAvailableIntIds()
+    {
+        return self::find()->select(['number' => 'DISTINCT(int_id)'])->column();
+    }
 }
