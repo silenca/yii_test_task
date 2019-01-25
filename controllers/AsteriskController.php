@@ -16,6 +16,7 @@ use app\components\Filter;
 use app\components\Notification;
 use app\models\forms\CallForm;
 use yii\helpers\BaseJson;
+use yii\log\Logger;
 
 class AsteriskController extends BaseController {
 
@@ -287,7 +288,7 @@ class AsteriskController extends BaseController {
                 if(($request['status'] ?? '') == self::CALL_STATUS_NO_ANSWER) {
                     $intIds = array_map(
                         'trim',
-                        explode(',', $this->typeToManagerKeyMap[$call->type] ?? '')
+                        explode(',', $request[$this->typeToManagerKeyMap[$call->type]] ?? '')
                     );
                     $managers = User::find()->where(['int_id' => $intIds])->all();
                     foreach($managers as $manager) {
@@ -324,5 +325,10 @@ class AsteriskController extends BaseController {
             default:
                 return $content;
         }
+    }
+
+    protected function log($message, $type = 'api')
+    {
+        \Yii::getLogger()->log($message, Logger::LEVEL_INFO, 'app.asterisk.'.$type);
     }
 }

@@ -73,6 +73,12 @@ $config = [
                     'logFile' => '@runtime/logs/socials.log',
                     'logVars' => []
                 ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'categories' => ['app.asterisk.*'],
+                    'logFile' => '@runtime/logs/asterisk.log',
+                    'logVars' => []
+                ],
             ],
         ],
         'db' => require(__DIR__ . '/db.php'),
