@@ -2,21 +2,14 @@
 
 namespace app\controllers;
 
-use app\models\SipChannel;
+use app\components\Filter;
+use app\models\{Call, Contact, ManagerNotification, MissedCall, User};
+use app\models\forms\CallForm;
 use Yii;
 use yii\db\Query;
-use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
-use app\models\Contact;
-use app\models\User;
-use app\models\Call;
-use app\models\TempContactsPool;
-use app\components\SessionHelper;
-use app\components\Filter;
-use app\components\Notification;
-use app\models\forms\CallForm;
-use yii\helpers\BaseJson;
 use yii\log\Logger;
+use yii\filters\{AccessControl, VerbFilter};
+
 
 class AsteriskController extends BaseController {
 
