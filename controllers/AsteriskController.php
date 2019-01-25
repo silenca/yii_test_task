@@ -101,6 +101,7 @@ class AsteriskController extends BaseController {
                 throw new \Exception('Can not find manager with INT_ID: '.$request['answered']);
             }
 
+            $call->status = Call::CALL_STATUS_ANSWERED;
             $call->assignManager($manager->id);
 
             return $this->json([], 200);
@@ -275,29 +276,32 @@ class AsteriskController extends BaseController {
                 'total_time' => intval($request['totaltime'] ?? 0),
                 'answered_time' => intval($request['answeredtime'] ?? 0),
                 'record' => $request['record_file'],
-                'status' => $this->callStatusMap[$request['status']] ?? Call::CALL_STATUS_FAILURE,
             ]);
 
-            // Update CallManager relation and create notifications for managers
-            if(($request['status'] ?? '') === self::CALL_STATUS_NO_ANSWER) {
-                $intIds = array_map(
-                    'trim',
-                    explode(',', $this->typeToManagerKeyMap[$call->type] ?? '')
-                );
-                $managers = User::find()->where(['int_id' => $intIds])->all();
-                foreach($managers as $manager) {
-                    // Create notification
-                    (new ManagerNotification())->add(
-                        $call->date_time,
-                        'call_missed',
-                        $manager->id,
-                        $call->phone_number,
-                        $call->contact_id
+            if($call->status == Call::CALL_STATUS_NEW) {
+                $call->status = $this->callStatusMap[$request['status']] ?? Call::CALL_STATUS_FAILURE;
+
+                // Update CallManager relation and create notifications for managers
+                if(($request['status'] ?? '') == self::CALL_STATUS_NO_ANSWER) {
+                    $intIds = array_map(
+                        'trim',
+                        explode(',', $this->typeToManagerKeyMap[$call->type] ?? '')
                     );
-                    // Assign call to manager
-                    $call->assignManager($manager->id);
-                    // Register missed call
-                    (new MissedCall())->add($call->id, $manager->id);
+                    $managers = User::find()->where(['int_id' => $intIds])->all();
+                    foreach($managers as $manager) {
+                        // Create notification
+                        (new ManagerNotification())->add(
+                            $call->date_time,
+                            'call_missed',
+                            $manager->id,
+                            $call->phone_number,
+                            $call->contact_id
+                        );
+                        // Assign call to manager
+                        $call->assignManager($manager->id);
+                        // Register missed call
+                        (new MissedCall())->add($call->id, $manager->id);
+                    }
                 }
             }
 
