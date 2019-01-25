@@ -13,6 +13,7 @@ use app\models\FailExportCall;
  * @property integer $id
  * @property string $date_time
  * @property string $type
+ * @property string $status
  * @property integer $contact_id
  * @property integer $phone_number
  * @property string $record
@@ -30,6 +31,11 @@ class Call extends \yii\db\ActiveRecord {
     const CALL_STATUS_FAILURE = 'failure';//отказ
     const CALL_STATUS_ANSWERED = 'answered';//ответил
     const CALL_STATUS_NEW = 'new';
+
+    const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
+
+    const TYPE_INCOMING = 'incoming';
+    const TYPE_OUTCOMING = 'outcoming';
 
     /**
      * @inheritdoc
@@ -164,6 +170,10 @@ class Call extends \yii\db\ActiveRecord {
         return $this->save();
     }
 
+    /**
+     * @param $unique_id
+     * @return Call
+     */
     public static function getByUniquelId($unique_id) {
         return self::find()->where(['unique_id' => $unique_id])->one();
     }
@@ -263,22 +273,24 @@ class Call extends \yii\db\ActiveRecord {
     }
 
 
-    public function setManagersForCall($managers_id, $status) {
+    public function setManagersForCall($managers_id, $status)
+    {
         $contact_manager = null;
         $managers_id_array = array_map('trim', explode(',', $managers_id));
         $managers = User::find()->where(['int_id' => $managers_id_array])->all();
-        foreach ($managers as $manager) {
+        foreach($managers as $manager) {
             if ($status === "NO ANSWER") {
                 $missed_call = new MissedCall();
                 $missed_call->add($this->id, $manager->id);
                 $manager_notification = new ManagerNotification();
                 $manager_notification->add($this->date_time, 'call_missed', $manager->id, $this->phone_number, $this->contact_id);
-            }            
+            }
             $call_manager = new CallManager();
             $call_manager->call_id = $this->id;
             $call_manager->manager_id = $manager->id;
             $call_manager->save();
         }
+
         if ($this->contact_id) {
             $contact_manager = Contact::getManagerById($this->contact_id);
             if ($contact_manager) {
@@ -394,5 +406,35 @@ class Call extends \yii\db\ActiveRecord {
 
     public function getManager() {
         return $this->hasMany(User::className(), ['id' => 'manager_id'])->viaTable('call_manager', ['call_id' => 'id']);
+    }
+
+    public function assignManager($managerId)
+    {
+        return self::assignCallManager($this->id, $managerId);
+    }
+
+    public static function assignCallManager($callId, $managerId)
+    {
+        $relation = new CallManager();
+        $relation->setAttributes([
+            'call_id' => $callId,
+            'manager_id' => $managerId,
+        ]);
+        return $relation->save();
+    }
+
+    public static function isIncomingCall(string $initiator, string $respondent): bool
+    {
+        return !self::isInternal($initiator) && !self::isInternal($respondent);
+    }
+
+    public static function isOutcomingCall(string $initiator, string $respondent): bool
+    {
+        return self::isInternal($initiator) && !self::isInternal($respondent);
+    }
+
+    protected static function isInternal(string $number): bool
+    {
+        return preg_match('^[\d]{3}$', $number);
     }
 }
