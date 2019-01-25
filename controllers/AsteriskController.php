@@ -271,7 +271,7 @@ class AsteriskController extends BaseController {
             }
 
             $call->setAttributes([
-                'date_time' => data(Call::DATE_TIME_FORMAT, strtotime($request['datetime'])),
+                'date_time' => date(Call::DATE_TIME_FORMAT, strtotime($request['datetime'])),
                 'total_time' => intval($request['totaltime'] ?? 0),
                 'answered_time' => intval($request['answeredtime'] ?? 0),
                 'record' => $request['record_file'],
