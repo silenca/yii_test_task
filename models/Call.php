@@ -323,6 +323,25 @@ class Call extends \yii\db\ActiveRecord {
         return $res;
     }
 
+    public function statusName()
+    {
+        $typeMap = [
+            self::TYPE_INCOMING => 'Входящий',
+            self::TYPE_OUTCOMING => 'Исходящий',
+        ];
+
+        $statusMap = [
+            self::CALL_STATUS_NEW => 'активный',
+            self::CALL_STATUS_MISSED => 'пропущеный',
+            self::CALL_STATUS_FAILURE => 'ошибка',
+        ];
+
+        return implode(' - ', array_filter([
+            $typeMap[$this->type] ?? '?',
+            $statusMap[$this->status] ?? null,
+        ]));
+    }
+
     public static function getCallStatusLabel($type, $status)
     {
         $res = '';

@@ -28,7 +28,7 @@ class CallTableWidget extends Widget {
                 'id' => $call->id,
                 'date' => date('d-m-Y', strtotime($call->date_time)),
                 'time' => date('H-i-s', strtotime($call->date_time)),
-                'type' => Call::getCallStatusLabel($call->type, $call->status),
+                'type' => $call->statusName(),
                 'manager' => implode(', ', array_map(function($managerRelation){
                     return $managerRelation->manager->firstname;
                 }, $call->callManagers)),
