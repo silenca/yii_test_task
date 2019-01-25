@@ -381,7 +381,9 @@ class Call extends \yii\db\ActiveRecord {
             ];
         }
 
-        return $callsData;
+        ksort($callsData);
+
+        return array_reverse($callsData);
     }
     
     public function setContactIdByPhone($phone, $contact_id) {
