@@ -437,6 +437,6 @@ class Call extends \yii\db\ActiveRecord {
 
     protected static function isInternal(string $number): bool
     {
-        return preg_match('^[\d]{3}$', $number);
+        return preg_match('/^[\d]{3}$/', $number);
     }
 }
