@@ -101,8 +101,10 @@ class AsteriskController extends BaseController {
                 throw new \Exception('Can not find manager with INT_ID: '.$request['answered']);
             }
 
-            $call->status = Call::CALL_STATUS_ANSWERED;
             $call->assignManager($manager->id);
+
+            $call->status = Call::CALL_STATUS_ANSWERED;
+            $call->save();
 
             return $this->json([], 200);
         } catch(\Exception $e) {
