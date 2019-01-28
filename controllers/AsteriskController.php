@@ -92,7 +92,7 @@ class AsteriskController extends BaseController {
                 throw new \Exception('Can not find call with ID#'.$request['uniqueid']);
             }
 
-            $manager = User::getManagerByIntId($request['answered'] ?? 0);
+            $manager = User::getManagerByIntId($request[$this->typeToManagerKeyMap[$call->type]] ?? 0);
             if(!$manager) {
                 throw new \Exception('Can not find manager with INT_ID: '.$request['answered']);
             }
