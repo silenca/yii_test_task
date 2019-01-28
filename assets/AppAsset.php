@@ -54,7 +54,8 @@ class AppAsset extends AssetBundle {
         '/media/js/pages.js',
         '/media/js/sidebar.custom.js',
         '/media/js/scripts.js',
-        '/media/js/book-visit.js'
+        '/media/js/book-visit.js',
+        '/media/js/core.js',
     ];
     public $depends = [
 

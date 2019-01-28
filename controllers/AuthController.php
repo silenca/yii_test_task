@@ -18,7 +18,7 @@ class AuthController extends BaseController
                 'only' => ['logout'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout', 'status'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -57,5 +57,16 @@ class AuthController extends BaseController
 //            $this->json(['result' => 'OK'], 200);
 //        }
         return $this->goHome();
+    }
+
+    public function actionStatus()
+    {
+        try {
+            return $this->json([
+                'loggedin' => !\Yii::$app->user->isGuest,
+            ]);
+        } catch(\Exception $e) {
+            return $this->json([], 500, explode('::', $e->getMessage()));
+        }
     }
 }
