@@ -74,11 +74,9 @@ $(function(){
         var ctrl = $('body').data('callCtrl');
         var number = ctrl.getCurrentPhoneNumber();
         if(number) {
-            setTimeout(function(){
-                $.getJSON('/contacts/get-contact-by-phone', {
-                    phone: number
-                }, ctrl.updateCaller);
-            }, 200);
+            $.getJSON('/contacts/get-contact-by-phone', {
+                phone: number
+            }, ctrl.updateCaller);
         }
     });
 

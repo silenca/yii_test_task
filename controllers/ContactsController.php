@@ -941,11 +941,11 @@ class ContactsController extends BaseController
         } else {
             // Try to find current call to and appropriate attraction_channel
             // Active incoming call with matched phone number
-            $call = Call::findOne([
+            $call = Call::find()->where([
                 'type' => Call::TYPE_INCOMING,
                 'phone_number' => $phone,
                 'status' => Call::CALL_STATUS_NEW,
-            ]);
+            ])->orderBy('id DESC')->one();
             if($call && ($attractionChannel = $call->findAttractionChannel())) {
                 $contactData['attraction_channel'] = $attractionChannel->id;
             }
