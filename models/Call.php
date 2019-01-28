@@ -394,7 +394,7 @@ class Call extends \yii\db\ActiveRecord {
                 'direction' => $call->type,
                 'directionName' => ucfirst($call->type),
                 'status' => $call->status,
-                'statusName' => ucfirst($call->status),
+                'statusName' => $call->statusName(),
                 'manager' => $manager?$manager->firstname:'-',
                 'file' => $call->record,
             ];

@@ -466,7 +466,7 @@ function fillContactData(data, $form) {
                     $('.calls_wrapper', $form).append(
                         '<div data-call-id="'+cId+'">'+
                             '<p>Время: '+call.started+'</p>'+
-                            '<p>Тип: '+call.directionName+' - '+call.statusName+'</p>'+
+                            '<p>Тип: '+call.statusName+'</p>'+
                             '<p>Менеджер: '+call.manager+'</p>'+
                             (call.file?('<audio controls="" src="https://dopomogaplus.silencatech.com'+call.file+'" type="audio/mpeg"></audio>'):(''))+
                             '<hr />'+
