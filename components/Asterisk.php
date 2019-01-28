@@ -18,7 +18,7 @@ class Asterisk
                 $externalSips[] = $config['username'];
             }
         }
-        return array_filters(array_map('trim', $externalSips));
+        return array_filter(array_map('trim', $externalSips));
     }
 
     protected function getConfig($key = null)
