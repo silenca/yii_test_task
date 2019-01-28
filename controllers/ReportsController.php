@@ -79,52 +79,9 @@ class ReportsController extends BaseController
         left join `call_manager` on `call_manager`.`call_id` = `call`.`id`
         left join `user` on `user`.`id` = `call_manager`.`manager_id`
         left join `tag` on `call`.`tag_id` = `tag`.`id`
-        where `call`.`type` = 'incoming' and `user`.`id` is not null and `call`.`status` <> 'new'
-        group by `user`.`id`, `call`.`status`
-         */
-        $incomingQuery = new Query();
-        $incomingQuery->select('`user`.`id`, `user`.`firstname`, count(*) as `count`, `call`.`status`')
-            ->from('`call`')
-            ->join("LEFT JOIN", '`call_manager`','`call_manager`.`call_id` = `call`.`id`')
-            ->join("LEFT JOIN", '`user`','`user`.`id` = `call_manager`.`manager_id`')
-            ->join("LEFT JOIN", '`tag`','`call`.`tag_id` = `tag`.`id`')
-            ->where(['`call`.`type`' => 'incoming'])
-            ->andWhere(['is not', '`user`.`id`', null])
-            ->andWhere(['<>', '`call`.`status`', 'new'])
-            ->groupBy(['`user`.`id`', '`call`.`status`']);
-        if ($user_id) {
-            $incomingQuery->andWhere(['`user`.`id`' => $user_id]);
-        }
-        if ($date_start) {
-            $incomingQuery->andWhere(['>=','`call`.`date_time`', $date_start]);
-        }
-        if ($date_end) {
-            $incomingQuery->andWhere(['<=','`call`.`date_time`', $date_end]);
-        }
-        if ($tags_id) {
-            $incomingQuery->andWhere(['in', '`call`.`tag_id`', $tags_id]);
-        }
-        if (!$show_archive_tags) {
-            $incomingQuery->andWhere('(`tag`.`is_deleted` = 0 or `call`.`tag_id` is null)');
-        }
-        $incomings = $incomingQuery->all();
-        $incomingData = [];
-        foreach ($incomings as $incoming) {
-            $incomingData[$incoming['id']]['success'] = 0;
-            if ($incoming['status'] == 'answered')
-                $incomingData[$incoming['id']]['success'] += $incoming['count'];
-            $incomingData[$incoming['id']]['all'] += $incoming['count'];
-        }
-        /*
-        Получаем входящие звонки для каждого опрератора сгруппированные по статусам
-        select `user`.`id`, `user`.`firstname`, count(*) as `count`, `call`.`status` from `call`
-        left join `call_manager` on `call_manager`.`call_id` = `call`.`id`
-        left join `user` on `user`.`id` = `call_manager`.`manager_id`
-        left join `tag` on `call`.`tag_id` = `tag`.`id`
         where `call`.`type` = 'outgoing' and `user`.`id` is not null and `call`.`status` <> 'new'
         group by `user`.`id`, `call`.`status`
          */
-
         $outgoingQuery = new Query();
         $outgoingQuery->select('`user`.`id`, `user`.`firstname`, count(*) as `count`, `call`.`status`')
             ->from('`call`')
@@ -152,23 +109,66 @@ class ReportsController extends BaseController
         }
         $outgoings = $outgoingQuery->all();
         $outgoingData = [];
-        foreach ($outgoings as $outgoing) {
-            if(!isset($outgoingData[$outgoing['id']]['success'])){
-                $outgoingData[$outgoing['id']]['success'] = 0;
+        foreach($outgoings as $outgoing) {
+            $outgoingData[$outgoing['id']]['success'] = 0;
+            if ($outgoing['status'] == 'answered')
+                $outgoingData[$outgoing['id']]['success'] += $outgoing['count'];
+            $outgoingData[$outgoing['id']]['all'] += $outgoing['count'];
+        }
+        /*
+        Получаем входящие звонки для каждого опрератора сгруппированные по статусам
+        select `user`.`id`, `user`.`firstname`, count(*) as `count`, `call`.`status` from `call`
+        left join `call_manager` on `call_manager`.`call_id` = `call`.`id`
+        left join `user` on `user`.`id` = `call_manager`.`manager_id`
+        left join `tag` on `call`.`tag_id` = `tag`.`id`
+        where `call`.`type` = 'incoming' and `user`.`id` is not null and `call`.`status` <> 'new'
+        group by `user`.`id`, `call`.`status`
+         */
+
+        $incomingQuery = new Query();
+        $incomingQuery->select('`user`.`id`, `user`.`firstname`, count(*) as `count`, `call`.`status`')
+            ->from('`call`')
+            ->join("LEFT JOIN", '`call_manager`','`call_manager`.`call_id` = `call`.`id`')
+            ->join("LEFT JOIN", '`user`','`user`.`id` = `call_manager`.`manager_id`')
+            ->join("LEFT JOIN", '`tag`','`call`.`tag_id` = `tag`.`id`')
+            ->where(['`call`.`type`' => 'incoming'])
+            ->andWhere(['is not', '`user`.`id`', null])
+            ->andWhere(['<>', '`call`.`status`', 'new'])
+            ->groupBy(['`user`.`id`', '`call`.`status`']);
+        if ($user_id) {
+            $incomingQuery->andWhere(['`user`.`id`' => $user_id]);
+        }
+        if ($date_start) {
+            $incomingQuery->andWhere(['>=','`call`.`date_time`', $date_start]);
+        }
+        if ($date_end) {
+            $incomingQuery->andWhere(['<=','`call`.`date_time`', $date_end]);
+        }
+        if ($tags_id) {
+            $incomingQuery->andWhere(['in', '`call`.`tag_id`', $tags_id]);
+        }
+        if (!$show_archive_tags) {
+            $incomingQuery->andWhere('(`tag`.`is_deleted` = 0 or `call`.`tag_id` is null)');
+        }
+        $incomings = $incomingQuery->all();
+        $incomingData = [];
+        foreach($incomings as $incoming) {
+            if(!isset($incomingData[$incoming['id']]['success'])){
+                $incomingData[$incoming['id']]['success'] = 0;
             }
-            if(!isset($outgoingData[$outgoing['id']]['missed'])){
-                $outgoingData[$outgoing['id']]['missed'] = 0;
+            if(!isset($incomingData[$incoming['id']]['missed'])){
+                $incomingData[$incoming['id']]['missed'] = 0;
             }
-            if(!isset($outgoingData[$outgoing['id']]['all'])){
-                $outgoingData[$outgoing['id']]['all'] = 0;
+            if(!isset($incomingData[$incoming['id']]['all'])){
+                $incomingData[$incoming['id']]['all'] = 0;
             }
 
-            if ($outgoing['status'] == 'answered'){
-                $outgoingData[$outgoing['id']]['success'] += $outgoing['count'];
+            if ($incoming['status'] == 'answered'){
+                $incomingData[$incoming['id']]['success'] += $incoming['count'];
             }else{
-                $outgoingData[$outgoing['id']]['missed'] += $outgoing['count'];
+                $incomingData[$incoming['id']]['missed'] += $incoming['count'];
             }
-            $outgoingData[$outgoing['id']]['all'] += $outgoing['count'];
+            $incomingData[$incoming['id']]['all'] += $incoming['count'];
         }
 
         /*
