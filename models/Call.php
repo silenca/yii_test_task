@@ -434,6 +434,24 @@ class Call extends \yii\db\ActiveRecord {
         return self::assignCallManager($this->id, $managerId);
     }
 
+    public function getSipChannel()
+    {
+        return $this->hasOne(SipChannel::class, ['id' => 'sip_channel_id']);
+    }
+
+    /**
+     * @return AttractionChannel|null
+     */
+    public function findAttractionChannel()
+    {
+        $sip = $this->getSipChannel()->one();
+        /**@var $sip SipChannel*/
+        if(!$sip) {
+            return null;
+        }
+        return $sip->getAttractionChannel()->one();
+    }
+
     public static function assignCallManager($callId, $managerId)
     {
         $relation = new CallManager();

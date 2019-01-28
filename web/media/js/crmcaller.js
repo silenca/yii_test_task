@@ -18,11 +18,7 @@ $(function(){
 
         $.getJSON('/contacts/get-contact-by-phone', {
             phone: number
-        }, function(response) {
-            if(response.data) {
-                ctrl.updateCallerName(response.data.full_name);
-            }
-        });
+        }, ctrl.updateCaller);
 
         openContactForm(contactId);
         changeActionsForm('call');
@@ -42,11 +38,7 @@ $(function(){
 
         $.getJSON('/contacts/get-contact-by-phone', {
             phone: contact.number
-        }, function(response) {
-            if(response.data) {
-                ctrl.updateCallerName(response.data.full_name);
-            }
-        });
+        }, ctrl.updateCaller);
     });
 
     $('body').on('hangup.caller', function(){
@@ -59,10 +51,14 @@ $(function(){
         }
 
         var contactId = ctrl.getCallerId();
+        var attractionChannel;
         if(contactId) {
             openContactForm(contactId);
         } else {
-            openNewContactForm(ctrl.getCurrentPhoneNumber());
+            if(ctrl.getCallerAttractionChannel()) {
+                attractionChannel = ctrl.getCallerAttractionChannel();
+            }
+            openNewContactForm(ctrl.getCurrentPhoneNumber(), attractionChannel);
         }
 
         changeActionsForm('call');
@@ -80,12 +76,7 @@ $(function(){
         if(number) {
             $.getJSON('/contacts/get-contact-by-phone', {
                 phone: number
-            }, function (response) { // getting full name of incoming contact
-                if(response.data) {
-                    ctrl.updateCallerId(response.data.contact_id);
-                    ctrl.updateCallerName(response.data.full_name);
-                }
-            });
+            }, ctrl.updateCaller);
         }
     });
 
@@ -151,7 +142,8 @@ function CallController(wr, opts, handles) {
                 name: '.name_holder',
                 number: '.number_holder',
                 id: '.id_holder',
-                timer: '.timer_holder'
+                timer: '.timer_holder',
+                attraction_channel: '.attraction_channel_holder'
             }
         },
         titles: {
@@ -206,6 +198,7 @@ function CallController(wr, opts, handles) {
                 self.updateCallerNumber(number);
                 self.updateCallerName(name || '');
                 self.updateCallerId(0);
+                self.updateCallerAttractionChannel(undefined);
 
                 self.getCardWrapper().show();
             },
@@ -375,9 +368,25 @@ function CallController(wr, opts, handles) {
         return parseInt($(options.selectors.card.id, self.getCardWrapper()).html());
     };
 
+    this.getCallerAttractionChannel = function(){
+        return parseInt($(options.selectors.card.attraction_channel, self.getCardWrapper()).html());
+    };
+
     this.updateCallerId = self.updateCallerData('id');
     this.updateCallerName = self.updateCallerData('name');
     this.updateCallerNumber = self.updateCallerData('number');
+    this.updateCallerAttractionChannel = self.updateCallerData('attraction_channel');
+
+    this.updateCaller = function(dataHolder){
+        var contactData = dataHolder.data || {};
+        if(contactData.contact_id) {
+            self.updateCallerId(contactData.contact_id);
+            self.updateCallerName(contactData.full_name);
+        }
+        if(contactData.attraction_channel) {
+            self.updateCallerAttractionChannel(contactData.attraction_channel);
+        }
+    };
 
     this.trigger = function(type, data){
         console.log('[T]', type.toUpperCase(), data);

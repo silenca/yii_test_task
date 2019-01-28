@@ -302,6 +302,7 @@ else {
                 <div class="number_holder"></div>
                 <div class="name_holder"></div>
                 <span class="id_holder hidden"></span>
+                <span class="attraction_channel_holder hidden"></span>
                 <div class="actions_wrapper">
                     <span class="timer_holder pull-left">00:00</span>
                     <span class="pull-right">

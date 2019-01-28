@@ -929,16 +929,29 @@ class ContactsController extends BaseController
 
     public function actionGetContactByPhone(): void
     {
+        $contactData = [];
+
         $phone = Yii::$app->request->get('phone');
 
-        if ($contact = Contact::getContactByPhone($phone)) {
-            $this->json([
-                'contact_id' => $contact->id,
-                'full_name' => $contact->getFullName(),
-            ], 200);
+        $contact = Contact::getContactByPhone($phone);
+        /**@var $contact Contact*/
+        if($contact) {
+            $contactData['contact_id'] = $contact->id;
+            $contactData['full_name'] = $contact->getFullName();
         } else {
-            $this->json(false, 404);
+            // Try to find current call to and appropriate attraction_channel
+            // Active incoming call with matched phone number
+            $call = Call::findOne([
+                'type' => Call::TYPE_INCOMING,
+                'phone_number' => $phone,
+                'status' => Call::CALL_STATUS_NEW,
+            ]);
+            if($call && ($attractionChannel = $call->findAttractionChannel())) {
+                $contactData['attraction_channel'] = $attractionChannel->id;
+            }
         }
+
+        $this->json($contactData, 200);
     }
 
     public function actionRemoveTag(): void

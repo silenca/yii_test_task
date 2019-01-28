@@ -303,16 +303,16 @@ function openContactForm(id) {
 function openNewContactForm(phone,attraction_channel) {
     clearContactForm($contact_form);
     $contact_form.modal({});
+    if(attraction_channel !== undefined) {
+        $contact_form.find('#contact_attraction_channel_id option[value='+attraction_channel+']').prop('selected',true);
+        $contact_form.find('#contact_attraction_channel_id').attr('data-value',attraction_channel);
+        editContact($contact_form, 'attraction_channel_id', attraction_channel);
+    }
+    bindLiveChangeContact($contact_data_form);
     if(phone !== undefined) {
         $contact_form.find('#contact_phones').val(phone);
         $contact_form.find('#contact_phones').attr('data-value',phone).trigger('blur');
     }
-    // console.log(attraction_channel);
-    if(attraction_channel !== undefined) {
-        $contact_form.find('#contact_attraction_channel_id option[value='+attraction_channel+']').prop('selected',true);
-        $contact_form.find('#contact_attraction_channel_id').attr('data-value',attraction_channel);
-    }
-    bindLiveChangeContact($contact_data_form);
 }
 
 function openNewContactFormWithPhone(phone) {
