@@ -43,19 +43,19 @@ class ReportsWidget extends Widget
             $data[$i][] = $user['firstname'];
 
             //Входящие звонки
-            if (isset($this->outgoings[$user['id']])) {
-                $data[$i][] = $this->outgoings[$user['id']]['success'] ."/".$this->outgoings[$user['id']]['missed'];
-                $this->totalOutgoingsSuccess += $this->outgoings[$user['id']]['success'];
-                $this->totalOutgoingsAll += $this->outgoings[$user['id']]['missed'];
+            if (isset($this->incomings[$user['id']])) {
+                $data[$i][] = $this->incomings[$user['id']]['success'] ."/".$this->incomings[$user['id']]['missed'];
+                $this->totalIncomingsSuccess += $this->incomings[$user['id']]['success'];
+                $this->totalIncomingsAll += $this->incomings[$user['id']]['missed'];
             } else {
                 $data[$i][] = "0/0";
             }
 
             // Исходящие звонки
-            if (isset($this->incomings[$user['id']])) {
-                $data[$i][] = $this->incomings[$user['id']]['all'] ."/". $this->incomings[$user['id']]['success'];
-                $this->totalIncomingsSuccess += $this->incomings[$user['id']]['success'];
-                $this->totalIncomingsAll += $this->incomings[$user['id']]['all'];
+            if (isset($this->outgoings[$user['id']])) {
+                $data[$i][] = $this->outgoings[$user['id']]['all'] ."/". $this->outgoings[$user['id']]['success'];
+                $this->totalOutgoingsSuccess += $this->outgoings[$user['id']]['success'];
+                $this->totalOutgoingsAll += $this->outgoings[$user['id']]['all'];
             } else {
                 $data[$i][] = "0/0";
             }
@@ -99,8 +99,8 @@ class ReportsWidget extends Widget
         }
         $data[] = [
             "Итого:",
-            $this->totalOutgoingsSuccess . "/" . $this->totalOutgoingsAll,
-            $this->totalIncomingsAll . "/" . $this->totalIncomingsSuccess,
+            $this->totalIncomingsSuccess . "/" . $this->totalIncomingsAll,
+            $this->totalOutgoingsAll . "/" . $this->totalOutgoingsSuccess,
             $this->totalContactsLeads,
             $this->totalCreateVisitsPending . "/" . $this->totalCreateVisitsTakePlace,
             $this->totalLeadInContacts
