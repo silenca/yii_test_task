@@ -94,12 +94,12 @@ function updateSipChannelsList($form,selected) {
         var list = response.data;
         select.empty();//.append('<option class="select-placeholder" value="" disabled selected>SIP Канал</option>');
         for(K in list) {
-            select.append('<option value="'+list[K].id+'">'+list[K].phone_number+'</option>');
+            select.append('<option value="'+list[K].id+'">'+list[K].name+'</option>');
         }
         if(selected != undefined) {
             var values = [];
             for(K in selected) {
-                select.append('<option value="'+selected[K].id+'">'+selected[K].phone_number+'</option>');
+                select.append('<option value="'+selected[K].id+'">'+selected[K].name+'</option>');
                 values.push(selected[K].id);
             }
             select.val(values);
@@ -250,7 +250,7 @@ $(document).ready(function() {
 
     $attraction_channel_data_form.find('input[type=text], input[type=email], #attraction_channel_integration_type')
         .on('change', function () {
-        if (bind_inputs[$(this).attr('name')] !== $(this).val()) {
+        if(bind_inputs[$(this).attr('name')] !== $(this).val()) {
             bind_inputs[$(this).attr('name')] = $(this).val();
             $(this).data('value', $(this).val());
             if(sendTimer != undefined){
