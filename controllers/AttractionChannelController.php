@@ -8,6 +8,7 @@
 namespace app\controllers;
 
 
+use app\components\Asterisk;
 use app\components\widgets\AttractionChannelTableWidget;
 use app\models\AttractionChannel;
 use app\models\forms\AttractionChannelForm;
@@ -182,9 +183,15 @@ class AttractionChannelController extends BaseController
         $this->json($attraction_channel_data, 200);
     }
 
-    public function actionGetFreeSipChannels() {
-        $channels = SipChannel::find()->where(['is','attraction_channel_id',NULL])->asArray()->all();
-        $this->json($channels,200);
+    public function actionGetFreeSipChannels()
+    {
+        SipChannel::syncWithConfig();
+
+        $channels = SipChannel::find()
+                        ->where(['is', 'attraction_channel_id', NULL])
+                        ->andWhere(['is_active' => SipChannel::ACTIVE])
+                            ->asArray()->all();
+        $this->json($channels, 200);
     }
 
     public function actionHideColumns()
