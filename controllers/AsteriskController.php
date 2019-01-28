@@ -301,6 +301,14 @@ class AsteriskController extends BaseController {
                 }
             }
 
+            // Update contact_id if it empty
+            if(!$call->contact_id) {
+                $contact = Contact::getContactByPhone($call->phone_number);
+                if($contact) {
+                    $call->contact_id = $contact->id;
+                }
+            }
+
             $call->save();
 
             return $this->json([]);
