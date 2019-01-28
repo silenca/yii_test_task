@@ -2,23 +2,24 @@
 
 namespace app\models;
 
+use app\components\Asterisk;
 use Yii;
 
 /**
  * This is the model class for table "sip_channel".
  *
  * @property integer $id
- * @property string $phone_number
- * @property string $host
- * @property integer $port
+ * @property string $name
+ * @property integer $is_active
  * @property integer $attraction_channel_id
- * @property string $login
- * @property string $password
  *
  * @property AttractionChannel $attractionChannel
  */
 class SipChannel extends \yii\db\ActiveRecord
 {
+    const ACTIVE = 1;
+    const INACTIVE = 0;
+
     /**
      * @inheritdoc
      */
@@ -33,10 +34,9 @@ class SipChannel extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['phone_number', 'host', 'port', 'login', 'password'], 'required'],
-            [['port','attraction_channel_id'], 'integer'],
-            [['phone_number'], 'string', 'max' => 20],
-            [['host', 'login', 'password'], 'string', 'max' => 255],
+            [['name'], 'string', 'max' => 255],
+            [['name'], 'required'],
+            [['attraction_channel_id', 'is_active'], 'integer']
         ];
     }
 
@@ -47,32 +47,22 @@ class SipChannel extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'phone_number' => 'Phone Number',
-            'host' => 'Host',
-            'port' => 'Port',
-            'login' => 'Login',
-            'password' => 'Password',
+            'name' => 'Name',
+            'is_active' => 'Status',
         ];
     }
 
     public static $safe_fields = [
-        'int_id',
-        'phone_number',
-        'host',
-        'port',
-        'login',
-        'password'
+        'name',
+        'is_active',
     ];
 
     public static function getColsForTableView()
     {
         $result = [
             'id' => ['label' => 'ID', 'have_search' => false, 'orderable' => true],
-            'phone_number' => ['label' => 'Номер телефона', 'have_search' => true, 'orderable' => true],
-            'host' => ['label' => 'Хост', 'have_search' => true, 'orderable' => true],
-            'port' => ['label' => 'Порт', 'have_search' => false, 'orderable' => false],
-            'login' => ['label' => 'Логин', 'have_search' => true, 'orderable' => true],
-            'password' => ['label' => 'Пароль', 'have_search' => false, 'orderable' => false],
+            'name' => ['label' => 'Название', 'have_search' => true, 'orderable' => true],
+            'is_active' => ['label' => 'Активен', 'have_search' => false, 'orderable' => false],
             'delete_button' => ['label' => 'Удалить', 'have_search' => false]
         ];
         return $result;
@@ -92,5 +82,27 @@ class SipChannel extends \yii\db\ActiveRecord
     public function getAttractionChannel()
     {
         return $this->hasOne(AttractionChannel::className(), ['id' => 'attraction_channel_id']);
+    }
+
+    public static function syncWithConfig()
+    {
+        $sips = (new Asterisk())->getExternalSips();
+        // Craete SIPs from config if it doesn't exist
+        foreach($sips as $sip) {
+            $channel = SipChannel::findOne(['name' => $sip]);
+            if(!$channel) {
+                $channel = new SipChannel();
+                $channel->name = $sip;
+                $channel->is_active = SipChannel::ACTIVE;
+                $channel->save();
+            }
+        }
+        // Mark as inactive if sip is not in config
+        $channels = SipChannel::find()->where(['not in', 'name', $sips])->all();
+        foreach($channels as $channel) {
+            /**@var $channel SipChannel*/
+            $channel->is_active = SipChannel::INACTIVE;
+            $channel->save();
+        }
     }
 }
