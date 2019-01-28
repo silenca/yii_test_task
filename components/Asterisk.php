@@ -15,10 +15,10 @@ class Asterisk
         $externalSips = [];
         foreach($sips as $name=>$config) {
             if(($config['context'] ?? '') === 'in') {
-                $externalSips[] = $name;
+                $externalSips[] = $config['username'];
             }
         }
-        return $externalSips;
+        return array_filters(array_map('trim', $externalSips));
     }
 
     protected function getConfig($key = null)
