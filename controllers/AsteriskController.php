@@ -4,7 +4,7 @@ namespace app\controllers;
 
 use app\components\Filter;
 use app\models\{
-    Call, Contact, ManagerNotification, MissedCall, SipChannel, User
+    Call, CallManager, Contact, ManagerNotification, MissedCall, SipChannel, User
 };
 use app\models\forms\CallForm;
 use Yii;
@@ -94,7 +94,7 @@ class AsteriskController extends BaseController {
 
             $manager = User::getManagerByIntId($request[$this->typeToManagerKeyMap[$call->type]] ?? 0);
             if(!$manager) {
-                throw new \Exception('Can not find manager with INT_ID: '.$request['answered']);
+                throw new \Exception('Can not find manager with INT_ID: (CT: '.$call->type.';K:'.$this->typeToManagerKeyMap[$call->type].';INT'.$request[$this->typeToManagerKeyMap[$call->type]].')');
             }
 
             $call->assignManager($manager->id);
@@ -201,6 +201,7 @@ class AsteriskController extends BaseController {
             $callData = [];
             $contact = null;
             $sipChannel = null;
+            $manager = null;
 
             switch(true) {
                 case Call::isIncomingCall($callerNumber, $answeredNumber):
@@ -220,6 +221,9 @@ class AsteriskController extends BaseController {
                     if(strtoupper($callOrderToken) == 'NONE') {
                         $callOrderToken = null;
                     }
+
+                    $manager = User::findOne(['int_id' => $callerNumber]);
+
                     // "tag_id" processing was removed
                     $callData = [
                         'type' => Call::TYPE_OUTCOMING,
@@ -247,6 +251,10 @@ class AsteriskController extends BaseController {
 
                 $call->setAttributes($callData);
                 $call->save();
+
+                if($manager) {
+                    $call->assignManager($manager->id);
+                }
             }
 
             return $this->json([]);
