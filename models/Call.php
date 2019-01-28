@@ -35,7 +35,7 @@ class Call extends \yii\db\ActiveRecord {
     const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
 
     const TYPE_INCOMING = 'incoming';
-    const TYPE_OUTCOMING = 'outcoming';
+    const TYPE_OUTCOMING = 'outgoing';
 
     /**
      * @inheritdoc
