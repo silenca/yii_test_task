@@ -3,7 +3,9 @@
 namespace app\controllers;
 
 use app\components\Filter;
-use app\models\{Call, Contact, ManagerNotification, MissedCall, User};
+use app\models\{
+    Call, Contact, ManagerNotification, MissedCall, SipChannel, User
+};
 use app\models\forms\CallForm;
 use Yii;
 use yii\db\Query;
@@ -198,10 +200,13 @@ class AsteriskController extends BaseController {
 
             $callData = [];
             $contact = null;
+            $sipChannel = null;
 
             switch(true) {
                 case Call::isIncomingCall($callerNumber, $answeredNumber):
                     $contact = Contact::getContactByPhone($callerNumber);
+
+                    $sipChannel = SipChannel::findOne(['name' => $answeredNumber]);
 
                     $callData = [
                         'type' => Call::TYPE_INCOMING,
@@ -231,7 +236,7 @@ class AsteriskController extends BaseController {
                     'date_time' => date(Call::DATE_TIME_FORMAT),
                     'contact_id' => null,
                     'status' => Call::CALL_STATUS_NEW,
-                    'sip_channel_id' => $form->sip_channel,
+                    'sip_channel_id' => $sipChannel?$sipChannel->id:null,
                     'sended_crm' => 1,
                 ]);
 
