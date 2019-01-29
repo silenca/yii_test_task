@@ -1116,7 +1116,7 @@ class ContactsController extends BaseController
             'name' => $name,
             'surname' => $surname,
             'middle_name' => $middle_name,
-            'first_phone' => self::parsePhoneString($mediumData['Phone'] ?? ''),
+            'first_phone' => $mediumData['Phone'] ?? '',
             'city' => $mediumData['City'] ?? '',
             'first_email' => $mediumData['Email'] ?? '',
             'status' => Contact::CONTACT,
@@ -1176,7 +1176,7 @@ class ContactsController extends BaseController
         return Contact::updateMediumObject($oid, $data) === true;
     }
 
-    public static function parsePhoneString($phoneString)
+    protected static function parsePhoneString($phoneString)
     {
         // Add spaces for strings in brackets
         $prepared = preg_replace('/\(([^\)]+)\)/', ' $1 ', $phoneString);
