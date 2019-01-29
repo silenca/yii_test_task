@@ -333,7 +333,7 @@ class Call extends \yii\db\ActiveRecord {
         $statusMap = [
             self::CALL_STATUS_NEW => 'активный',
             self::CALL_STATUS_MISSED => 'пропущеный',
-            self::CALL_STATUS_FAILURE => 'ошибка',
+            self::CALL_STATUS_FAILURE => 'занят',
         ];
 
         return implode(' - ', array_filter([
