@@ -287,11 +287,15 @@ class ContactsController extends BaseController
                 if($department) {
                     $contact = Contact::findOne($contactId);//Пациент
                     if ($contact) {
+                        $attrChannel = $contact->getAttractionChannel()->one();
+                        $infoSource = $attrChannel?$attrChannel->name:'';
+                        $type = ($contact->status == Contact::CONTACT)?'Повторный':'Новый';
+
                         $data = '<OBJECT ДатаПриема="' . date("Y-m-d\TH:i:s", $doctorStartTime) . '" ВремяПриема="' . $timeReceipt . '" '
                             . 'Пациент="' . $contact->surname . ' ' . $contact->name . ' ' . $contact->middle_name . '" '
                             . 'Врач="' . $doctorName . '" Кабинет="' . $cabinetName . '" ИсточЗапис="Через контакт центр" '
-                            . 'Статус="В ожидании" Визит="Новый" Комментарий="' . htmlspecialchars($visitComment) . '" '
-                            . 'ИсточникИнформации="DOC.UA">' . "\n"
+                            . 'Статус="В ожидании" Визит="'.$type.'" Комментарий="' . htmlspecialchars($visitComment) . '" '
+                            . 'ИсточникИнформации="'.$infoSource.'" Телефон="'.$contact->first_phone.'">' . "\n"
                             . '<Пациент link="C:1CDA3A9DBD62FBC/O:' . $contact->medium_oid . '"/>' . "\n"
                             . '<Врач link="C:1CDCBA80BCACD1E/O:' . $doctorId . '"/>' . "\n"
                             . '<Кабинет link="C:1CE311BD5A26671/O:' . $cabinetId . '"/>' . "\n"
@@ -465,6 +469,9 @@ class ContactsController extends BaseController
                         $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
                     } elseif($contact_form->status == Contact::CONTACT) {
                         Contact::updateMediumObject($contact->medium_oid, $contact_form->attributes);
+                    }
+                    if(!$contact->manager_id) {
+                        $contact->manager_id = Yii::$app->user->identity->getId();
                     }
                     if ($contact->manager_id !== Yii::$app->user->identity->getId() && !Yii::$app->user->can('supervisor') && !Yii::$app->user->can('admin')) {
                         $contact_form->manager_id = $contact->manager_id;
