@@ -1106,9 +1106,12 @@ class ContactsController extends BaseController
 
         // Parse name data
         $nameData = array_filter(explode(' ', trim($mediumData['FIO'])));
-        list($surname, $name) = $nameData;
+
+        $surname = count($nameData)?array_shift($nameData):'';
+        $name = count($nameData)?array_shift($nameData):'';
+
         $middle_name = '';
-        if(count($nameData) > 2) {
+        if(count($nameData)) {
             $middle_name = implode(' ', array_slice($nameData, 2));
         }
 
