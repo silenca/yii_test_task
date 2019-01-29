@@ -70,7 +70,7 @@ $(function(){
             _.delay(doSearch, 2000);
         });
 
-        $('.search-input-select').on('change', doSearch);
+        $('select.search-input-select').on('change', doSearch);
     })();
 
     $(document).on('click', '#call-table .contact', function(e) {
