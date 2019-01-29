@@ -1112,7 +1112,7 @@ class ContactsController extends BaseController
 
         $middle_name = '';
         if(count($nameData)) {
-            $middle_name = implode(' ', array_slice($nameData, 2));
+            $middle_name = implode(' ', $nameData);
         }
 
         $existingContact->setAttributes([
