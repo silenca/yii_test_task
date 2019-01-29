@@ -658,6 +658,11 @@ class Contact extends ActiveRecord
         ];
     }
 
+    public function getPhonesString()
+    {
+        return implode(',', array_filter($this->getPhoneValues()));
+    }
+
     public function getEmailValues(): array
     {
         return [

@@ -295,7 +295,7 @@ class ContactsController extends BaseController
                             . 'Пациент="' . $contact->surname . ' ' . $contact->name . ' ' . $contact->middle_name . '" '
                             . 'Врач="' . $doctorName . '" Кабинет="' . $cabinetName . '" ИсточЗапис="Через контакт центр" '
                             . 'Статус="В ожидании" Визит="'.$type.'" Комментарий="' . htmlspecialchars($visitComment) . '" '
-                            . 'ИсточникИнформации="'.$infoSource.'" Телефон="'.$contact->first_phone.'">' . "\n"
+                            . 'ИсточникИнформации="'.$infoSource.'" Телефон="'.$contact->getPhonesString().'">' . "\n"
                             . '<Пациент link="C:1CDA3A9DBD62FBC/O:' . $contact->medium_oid . '"/>' . "\n"
                             . '<Врач link="C:1CDCBA80BCACD1E/O:' . $doctorId . '"/>' . "\n"
                             . '<Кабинет link="C:1CE311BD5A26671/O:' . $cabinetId . '"/>' . "\n"
