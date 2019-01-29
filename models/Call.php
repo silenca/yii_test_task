@@ -452,6 +452,21 @@ class Call extends \yii\db\ActiveRecord {
         return $sip->getAttractionChannel()->one();
     }
 
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        $contact = $this->getContact()->one();
+        /**@var $contact \app\models\Contact*/
+        if($contact && !$contact->manager_id) {
+            $manager = $this->getManager()->one();
+            if($manager) {
+                $contact->manager_id = $manager->id;
+                $contact->save();
+            }
+        }
+    }
+
     public static function assignCallManager($callId, $managerId)
     {
         $relation = new CallManager();
