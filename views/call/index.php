@@ -23,14 +23,14 @@ $this->params['active'] = 'call';
                 <table class="table table-hover" id="call-table">
                     <thead>
                         <tr>
-                            <?php foreach($columns as $column) { ?>
+                            <?php foreach($columns as $k=>$column) { ?>
                                 <th class="dt_column" data-name="<?php echo $column['name']; ?>" data-visible="<?php echo $column['visible'] ?? 'true'; ?>">
                                     <?php
                                     switch($column['type']) {
                                         case 'select':
                                             ?>
                                             <?php if(!empty($column['options'])) { ?>
-                                                <select data-column="5" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
+                                                <select data-column="<?php echo $k; ?>" class="cs-select cs-skin-slide search-input-select" data-init-plugin="cs-select">
                                                     <option value="<?php echo $column['default'] ?? ""; ?>"><?php echo $column['label']; ?></option>
                                                     <?php foreach($column['options'] as $value=>$label) { ?>
                                                         <option value="<?php echo $value; ?>"><?php echo $label; ?></option>
