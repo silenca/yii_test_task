@@ -92,12 +92,15 @@ class AsteriskController extends BaseController {
                 throw new \Exception('Can not find call with ID#'.$request['uniqueid']);
             }
 
-            $manager = User::getManagerByIntId($request[$this->typeToManagerKeyMap[$call->type]] ?? 0);
-            if(!$manager) {
-                throw new \Exception('Can not find manager with INT_ID: (CT: '.$call->type.';K:'.$this->typeToManagerKeyMap[$call->type].';INT'.$request[$this->typeToManagerKeyMap[$call->type]].')');
-            }
+            // No need to assign manager because relation set in callstarted action
+            if($call->type == Call::TYPE_INCOMING) {
+                $manager = User::getManagerByIntId($request[$this->typeToManagerKeyMap[$call->type]] ?? 0);
+                if (!$manager) {
+                    throw new \Exception('Can not find manager with INT_ID: (CT: ' . $call->type . ';K:' . $this->typeToManagerKeyMap[$call->type] . ';INT' . $request[$this->typeToManagerKeyMap[$call->type]] . ')');
+                }
 
-            $call->assignManager($manager->id);
+                $call->assignManager($manager->id);
+            }
 
             $call->status = Call::CALL_STATUS_ANSWERED;
             $call->save();
