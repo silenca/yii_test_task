@@ -45,7 +45,7 @@ CODE
         if(!$lastSync) {
             $dateFrom = (new \DateTime())->modify('- 2 minutes');
         } else {
-            $dateFrom = \DateTime::createFromFormat('U', $lastSync);
+            $dateFrom = (new \DateTime())->setTimestamp($lastSync);
         }
         $dateTo = (new \DateTime());
         $lastSync = $dateTo->format('U') - 1;
