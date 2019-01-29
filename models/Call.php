@@ -90,10 +90,52 @@ class Call extends \yii\db\ActiveRecord {
     public static function getCallStatuses()
     {
         return [
-            ['name' => self::CALL_STATUS_ANSWERED.'_'.self::CALL_STATUS_MISSED.'|'.self::CALL_INCOMING, 'label' => 'Исходящий'],
-            ['name' => self::CALL_STATUS_ANSWERED.'|'.self::CALL_OUTGOING, 'label' => 'Входящий'],
-            ['name' => self::CALL_STATUS_MISSED.'|'.self::CALL_OUTGOING, 'label' => 'Пропущенный'],
-            ['name' => self::CALL_STATUS_FAILURE.'|'.self::CALL_INCOMING.'_'.self::CALL_OUTGOING, 'label' => 'Сбой'],
+            [
+                'name' => implode('_', [
+                    implode('|', [
+                        Call::CALL_STATUS_ANSWERED,
+                        Call::CALL_STATUS_MISSED,
+                    ]),
+                    implode('|', [
+                        Call::TYPE_OUTCOMING,
+                    ])
+                ]),
+                'label' => 'Исходящий',
+            ],
+            [
+                'name' => implode('_', [
+                    implode('|', [
+                        Call::CALL_STATUS_ANSWERED,
+                    ]),
+                    implode('|', [
+                        Call::TYPE_INCOMING,
+                    ])
+                ]),
+                'label' => 'Входящий',
+            ],
+            [
+                'name' => implode('_', [
+                    implode('|', [
+                        Call::CALL_STATUS_MISSED,
+                    ]),
+                    implode('|', [
+                        Call::TYPE_INCOMING,
+                    ])
+                ]),
+                'label' => 'Пропущенный',
+            ],
+            [
+                'name' => implode('_', [
+                    implode('|', [
+                        Call::CALL_STATUS_FAILURE,
+                    ]),
+                    implode('|', [
+                        Call::TYPE_INCOMING,
+                        Call::TYPE_OUTCOMING,
+                    ])
+                ]),
+                'label' => 'Сбой',
+            ],
         ];
     }
 
