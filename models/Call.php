@@ -456,13 +456,15 @@ class Call extends \yii\db\ActiveRecord {
     {
         parent::afterSave($insert, $changedAttributes);
 
-        $contact = $this->getContact()->one();
-        /**@var $contact \app\models\Contact*/
-        if($contact && !$contact->manager_id) {
-            $manager = $this->getManager()->one();
-            if($manager) {
-                $contact->manager_id = $manager->id;
-                $contact->save();
+        if($this->status == Call::CALL_STATUS_ANSWERED) {
+            $contact = $this->getContact()->one();
+            /**@var $contact \app\models\Contact */
+            if ($contact && !$contact->manager_id) {
+                $manager = $this->getManager()->one();
+                if ($manager) {
+                    $contact->manager_id = $manager->id;
+                    $contact->save();
+                }
             }
         }
     }
