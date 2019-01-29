@@ -91,45 +91,45 @@ class Call extends \yii\db\ActiveRecord {
     {
         return [
             [
-                'name' => implode('_', [
-                    implode('|', [
+                'name' => implode('|', [
+                    implode('_', [
                         Call::CALL_STATUS_ANSWERED,
                         Call::CALL_STATUS_MISSED,
                     ]),
-                    implode('|', [
+                    implode('_', [
                         Call::TYPE_OUTCOMING,
                     ])
                 ]),
                 'label' => 'Исходящий',
             ],
             [
-                'name' => implode('_', [
-                    implode('|', [
+                'name' => implode('|', [
+                    implode('_', [
                         Call::CALL_STATUS_ANSWERED,
                     ]),
-                    implode('|', [
+                    implode('_', [
                         Call::TYPE_INCOMING,
                     ])
                 ]),
                 'label' => 'Входящий',
             ],
             [
-                'name' => implode('_', [
-                    implode('|', [
+                'name' => implode('|', [
+                    implode('_', [
                         Call::CALL_STATUS_MISSED,
                     ]),
-                    implode('|', [
+                    implode('_', [
                         Call::TYPE_INCOMING,
                     ])
                 ]),
                 'label' => 'Пропущенный',
             ],
             [
-                'name' => implode('_', [
-                    implode('|', [
+                'name' => implode('|', [
+                    implode('_', [
                         Call::CALL_STATUS_FAILURE,
                     ]),
-                    implode('|', [
+                    implode('_', [
                         Call::TYPE_INCOMING,
                         Call::TYPE_OUTCOMING,
                     ])
