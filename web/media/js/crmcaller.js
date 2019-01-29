@@ -26,19 +26,24 @@ $(function(){
 
     $('body').on('click', '.btn-audio-call', function(){
         var contact = $(this).data();
-        if(!contact.id || !contact.number) {
+
+        if(!contact.id && !contact.number) {
             return;
         }
-
         $(this).addClass('disabled');
 
-        ctrl.doCall(contact.number);
-        ctrl.showCard(contact.number);
-        ctrl.updateCallerId(contact.id);
+        if(contact.number) {
+            ctrl.doCall(contact.number);
+            ctrl.showCard(contact.number);
 
-        $.getJSON('/contacts/get-contact-by-phone', {
-            phone: contact.number
-        }, ctrl.updateCaller);
+            $.getJSON('/contacts/get-contact-by-phone', {
+                phone: contact.number
+            }, ctrl.updateCaller);
+        }
+
+        if(contact.id) {
+            ctrl.updateCallerId(contact.id);
+        }
     });
 
     $('body').on('hangup.caller', function(){
