@@ -1104,12 +1104,19 @@ class ContactsController extends BaseController
             $existingContact->medium_oid = $mediumData['oid'];
         }
 
-        list($surname, $name, $middle_name) = explode(' ', $mediumData['FIO']);
+        // Parse name data
+        $nameData = array_filter(explode(' ', trim($mediumData['FIO'])));
+        list($surname, $name) = $nameData;
+        $middle_name = '';
+        if(count($nameData) > 2) {
+            $middle_name = implode(' ', array_slice($nameData, 2));
+        }
+
         $existingContact->setAttributes([
             'name' => $name,
             'surname' => $surname,
             'middle_name' => $middle_name,
-            'first_phone' => $mediumData['Phone'] ?? '',
+            'first_phone' => self::parsePhoneString($mediumData['Phone'] ?? ''),
             'city' => $mediumData['City'] ?? '',
             'first_email' => $mediumData['Email'] ?? '',
             'status' => Contact::CONTACT,
@@ -1167,5 +1174,39 @@ class ContactsController extends BaseController
     public function actionUpdateMediumClient($oid, $data): bool
     {
         return Contact::updateMediumObject($oid, $data) === true;
+    }
+
+    public static function parsePhoneString($phoneString)
+    {
+        // Add spaces for strings in brackets
+        $prepared = preg_replace('/\(([^\)]+)\)/', ' $1 ', $phoneString);
+        // Replcae invalid chars
+        $cleaned = trim(preg_replace('/[\-\.\,\=\(\)]|(\s\s)/', '', $prepared));
+
+        // Fetch string from source
+        $strings = [];
+        preg_match_all('/[^\+\d\s\;]+/', $cleaned, $strings);
+
+        // remove strings
+        $cleaned = preg_replace('/[^\d\s\;]/', '', $cleaned);
+
+        // Split by spaces or semicolon
+        $numeric = preg_split('/[\s\;]/', $cleaned);// preg_replace('/[^\d]/', '', $cleaned);
+        foreach ($numeric as $k => $v) {
+            if (is_numeric($v)) {
+                if (strlen($v) >= 10) {
+                    // Remove +38 if it exists
+                    $numeric[$k] = preg_replace('/^\+?3?8?(\d{10,})$/', '$1', $v);
+                }
+            } else {
+                unset($numeric[$k]);
+            }
+        }
+
+        // Merge all parts together
+        $parts = array_filter(array_merge($numeric, $strings[0]));
+
+        // Return imploded parse data
+        return implode(' ', $parts);
     }
 }
