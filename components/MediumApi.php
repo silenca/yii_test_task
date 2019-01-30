@@ -1,5 +1,4 @@
 <?php
-
 namespace app\components;
 
 use app\models\Contact;
@@ -16,8 +15,11 @@ class MediumApi
     private $minTime;
     private $maxTime;
 
-    public const CONTACT_URL = 'http://91.225.122.210:8080/api/H:1D13C88C20AA6C6/D:WORK/D:1D13C9303C946F9/C:1D45F18F27C737D';
-    public const KEY_OBJECT = '/O:';
+    const LINK_GET_CONTACT = 'get_contact';
+    const LINK_FETCH_CONTACTS = 'fetch_contacts';
+    const LINK_PUT_CONTACT = 'put_contact';
+
+    const DATE_FORMAT = 'Y-m-d\TH:i:s';
 
     protected static $apiFieldsMap = [
         'name' => 'FIO',
@@ -360,9 +362,11 @@ class MediumApi
         return $result;
     }
 
-    public static function getContact($oid)
+    public function getContact($oid)
     {
-        $url = implode('', [self::CONTACT_URL, self::KEY_OBJECT, $oid]);
+        $url = $this->link(self::LINK_GET_CONTACT, [
+            'OID' => $oid
+        ]);
 
         $client = new Client();
 
@@ -373,13 +377,91 @@ class MediumApi
                 throw new \Exception('Error querying MediumAPI');
             }
             // There should be only one contact information so fetch it by index
-            return self::parseContactsXml($response->getContent())[0] ?? false;
+            return $this->parseContactsXml($response->getContent())[0] ?? false;
         } catch(\Exception $e) {
             $log->setResponse('[ERROR] '.$e->getMessage());
             return false;
         }
 
         return $xml->attributes();
+    }
+
+    public function putContact($data, $oid = null)
+    {
+        $contactData = $this->preparePutContactData($data);
+        $contactData['OID_STR'] = $oid?('oid="'.$oid.'"'):'';
+
+        $url = $this->link(self::LINK_PUT_CONTACT);
+        $body = $this->body(self::LINK_PUT_CONTACT, $contactData);
+
+        $log = MediumLogsApi::setRequestData($url, $body);
+        try {
+            $response = (new Client([
+                'requestConfig' => [
+                    'format' => Client::FORMAT_XML,
+                    'headers' => ['Content-type' => 'application/x-www-form-urlencoded']
+                ],
+                'responseConfig' => [
+                    'format' => Client::FORMAT_XML
+                ]
+            ]))
+                ->post($url, $body)
+                ->send();
+            $log->setResponse($response->getContent());
+
+            if(!$response->isOk) {
+                throw new \Exception('Invalid response. '.$response->getContent());
+            }
+
+            return $response->getData()[0];
+        } catch(\Exception $e) {
+            $log->setResponse('Error: '.$e->getMessage());
+            return null;
+        }
+    }
+
+    public function preparePutContactData($source)
+    {
+        $birthdayString = '';
+        if($source['birthday']) {
+            $birthdayString = \DateTime::createFromFormat('Y-m-d', $source['birthday'])
+                ->format(self::DATE_FORMAT);
+        }
+
+        return [
+            'name' => implode(' ', [
+                $source['surname'],
+                $source['name'],
+                $source['middle_name'],
+            ]),
+            'birthday' => $birthdayString,
+            'phone' => $data['first_phone'] ?? '',
+            'email' => $data['first_email'] ?? '',
+            'city' => $data['city'] ?? '',
+            'attraction_channel' => $data['attraction_channel_id'] ?? '',
+        ];
+    }
+
+    public function fetchContactsToSync(\DateTime $from, \DateTime $till)
+    {
+        $url = $this->link(self::LINK_FETCH_CONTACTS);
+        $data = $this->body(self::LINK_FETCH_CONTACTS, [
+            'DATE_FROM' => $this->dateString($from),
+            'DATE_TO' => $this->dateString($till),
+        ]);
+
+        $log = MediumLogsApi::setRequestData($url, $data);
+
+        $response = (new Client())
+                        ->createRequest()
+                            ->addHeaders(['Content-type' => 'application/x-www-form-urlencoded'])
+                            ->setUrl($url)
+                            ->setContent($data)
+                        ->send();
+        $response->setFormat(Client::FORMAT_XML);
+        $log->setResponse($response->getContent());
+
+        return $this->parseContactsXml($response->getContent());
     }
 
     public static function isUpToDate(Contact $contact, array $mediumData): bool
@@ -398,7 +480,7 @@ class MediumApi
         return true;
     }
 
-    public static function parseContactsXml(string $xml)
+    public function parseContactsXml(string $xml)
     {
         if(false !== strpos($xml, '<?xml')) {
             // Remove XML comment to be able to correctly parse XML string
@@ -410,7 +492,7 @@ class MediumApi
             return array_reduce($oXml->xpath('OBJECT'), function($list, \SimpleXMLElement $el){
                 $idx = count($list);
                 foreach($el->attributes() as $name=>$value) {
-                    $list[$idx][self::mapFieldName($name)] = (string) $value;
+                    $list[$idx][$this->mapFieldName($name)] = (string) $value;
                 }
                 return $list;
             }, []);
@@ -419,7 +501,82 @@ class MediumApi
         }
     }
 
-    protected static function mapFieldName(string $name)
+    private function buildMediumRequest($data, $url, $oid = null): \yii\httpclient\Request
+    {
+        $url = $this->link(self::LINK_PUT_CONTACT);
+
+        $birthdayString = '';
+        if($data['birthday']) {
+            $birthdayString = \DateTime::createFromFormat('Y-m-d',$data['birthday'])
+                                    ->format(self::DATE_FORMAT);
+        }
+
+        return $this->body(self::LINK_PUT_CONTACT, [
+            'OID_STR' => $oid?('oid="'.$oid.'"'):'',
+            'name' => implode(' ', [
+                $data['surname'],
+                $data['name'],
+                $data['middle_name'],
+            ]),
+            'birthday' => $birthdayString,
+            'phone' => $data['first_phone'] ?? '',
+            'email' => $data['first_email'] ?? '',
+            'city' => $data['city'] ?? '',
+            'attraction_channel' => $data['attraction_channel_id'] ?? '',
+        ]);
+
+        $client = new Client([
+            'baseUrl' => $url,
+            'requestConfig' => [
+                'format' => Client::FORMAT_XML,
+                'headers' => ['Content-type' => 'application/x-www-form-urlencoded']
+            ],
+            'responseConfig' => [
+                'format' => Client::FORMAT_XML
+            ]
+        ]);
+
+        return $client->post($url, $body);
+    }
+
+    public function link($name, array $replacements = [])
+    {
+        $raw = $this->links ?? null;
+        if(!$raw) {
+            throw new \Exception('Link with type "'.$name.'" isn\'t configured.');
+        }
+
+        return $this->replace($raw, $replacements);
+    }
+
+    public function body($name, array $replacements = [])
+    {
+        $raw = $this->bodies ?? null;
+        if(!$raw) {
+            throw new \Exception('Body with type "'.$name.'" isn\'t configured.');
+        }
+
+        return $this->replace($raw, $replacements);
+    }
+
+    protected function replace(string $source, array $replacements = [])
+    {
+        return str_replace(
+            array_map(
+                function($v){ return '{'.strtoupper($v).'}'; },
+                array_keys($replacements)
+            ),
+            array_values($replacements),
+            $source
+        );
+    }
+
+    protected function dateString(\DateTime $date)
+    {
+        return $date->format(self::DATE_FORMAT);
+    }
+
+    protected function mapFieldName(string $name)
     {
         return self::$apiFieldsMap[$name] ?? $name;
     }

@@ -15,27 +15,6 @@ use Yii;
 
 class SyncController extends Controller
 {
-    const MEDIUM_FETCH_URL = 'http://91.225.122.210:8080/api/H:1D13C88C20AA6C6/D:WORK/D:1D13C9303C946F9/C:1D45F18F27C737D/I:PACK';
-    const MEDIUM_FETCH_DATA_TPL = <<<'CODE'
-let $d1 := '{DATE_FROM}'
-let $d2 := '{DATE_TO}'
-return
-for $ob in //PACK/OBJECT[@update >= $d1 and @update < $d2]
-return element OBJECT
-{
-    attribute oid { $ob/@oid },
-    attribute update {  $ob/@update },
-    attribute FIO { $ob/@name },
-    attribute Email { $ob/@E-mail },
-    attribute Phone { $ob/@ТелефонМоб },
-    attribute Birth { $ob/@ДатаРождения },
-    attribute City { $ob/@Город }
-}
-CODE
-    ;
-
-    const MEDIUM_DATE_FORMAT = 'Y-m-d\TH:i:s';
-
     const VAR_LAST_SYNC_TS = 'lastSyncTs';
 
     public function actionMedium()
@@ -50,29 +29,8 @@ CODE
         $dateTo = (new \DateTime());
         $lastSync = $dateTo->format('U') - 1;
 
-        $client = new Client();
         try {
-            $url = self::MEDIUM_FETCH_URL;
-            $data = str_replace([
-                '{DATE_FROM}',
-                '{DATE_TO}',
-            ], [
-                $this->dateString($dateFrom),
-                $this->dateString($dateTo),
-            ], self::MEDIUM_FETCH_DATA_TPL);
-
-            $log = MediumLogsApi::setRequestData($url, $data);
-
-            $response = $client
-                            ->createRequest()
-                                ->addHeaders(['Content-type' => 'application/x-www-form-urlencoded'])
-                                ->setUrl($url)
-                                ->setContent($data)
-                                ->send();
-            $response->setFormat(Client::FORMAT_XML);
-            $log->setResponse($response->getContent());
-
-            $contacts = MediumApi::parseContactsXml($response->getContent());
+            $contacts = Yii::$app->medium->fetchContactsToSync($dateFrom, $dateTo);
             if(count($contacts)) {
                 foreach($contacts as $contact) {
                     ContactsController::updateContact($contact);
@@ -112,6 +70,8 @@ CODE
 
     public function actionVisitStatus()
     {
+        $cMedium = Yii::$app->medium;
+        /**@var $cMedium MediumApi*/
         $contactsVisits = ContactsVisits::find()
             ->where('visit_date < :date',[':date'=>date('Y-m-d H:i:s')])
             ->andWhere(['status'=>ContactsVisits::STATUS_PENDING])
@@ -119,7 +79,7 @@ CODE
         if($contactsVisits){
             foreach ($contactsVisits as $contactsVisit){
                 if($contactsVisit->department){
-                    $visitStatus = Yii::$app->medium->visitStatus($contactsVisit->department->api_url, $contactsVisit->medium_oid);
+                    $visitStatus = $cMedium->visitStatus($contactsVisit->department->api_url, $contactsVisit->medium_oid);
                     if(!empty($visitStatus['error'])){
                         echo "Error update status visit " . $contactsVisit->medium_oid . $visitStatus['error'] . "\n";
                     }else{
@@ -128,7 +88,7 @@ CODE
                             if($contactsVisit->save() && $contactsVisit->contact){
                                 $contactsVisit->contact->status = strval(Contact::CONTACT);
                                 if (!$contactsVisit->contact->medium_oid) {
-                                    $contactsVisit->contact->medium_oid = Contact::postMediumObject($contactsVisit->contact);
+                                    $contactsVisit->contact->medium_oid = $cMedium->putContact($contactsVisit->contact);
                                 }
                                 if($contactsVisit->contact->save()){
                                     echo "Update status visit " . $contactsVisit->medium_oid . "\n";
@@ -139,10 +99,5 @@ CODE
                 }
             }
         }
-    }
-
-    protected function dateString(\DateTime $date)
-    {
-        return $date->format(self::MEDIUM_DATE_FORMAT);
     }
 }

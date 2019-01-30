@@ -61,24 +61,6 @@ class ContactsController extends ActiveController
         ];
     }
 
-    /**
-     * @return false|string
-     */
-    public function actionCreate()
-    {
-        $content = \Yii::$app->request->getRawBody();
-        $xmlParser = xml_parser_create();
-        xml_parse_into_struct($xmlParser, $content, $array, $index);
-        $contacts = [];
-        foreach ($array as $contact) {
-            if ($contact['attributes']['OID']) {
-                $contacts[] = \app\controllers\ContactsController::actionSaveContacts($contact);
-            }
-
-        }
-        return json_encode($contacts);
-    }
-
     public function actions()
     {
         $parent = parent::actions();

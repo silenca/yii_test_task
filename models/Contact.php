@@ -1,18 +1,11 @@
 <?php
-
 namespace app\models;
-
 
 use app\components\UtilHelper;
 use app\models\helpers\MediumLogsApi;
 use Yii;
-use yii\db\ActiveRecord;
-use yii\db\Query;
-use yii\db\StaleObjectException;
-use yii\db\Transaction;
-use yii\httpclient\Client;
-use yii\httpclient\Exception;
-use yii\httpclient\XmlParser;
+use yii\db\{ActiveRecord, StaleObjectException, Transaction, Query};
+use yii\httpclient\{Client, Exception};
 
 /**
  * This is the model class for table "contact".
@@ -54,7 +47,7 @@ class Contact extends ActiveRecord
     public const IS_BROADCAST_FALSE = 0;
     public const LEAD = 1;
     public const CONTACT = 2;
-    public const MEDIUM_API_URL = 'http://91.225.122.210:8080/api/H:1D13C88C20AA6C6/D:WORK/D:1D13C9303C946F9/C:1D45F18F27C737D';
+
     public const MEDIUM_API_URL_SAVE = 'http://91.225.122.210:5080/clients';
     public const MEDIUM_API_OBJECT = '/O:';
     public const MEDIUM_API_ITEM = '/I:';//STATUSES
@@ -440,7 +433,11 @@ class Contact extends ActiveRecord
 
     public static function getMediumObject($oid)
     {
-        $url = self::MEDIUM_API_URL . self::MEDIUM_API_OBJECT . $oid;
+        $mediumApi = Yii::$app->medium;
+        $url = $mediumApi->link($mediumApi::LINK_GET_CONTACT, [
+            'oid' => $oid,
+        ]);
+
         $client = new Client([
             'responseConfig' => [
                 'format' => Client::FORMAT_XML
@@ -457,126 +454,6 @@ class Contact extends ActiveRecord
             return $e->getMessage();
         }
         return $xml->attributes();
-    }
-
-    /**
-     * @param array $data
-     * @return int|null|string
-     */
-    public static function postMediumObject($data, $oid = null)
-    {
-
-//        $url = self::MEDIUM_API_URL . '?method=save_object';
-        $url = self::MEDIUM_API_URL_SAVE;
-
-        $client = self::buildMediumRequestBody($data, $url, $oid);
-        $log = MediumLogsApi::setRequestData($url, $client->getContent());
-        try {
-            $newUserResponse = $client->send();
-            $log->setResponse($newUserResponse->getContent());
-        } catch (Exception $e) {
-            $log->setResponse('error');
-            return $e->getMessage();
-        }
-        $newUserId = 0;
-        if ($newUserResponse->isOk && $newUserResponse !== 0) {
-            $xmlParser = new XmlParser();
-            $xml = $xmlParser->parse($newUserResponse);
-            $newUserId = $xml[0];
-        }
-        if ($newUserId !== 0) {
-            return $newUserId;
-        }
-        return $newUserId;
-    }
-
-    private static function buildMediumRequestBody($data, $url, $oid = null): \yii\httpclient\Request
-    {
-
-        if(!empty($data['birthday'])) {
-            $birthday = \DateTime::createFromFormat('Y-m-d',$data['birthday'])->format('Y-m-d\TH:i:s');
-        } else {
-            $birthday ="";
-        }
-        if(!empty($data['first_phone'])){
-            $phone = $data['first_phone'];
-        }else{
-            $phone = '';
-        }
-        if(!empty($data['first_email'])){
-            $emails = $data['first_email'];
-        }else{
-            $emails = '';
-        }
-        //$phone = !empty($data['phones'])?$data['phones']:' ';
-        //$emails = !empty($data['emails'])?$data['emails']:' ';
-        $body = '<OBJECT '
-                    . ($oid ? ' oid="' . $oid . '" ' : '')
-                    . 'name="' . $data['surname'] . ' ' . $data['name'] . ' ' . $data['middle_name'] . '" 
-                    ТелефонМоб="'.$phone.'" 
-                    E-mail= "'.$emails.'"
-                    ДатаРождения="' . $birthday . '" 
-                    Город="' . $data['city'] . '" 
-                    ИсточникИнфомации="' . $data['attraction_channel_id'] . '" />';
-        $client = new Client([
-            'baseUrl' => $url,
-            'requestConfig' => [
-                'format' => Client::FORMAT_XML,
-                'headers' => ['Content-type' => 'application/x-www-form-urlencoded']
-            ],
-            'responseConfig' => [
-                'format' => Client::FORMAT_XML
-            ]
-        ]);
-        return $client->post($url, $body);
-    }
-
-    public static function updateMediumObject($oid, $data)
-    {
-        if ($oid) {
-//            $url = self::MEDIUM_API_URL . self::MEDIUM_API_OBJECT . $oid . '?method=save_object';
-            $url = self::MEDIUM_API_URL_SAVE;
-            $client = self::buildMediumRequestBody($data, $url, $oid);
-        } else {
-//            $url = self::MEDIUM_API_URL . '?method=save_object';
-            $url = self::MEDIUM_API_URL_SAVE;
-            $client = self::buildMediumRequestBody($data, $url);
-        }
-        $log = MediumLogsApi::setRequestData($url, $client->getContent());
-        try {
-            $newUserResponse = $client->send();
-            $log->setResponse($newUserResponse->getContent());
-        } catch (Exception $e) {
-            $log->setResponse('error');
-            return $e->getMessage();
-        }
-        if ($newUserResponse->isOk && $newUserResponse !== 0) {
-            $xmlParser = new XmlParser();
-            $xml = $xmlParser->parse($newUserResponse);
-            return $xml[0];
-        }
-        return false;
-    }
-
-    /**
-     * @return \yii\httpclient\Response
-     * @throws \yii\base\InvalidConfigException
-     * @throws \yii\httpclient\Exception
-     */
-    public static function getMediumObjects(): \yii\httpclient\Response
-    {
-        $url = self::MEDIUM_API_URL . self::MEDIUM_API_ITEM . 'PACK';
-        $log = MediumLogsApi::setRequestData($url, '');
-        $client = new Client([
-            'baseUrl' => $url,
-            'responseConfig' => [
-                'format' => Client::FORMAT_XML
-            ],
-        ]);
-        $request = $client->createRequest();
-        $send = $request->send();
-        $log->setResponse($send->getContent());
-        return $send;
     }
 
     public function fields()
