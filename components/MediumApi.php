@@ -426,7 +426,7 @@ class MediumApi
         if($source instanceof ActiveRecord) {
             $source = $source->attributes;
         }
-        
+
         $birthdayString = '';
         if($source['birthday']) {
             $birthdayString = \DateTime::createFromFormat('Y-m-d', $source['birthday'])
@@ -440,10 +440,10 @@ class MediumApi
                 $source['middle_name'],
             ]),
             'birthday' => $birthdayString,
-            'phone' => $data['first_phone'] ?? '',
-            'email' => $data['first_email'] ?? '',
-            'city' => $data['city'] ?? '',
-            'attraction_channel' => $data['attraction_channel_id'] ?? '',
+            'phone' => $source['first_phone'] ?? '',
+            'email' => $source['first_email'] ?? '',
+            'city' => $source['city'] ?? '',
+            'attraction_channel' => $source['attraction_channel_id'] ?? '',
         ];
     }
 
