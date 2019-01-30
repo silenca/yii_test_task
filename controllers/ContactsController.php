@@ -466,9 +466,9 @@ class ContactsController extends BaseController
                         $contact->is_deleted = 0;
                     }
                     if (!$contact->medium_oid && $contact_form->status == Contact::CONTACT) {
-                        $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
+                        $contact->medium_oid = Yii::$app->medium->putContact($contact_form->attributes);
                     } elseif($contact_form->status == Contact::CONTACT) {
-                        Contact::updateMediumObject($contact->medium_oid, $contact_form->attributes);
+                        Yii::$app->medium->putContact($contact_form->attributes, $contact->medium_oid);
                     }
                     if(!$contact->manager_id) {
                         $contact->manager_id = Yii::$app->user->identity->getId();
@@ -501,7 +501,7 @@ class ContactsController extends BaseController
                     }
 
                     if(Yii::$app->user->can('editStatusContact') && $contact_form->status == Contact::CONTACT){
-                        $contact->medium_oid = Contact::postMediumObject($contact_form->attributes);
+                        $contact->medium_oid = Yii::$app->medium->putContact($contact_form->attributes);
                     }
                 }
                 unset($post['_csrf'], $post['id']);
@@ -732,9 +732,10 @@ class ContactsController extends BaseController
 
         if($contact->medium_oid) {
             // Try to sync with medium
+            $mediumApi = \Yii::$app->medium;
             try {
-                $mediumContact = MediumApi::getContact($contact->medium_oid);
-                if($mediumContact && !MediumApi::isUpToDate($contact, $mediumContact)) {
+                $mediumContact = $mediumApi->getContact($contact->medium_oid);
+                if($mediumContact && !$mediumApi::isUpToDate($contact, $mediumContact)) {
                     $contact = self::updateContact($mediumContact, $contact);
                 }
             } catch (\Exception $e) {
@@ -758,9 +759,6 @@ class ContactsController extends BaseController
 
     public function actionNewView($contact)
     {
-
-//        $newContactData = new Contact($contact->one());
-//        var_dump($contact);die;
         $contact = $contact->one();
         $email = 'E-mail';
         $birthday = 'ДатаРождения';
@@ -791,7 +789,6 @@ class ContactsController extends BaseController
                 $contact->first_email = $email_data;
             }
             $contact->status = 2;
-            //$contact->save();
         } else {
             $contact = $contact->one();
         }
@@ -997,94 +994,6 @@ class ContactsController extends BaseController
         return json_encode($contacts);
     }
 
-    public function actionSyncContacts(): void
-    {
-        $contacts = Contact::getMediumObjects();
-        $xmlParser = xml_parser_create();
-        xml_parse_into_struct($xmlParser, $contacts->getContent(), $array, $index);
-//            var_dump($array);
-//            var_dump($contacts);
-//        print_r($array['oid']);
-//        $contacts = json_decode($this->actionContacts());
-        foreach ($array as $contact) {
-            if ($contact['attributes']['OID']) {
-                self::actionSaveContacts($contact);
-            }
-
-        }
-    }
-
-    public static function actionSaveContacts($contact)
-    {
-        if(!empty($contact['@attributes'])){
-            $localContact = Contact::find()->where(['medium_oid' => $contact['@attributes']['oid']])->one();
-        }elseif (!empty($contact['attributes'])){
-            $localContact = Contact::find()->where(['medium_oid' => $contact['@attributes']['oid']])->one();
-        }else {
-            $localContact = Contact::find()->where(['medium_oid' => $contact['oid']])->one();
-        }
-        if(!empty($localContact) && Contact::checkLatestUpdate($localContact)){
-            return Contact::updateMediumObject($localContact->attributes['medium_oid'], $localContact->attributes);
-        }else{
-            if (!empty($contact['attributes'])) {
-                $attrs = $contact['attributes'];
-                $isExists = Contact::find()->where(['medium_oid' => $attrs['OID']])->one();
-            } else if(!empty($contact['@attributes'])) {
-                $attrs = $contact['@attributes'];
-                $isExists = Contact::find()->where(['medium_oid' => $attrs['oid']])->one();
-            }else{
-                $attrs = $contact;
-            }
-//            else{
-//                $isExists = Contact::find()->where(['medium_oid' => $contact['oid']])->one();
-////                if(empty($isExists))
-////                    return null;
-//            }
-            if(!empty($isExists)){
-                $newFlag = 0;
-                $newContact = $isExists;
-            }else{
-                $newFlag = 1;
-                $newContact = new Contact();
-            }
-//            $newContact = (!empty($isExists)) ? $isExists : new Contact();
-
-            if (!empty($attrs['NAME']) || !empty($attrs['name'])) {
-                $surname = !empty(explode(' ', $attrs['name'])[0]) ? explode(' ', $attrs['name'])[0] : " ";
-                $name = !empty(explode(' ', $attrs['name'])[1]) ? explode(' ', $attrs['name'])[1] : " ";
-                $middle_name = !empty(explode(' ', $attrs['name'])[2]) ? explode(' ', $attrs['name'])[2] : " ";
-                $newContact->surname = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[0] : $surname;
-                $newContact->name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[1] : $name;
-                $newContact->middle_name = !empty($attrs['NAME']) ? explode(' ', $attrs['NAME'])[2] : $middle_name;
-            }
-            if (!empty($attrs['ТелефонМоб']) || !empty($attrs['ТМлМфонМоб']))
-                $newContact->first_phone = $attrs['ТМлМфонМоб'] ?? $attrs['ТелефонМоб'];
-            if (!empty($attrs['Город']))
-                $newContact->city = $attrs['Город'];
-            if (!empty($attrs['E-mail']) || !empty($attrs['E-MAIL']))
-                $newContact->first_email = !empty($attrs['E-MAIL']) ? $attrs['E-MAIL'] : $attrs['E-mail'];
-            if (!empty($attrs['ДатаРождения'])) {
-                $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$attrs['ДатаРождения']);
-                if($birthday) {
-                    $newContact->birthday =  $birthday->format('Y-m-d');
-                } else {
-                    $birthday = \DateTime::createFromFormat('Y-m-d\TH:i:s',$attrs['ДатаРождения']);
-                    if($birthday) {
-                        $newContact->birthday =  $birthday->format('Y-m-d');
-                    }
-                }
-            }
-
-            $newContact->medium_oid = (!empty($attrs['OID'])) ? $attrs['OID'] : $attrs['oid'];
-            $newContact->status = Contact::$statuses[2];
-            $newContact->is_broadcast = $newFlag ? null : $newContact->is_broadcast;
-            if($newContact->save()) {
-                return $newContact->medium_oid;
-            }
-        }
-        return ['errors' => $newContact->getErrors(),'data' => $newContact->toArray()];
-    }
-
     public static function updateContact(array $mediumData, Contact $contactToUpdate = null)
     {
         $oid = $mediumData['oid'] ?? 0;
@@ -1137,46 +1046,9 @@ class ContactsController extends BaseController
         return ['errors' => $existingContact->getErrors(),'data' => $existingContact->toArray()];
     }
 
-    public function actionContacts()
-    {
-        $contacts = Contact::getMediumObjects();
-        $xmlParser = xml_parser_create();
-        $struct = xml_parse_into_struct($xmlParser, $contacts->getContent(), $array, $index);
-        $oids = [];
-        $clients = [];
-        $crmContacts = [];
-        foreach ($array as $item) {
-            if (!empty($item['attributes'])) {
-                $attr = $item['attributes'];
-                $oid = $attr['OID'];
-                $crmContacts = Contact::findOne(['medium_oid' => $oid]);
-//                var_dump($crmContacts );die;
-                $clients[$oid] = $attr;
-            }
-        }
-        return json_encode($clients);
-//        var_dump($parsed);die;
-
-//        try {
-//            return true;
-//        } catch (\Exception $e) {
-//            return ['text'=>$e->getMessage()];
-//        }
-    }
-
-    public function actionSaveMediumClient($data): bool
-    {
-        return Contact::postMediumObject($data) === true;
-    }
-
     public function actionMediumUpdate($data): bool
     {
 
-    }
-
-    public function actionUpdateMediumClient($oid, $data): bool
-    {
-        return Contact::updateMediumObject($oid, $data) === true;
     }
 
     protected static function parsePhoneString($phoneString)
