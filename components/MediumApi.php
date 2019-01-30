@@ -401,7 +401,9 @@ class MediumApi
                 'requestConfig' => [
                     'format' => Client::FORMAT_XML,
                     'headers' => ['Content-type' => 'application/x-www-form-urlencoded'],
-                    'timeout' => 5,
+                    'options' => [
+                        'timeout' => 5,
+                    ],
                 ],
                 'responseConfig' => [
                     'format' => Client::FORMAT_XML
