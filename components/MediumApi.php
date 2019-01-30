@@ -541,7 +541,7 @@ class MediumApi
 
     public function link($name, array $replacements = [])
     {
-        $raw = $this->links ?? null;
+        $raw = $this->links[$name] ?? null;
         if(!$raw) {
             throw new \Exception('Link with type "'.$name.'" isn\'t configured.');
         }
@@ -551,7 +551,7 @@ class MediumApi
 
     public function body($name, array $replacements = [])
     {
-        $raw = $this->bodies ?? null;
+        $raw = $this->bodies[$name] ?? null;
         if(!$raw) {
             throw new \Exception('Body with type "'.$name.'" isn\'t configured.');
         }
