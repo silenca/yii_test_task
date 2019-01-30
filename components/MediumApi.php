@@ -65,8 +65,8 @@ class MediumApi
     private function setTimeCabinet($day): array
     {
         $grTime = [];
-        $minTime = strtotime($day . ' ' . '07:00');
-        $maxTime = strtotime($day . ' ' . '21:00');
+        $minTime = strtotime($day . ' ' . '08:00');
+        $maxTime = strtotime($day . ' ' . '20:00');
         $nextMinutes = 30 * 60;
         $grTime[$minTime]['time'] = date("H:i", $minTime);
         for($minutes = $nextMinutes; $minTime + $minutes <= $maxTime;){
