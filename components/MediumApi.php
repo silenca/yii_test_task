@@ -400,7 +400,8 @@ class MediumApi
             $response = (new Client([
                 'requestConfig' => [
                     'format' => Client::FORMAT_XML,
-                    'headers' => ['Content-type' => 'application/x-www-form-urlencoded']
+                    'headers' => ['Content-type' => 'application/x-www-form-urlencoded'],
+                    'timeout' => 5,
                 ],
                 'responseConfig' => [
                     'format' => Client::FORMAT_XML
