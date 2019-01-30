@@ -494,49 +494,42 @@ function checkChangesContact(name, value, $form) {
 }
 
 function editContact($form, name, value) {
-    console.log('edit');
-    console.log(contact_bind_inputs);
-    var data = {};
+    var data = { _csrf: _csrf };
     $.each(contact_bind_inputs, function (key, value) {
         if (value != "undefined")
             data[key] = value;
     });
-    data['_csrf'] = _csrf;
-    if (contact_bind_inputs['phones']) {
-        console.dir(data);
-        $.post('/contacts/edit', data, function (response) {
-            $form.find('label.error').remove();
-            $form.find('.error').removeClass('error');
-            var result = $.parseJSON(response);
-            if (result.status=== 200) {
-                contact_bind_inputs['id'] = result.data.id;
-                if (name && value) {
-                    contact_bind_inputs[name] = value;
-                }
-                $form.find('#contact-id').val(result.data.id);
-                if (typeof dataTable !== 'undefined') { dataTable.draw(false); }
-                if (typeof tagContactsdataTable !== 'undefined') { tagContactsdataTable.columns(0).search($('#contacts_list').val()).draw(); }
-                if (typeof contactsModaldataTable !== 'undefined') { contactsModaldataTable.columns().search('').draw(); }
-                if (!data['id']) {
-                    getHistory(result.data.id, $form);
-                }
+    $.post('/contacts/edit', data, function (response) {
+        $form.find('label.error').remove();
+        $form.find('.error').removeClass('error');
+        var result = $.parseJSON(response);
+        if (result.status=== 200) {
+            contact_bind_inputs['id'] = result.data.id;
+            if (name && value) {
+                contact_bind_inputs[name] = value;
             }
-            if (result.status === 415) {
-                $.each(result.errors, function (name, errors) {
-                    addError($form, name, errors);
-                });
+            $form.find('#contact-id').val(result.data.id);
+            if (typeof dataTable !== 'undefined') { dataTable.draw(false); }
+            if (typeof tagContactsdataTable !== 'undefined') { tagContactsdataTable.columns(0).search($('#contacts_list').val()).draw(); }
+            if (typeof contactsModaldataTable !== 'undefined') { contactsModaldataTable.columns().search('').draw(); }
+            if (!data['id']) {
+                getHistory(result.data.id, $form);
+            }
+        }
+        if (result.status === 415) {
+            $.each(result.errors, function (name, errors) {
+                addError($form, name, errors);
+            });
 
-            }
-            if (result.status === 412) {
-                //alert(result.errors);
-                showNotification('#modalAddContact', result.errors, 'top', 'danger', 'bar');
-            }
-            if (result.status === 403) {
-                showNotification('#modalAddContact', result.errors, 'top', 'danger', 'bar', 5000);
-            }
-        });
-    }
-
+        }
+        if (result.status === 412) {
+            //alert(result.errors);
+            showNotification('#modalAddContact', result.errors, 'top', 'danger', 'bar');
+        }
+        if (result.status === 403) {
+            showNotification('#modalAddContact', result.errors, 'top', 'danger', 'bar', 5000);
+        }
+    });
 }
 
 function changeActionsForm(action) {
