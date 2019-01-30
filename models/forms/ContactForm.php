@@ -85,11 +85,9 @@ class ContactForm extends Model
             [['phones'], 'phoneArray'],
             [['emails'], 'emailArray'],
 
-            [['name', 'surname'], 'match', 'pattern' => "/^[\s\p{Cyrillic}\-()]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
             [['name', 'surname', 'country', 'city', 'birthday', 'middle_name'], 'string', 'length' => [1, 150],
                 'tooShort' => 'Ошибка: поле {attribute} должно содержать не менее {min} символов',
                 'tooLong' => 'Ошибка: поле {attribute} должно содержать не более {max} символов'],
-            [['middle_name'], 'match', 'pattern' => "/^[\s\p{Cyrillic}\-()]*$/u", 'message' => 'Ошибка: в поле {attribute} - Недопустимые символы'],
 
             [['tags_str'], 'tagsArray'],
 
