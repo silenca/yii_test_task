@@ -486,8 +486,7 @@ function fillContactData(data, $form) {
 
 
 function checkChangesContact(name, value, $form) {
-    console.log(name+':'+value);
-    if (contact_bind_inputs[name] !== value) {
+    if(contact_bind_inputs[name] !== value) {
         contact_bind_inputs[name] = value;
         editContact($form, name, value);
     }
@@ -499,7 +498,9 @@ function editContact($form, name, value) {
         if (value != "undefined")
             data[key] = value;
     });
+    $('.close', $form).addClass('disabled');
     $.post('/contacts/edit', data, function (response) {
+        $('.close', $form).removeClass('disabled');
         $form.find('label.error').remove();
         $form.find('.error').removeClass('error');
         var result = $.parseJSON(response);
@@ -666,11 +667,27 @@ function visitPlanning(){
     });
 
     $('#modalAddContact .close').on('click', function (e) {
-		$('#contact-action').selectpicker('val', 0);
-		$forms = $('#contact-actions').find('.contact-action');
-		$.each($forms, function(i, form) {
-			$(form).hide();
-		});
+        if($(this).is('.disabled')) {
+            return false;
+        }
+
+        var doClose = function(){
+            $('#contact-action').selectpicker('val', 0);
+            $forms = $('#contact-actions').find('.contact-action');
+            $.each($forms, function (i, form) {
+                $(form).hide();
+            });
+        };
+        
+        if($('#modalAddContact .error').length) {
+            if(confirm('Форма содержит ошибки. Вы уверены, что хотите закрыть без сохранения?')) {
+                doClose();
+            } else {
+                return false;
+            }
+        } else {
+            doClose();
+        }
 	});
 
     $('#speciality').on('change', function (e) {
