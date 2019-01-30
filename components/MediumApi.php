@@ -3,6 +3,7 @@ namespace app\components;
 
 use app\models\Contact;
 use app\models\helpers\MediumLogsApi;
+use yii\db\ActiveRecord;
 use yii\httpclient\Client;
 use yii\web\HttpException;
 
@@ -422,6 +423,10 @@ class MediumApi
 
     public function preparePutContactData($source)
     {
+        if($source instanceof ActiveRecord) {
+            $source = $source->attributes;
+        }
+        
         $birthdayString = '';
         if($source['birthday']) {
             $birthdayString = \DateTime::createFromFormat('Y-m-d', $source['birthday'])
