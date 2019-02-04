@@ -1,10 +1,10 @@
 <?php
 namespace app\components;
 
-use app\models\Contact;
+use app\models\{Contact, ContactsVisits, Departments};
 use app\models\helpers\MediumLogsApi;
 use yii\db\ActiveRecord;
-use yii\httpclient\Client;
+use yii\httpclient\{Client, Response};
 use yii\web\HttpException;
 
 class MediumApi
@@ -19,16 +19,56 @@ class MediumApi
     const LINK_GET_CONTACT = 'get_contact';
     const LINK_FETCH_CONTACTS = 'fetch_contacts';
     const LINK_PUT_CONTACT = 'put_contact';
+    const LINK_GET_VISIT = 'get_visit';
+    const LINK_PUT_VISIT = 'put_visit';
+
+    const LINK_SYS_CONTACT_STR = '_contact_visit';
+    const LINK_SYS_OID_STR = '_oid_str';
+
+    const SEND_TIMEOUT = 3;
 
     const DATE_FORMAT = 'Y-m-d\TH:i:s';
 
-    protected static $apiFieldsMap = [
-        'name' => 'FIO',
-        'E-mail' => 'Email',
-        'ТелефонМоб' => 'Phone',
-        'ДатаРождения' => 'Birth',
-        'Город' => 'City',
+    const XML_CONTACT = 'contact';
+    const XML_VISIT = 'visit';
+
+    protected $apiFieldsMap = [
+        self::XML_CONTACT => [
+            'name' => 'FIO',
+            'E-mail' => 'Email',
+            'ТелефонМоб' => 'Phone',
+            'ДатаРождения' => 'Birth',
+            'Город' => 'City',
+        ],
+        self::XML_VISIT => [
+            'Пациент' => 'contact',
+            'ДатаПриема' => 'date',
+            'ВремяПриема' => 'time',
+            'Врач' => 'doctor',
+            'Кабинет' => 'cabinet',
+            'Статус' => 'm_status',
+            'Визит' => 'v_status',
+            'Комментарий' => 'comment',
+            'ИсточникИнформации' => 'attraction_channel',
+            'Телефон' => 'phone',
+            'Предупреждение' => 'warning',
+        ],
     ];
+
+    protected $defaultReplacements;
+
+    protected function getDefaultReplacements()
+    {
+        if(!isset($this->defaultReplacements)) {
+            $this->defaultReplacements = [];
+            foreach($this->replacements as $key=>$value) {
+                $this->defaultReplacements['{_'.strtoupper($key).'}'] = $value;
+            }
+            $this->defaultReplacements['{_DOMAIN}'] = $this->mediumApiDomain;
+        }
+
+        return $this->defaultReplacements;
+    }
 
     private function sendMedium($url, $data)
     {
@@ -387,39 +427,60 @@ class MediumApi
         return $xml->attributes();
     }
 
+    public function getVisit($oid, $departmentPart)
+    {
+        $url = $this->link(self::LINK_GET_VISIT, [
+            'department' => $departmentPart,
+            'oid' => $oid,
+        ]);
+
+        try {
+            return $this->parseVisitXml($this->get($url)->getContent());
+        } catch(\Exception $e) {
+            echo $e->getMessage();die;
+            return null;
+        }
+    }
+
     public function putContact($data, $oid = null)
     {
         $contactData = $this->preparePutContactData($data);
-        $contactData['OID_STR'] = $oid?('oid="'.$oid.'"'):'';
+        $contactData['OID_STR'] = $oid?$this->body(self::LINK_SYS_OID_STR, ['oid' => $oid]):'';
 
         $url = $this->link(self::LINK_PUT_CONTACT);
         $body = $this->body(self::LINK_PUT_CONTACT, $contactData);
 
-        $log = MediumLogsApi::setRequestData($url, $body);
         try {
-            $response = (new Client([
-                'requestConfig' => [
-                    'format' => Client::FORMAT_XML,
-                    'headers' => ['Content-type' => 'application/x-www-form-urlencoded'],
-                    'options' => [
-                        'timeout' => 5,
-                    ],
-                ],
-                'responseConfig' => [
-                    'format' => Client::FORMAT_XML
-                ]
-            ]))
-                ->post($url, $body)
-                ->send();
-            $log->setResponse($response->getContent());
-
-            if(!$response->isOk) {
-                throw new \Exception('Invalid response. '.$response->getContent());
-            }
+            $response = $this->post($url, $body);
 
             return $response->getData()[0];
         } catch(\Exception $e) {
-            $log->setResponse('Error: '.$e->getMessage());
+            return null;
+        }
+    }
+
+    public function putVisit(ContactsVisits $visit, $oid = null)
+    {
+        $visitData = $this->preparePutVisitData($visit);
+        $visitData['OID_STR'] = $oid?$this->body(self::LINK_SYS_OID_STR, ['oid' => $oid]):'';
+
+        $department = $visit->getDepartment()->one();
+        /**@var $department Departments*/
+        if(!$department) {
+            throw new \Exception('Can not fid department for visit #'.$visit->id);
+        }
+
+        $url = $this->link(self::LINK_PUT_VISIT, [
+            'host' => $department->api_send_url,
+            'url' => $department->api_url,
+        ]);
+        $body = $this->body(self::LINK_PUT_VISIT, $visitData);
+
+        try {
+            $response = $this->post($url, $body);
+
+            return $response->getData()[0];
+        } catch(\Exception $e) {
             return null;
         }
     }
@@ -447,6 +508,46 @@ class MediumApi
             'email' => $source['first_email'] ?? '',
             'city' => $source['city'] ?? '',
             'attraction_channel' => $source['attraction_channel_id'] ?? '',
+        ];
+    }
+
+    protected function preparePutVisitData(ContactsVisits $visit)
+    {
+        $contact = $visit->getContact()->one();
+        /**@var $contact Contact*/
+        if(!$contact) {
+            throw new \Exception('Visit contact should be filled');
+        }
+
+        $attrChannel = $contact->getAttractionChannel()->one();
+        $infoSource = $attrChannel?$attrChannel->name:'';
+
+        $type = 'Новый';
+        $contactStr = '';
+        if($contact->status == Contact::CONTACT) {
+            $type = 'Повторный';
+            if($contact->medium_oid) {
+                $contactStr = $this->body(self::LINK_SYS_CONTACT_STR, [
+                    'oid' => $contact->medium_oid,
+                ]);
+            }
+        }
+
+        $visitDate = \DateTime::createFromFormat(ContactsVisits::DATE_FORMAT, $visit->visit_date);
+
+        return [
+            'DATE' => $visitDate->format(self::DATE_FORMAT),
+            'TIME' => $visit->time,
+            'NAME' => $contact->getFullName(),
+            'DOC_NAME' => $visit->doctor_name,
+            'CAB_NAME' => $visit->cabinet_name,
+            'TYPE' => $type,
+            'COMMENT' => $visit->comment,
+            'ATTRACTION_CHANNEL' => $infoSource,
+            'PHONE' => $contact->first_phone,
+            'CONTACT' => $contactStr,
+            'DOC_ID' => $visit->doctor_oid,
+            'CAB_ID' => $visit->cabinet_oid,
         ];
     }
 
@@ -490,6 +591,16 @@ class MediumApi
 
     public function parseContactsXml(string $xml)
     {
+        return $this->parseXml($xml, self::XML_CONTACT);
+    }
+
+    public function parseVisitXml(string $xml)
+    {
+        return $this->parseXml($xml, self::XML_VISIT);
+    }
+
+    public function parseXml(string $xml, $type): array
+    {
         if(false !== strpos($xml, '<?xml')) {
             // Remove XML comment to be able to correctly parse XML string
             $xml = str_replace('<?xml version="1.0"?>', '', $xml);
@@ -497,57 +608,81 @@ class MediumApi
         $oXml = new \SimpleXMLElement('<xml>'.$xml.'</xml>');
 
         if($oXml) {
-            return array_reduce($oXml->xpath('OBJECT'), function($list, \SimpleXMLElement $el){
-                $idx = count($list);
-                foreach($el->attributes() as $name=>$value) {
-                    $list[$idx][$this->mapFieldName($name)] = (string) $value;
-                }
-                return $list;
-            }, []);
+            $list = [];
+            foreach($oXml->xpath('OBJECT') as $xmlItem) {
+                $list[count($list)] = $this->parseXmlItem($xmlItem, $type);
+            }
+            return $list;
         } else {
             return [];
         }
     }
 
-    private function buildMediumRequest($data, $url, $oid = null): \yii\httpclient\Request
+    private function parseXmlItem(\SimpleXMLElement $element, $type): array
     {
-        $url = $this->link(self::LINK_PUT_CONTACT);
-
-        $birthdayString = '';
-        if($data['birthday']) {
-            $birthdayString = \DateTime::createFromFormat('Y-m-d',$data['birthday'])
-                                    ->format(self::DATE_FORMAT);
+        $data = [];
+        foreach($element->attributes() as $name=>$value) {
+            $data[$this->mapFieldName($name, $type)] = (string) $value;
         }
-
-        return $this->body(self::LINK_PUT_CONTACT, [
-            'OID_STR' => $oid?('oid="'.$oid.'"'):'',
-            'name' => implode(' ', [
-                $data['surname'],
-                $data['name'],
-                $data['middle_name'],
-            ]),
-            'birthday' => $birthdayString,
-            'phone' => $data['first_phone'] ?? '',
-            'email' => $data['first_email'] ?? '',
-            'city' => $data['city'] ?? '',
-            'attraction_channel' => $data['attraction_channel_id'] ?? '',
-        ]);
-
-        $client = new Client([
-            'baseUrl' => $url,
-            'requestConfig' => [
-                'format' => Client::FORMAT_XML,
-                'headers' => ['Content-type' => 'application/x-www-form-urlencoded']
-            ],
-            'responseConfig' => [
-                'format' => Client::FORMAT_XML
-            ]
-        ]);
-
-        return $client->post($url, $body);
+        //$data['@children'] = [];
+        foreach($element->children() as $child) {
+            $elName = '@'.$this->mapFieldName($child->getName(), $type);
+            $data[$elName] = $data[$elName] ?? [];
+            $data[$elName][] = $this->parseXmlItem($child, $type);
+        }
+        return $data;
     }
 
-    public function link($name, array $replacements = [])
+    private function get($url, $body = '', $saveLogs = true): Response
+    {
+        return $this->doReuest('get', $url, $body, $saveLogs);
+    }
+
+    private function post($url, $body, $saveLogs = true): Response
+    {
+        return $this->doReuest('post', $url, $body, $saveLogs);
+    }
+
+    private function doReuest($type, $url, $body, $saveLogs = true): Response
+    {
+        if($saveLogs) {
+            $log = MediumLogsApi::setRequestData($url, $body);
+        }
+
+        try {
+            $response = (new Client([
+                'requestConfig' => [
+                    'format' => Client::FORMAT_XML,
+                    'headers' => ['Content-type' => 'application/x-www-form-urlencoded'],
+                    'options' => [
+                        'timeout' => self::SEND_TIMEOUT,
+                    ],
+                ],
+                'responseConfig' => [
+                    'format' => Client::FORMAT_XML
+                ]
+            ]))
+                ->{strtolower($type)}($url, $body)
+                ->send();
+            if($saveLogs) {
+                $log->setResponse($response->getContent());
+            }
+
+            if(!$response->isOk) {
+                throw new \Exception('Invalid response. '.$response->getContent());
+            }
+
+            return $response;
+        } catch(\Exception $e) {
+            if($saveLogs) {
+                $log->setResponse('Error: '.$e->getMessage());
+            }
+
+            throw new \Exception('Invalid request.');
+        }
+    }
+
+    private function link($name, array $replacements = [])
     {
         $raw = $this->links[$name] ?? null;
         if(!$raw) {
@@ -557,7 +692,7 @@ class MediumApi
         return $this->replace($raw, $replacements);
     }
 
-    public function body($name, array $replacements = [])
+    private function body($name, array $replacements = [])
     {
         $raw = $this->bodies[$name] ?? null;
         if(!$raw) {
@@ -567,25 +702,30 @@ class MediumApi
         return $this->replace($raw, $replacements);
     }
 
-    protected function replace(string $source, array $replacements = [])
+    private function replace(string $source, array $replacements = [])
     {
+        $mergedReplacements = $this->getDefaultReplacements();
+        foreach($replacements as $key=>$value) {
+            // Overwrite default settings if needed
+            $mergedReplacements['{'.strtoupper($key).'}'] = $value;
+        }
+
         return str_replace(
-            array_map(
-                function($v){ return '{'.strtoupper($v).'}'; },
-                array_keys($replacements)
-            ),
-            array_values($replacements),
+            array_keys($mergedReplacements),
+            array_values($mergedReplacements),
             $source
         );
     }
 
-    protected function dateString(\DateTime $date)
+    private function dateString(\DateTime $date)
     {
         return $date->format(self::DATE_FORMAT);
     }
 
-    protected function mapFieldName(string $name)
+    private function mapFieldName(string $name, $type = self::XML_CONTACT)
     {
-        return self::$apiFieldsMap[$name] ?? $name;
+        $map = $this->apiFieldsMap[$type] ?? [];
+
+        return $map[$name] ?? $name;
     }
 }

@@ -877,4 +877,67 @@ class Contact extends ActiveRecord
             $this->middle_name,
         ]));
     }
+
+    /**
+     * @param Contact $source
+     * @param Contact $target
+     * @return Contact Target contact after all data reassigned to it
+     * @throws \Exception
+     */
+    public static function merge(Contact $source, Contact $target): Contact
+    {
+        // Prevent deletion of existing contact
+        if($source->id == $target->id) {
+            return $target;
+        }
+        // Reassign all relation to target
+        // Responsible
+        $manager = $source->getManager()->one();
+        if($manager) {
+            $target->manager_id = $manager->id;
+        }
+        // Language
+        $lang = $source->getLanguage()->one();
+        if($lang) {
+            $target->language_id = $lang->id;
+        }
+        // Attraction channel
+        $attrChannel = $source->getAttractionChannel()->one();
+        if($attrChannel) {
+            $target->attraction_channel_id = $attrChannel->id;
+        }
+        // Actions. Replace contact_id
+        $actions = $source->getActions()->all();
+        foreach($actions as $action) {
+            /**@var $action \app\models\Action*/
+            $action->contact_id = $target->id;
+            $action->save();
+        }
+        // Comments
+        $comments = $source->getComments()->all();
+        foreach($comments as $comment) {
+            /**@var $comment \app\models\ActionComment*/
+            $comment->contact_id = $target->id;
+            $comment->save();
+        }
+        // Calls
+        $calls = $source->getCalls()->all();
+        foreach($calls as $call) {
+            /**@var $call \app\models\Call*/
+            $call->contact_id = $target->id;
+            $call->save();
+        }
+
+        $source->is_deleted = 1;
+
+        if(!$source->save()) {
+            throw new \Exception('Error saving source: '.implode('; ', $source->getErrorSummary(true)));
+        }
+
+        if(!$target->save()) {
+            throw new \Exception('Error saving target: '.implode('; ', $source->getErrorSummary(true)));
+        }
+
+        return $target;
+    }
 }

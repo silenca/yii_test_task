@@ -49,6 +49,89 @@ class SyncController extends Controller
         }
     }
 
+    public function actionVisitSend()
+    {
+        $visits = ContactsVisits::fetchToSync();
+        foreach($visits as $visit) {
+            try {
+                $visitOid = Yii::$app->medium->putVisit($visit);
+
+                if(!$visitOid) {
+                    throw new \Exception('There is no OID in PUT_VIST response');
+                }
+
+                $visit->medium_oid = $visitOid;
+
+                $contact = $visit->getContact()->one();
+                /**@var $contact Contact*/
+                if(!$contact) {
+                    throw new \Exception('Can not find contact for visit #'.$visit->id);
+                }
+
+                $visit->sync_status = ContactsVisits::SYNC_STATUS_SYNCED;
+                if($contact->status == Contact::LEAD) {
+                    // We should wait until contact will be created on medium to prevent duplication
+                    $visit->sync_status = ContactsVisits::SYNC_STATUS_WAITING;
+                }
+
+                $visit->save();
+            } catch(\Exception $e) {
+                echo '[VISIT SYNC] [#'.$visit->id.'] [ERROR] '.$e->getMessage()."\r\n";
+            }
+        }
+    }
+
+    public function actionVisitUpdateLead()
+    {
+        $visits = ContactsVisits::fetchToUpdateLead();
+        foreach($visits as $visit) {
+            /**@var $visit ContactsVisits*/
+            try {
+                $department = $visit->getDepartment()->one();
+                if(!$department) {
+                    throw new \Exception('Can not find department for visit #'.$visit->id);
+                }
+                try {
+                    $visitData = Yii::$app->medium->getVisit($visit->medium_oid, $department->api_url);
+                } catch(\Exception $e) {
+                    echo $e->getMessage();die;
+                }
+
+                $contactOid = $this->fetchContactOidFromVisitData($visitData);
+                if(!$contactOid) {
+                    continue;
+                }
+
+                $contact = Contact::findOne(['medium_oid' => $contactOid]);
+                if (!$contact) {
+                    throw new \Exception('Can not find synced contact. Waiting ...');
+                }
+
+                $lead = $visit->getContact()->one();
+                if (!$lead) {
+                    throw new \Exception('Can not find lead for visit #' . $visit->id);
+                }
+
+                try {
+                    $contact = Contact::merge($lead, $contact);
+                } catch(\Exception $e) {
+                    throw new \Exception('Can not merge contacts. '.$e->getMessage());
+                }
+
+                // Update visit SYNC status
+                $visit->contact_id = $contact->id;
+                $visit->sync_status = ContactsVisits::SYNC_STATUS_SYNCED;
+
+                if(!$visit->save()) {
+                    throw new \Exception('Error saving visit. '.implode('; ', $visit->getErrorSummary(true)));
+                }
+            } catch(\Exception $e) {
+                // @TODO: Add logger
+                echo '[ERROR] '.$e->getMessage()."\r\n";
+            }
+        }
+    }
+
     public function actionSpeciality()
     {
         $cnt = 0;
@@ -68,36 +151,18 @@ class SyncController extends Controller
         }
     }
 
-    public function actionVisitStatus()
+    protected function fetchContactOidFromVisitData(array $visit)
     {
-        $cMedium = Yii::$app->medium;
-        /**@var $cMedium MediumApi*/
-        $contactsVisits = ContactsVisits::find()
-            ->where('visit_date < :date',[':date'=>date('Y-m-d H:i:s')])
-            ->andWhere(['status'=>ContactsVisits::STATUS_PENDING])
-            ->all();
-        if($contactsVisits){
-            foreach ($contactsVisits as $contactsVisit){
-                if($contactsVisit->department){
-                    $visitStatus = $cMedium->visitStatus($contactsVisit->department->api_url, $contactsVisit->medium_oid);
-                    if(!empty($visitStatus['error'])){
-                        echo "Error update status visit " . $contactsVisit->medium_oid . $visitStatus['error'] . "\n";
-                    }else{
-                        if($visitStatus['data'] == ContactsVisits::STATUS_TAKE_PLACE_MEDIUM){
-                            $contactsVisit->status = ContactsVisits::STATUS_TAKE_PLACE;
-                            if($contactsVisit->save() && $contactsVisit->contact){
-                                $contactsVisit->contact->status = strval(Contact::CONTACT);
-                                if (!$contactsVisit->contact->medium_oid) {
-                                    $contactsVisit->contact->medium_oid = $cMedium->putContact($contactsVisit->contact);
-                                }
-                                if($contactsVisit->contact->save()){
-                                    echo "Update status visit " . $contactsVisit->medium_oid . "\n";
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        $contactLink = $visit[0]['@contact'][0]['link'] ?? null;
+        if(!$contactLink) {
+            return null;
         }
+
+        $matches = [];
+        if(!preg_match('/\/O:(.+)$/', $contactLink, $matches)) {
+            return null;
+        }
+
+        return $matches[1];
     }
 }

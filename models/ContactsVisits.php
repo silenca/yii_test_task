@@ -14,7 +14,14 @@ namespace app\models;
  * @property string $medium_oid
  * @property integer $status
  * @property integer $manager_id
+ * @property integer $sync_status
  * @property Departments $department
+ * @property string $cabinet_oid
+ * @property string $doctor_oid
+ * @property string $cabinet_name
+ * @property string $doctor_name
+ * @property integer $time
+ * @property string $comment
  */
 class ContactsVisits extends \yii\db\ActiveRecord
 {
@@ -23,6 +30,13 @@ class ContactsVisits extends \yii\db\ActiveRecord
 
     const STATUS_PENDING_MEDIUM = "В ожидании";
     const STATUS_TAKE_PLACE_MEDIUM = "Состоялся";
+
+    const SYNC_STATUS_NEW = 1;
+    const SYNC_STATUS_WAITING = 2;
+    const SYNC_STATUS_SYNCED = 3;
+    const SYNC_STATUS_ERROR = 4;
+
+    const DATE_FORMAT = 'Y-m-d H:i:s';
 
     /**
      * @inheritdoc
@@ -38,8 +52,9 @@ class ContactsVisits extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['contact_id','department_id','status', 'manager_id'], 'integer'],
-            [['medium_oid'], 'string'],
+            [['contact_id','department_id','status', 'manager_id', 'sync_status', 'time'], 'integer'],
+            [['medium_oid', 'cabinet_oid', 'cabinet_name', 'doctor_oid', 'doctor_name', 'comment'], 'string'],
+            [['create_date', 'edit_date', 'visit_date'], 'datetime', 'format' => 'php:'.self::DATE_FORMAT],
         ];
     }
 
@@ -56,5 +71,25 @@ class ContactsVisits extends \yii\db\ActiveRecord
     public function getManager()
     {
         return $this->hasOne(User::className(), ['id' => 'manager_id']);
+    }
+
+    /**
+     * @return ContactsVisits[]
+     */
+    public static function fetchToSync()
+    {
+        return self::find()->where([
+            'sync_status' => self::SYNC_STATUS_NEW,
+        ])->all();
+    }
+
+    /**
+     * @return ContactsVisits[]
+     */
+    public static function fetchToUpdateLead()
+    {
+        return self::find()->where([
+            'sync_status' => self::SYNC_STATUS_WAITING,
+        ])->all();
     }
 }

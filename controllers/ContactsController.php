@@ -32,6 +32,7 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
+use yii\web\Request;
 
 class ContactsController extends BaseController
 {
@@ -264,87 +265,86 @@ class ContactsController extends BaseController
 
     public function actionSendVisit(): string
     {
+        $request = Yii::$app->request;
+        /**@var $request Request*/
         $response = ['data'=>[], 'notify'=>'', 'error'=>''];
-        if(Yii::$app->request->isAjax) {
-            $contactId = intval(Yii::$app->request->post('contactId'));// ID Пациент
-			$speciality = intval(Yii::$app->request->post('speciality'));
-			$departmentId = intval(Yii::$app->request->post('department'));
-			$doctorName = htmlspecialchars(Yii::$app->request->post('doctorName'));//Врач
-			$bookingDate = date("Y-m-d", strtotime(Yii::$app->request->post('bookingDate')));//ДатаПриема
-			$cabinetName = htmlspecialchars(Yii::$app->request->post('cabinetName'));//Кабинет
-			$visitComment = htmlspecialchars(Yii::$app->request->post('visitComment'));//Визит
-			$doctorId = htmlspecialchars(Yii::$app->request->post('doctorId'));//Врач
-			$doctorStartTime = strtotime($bookingDate . ' ' . Yii::$app->request->post('doctorStartTime'));//ДатаПриема
-			$doctorEndTime = strtotime($bookingDate . ' ' . Yii::$app->request->post('doctorEndTime'));
-			$cabinetId = htmlspecialchars(Yii::$app->request->post('cabinetId'));
-			$cabinetStartTime = strtotime($bookingDate . ' ' . Yii::$app->request->post('cabinetStartTime'));
-			$cabinetEndTime = strtotime($bookingDate . ' ' . Yii::$app->request->post('cabinetEndTime'));
+        try {
+            if(!$request->isAjax) {
+                throw new \Exception('This method is accessible only using AJAX request');
+            }
+
+            $contactId = intval($request->post('contactId'));// ID Пациент
+            $speciality = intval($request->post('speciality'));
+            $departmentId = intval($request->post('department'));
+
+            $cabinetId = htmlspecialchars($request->post('cabinetId'));
+            $doctorName = htmlspecialchars($request->post('doctorName'));//Врач
+            $cabinetName = htmlspecialchars($request->post('cabinetName'));//Кабинет
+            $visitComment = htmlspecialchars($request->post('visitComment'));//Визит
+            $doctorId = htmlspecialchars($request->post('doctorId'));//Врач
+
+            $bookingDate = date("Y-m-d", strtotime($request->post('bookingDate')));//ДатаПриема
+
+            $doctorStartTime = strtotime($bookingDate . ' ' . $request->post('doctorStartTime'));//ДатаПриема
+            $doctorEndTime = strtotime($bookingDate . ' ' . $request->post('doctorEndTime'));
+            $cabinetStartTime = strtotime($bookingDate . ' ' . $request->post('cabinetStartTime'));
+            $cabinetEndTime = strtotime($bookingDate . ' ' . $request->post('cabinetEndTime'));
 
             $timeReceipt = ($doctorEndTime - $doctorStartTime) / 60;//ВремяПриема
+            $visitDate = date(ContactsVisits::DATE_FORMAT, $doctorStartTime);
 
-            if($doctorStartTime == $cabinetStartTime && $doctorEndTime == $cabinetEndTime) {
-                $department = Departments::findOne($departmentId);
-                if($department) {
-                    $contact = Contact::findOne($contactId);//Пациент
-                    if ($contact) {
-                        $attrChannel = $contact->getAttractionChannel()->one();
-                        $infoSource = $attrChannel?$attrChannel->name:'';
-                        $type = ($contact->status == Contact::CONTACT)?'Повторный':'Новый';
-
-                        $data = '<OBJECT ДатаПриема="' . date("Y-m-d\TH:i:s", $doctorStartTime) . '" ВремяПриема="' . $timeReceipt . '" '
-                            . 'Пациент="' . $contact->surname . ' ' . $contact->name . ' ' . $contact->middle_name . '" '
-                            . 'Врач="' . $doctorName . '" Кабинет="' . $cabinetName . '" ИсточЗапис="Через контакт центр" '
-                            . 'Статус="В ожидании" Визит="'.$type.'" Комментарий="' . htmlspecialchars($visitComment) . '" '
-                            . 'ИсточникИнформации="'.$infoSource.'" Телефон="'.$contact->getPhonesString().'">' . "\n"
-                            . '<Пациент link="C:1CDA3A9DBD62FBC/O:' . $contact->medium_oid . '"/>' . "\n"
-                            . '<Врач link="C:1CDCBA80BCACD1E/O:' . $doctorId . '"/>' . "\n"
-                            . '<Кабинет link="C:1CE311BD5A26671/O:' . $cabinetId . '"/>' . "\n"
-                            . '</OBJECT>';
-                        $response['data'] = $data;
-
-                        $records =  Yii::$app->medium->records($department->api_send_url, $data);
-                        if(empty($records['error'])){
-                            $response['notify'] = 'Запись была успешно отправлена. ID визита ' . $records['data']['oid'];
-                        }else{
-                            $response['error'] = $records['error'];
-                        }
-                        $log = new ContactVisitLog();
-                        $log->date = date('Y-m-d H:i:s');
-                        $log->date_visit = date('Y-m-d H:i:s', $doctorStartTime);
-                        $log->contact_id = $contact->id;
-                        $log->medium_oid = $records['data']['oid'];
-                        $log->request = $data;
-                        $log->response = $records['data']['response'];
-                        $log->save();
-
-                        $visit = new ContactsVisits();
-                        $visit->create_date = date('Y-m-d H:i:s');
-                        $visit->edit_date = date('Y-m-d H:i:s');
-                        $visit->visit_date = date('Y-m-d H:i:s', $doctorStartTime);
-                        $visit->contact_id = $contact->id;
-                        $visit->medium_oid = $records['data']['oid'];
-                        $visit->department_id = $department->id;
-                        $visit->status = ContactsVisits::STATUS_PENDING;
-                        $visit->manager_id = Yii::$app->user->id;
-                        $visit->save();
-
-                        $action = new Action();
-                        $action_type = ActionType::find()->where(['name' => 'scheduled_visit'])->one();
-                        $action->add($contact->id, $action_type->id, [], date('Y-m-d H:i:s', $doctorStartTime));
-
-                        $contact_history = new ContactHistory();
-                        $contact_history->add($contact->id, 'Запланированный визит на ' . date('d-m-Y H:i:s', $doctorStartTime), 'scheduled_visit');
-                        $contact_history->save();
-                    } else {
-                        $response['error'] = "Контакт не найден";
-                    }
-                }else{
-                    $response['error'] = "Отделение с ID {$departmentId} не найдено";
-                }
-            }else{
-                $response['error'] = "Время записи к доктору, должно совпадать с временем записи в кабинет";
+            if(($doctorStartTime != $cabinetStartTime) || ($doctorEndTime != $cabinetEndTime)) {
+                throw new \Exception('Время записи к доктору, должно совпадать с временем записи в кабинет');
             }
+
+            $department = Departments::findOne($departmentId);
+            if(!$department) {
+                throw new \Exception('Отделение с ID '.$departmentId.' не найдено');
+            }
+
+            $contact = Contact::findOne($contactId);
+            if(!$contact) {
+                throw new \Exception('Контакт не найден');
+            }
+
+            // Save visit
+            $visit = new ContactsVisits();
+            $visit->setAttributes([
+                'create_date' => date(ContactsVisits::DATE_FORMAT),
+                'edit_date' => date(ContactsVisits::DATE_FORMAT),
+                'visit_date' => $visitDate,
+                'contact_id' => $contact->id,
+                'department_id' => $department->id,
+                'status' => ContactsVisits::STATUS_PENDING,
+                'manager_id' => Yii::$app->user->id,
+                'sync_status' => ContactsVisits::SYNC_STATUS_NEW,
+                'cabinet_oid' => $cabinetId,
+                'cabinet_name' => $cabinetName,
+                'doctor_oid' => $doctorId,
+                'doctor_name' => $doctorName,
+                'comment' => $visitComment,
+                'time' => $timeReceipt,
+            ]);
+
+            if(!$visit->save()) {
+                throw new \Exception(implode('; ', $visit->getErrorSummary(true)));
+            }
+
+            $response['notify'] = 'Запись была успешно сохранена. ID визита #'.$visit->id;
+
+            // Create visit action
+            $action = new Action();
+            $action_type = ActionType::find()->where(['name' => 'scheduled_visit'])->one();
+            $action->add($contact->id, $action_type->id, [], $visitDate);
+
+            // Create history item
+            $contact_history = new ContactHistory();
+            $contact_history->add($contact->id, 'Запланированный визит на '.$visitDate, 'scheduled_visit');
+            $contact_history->save();
+        } catch(\Exception $e) {
+            $response['error'] = $e->getMessage();
         }
+
         return Json::encode($response);
     }
 
@@ -571,79 +571,6 @@ class ContactsController extends BaseController
             $this->json(false, 415, $errors);
         }
     }
-
-//TODO clean or finish this methods:
-//    public function actionSyncAllMediumContacts()
-//    {
-//        $user = User::find()
-//            ->where([
-//                'id' => Yii::$app->user->identity->getId()
-//            ])
-//            ->one();
-//        //TODO **refactoring-lowprior change user model's column names
-//        $crmContacts = $user->cols_config;
-//        $mediumContacts = Contact::getMediumObjects();
-//        foreach ($mediumContacts as $mediumContact) {
-//            foreach ($crmContacts as $crmContact) {
-////                ($crmContact);
-//            }
-//        }
-//    }
-//
-//    public function actionForceUpdateContact($oid)
-//    {
-//        $request = Yii::$app->request->post();
-//        try {
-//            $contact = new Contact();
-//            $xml = new XMLparser();
-//            $xmlObject = $xml->parse($request);
-//            foreach ($xmlObject as $key => $value) {
-//                switch ($key) {
-//                    case 'name' || 'FIO':
-//                        break;
-//                    case 'ТелефонМоб' || 'Phone':
-//                        break;
-//                    case 'ДатаРождения' || 'birth':
-//                        break;
-//                    case 'ИсточникИнфомации' || 'ИсточникИнфомации':
-//                        break;
-//                    case 'ТелефонБинотел' || '':
-//                        break;
-//                }
-//                $client[$key] = $value;
-//            }
-//
-//            $contact->first_phone = $post['phone1'];
-//            $contact->second_phone = $post['phone2'];
-//            $contact->third_phone = $post['phone3'];
-//            $contact->fourth_phone = $post['phone4'];
-//            $contact->first_email = $post['email1'];
-//            $contact->second_email = $post['email2'];
-//            $contact->name = $post['first_name'];
-//            $contact->surname = $post['last_name'];
-//            $contact->middle_name = $post['middle_name'];
-//            $contact->country = $post['country'];
-//            $contact->city = $post['city'];
-//            $contact->int_id = $post['internal_no'];
-//            $contact->status = $post['status'];
-//            $contact->birthday = $post['birthday'];
-//
-//            if ($contact->save()) {
-//                $contact_history = new ContactHistory();
-//                $contact_history->add($this->id, 'создан контакт (API)', 'new_contact');
-//                $contact_history->save();
-//                $contactStatusHistory = new ContactStatusHistory();
-//                $contactStatusHistory->add($this->id, $this->manager_id, 'lead');
-//                $contactStatusHistory->save();
-//                $this->json(['id' => $contact->id], 200);
-//            } else {
-//                $this->json(false, 415, $contact->getErrors());
-//            }
-//        } catch (\Exception $ex) {
-//            $this->json(false, 500);
-//        }
-//
-//    }
 
     public function actionSearch(): void
     {
