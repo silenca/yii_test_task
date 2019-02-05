@@ -22,6 +22,7 @@ class MediumApi
     const LINK_GET_VISIT = 'get_visit';
     const LINK_PUT_VISIT = 'put_visit';
     const LINK_DOCTOR_VISIT = 'doctor_visit';
+    const LINK_CABINET_SCHEDULE = self::LINK_DOCTOR_VISIT;
 
     const LINK_SYS_CONTACT_STR = '_contact_visit';
     const LINK_SYS_OID_STR = '_oid_str';
@@ -339,7 +340,10 @@ class MediumApi
      */
     public function cabinetSchedule($apiUrl, $day): array
     {
-        $url = $this->mediumApiDomain . '/api/' . $apiUrl . $this->cabinetSchedule . $day;
+        $url = $this->link(self::LINK_CABINET_SCHEDULE, [
+            'DEP_HD' => $apiUrl,
+            'day' => $day,
+        ]);
         $result = ['data'=>[],'error'=>''];
         try {
             $data = 'let $data := "' . $day . '"' . "\n"
