@@ -21,6 +21,7 @@ class MediumApi
     const LINK_PUT_CONTACT = 'put_contact';
     const LINK_GET_VISIT = 'get_visit';
     const LINK_PUT_VISIT = 'put_visit';
+    const LINK_DOCTOR_VISIT = 'doctor_visit';
 
     const LINK_SYS_CONTACT_STR = '_contact_visit';
     const LINK_SYS_OID_STR = '_oid_str';
@@ -260,7 +261,11 @@ class MediumApi
                 . 'attribute Phone {$ob/@Телефон},' . "\n"
                 . 'attribute time {$ob/@ВремяПриема}' . "\n"
                 . "}";
-            $response = $this->sendMediumPost($this->mediumApiDomain .'/api/' . $apiUrl . $this->doctorsVisit . $day, $data);
+            $url = $this->link(self::LINK_DOCTOR_VISIT, [
+                'DEP_HD' => $apiUrl,
+                'day' => $day,
+            ]);
+            $response = $this->sendMediumPost($url, $data);
             if(!empty($response->getContent()) && mb_strcut($response->getContent(), 0, 2) != "<x>"){
                 $response->setContent("<x>".$response->getContent()."</x>");
             }
